@@ -72,14 +72,33 @@ has no context to repair a doubtful letter. Haiku per line is cheap and
 weak; Gemini per line is strong and, at forty calls a page with reasoning
 tokens on each, eight times the price of reading the page whole.
 
-The handwriting half (run `hand-20261105`: the three real Kurrent pages,
-with Gemini 3.1 Pro added as a whole-page reader) was still running when
-this README was written and is reported in `outputs/index-hand.html` and
-`outputs/bakeoff_hand-20261105.json` once complete.
+Run `hand-20261105`, the three real Kurrent pages, with Gemini 3.1 Pro
+added as a whole-page reader. Normalised CER:
 
-`outputs/index.html` shows the four readings of each print page with the
-diff; `outputs/consensus-print/` is the consensus of the four, which puts
-8 to 32 spans per page on the check-in list.
+| page | Kraken | Gemini 3.8 Flash, whole page | Gemini 3.1 Pro, whole page | **hybrid**: Kraken lines + Gemini 3.8 Flash | **hybrid**: Kraken lines + Haiku 5.5 |
+|---|---|---|---|---|---|
+| Kaskel 1864 | 0.207 | **0.060** | **0.060** | 0.142 | 0.398 |
+| Schnitzler 1896 | 0.429 | 0.278 | **0.176** | 0.482 | 0.569 |
+| Poesiealbum 1901 | 0.819 | 0.710 | **0.708** | 0.797 | 0.840 |
+| mean | 0.485 | 0.349 | 0.314 | 0.473 | 0.602 |
+| $ per page | 0 | 0.018 | 0.007 | 0.167 | 0.004 |
+
+On handwriting the hybrid loses to the whole-page reading on every page
+and by a wide margin (0.14 against 0.06 on the clean 1864 hand). A line of
+Kurrent cut from its page loses the context a reader uses to settle a
+letterform; Kraken's segmenter also cuts the album page into 39 polygons
+where the model, reading whole, counts 9 lines. The hybrid remains the way
+to get coordinates onto a model reading, and the way to re-read only the
+lines a person flagged; it is not the way to get the best first reading of
+a hand. (Gemini 3.8 Flash also read the Schnitzler page this time, at
+0.278, where the bake-off in use case 02 recorded an empty reply; both
+runs are kept.)
+
+`outputs/index.html` and `outputs/index-hand.html` show every reading of
+each page with the diff; `outputs/consensus-print/` and
+`outputs/consensus-hand/` are the consensus pages, with 8 to 36 spans per
+page on the check-in list, and the album page flagged as too disputed for
+span-level checking.
 
 ## The pipeline
 

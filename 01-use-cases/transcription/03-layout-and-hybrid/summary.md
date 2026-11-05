@@ -12,8 +12,13 @@ any other backend.
 
 **Findings.** The layout pass counts lines correctly, names the stamp, the
 pencil pagination, the interlinear correction and the Latin-cursive names
-inside Kurrent, and caught that the Schiller page is Antiqua. See the
-README for the hybrid numbers against the whole-page readings.
+inside Kurrent, and caught that the Schiller page is Antiqua. The hybrid
+reading is the best of all on the clean Antiqua page (CER 0.010) and
+slightly behind the whole-page reading on Fraktur (0.024 against 0.015);
+on handwriting it loses clearly (0.14 against 0.06 on the 1864 hand),
+because a line cut from its page loses the context that settles a
+letterform. It is the way to put coordinates on a model reading, not the
+way to get the best first reading of a hand.
 
 **Limits.** The model's boxes are approximate; the hybrid mode pays one
 call per line; six pages.

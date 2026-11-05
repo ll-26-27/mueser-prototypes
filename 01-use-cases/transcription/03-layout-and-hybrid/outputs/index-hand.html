@@ -1,0 +1,1296 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hybrid reading, handwriting: Kraken&#x27;s lines read by a vision model</title>
+<style>
+:root { --bg:#fbfaf7; --ink:#1e1c1a; --muted:#6b6660; --line:#e4dfd6; --panel:#fff; --accent:#c8102e; --del:#ffd6d6; --ins:#d6f0dd; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#15151a; --ink:#ecebe6; --muted:#a39f98; --line:#2c2c33; --panel:#1d1d23; --del:#5a2222; --ins:#1f4a2c; } }
+:root[data-theme="dark"] { --bg:#15151a; --ink:#ecebe6; --muted:#a39f98; --line:#2c2c33; --panel:#1d1d23; --del:#5a2222; --ins:#1f4a2c; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 Georgia, "Source Serif 4", serif; }
+header, section { padding:16px 24px; max-width:1500px; margin:0 auto; }
+h1 { font-size:24px; margin:0 0 6px; } h2 { font-size:18px; margin:24px 0 8px; } h3 { font-size:15px; margin:12px 0 4px; }
+.muted { color:var(--muted); } .mono { font-family: ui-monospace, Menlo, monospace; font-size:12.5px; }
+table { border-collapse:collapse; font-size:14px; } td, th { padding:4px 10px; border-bottom:1px solid var(--line); text-align:left; } td.num { text-align:right; font-variant-numeric: tabular-nums; }
+.page { display:grid; grid-template-columns: minmax(280px, 42%) 1fr; gap:18px; border-top:1px solid var(--line); padding-top:14px; margin-top:14px; }
+.page img { width:100%; height:auto; border:1px solid var(--line); background:#fff; }
+.tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; font-family: ui-sans-serif, system-ui, sans-serif; font-size:13px; }
+.tabs button { border:1px solid var(--line); background:var(--panel); color:var(--ink); border-radius:14px; padding:3px 10px; cursor:pointer; }
+.tabs button[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); font-weight:600; }
+pre { white-space:pre-wrap; word-break:break-word; background:var(--panel); border:1px solid var(--line); padding:10px; border-radius:6px; font-size:13.5px; line-height:1.55; }
+del { background:var(--del); text-decoration:line-through; } ins { background:var(--ins); text-decoration:none; }
+details { margin:8px 0; } summary { cursor:pointer; }
+.stat { display:inline-block; margin-right:14px; }
+@media (max-width:900px) { .page { grid-template-columns:1fr; } }
+</style></head><body>
+<header><h1>Hybrid reading, handwriting: Kraken&#x27;s lines read by a vision model</h1><p>Three real Kurrent pages. Kraken segments and reads; Gemini 3.8 Flash and 3.1 Pro read the whole page; in hybrid mode Gemini 3.8 Flash and Claude Haiku 5.5 read Kraken's line crops one at a time.</p>
+<p class="muted">Run <span class="mono">hand-20261105</span>. CER = character error rate against the ground truth (0.05 = one wrong character in twenty); "norm" = after the declared normalisation (ſ→s, superscript umlauts, hyphenation, whitespace). Costs are what the provider reported, or list price per page for Mistral OCR; cached calls cost nothing to rerun.</p></header>
+<section><h2>Summary (mean over pages)</h2><table><tr><th>backend</th><th>model</th><th>pages</th><th>CER</th><th>WER</th><th>CER norm</th><th>WER norm</th><th>$ / page</th><th>s / page</th></tr><tr><td>openrouter</td><td class='mono'>google/gemini-3.1-pro-preview</td><td class='num'>3</td><td class='num'>0.321</td><td class='num'>0.463</td><td class='num'>0.314</td><td class='num'>0.442</td><td class='num'>0.0071</td><td class='num'>6.0</td></tr><tr><td>openrouter</td><td class='mono'>google/gemini-3.8-flash</td><td class='num'>3</td><td class='num'>0.349</td><td class='num'>0.472</td><td class='num'>0.349</td><td class='num'>0.472</td><td class='num'>0.0184</td><td class='num'>49.6</td></tr><tr><td>hybrid</td><td class='mono'>google/gemini-3.8-flash</td><td class='num'>3</td><td class='num'>0.475</td><td class='num'>0.685</td><td class='num'>0.473</td><td class='num'>0.677</td><td class='num'>0.1670</td><td class='num'>478.2</td></tr><tr><td>kraken</td><td class='mono'>german_handwriting.mlmodel</td><td class='num'>3</td><td class='num'>0.500</td><td class='num'>0.836</td><td class='num'>0.485</td><td class='num'>0.799</td><td class='num'>0.0000</td><td class='num'>15.8</td></tr><tr><td>hybrid</td><td class='mono'>anthropic/claude-haiku-5.5</td><td class='num'>3</td><td class='num'>0.609</td><td class='num'>0.850</td><td class='num'>0.602</td><td class='num'>0.833</td><td class='num'>0.0037</td><td class='num'>62.3</td></tr></table><details><summary>The prompt sent to every vision-language model (<span class='mono'>src/mueser/text/backends/prompts/transcribe_de.md</span>)</summary><pre>You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.
+
+Rules:
+
+1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep &quot;Thür&quot;, &quot;seyn&quot;, &quot;Gebäu&quot;). Do not translate.
+2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus &quot;e&quot; superscript marker: aͤ, oͤ, uͤ.
+3. Keep abbreviations as written (e.g. &quot;u.&quot; not &quot;und&quot;, &quot;Hr.&quot; not &quot;Herr&quot;). Keep hyphenation at line ends as the page has it (&quot;Ver-&quot; / &quot;zeichnis&quot;).
+4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.
+5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never &quot;correct&quot; a reading toward a word you expect.
+6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent &quot;e&quot; looks like &quot;n&quot;, &quot;h&quot; has a loop below the line, &quot;s&quot; has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.
+7. Return JSON only, matching the schema: {&quot;lines&quot;: [{&quot;text&quot;: &quot;...&quot;}], &quot;script&quot;: &quot;fraktur|antiqua|kurrent|suetterlin|mixed|unknown&quot;, &quot;notes&quot;: &quot;...&quot;}. &quot;notes&quot; is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short.</pre></details><details><summary>The normalisation used for the “norm” columns</summary><pre>The declared normalisation. Keep it small and listed in the README.
+
+ſ→s · aͤ oͤ uͤ → ä ö ü · ꝛ→r · quotation marks and dashes unified · end-of-line hyphenation joined · whitespace collapsed</pre></details></section><section><h2>Every page, every backend</h2><div class="page" id="real-kaskel-to-schnorr-1864"><div><h3>real-kaskel-to-schnorr-1864</h3><a href="../inputs/pages-hand/real-kaskel-to-schnorr-1864.jpg" target="_blank"><img src="../inputs/pages-hand/real-kaskel-to-schnorr-1864.jpg" alt="page real-kaskel-to-schnorr-1864" loading="lazy"></a></div><div><div class="tabs"><button aria-pressed="true" data-target="real-kaskel-to-schnorr-1864-0">kraken · german_handwriting.mlmodel</button><button aria-pressed="false" data-target="real-kaskel-to-schnorr-1864-1">openrouter · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-kaskel-to-schnorr-1864-2">openrouter · google/gemini-3.1-pro-preview</button><button aria-pressed="false" data-target="real-kaskel-to-schnorr-1864-3">hybrid · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-kaskel-to-schnorr-1864-4">hybrid · anthropic/claude-haiku-5.5</button><button aria-pressed="false" data-target="real-kaskel-to-schnorr-1864-gt">ground truth</button></div><div class="pane" id="real-kaskel-to-schnorr-1864-0" style="display:block"><p class="mono"><span class="stat"><b>cer</b> 0.225</span><span class="stat"><b>wer</b> 0.634</span><span class="stat"><b>cer_norm</b> 0.207</span><span class="stat"><b>wer_norm</b> 0.549</span><span class="stat"><b>lines</b> 24</span><span class="stat"><b>$</b> 0.0000</span><span class="stat"><b>s</b> 17.43</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><del title="in ground truth, not in output">H</del><ins title="in output, not in ground truth">ſ</ins>och<del title="in ground truth, not in output">v</del><ins title="in output, not in ground truth">g</ins>e<del title="in ground truth, not in output">r</del>ehrte<ins title="in output, not in ground truth">ſti</ins>r <del title="in ground truth, not in output">F</del>re<del title="in ground truth, not in output">u</del><ins title="in output, not in ground truth">n</ins>nd<del title="in ground truth, not in output">!</del><ins title="in output, not in ground truth">.</ins>
+So herrlich und unvergleichlich<ins title="in output, not in ground truth">,</ins> als
+ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tern im un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>terblichen Werke<ins title="in output, not in ground truth">.</ins>
+Meyerbe<del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">r</ins>rs, habe ich <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">A</ins>hren <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o<ins title="in output, not in ground truth">.</ins>
+h<del title="in ground truth, not in output">o</del><ins title="in output, not in ground truth">ö</ins>ch<del title="in ground truth, not in output">vo</del><ins title="in output, not in ground truth">e</ins>r<del title="in ground truth, not in output">tre</del><ins title="in output, not in ground truth">c</ins>fflichen Sohn <ins title="in output, not in ground truth">u</ins>n<del title="in ground truth, not in output">ie</del><ins title="in output, not in ground truth">d</ins> g<del title="in ground truth, not in output">e</del>hört<del title="in ground truth, not in output">,</del>
+obwohl<del title="in ground truth, not in output"> </del>er <del title="in ground truth, not in output">ste</del><ins title="in output, not in ground truth">da</ins>ts der er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>te <del title="in ground truth, not in output">T</del><ins title="in output, not in ground truth">l</ins>enor
+der Gegenwart <del title="in ground truth, not in output">ist</del><ins title="in output, not in ground truth">Hh</ins>. Meine
+Fr<del title="in ground truth, not in output">eu</del><ins title="in output, not in ground truth">in</ins>de w<del title="in ground truth, not in output">u</del><ins title="in output, not in ground truth">ü</ins>rde v<del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">o</ins>rdo<del title="in ground truth, not in output">pp</del><ins title="in output, not in ground truth">gg</ins>elt, als
+ich <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>einen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o hoch<del title="in ground truth, not in output">v</del><ins title="in output, not in ground truth">r</ins>erehrten, und
+ebenfalls unvergleichlichen <del title="in ground truth, not in output">V</del><ins title="in output, not in ground truth">N</ins>ate<del title="in ground truth, not in output">r</del>
+unter den <del title="in ground truth, not in output">Z</del><ins title="in output, not in ground truth">z</ins>uhörern erblic<del title="in ground truth, not in output">kte</del><ins title="in output, not in ground truth">h</ins>
+und mir <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agte was <del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">D</ins>ie<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>er da
+e<del title="in ground truth, not in output">mp</del><ins title="in output, not in ground truth">ing</ins>finden müß<del title="in ground truth, not in output">t</del>e<del title="in ground truth, not in output">!</del><ins title="in output, not in ground truth">:</ins>
+Aber me<del title="in ground truth, not in output">i</del>n<del title="in ground truth, not in output">em</del><ins title="in output, not in ground truth">und</ins> vere<del title="in ground truth, not in output">w</del><ins title="in output, not in ground truth">r</ins>igten<ins title="in output, not in ground truth">.</ins>
+großen <del title="in ground truth, not in output">F</del><ins title="in output, not in ground truth">St</ins>reunde w<del title="in ground truth, not in output">a</del><ins title="in output, not in ground truth">o</ins>r, ach<del title="in ground truth, not in output">!</del><ins title="in output, not in ground truth">:</ins> das
+Glück nicht be<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chi<del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">r</ins>den, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>einen
+<del title="in ground truth, not in output">R</del><ins title="in output, not in ground truth">K</ins>ao<del title="in ground truth, not in output">u</del><ins title="in output, not in ground truth">n</ins>l<del title="in ground truth, not in output"> so </del><ins title="in output, not in ground truth">
+</ins>zu hören<del title="in ground truth, not in output">!</del><ins title="in output, not in ground truth">:</ins>
+<del title="in ground truth, not in output">G</del><ins title="in output, not in ground truth">H</ins>o<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">r</ins>t erhalte <del title="in ground truth, not in output">Si</del><ins title="in output, not in ground truth">v</ins>e<del title="in ground truth, not in output">!</del><ins title="in output, not in ground truth">r.</ins>
+<del title="in ground truth, not in output">Ihr</del><ins title="in output, not in ground truth">am</ins> <ins title="in output, not in ground truth">30 uny.
+1864.
+</ins>tre<del title="in ground truth, not in output">u</del><ins title="in output, not in ground truth">n</ins> ergeben<del title="in ground truth, not in output">st</del>er
+Carl Ka<del title="in ground truth, not in output">sk</del><ins title="in output, not in ground truth">dt</ins>e<del title="in ground truth, not in output">l
+am 30. Juny
+1864</del><ins title="in output, not in ground truth">e</ins></pre><details><summary>Output as written</summary><pre>
+ſochgeehrteſtir rennd.
+So herrlich und unvergleichlich, als
+geſtern im unſterblichen Werke.
+Meyerberrs, habe ich Ahren ſo.
+höchercfflichen Sohn und ghört
+obwohler dats der erſte lenor
+der Gegenwart Hh. Meine
+Frinde würde vordoggelt, als
+ich ſeinen ſo hochrerehrten, und
+ebenfalls unvergleichlichen Nate
+unter den zuhörern erblich
+und mir ſagte was Dieſer da
+eingfinden müße:
+Aber menund vererigten.
+großen Streunde wor, ach: das
+Glück nicht beſchirden, ſeinen
+Kaonl
+zu hören:
+Hort erhalte ver.
+am 30 uny.
+1864.
+tren ergebener
+Carl Kadtee
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/kraken/german_handwriting.mlmodel/real-kaskel-to-schnorr-1864.txt · PAGE-XML beside it</p></div><div class="pane" id="real-kaskel-to-schnorr-1864-1" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.060</span><span class="stat"><b>wer</b> 0.122</span><span class="stat"><b>cer_norm</b> 0.060</span><span class="stat"><b>wer_norm</b> 0.122</span><span class="stat"><b>lines</b> 22</span><span class="stat"><b>$</b> 0.0080</span><span class="stat"><b>s</b> 17.21</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">84
+</ins>Hoch<del title="in ground truth, not in output">v</del><ins title="in output, not in ground truth">g</ins>e<del title="in ground truth, not in output">r</del>ehrter Freund!
+So herrlich und unvergleichlich als
+gestern im unsterblichen Werke
+Meyerbeer<ins title="in output, not in ground truth">&#x27;</ins>s, habe ich Ihren so
+hoch<del title="in ground truth, not in output">vor</del>trefflichen Sohn nie gehört,
+obwohl er stets der erste Tenor
+der Gegenwart ist. Meine
+Freude wurde verdoppelt, als
+ich seinen so hochverehrten, und
+ebenfalls unvergleichlichen Vater
+unter den Zuhörern erblickte
+und mir sagte was dieser da
+empfinden müßte!
+Aber meinem verewigten
+großen Freunde war, ach! das
+Glück nicht beschieden, seinen
+Raoul so zu hören!
+Gott erhalte Sie!
+Ihr treu ergeben<del title="in ground truth, not in output">st</del>er
+<ins title="in output, not in ground truth">am 30t Juny </ins>Carl Kaskel
+<del title="in ground truth, not in output">am 30. Juny
+</del>1864</pre><details><summary>Output as written</summary><pre>84
+Hochgeehrter Freund!
+So herrlich und unvergleichlich als
+gestern im unsterblichen Werke
+Meyerbeer&#x27;s, habe ich Ihren so
+hochtrefflichen Sohn nie gehört,
+obwohl er stets der erste Tenor
+der Gegenwart ist. Meine
+Freude wurde verdoppelt, als
+ich seinen so hochverehrten, und
+ebenfalls unvergleichlichen Vater
+unter den Zuhörern erblickte
+und mir sagte was dieser da
+empfinden müßte!
+Aber meinem verewigten
+großen Freunde war, ach! das
+Glück nicht beschieden, seinen
+Raoul so zu hören!
+Gott erhalte Sie!
+Ihr treu ergebener
+am 30t Juny Carl Kaskel
+1864
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/openrouter/google_gemini-3.8-flash/real-kaskel-to-schnorr-1864.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-kaskel-to-schnorr-1864-2" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.060</span><span class="stat"><b>wer</b> 0.122</span><span class="stat"><b>cer_norm</b> 0.060</span><span class="stat"><b>wer_norm</b> 0.122</span><span class="stat"><b>lines</b> 22</span><span class="stat"><b>$</b> 0.0090</span><span class="stat"><b>s</b> 6.5</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">84
+</ins>Hoch<del title="in ground truth, not in output">v</del><ins title="in output, not in ground truth">g</ins>e<del title="in ground truth, not in output">r</del>ehrter Freund!
+So herrlich und unvergleichlich als
+gestern im unsterblichen Werke
+Meyerbeer<ins title="in output, not in ground truth">&#x27;</ins>s, habe ich Ihren so
+hoch<del title="in ground truth, not in output">vor</del>trefflichen Sohn nie gehört,
+obwohl er stets der erste Tenor
+der Gegenwart ist. Meine
+Freude wurde verdoppelt, als
+ich seinen so hochverehrten, und
+ebenfalls unvergleichlichen Vater
+unter den Zuhörern erblickte
+und mir sagte was dieser da
+empfinden müßte!
+Aber meinem verewigten
+großen Freunde war, ach! das
+Glück nicht beschieden, seinen
+Raoul so zu hören!
+Gott erhalte Sie!
+Ihr treu ergeben<del title="in ground truth, not in output">st</del>er
+<ins title="in output, not in ground truth">am 30t Juny </ins>Carl Kaskel
+<del title="in ground truth, not in output">am 30. Juny
+</del>1864</pre><details><summary>Output as written</summary><pre>84
+Hochgeehrter Freund!
+So herrlich und unvergleichlich als
+gestern im unsterblichen Werke
+Meyerbeer&#x27;s, habe ich Ihren so
+hochtrefflichen Sohn nie gehört,
+obwohl er stets der erste Tenor
+der Gegenwart ist. Meine
+Freude wurde verdoppelt, als
+ich seinen so hochverehrten, und
+ebenfalls unvergleichlichen Vater
+unter den Zuhörern erblickte
+und mir sagte was dieser da
+empfinden müßte!
+Aber meinem verewigten
+großen Freunde war, ach! das
+Glück nicht beschieden, seinen
+Raoul so zu hören!
+Gott erhalte Sie!
+Ihr treu ergebener
+am 30t Juny Carl Kaskel
+1864
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/openrouter/google_gemini-3.1-pro-preview/real-kaskel-to-schnorr-1864.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-kaskel-to-schnorr-1864-3" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.145</span><span class="stat"><b>wer</b> 0.293</span><span class="stat"><b>cer_norm</b> 0.142</span><span class="stat"><b>wer_norm</b> 0.268</span><span class="stat"><b>lines</b> 24</span><span class="stat"><b>$</b> 0.1542</span><span class="stat"><b>s</b> 443.16</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">[?O]
+</ins>Hoch<del title="in ground truth, not in output">v</del><ins title="in output, not in ground truth">g</ins>e<del title="in ground truth, not in output">r</del>ehrter Freund!
+So herrlich und unvergleichlich als
+g<ins title="in output, not in ground truth">roß</ins>e<del title="in ground truth, not in output">ster</del>n <del title="in ground truth, not in output">im</del><ins title="in output, not in ground truth">und</ins> unsterblichen Werke
+Meyerbeer<ins title="in output, not in ground truth">&#x27;</ins>s, habe ich <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">sc</ins>h<del title="in ground truth, not in output">re</del><ins title="in output, not in ground truth">o</ins>n so
+<del title="in ground truth, not in output">hochv</del><ins title="in output, not in ground truth">f</ins>ortrefflichen Sohn nie gehört,
+obwohl er stets der erste Tenor
+der Gegenwart ist.<ins title="in output, not in ground truth">,</ins> Meine
+Freude wurde verdoppelt, als
+ich seinen so hochverehrten, und
+ebenfalls unvergleichlichen Vater<ins title="in output, not in ground truth">s</ins>
+unter den Zuhörern erblickt<del title="in ground truth, not in output">e</del>
+und mir sagte was dieser da
+empfinden müßte!
+Aber <del title="in ground truth, not in output">m</del><ins title="in output, not in ground truth">w</ins>eine<del title="in ground truth, not in output">m</del><ins title="in output, not in ground truth">nd</ins> vere<del title="in ground truth, not in output">w</del><ins title="in output, not in ground truth">in</ins>igten
+großen Freunde war, ach! das
+Glück nicht be<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chieden, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>einen
+Raoul<del title="in ground truth, not in output"> so</del><ins title="in output, not in ground truth">
+&#x27;</ins> zu hören!
+Gott erhalte Sie!
+<del title="in ground truth, not in output">Ihr</del><ins title="in output, not in ground truth">am</ins> <ins title="in output, not in ground truth">30ten Juny
+1864.
+[?S</ins>tr<del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">a</ins>u<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">bing</ins>er<del title="in ground truth, not in output">gebenster</del><ins title="in output, not in ground truth">]</ins>
+Carl Kaskel<del title="in ground truth, not in output">
+am 30. Juny
+1864</del></pre><details><summary>Output as written</summary><pre>[?O]
+Hochgeehrter Freund!
+So herrlich und unvergleichlich als
+großen und unsterblichen Werke
+Meyerbeer&#x27;s, habe ich schon so
+fortrefflichen Sohn nie gehört,
+obwohl er stets der erste Tenor
+der Gegenwart ist., Meine
+Freude wurde verdoppelt, als
+ich seinen so hochverehrten, und
+ebenfalls unvergleichlichen Vaters
+unter den Zuhörern erblickt
+und mir sagte was dieser da
+empfinden müßte!
+Aber weinend vereinigten
+großen Freunde war, ach! das
+Glück nicht beſchieden, ſeinen
+Raoul
+&#x27; zu hören!
+Gott erhalte Sie!
+am 30ten Juny
+1864.
+[?Straubinger]
+Carl Kaskel
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/hybrid/google_gemini-3.8-flash/real-kaskel-to-schnorr-1864.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-kaskel-to-schnorr-1864-4" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.403</span><span class="stat"><b>wer</b> 0.658</span><span class="stat"><b>cer_norm</b> 0.398</span><span class="stat"><b>wer_norm</b> 0.634</span><span class="stat"><b>lines</b> 24</span><span class="stat"><b>$</b> 0.0042</span><span class="stat"><b>s</b> 65.5</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><del title="in ground truth, not in output">H</del><ins title="in output, not in ground truth">F</ins>o<del title="in ground truth, not in output">chv</del><ins title="in output, not in ground truth">lg</ins>e<del title="in ground truth, not in output">r</del><ins title="in output, not in ground truth">nd</ins>e<del title="in ground truth, not in output">hrter</del><ins title="in output, not in ground truth">s an</ins> Fr<del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">a</ins>u<del title="in ground truth, not in output">nd!</del>
+So <del title="in ground truth, not in output">herr</del><ins title="in output, not in ground truth">[?faw</ins>lich<ins title="in output, not in ground truth">]</ins> und <ins title="in output, not in ground truth">[?</ins>un<del title="in ground truth, not in output">v</del><ins title="in output, not in ground truth">m</ins>ergleichlich<ins title="in output, not in ground truth">]</ins> <ins title="in output, not in ground truth">[?</ins>al<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ß]</ins>
+gestern <del title="in ground truth, not in output">im</del><ins title="in output, not in ground truth">und</ins> un<del title="in ground truth, not in output">s</del>terbli<del title="in ground truth, not in output">ch</del><ins title="in output, not in ground truth">eb</ins>en <del title="in ground truth, not in output">We</del><ins title="in output, not in ground truth">[?Eh</ins>r<ins title="in output, not in ground truth">s</ins>ke<ins title="in output, not in ground truth">]</ins>
+Meyerbeers, <del title="in ground truth, not in output">h</del><ins title="in output, not in ground truth">f</ins>ab<del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">r</ins> i<del title="in ground truth, not in output">ch</del><ins title="in output, not in ground truth">f</ins> <del title="in ground truth, not in output">Ih</del><ins title="in output, not in ground truth">Gf</ins>r<del title="in ground truth, not in output">en</del><ins title="in output, not in ground truth">au</ins> s<ins title="in output, not in ground truth">f</ins>o
+<del title="in ground truth, not in output">hochvortref</del><ins title="in output, not in ground truth">p</ins>flich<ins title="in output, not in ground truth">t</ins>en <del title="in ground truth, not in output">S</del><ins title="in output, not in ground truth">P</ins>o<del title="in ground truth, not in output">h</del><ins title="in output, not in ground truth">ste</ins>n <ins title="in output, not in ground truth">si</ins>n<del title="in ground truth, not in output">ie</del><ins title="in output, not in ground truth">d</ins> ge<del title="in ground truth, not in output">h</del><ins title="in output, not in ground truth">st</ins>ört<del title="in ground truth, not in output">,</del>
+obwohl <ins title="in output, not in ground truth">ſi</ins>e<del title="in ground truth, not in output">r</del> <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tets <ins title="in output, not in ground truth">[?</ins>der<ins title="in output, not in ground truth">]</ins> <del title="in ground truth, not in output">erste</del><ins title="in output, not in ground truth">[...]</ins> <del title="in ground truth, not in output">Tenor</del><ins title="in output, not in ground truth">[?Ruhm]</ins>
+der Gegenwart ist<ins title="in output, not in ground truth"> [?2</ins>.<ins title="in output, not in ground truth">]</ins> M<del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">a</ins>in<del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">z</ins>
+Freude wurde <del title="in ground truth, not in output">v</del><ins title="in output, not in ground truth">wied</ins>er<del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">h</ins>o<del title="in ground truth, not in output">ppe</del>lt, als
+i<del title="in ground truth, not in output">ch</del><ins title="in output, not in ground truth">st</ins> seinen so <del title="in ground truth, not in output">h</del><ins title="in output, not in ground truth">v</ins>o<del title="in ground truth, not in output">chv</del><ins title="in output, not in ground truth">rg</ins>e<del title="in ground truth, not in output">r</del><ins title="in output, not in ground truth">s</ins>e<del title="in ground truth, not in output">hr</del><ins title="in output, not in ground truth">tz</ins>ten, <ins title="in output, not in ground truth">n</ins>u<del title="in ground truth, not in output">nd</del><ins title="in output, not in ground truth">r</ins>
+ebenfalls unvergleichlichen <del title="in ground truth, not in output">V</del><ins title="in output, not in ground truth">R</ins>at<del title="in ground truth, not in output">er</del><ins title="in output, not in ground truth">z</ins>
+unter den Zuhörern <del title="in ground truth, not in output">e</del><ins title="in output, not in ground truth">vo</ins>rblick<del title="in ground truth, not in output">te</del>
+und mir <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agte <ins title="in output, not in ground truth">mab Dirſch</ins>w<del title="in ground truth, not in output">as </del><ins title="in output, not in ground truth">i</ins>d<ins title="in output, not in ground truth">
+zufr</ins>ie<del title="in ground truth, not in output">ser da
+empfin</del>den müß<del title="in ground truth, not in output">t</del>e<ins title="in output, not in ground truth">n</ins>!
+Aber meinem <del title="in ground truth, not in output">ve</del><ins title="in output, not in ground truth">[?wi</ins>r<del title="in ground truth, not in output">ew</del><ins title="in output, not in ground truth">m</ins>igten<ins title="in output, not in ground truth">]</ins>
+großen Freunde war, a<del title="in ground truth, not in output">ch</del><ins title="in output, not in ground truth">uf</ins>! <ins title="in output, not in ground truth">[?</ins>da<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ß]</ins>
+Glück nicht be<del title="in ground truth, not in output">schie</del><ins title="in output, not in ground truth">för</ins>de<ins title="in output, not in ground truth">r</ins>n<ins title="in output, not in ground truth">)</ins>, <del title="in ground truth, not in output">se</del><ins title="in output, not in ground truth">S</ins>i<del title="in ground truth, not in output">ne</del><ins title="in output, not in ground truth">mo</ins>n
+Raoul<ins title="in output, not in ground truth">
+zu</ins> so<del title="in ground truth, not in output"> zu hör</del><ins title="in output, not in ground truth">w</ins>en!
+Gott <ins title="in output, not in ground truth">b</ins>e<del title="in ground truth, not in output">r</del><ins title="in output, not in ground truth">fo</ins>h<del title="in ground truth, not in output">a</del>l<del title="in ground truth, not in output">t</del>e<ins title="in output, not in ground truth">n</ins> Sie!
+<del title="in ground truth, not in output">Ihr treu ergebenster
+Carl Kaskel
+</del>am 30<del title="in ground truth, not in output">.</del><ins title="in output, not in ground truth">ten</ins> Juny
+1864<ins title="in output, not in ground truth">
+Herrn Augsburg
+carl Rassel</ins></pre><details><summary>Output as written</summary><pre>
+Folgendes an Frau
+So [?fawlich] und [?unmergleichlich] [?alß]
+gestern und unterblieben [?Ehrske]
+Meyerbeers, fabr if Gfrau sfo
+pflichten Posten sind gestört
+obwohl ſie ſtets [?der] [...] [?Ruhm]
+der Gegenwart ist [?2.] Mainz
+Freude wurde wiederholt, als
+ist seinen so vorgesetzten, nur
+ebenfalls unvergleichlichen Ratz
+unter den Zuhörern vorblick
+und mir ſagte mab Dirſchwid
+zufrieden müßen!
+Aber meinem [?wirmigten]
+großen Freunde war, auf! [?daß]
+Glück nicht befördern), Simon
+Raoul
+zu sowen!
+Gott befohlen Sie!
+am 30ten Juny
+1864
+Herrn Augsburg
+carl Rassel
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/hybrid/anthropic_claude-haiku-5.5/real-kaskel-to-schnorr-1864.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-kaskel-to-schnorr-1864-gt" style="display:none"><pre>Hochverehrter Freund!
+So herrlich und unvergleichlich als
+gestern im unsterblichen Werke
+Meyerbeers, habe ich Ihren so
+hochvortrefflichen Sohn nie gehört,
+obwohl er stets der erste Tenor
+der Gegenwart ist. Meine
+Freude wurde verdoppelt, als
+ich seinen so hochverehrten, und
+ebenfalls unvergleichlichen Vater
+unter den Zuhörern erblickte
+und mir sagte was dieser da
+empfinden müßte!
+Aber meinem verewigten
+großen Freunde war, ach! das
+Glück nicht beschieden, seinen
+Raoul so zu hören!
+Gott erhalte Sie!
+Ihr treu ergebenster
+Carl Kaskel
+am 30. Juny
+1864
+</pre></div></div></div><div class="page" id="real-poesiealbum-hedwig-1901-p02"><div><h3>real-poesiealbum-hedwig-1901-p02</h3><a href="../inputs/pages-hand/real-poesiealbum-hedwig-1901-p02.jpg" target="_blank"><img src="../inputs/pages-hand/real-poesiealbum-hedwig-1901-p02.jpg" alt="page real-poesiealbum-hedwig-1901-p02" loading="lazy"></a></div><div><div class="tabs"><button aria-pressed="true" data-target="real-poesiealbum-hedwig-1901-p02-0">kraken · german_handwriting.mlmodel</button><button aria-pressed="false" data-target="real-poesiealbum-hedwig-1901-p02-1">openrouter · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-poesiealbum-hedwig-1901-p02-2">openrouter · google/gemini-3.1-pro-preview</button><button aria-pressed="false" data-target="real-poesiealbum-hedwig-1901-p02-3">hybrid · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-poesiealbum-hedwig-1901-p02-4">hybrid · anthropic/claude-haiku-5.5</button><button aria-pressed="false" data-target="real-poesiealbum-hedwig-1901-p02-gt">ground truth</button></div><div class="pane" id="real-poesiealbum-hedwig-1901-p02-0" style="display:block"><p class="mono"><span class="stat"><b>cer</b> 0.823</span><span class="stat"><b>wer</b> 0.970</span><span class="stat"><b>cer_norm</b> 0.819</span><span class="stat"><b>wer_norm</b> 0.970</span><span class="stat"><b>lines</b> 39</span><span class="stat"><b>$</b> 0.0000</span><span class="stat"><b>s</b> 17.1</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><del title="in ground truth, not in output">[W</del><ins title="in output, not in ground truth">2
+
+</ins>e<del title="in ground truth, not in output">r Gott v</del><ins title="in output, not in ground truth">
+g</ins>e<del title="in ground truth, not in output">rläßt u</del><ins title="in output, not in ground truth">n</ins>nd<del title="in ground truth, not in output"> Sünde th</del>u<del title="in ground truth, not in output">t,</del>
+<del title="in ground truth, not in output">Beraubt sich wahrer Freuden;
+Ihm fehlt Beruhigung und Mutz
+In Trübsal, Schmer und L</del><ins title="in output, not in ground truth">ſ</ins>ei<del title="in ground truth, not in output">ten.
+Das Scheinglück, das er sich versprrach,
+Läßt nichts, als Gram und Reue nach.]
+Wer Sünde thut, sieht Schrecken[voll]
+sein</del> letztes<del title="in ground truth, not in output"> En</del><ins title="in output, not in ground truth">
+</ins>de<del title="in ground truth, not in output"> k</del><ins title="in output, not in ground truth">.
+als
+
+5
+</ins>o<del title="in ground truth, not in output">mm</del><ins title="in output, not in ground truth">ff</ins>en
+<del title="in ground truth, not in output">die Hoffnung, die Ihn trös</del>te<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">t.</ins>
+<del title="in ground truth, not in output">soll,</del><ins title="in output, not in ground truth">herte
+ß</ins> <ins title="in output, not in ground truth">ſet.
+ſ</ins>i<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ch</ins>t<del title="in ground truth, not in output"> s</del><ins title="in output, not in ground truth">
+d</ins>e<del title="in ground truth, not in output">inem Geist benommen</del><ins title="in output, not in ground truth">r</ins>
+<del title="in ground truth, not in output">Er li</del><ins title="in output, not in ground truth">T</ins>ebte <del title="in ground truth, not in output">G</del><ins title="in output, not in ground truth">Hr
+enst
+alg.
+de
+Schreet.
+k</ins>o<ins title="in output, not in ground truth">m me
+Then Troſ</ins>t<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">
+se
+beare
+41.</ins> und <del title="in ground truth, not in output">Jesum
+nicht, und auf </del>de<del title="in ground truth, not in output">m Todt</del><ins title="in output, not in ground truth">ſe</ins>
+<del title="in ground truth, not in output">folgt </del>da<del title="in ground truth, not in output">s Gericht</del><ins title="in output, not in ground truth">n</ins>
+<del title="in ground truth, not in output">Gero H. Peters</del><ins title="in output, not in ground truth">4</ins>
+<del title="in ground truth, not in output">Suurh[ausen]</del>
+<del title="in ground truth, not in output">[So folget Trübsal, Angst und Pein</del><ins title="in output, not in ground truth">
+
+</ins>
+dem<del title="in ground truth, not in output"> Last</del><ins title="in output, not in ground truth">
+</ins>e<del title="in ground truth, not in output">r schon auf Erden;</del>
+<del title="in ground truth, not in output">Unendlich größer wird die Pein
+In jenem Leben werden</del>.
+<del title="in ground truth, not in output">Ach fürch</del><ins title="in output, not in ground truth">lme.
+
+Lod2
+21e</ins>t<del title="in ground truth, not in output">erlich ist beides mir,
+Ach führ vom Laster mich zu dir.]</del></pre><details><summary>Output as written</summary><pre>
+2
+
+e
+genndu
+ſei letztes
+de.
+als
+
+5
+offen
+tet.
+herte
+ß ſet.
+ſicht
+der
+Tebte Hr
+enst
+alg.
+de
+Schreet.
+kom me
+Then Troſt
+se
+beare
+41. und deſe
+dan
+4
+
+
+
+
+dem
+e
+.
+lme.
+
+Lod2
+21et
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/kraken/german_handwriting.mlmodel/real-poesiealbum-hedwig-1901-p02.txt · PAGE-XML beside it</p></div><div class="pane" id="real-poesiealbum-hedwig-1901-p02-1" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.710</span><span class="stat"><b>wer</b> 0.782</span><span class="stat"><b>cer_norm</b> 0.710</span><span class="stat"><b>wer_norm</b> 0.782</span><span class="stat"><b>lines</b> 9</span><span class="stat"><b>$</b> 0.0235</span><span class="stat"><b>s</b> 54.57</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><del title="in ground truth, not in output">[</del>Wer G<del title="in ground truth, not in output">ott verläßt und Sünde th</del>ut<del title="in ground truth, not in output">,
+B</del>e<del title="in ground truth, not in output">raubt </del>s<del title="in ground truth, not in output">ich wahrer Freuden;
+Ihm fehlt Beruhigung und Mutz
+In Trübsal, Schmer und Leiten.
+Das Scheinglück, das er sich versprrach,
+Läßt nichts, als Gram und Reue nach.]
+Wer Sünde</del> thut, sieht <del title="in ground truth, not in output">Sc</del><ins title="in output, not in ground truth">o</ins>h<del title="in ground truth, not in output">r</del><ins title="in output, not in ground truth">n</ins>e<del title="in ground truth, not in output">cken[voll]</del>
+sein letztes Ende kommen
+die Hoffnung, die <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">i</ins>hn tröste<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">[t]</ins>
+<del title="in ground truth, not in output">soll</del><ins title="in output, not in ground truth">hat</ins>, ist <del title="in ground truth, not in output">se</del>i<del title="in ground truth, not in output">ne</del><ins title="in output, not in ground truth">h</ins>m <del title="in ground truth, not in output">Ge</del><ins title="in output, not in ground truth">n</ins>i<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ch</ins>t benommen
+Er l<del title="in ground truth, not in output">i</del>ebte Gott<ins title="in output, not in ground truth">,</ins> <ins title="in output, not in ground truth">n</ins>u<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">r </ins>d<del title="in ground truth, not in output"> Jesum</del><ins title="in output, not in ground truth">afür</ins>
+nicht, und auf dem Tod<del title="in ground truth, not in output">t</del>
+folgt das Gericht
+Ger<del title="in ground truth, not in output">o</del><ins title="in output, not in ground truth">d</ins> H. Peters
+Suurh<del title="in ground truth, not in output">[a</del>usen<del title="in ground truth, not in output">]
+[So folget Trübsal, Angst und Pein
+dem Laster schon auf Erden;
+Unendlich größer wird die Pein
+In jenem Leben werden.
+Ach fürchterlich ist beides mir,
+Ach führ vom Laster mich zu dir.]</del></pre><details><summary>Output as written</summary><pre>Wer Gutes thut, sieht ohne
+sein letztes Ende kommen
+die Hoffnung, die ihn tröste[t]
+hat, ist ihm nicht benommen
+Er lebte Gott, nur dafür
+nicht, und auf dem Tod
+folgt das Gericht
+Gerd H. Peters
+Suurhusen
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/openrouter/google_gemini-3.8-flash/real-poesiealbum-hedwig-1901-p02.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-poesiealbum-hedwig-1901-p02-2" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.708</span><span class="stat"><b>wer</b> 0.802</span><span class="stat"><b>cer_norm</b> 0.708</span><span class="stat"><b>wer_norm</b> 0.802</span><span class="stat"><b>lines</b> 9</span><span class="stat"><b>$</b> 0.0060</span><span class="stat"><b>s</b> 4.69</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><del title="in ground truth, not in output">[</del>Wer <del title="in ground truth, not in output">Gott verläßt und Sünde thut,
+Beraubt sich wahrer Freuden;
+Ihm fehlt Beruhigung und Mutz
+In Trübsal, Schmer und Leiten.
+Das Sch</del><ins title="in output, not in ground truth">P</ins>ein<del title="in ground truth, not in output">glück,</del> <del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">h</ins>a<del title="in ground truth, not in output">s er sich versprrach,
+Läßt nichts, als Gram und Reue nach.]
+Wer Sünde thu</del>t, sieht Sch<ins title="in output, not in ground truth">me</ins>r<del title="in ground truth, not in output">ecken[voll]</del><ins title="in output, not in ground truth">z</ins>
+sein letztes Ende kommen
+die Hoffnung, die <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">i</ins>hn tröste<del title="in ground truth, not in output">n</del>
+soll, ist <del title="in ground truth, not in output">se</del>i<del title="in ground truth, not in output">ne</del><ins title="in output, not in ground truth">h</ins>m <del title="in ground truth, not in output">G</del><ins title="in output, not in ground truth">g</ins>e<ins title="in output, not in ground truth">w</ins>i<del title="in ground truth, not in output">st</del><ins title="in output, not in ground truth">ß</ins> benommen
+<del title="in ground truth, not in output">E</del><ins title="in output, not in ground truth">de</ins>r lieb<del title="in ground truth, not in output">t</del>e Gott<ins title="in output, not in ground truth">,</ins> <ins title="in output, not in ground truth">n</ins>u<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">r </ins>d<del title="in ground truth, not in output"> J</del><ins title="in output, not in ground truth">i</ins>es<del title="in ground truth, not in output">um</del><ins title="in output, not in ground truth">er</ins>
+<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">h</ins>i<del title="in ground truth, not in output">ch</del><ins title="in output, not in ground truth">lf</ins>t, und auf dem Tod<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">e</ins>
+folgt das Gericht
+Ger<del title="in ground truth, not in output">o</del><ins title="in output, not in ground truth">d</ins> H. Peters
+Suurh<del title="in ground truth, not in output">[a</del>usen<del title="in ground truth, not in output">]
+[So folget Trübsal, Angst und Pein
+dem Laster schon auf Erden;
+Unendlich größer wird die Pein
+In jenem Leben werden.
+Ach fürchterlich ist beides mir,
+Ach führ vom Laster mich zu dir.]</del></pre><details><summary>Output as written</summary><pre>Wer Pein hat, sieht Schmerz
+sein letztes Ende kommen
+die Hoffnung, die ihn tröste
+soll, ist ihm gewiß benommen
+der liebe Gott, nur dieser
+hilft, und auf dem Tode
+folgt das Gericht
+Gerd H. Peters
+Suurhusen
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/openrouter/google_gemini-3.1-pro-preview/real-poesiealbum-hedwig-1901-p02.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-poesiealbum-hedwig-1901-p02-3" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.797</span><span class="stat"><b>wer</b> 0.970</span><span class="stat"><b>cer_norm</b> 0.797</span><span class="stat"><b>wer_norm</b> 0.970</span><span class="stat"><b>lines</b> 39</span><span class="stat"><b>$</b> 0.2522</span><span class="stat"><b>s</b> 713.18</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre>[<del title="in ground truth, not in output">W</del><ins title="in output, not in ground truth">?[...]]
+d</ins>er<del title="in ground truth, not in output"> Gott verläßt </del><ins title="in output, not in ground truth">
+[?P</ins>un<del title="in ground truth, not in output">d Sünde thut,
+Beraubt si</del>c<del title="in ground truth, not in output">h wahrer Freuden;
+Ihm fehlt Beruhigung und Mutz
+In Trübsal, Schmer und Lei</del>ten<del title="in ground truth, not in output">.
+Das Scheinglück, das er sich versprrach,
+Läßt nichts, als Gram und Reue nach.]
+Wer Sünde thut, sieht Schrecken[voll</del>]
+sein <del title="in ground truth, not in output">letztes </del>En<del title="in ground truth, not in output">de kommen</del><ins title="in output, not in ground truth">tschluß</ins>
+<ins title="in output, not in ground truth">[?</ins>die<ins title="in output, not in ground truth">]
+[?dall]
+[?r]
+[?[...]]
+[?...]
+thut,
+[?[...]]
+[...]icht</ins> <del title="in ground truth, not in output">Hoff</del><ins title="in output, not in ground truth">si</ins>n<del title="in ground truth, not in output">u</del><ins title="in output, not in ground truth">d [...]
+[?si</ins>n<del title="in ground truth, not in output">g, </del><ins title="in output, not in ground truth">d]
+[?</ins>die<del title="in ground truth, not in output"> Ihn trösten</del><ins title="in output, not in ground truth">]</ins>
+<del title="in ground truth, not in output">so</del>l<del title="in ground truth, not in output">l, ist seinem Geist benommen
+Er li</del>ebte G<del title="in ground truth, not in output">ott und J</del>e<del title="in ground truth, not in output">sum</del><ins title="in output, not in ground truth">r</ins>
+<ins title="in output, not in ground truth">[?</ins>nicht,<ins title="in output, not in ground truth">]
+[?[...]ly]
+[?Gr]
+[...]hre</ins> <ins title="in output, not in ground truth">[...]
+Kann man
+Ihm wohl
+
+[...] brauen
+Ist, nur dieser
+</ins>und <del title="in ground truth, not in output">auf </del><ins title="in output, not in ground truth">dich
+[?r]
+[?[...]]
+
+[?[...]]
+
+</ins>dem<del title="in ground truth, not in output"> Todt</del>
+<del title="in ground truth, not in output">folgt das G</del><ins title="in output, not in ground truth">[?[...]ren]
+[...]</ins>er<del title="in ground truth, not in output">icht</del><ins title="in output, not in ground truth">d [...]</ins>
+<del title="in ground truth, not in output">G</del><ins title="in output, not in ground truth">Dunk</ins>er<del title="in ground truth, not in output">o H</del><ins title="in output, not in ground truth">
+[?[</ins>.<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">..]]
+[?Lenz]
+</ins>Peter<del title="in ground truth, not in output">s
+Suurh[ausen]
+[So folget Trübsal, Angst und Pein
+dem Laster schon auf Erden;
+Unendlich größer wird die Pein
+In jenem Leben werden.
+Ach fürchterlich ist beides mir,
+Ach führ vom Laster mich zu dir.]</del></pre><details><summary>Output as written</summary><pre>
+
+[?[...]]
+der
+[?Puncten]
+sein Entschluß
+[?die]
+[?dall]
+[?r]
+[?[...]]
+[?...]
+thut,
+[?[...]]
+[...]icht sind [...]
+[?sind]
+[?die]
+lebte Ger
+[?nicht,]
+[?[...]ly]
+[?Gr]
+[...]hre [...]
+Kann man
+Ihm wohl
+
+[...] brauen
+Ist, nur dieser
+und dich
+[?r]
+[?[...]]
+
+[?[...]]
+
+dem
+[?[...]ren]
+[...]erd [...]
+Dunker
+[?[...]]
+[?Lenz]
+Peter
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/hybrid/google_gemini-3.8-flash/real-poesiealbum-hedwig-1901-p02.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-poesiealbum-hedwig-1901-p02-4" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.843</span><span class="stat"><b>wer</b> 1.000</span><span class="stat"><b>cer_norm</b> 0.840</span><span class="stat"><b>wer_norm</b> 1.000</span><span class="stat"><b>lines</b> 39</span><span class="stat"><b>$</b> 0.0045</span><span class="stat"><b>s</b> 80.07</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre>[<del title="in ground truth, not in output">Wer Go</del><ins title="in output, not in ground truth">?Quin</ins>t<del title="in ground truth, not in output">t verläßt u</del>n<del title="in ground truth, not in output">d Sünde thut,
+Beraubt sich wahrer Freuden;</del><ins title="in output, not in ground truth">]</ins>
+I<del title="in ground truth, not in output">h</del>m<del title="in ground truth, not in output"> fehlt Beruhigung und Mutz
+In Trübsal, Schmer und Leiten.
+Das Scheinglück, das er sich versprrach,
+Läßt nichts, als Gram und Reue nach.]
+Wer Sünde thut, sieht Schrecken[voll]
+sein letztes</del> En<del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">tg</ins>e<del title="in ground truth, not in output"> komm</del><ins title="in output, not in ground truth">g</ins>en
+<del title="in ground truth, not in output">die Hoffnung, die Ihn trösten
+soll, ist seinem Geist benommen
+Er liebte Gott und Jesum
+</del><ins title="in output, not in ground truth">[?</ins>ni<del title="in ground truth, not in output">cht, und auf dem Todt</del><ins title="in output, not in ground truth">]</ins>
+<del title="in ground truth, not in output">folgt </del><ins title="in output, not in ground truth">[?I</ins>da<del title="in ground truth, not in output">s G</del><ins title="in output, not in ground truth">]
+
+
+[?[...]ſ</ins>e<del title="in ground truth, not in output">ri</del>c<del title="in ground truth, not in output">ht
+Gero H. Peters
+Suurh[aus</del>en]
+[<ins title="in output, not in ground truth">?Jmd.]
+[?un]
+
+[?Jingd]
+
+</ins>S<ins title="in output, not in ground truth">chabs Gr</ins>o<del title="in ground truth, not in output"> f</del><ins title="in output, not in ground truth">
+[?uiſt.]
+[?l</ins>ol<del title="in ground truth, not in output">g</del><ins title="in output, not in ground truth">ly]
+
+[?[...]]
+[?Konnen]
+[?Ihre] [?Zeilen]
+
+[?[...]]
+[?</ins>et<ins title="in output, not in ground truth">]</ins> <del title="in ground truth, not in output">T</del><ins title="in output, not in ground truth">[...] d&#x27;[?upe]
+wi</ins>r<del title="in ground truth, not in output">übsal, Angs</del>t <del title="in ground truth, not in output">und P</del><ins title="in output, not in ground truth">sey
+
+
+
+
+
+[?ſ</ins>ein<ins title="in output, not in ground truth">es]</ins>
+<del title="in ground truth, not in output">dem</del><ins title="in output, not in ground truth">[?ſo]</ins> <del title="in ground truth, not in output">Laster schon au</del><ins title="in output, not in ground truth">[...]
+[?</ins>f<del title="in ground truth, not in output"> Erden;
+Unendlich größer wird die Pein
+In jenem Leben w</del>erd<ins title="in output, not in ground truth">]
+[?Puurhu]
+
+[?Lnz]
+[?L</ins>e<del title="in ground truth, not in output">n.
+Ach fürcht</del><ins title="in output, not in ground truth">d</ins>er<del title="in ground truth, not in output">lich ist beides mir,
+Ach führ vom Laster mich zu dir.</del>]</pre><details><summary>Output as written</summary><pre>
+
+
+
+[?Quintn]
+Im Entgegen
+[?ni]
+[?Ida]
+
+
+[?[...]ſecen]
+[?Jmd.]
+[?un]
+
+[?Jingd]
+
+Schabs Gro
+[?uiſt.]
+[?lolly]
+
+[?[...]]
+[?Konnen]
+[?Ihre] [?Zeilen]
+
+[?[...]]
+[?et] [...] d&#x27;[?upe]
+wirt sey
+
+
+
+
+
+[?ſeines]
+[?ſo] [...]
+[?ferd]
+[?Puurhu]
+
+[?Lnz]
+[?Leder]
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/hybrid/anthropic_claude-haiku-5.5/real-poesiealbum-hedwig-1901-p02.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-poesiealbum-hedwig-1901-p02-gt" style="display:none"><pre>[Wer Gott verläßt und Sünde thut,
+Beraubt sich wahrer Freuden;
+Ihm fehlt Beruhigung und Mutz
+In Trübsal, Schmer und Leiten.
+Das Scheinglück, das er sich versprrach,
+Läßt nichts, als Gram und Reue nach.]
+Wer Sünde thut, sieht Schrecken[voll]
+sein letztes Ende kommen
+die Hoffnung, die Ihn trösten
+soll, ist seinem Geist benommen
+Er liebte Gott und Jesum
+nicht, und auf dem Todt
+folgt das Gericht
+Gero H. Peters
+Suurh[ausen]
+[So folget Trübsal, Angst und Pein
+dem Laster schon auf Erden;
+Unendlich größer wird die Pein
+In jenem Leben werden.
+Ach fürchterlich ist beides mir,
+Ach führ vom Laster mich zu dir.]
+</pre></div></div></div><div class="page" id="real-schnitzler-to-beer-hofmann-1896"><div><h3>real-schnitzler-to-beer-hofmann-1896</h3><a href="../inputs/pages-hand/real-schnitzler-to-beer-hofmann-1896.jpg" target="_blank"><img src="../inputs/pages-hand/real-schnitzler-to-beer-hofmann-1896.jpg" alt="page real-schnitzler-to-beer-hofmann-1896" loading="lazy"></a></div><div><div class="tabs"><button aria-pressed="true" data-target="real-schnitzler-to-beer-hofmann-1896-0">kraken · german_handwriting.mlmodel</button><button aria-pressed="false" data-target="real-schnitzler-to-beer-hofmann-1896-1">openrouter · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-schnitzler-to-beer-hofmann-1896-2">openrouter · google/gemini-3.1-pro-preview</button><button aria-pressed="false" data-target="real-schnitzler-to-beer-hofmann-1896-3">hybrid · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-schnitzler-to-beer-hofmann-1896-4">hybrid · anthropic/claude-haiku-5.5</button><button aria-pressed="false" data-target="real-schnitzler-to-beer-hofmann-1896-gt">ground truth</button></div><div class="pane" id="real-schnitzler-to-beer-hofmann-1896-0" style="display:block"><p class="mono"><span class="stat"><b>cer</b> 0.453</span><span class="stat"><b>wer</b> 0.902</span><span class="stat"><b>cer_norm</b> 0.429</span><span class="stat"><b>wer_norm</b> 0.878</span><span class="stat"><b>lines</b> 12</span><span class="stat"><b>$</b> 0.0000</span><span class="stat"><b>s</b> 12.76</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre>liebe<del title="in ground truth, not in output">r</del> <del title="in ground truth, not in output">R</del><ins title="in output, not in ground truth">Aufan ſoll</ins>ich<del title="in ground truth, not in output">ard</del><ins title="in output, not in ground truth">nſtjemhet</ins>, <ins title="in output, not in ground truth">daß
+die wanier Strruſſ.an</ins>h<del title="in ground truth, not in output">ä</del><ins title="in output, not in ground truth">een wr</ins>t<ins title="in output, not in ground truth">feſchrek.
+iſ</ins>t<ins title="in output, not in ground truth">, ſ. Call</ins> ich<ins title="in output, not in ground truth"> ihn zu</ins> nicht ge<del title="in ground truth, not in output">wußt, dass Sie meinen Brief so nehmen wie er ges</del><ins title="in output, not in ground truth">ſ</ins>chrie<del title="in ground truth, not in output">ben ist, so hätte ich ihn ja nicht geschrieb</del><ins title="in output, not in ground truth">k</ins>en. Aber<del title="in ground truth, not in output"> so</del><ins title="in output, not in ground truth">
+ſ</ins> war<del title="in ground truth, not in output">’</del>s w<del title="in ground truth, not in output">ied</del>er<ins title="in output, not in ground truth">dt,</ins> nich<del title="in ground truth, not in output">t</del> ge<del title="in ground truth, not in output">m</del><ins title="in output, not in ground truth">w</ins>eint, da<ins title="in output, not in ground truth">ß</ins>s<ins title="in output, not in ground truth"> E ſich
+wklde d</ins>s S<del title="in ground truth, not in output">i</del><ins title="in output, not in ground truth">h</ins>e<del title="in ground truth, not in output"> si</del>c<del title="in ground truth, not in output">h einbilden müssen, das Schreiben</del><ins title="in output, not in ground truth">k</ins> mit <del title="in ground truth, not in output">der</del><ins title="in output, not in ground truth">K</ins> <del title="in ground truth, not in output">Z</del><ins title="in output, not in ground truth">f</ins>ei<del title="in ground truth, not in output">t ga</del><ins title="in output, not in ground truth">lſo</ins>n<del title="in ground truth, not in output">z sein</del><ins title="in output, not in ground truth">,</ins> z<ins title="in output, not in ground truth">en
+z</ins>u<del title="in ground truth, not in output"> </del>l<del title="in ground truth, not in output">ass</del><ins title="in output, not in ground truth">eſſ</ins>en. <del title="in ground truth, not in output">W</del><ins title="in output, not in ground truth">M</ins>o<ins title="in output, not in ground truth">wariſſrul</ins> <del title="in ground truth, not in output">wär ich heute, wen</del><ins title="in output, not in ground truth">vo</ins>n mich<del title="in ground truth, not in output"> ir</del><ins title="in output, not in ground truth">
+a</ins>ge<del title="in ground truth, not in output">nd</del><ins title="in output, not in ground truth">r</ins> was mis<del title="in ground truth, not in output">glü</del><ins title="in output, not in ground truth">zi</ins>cktes <del title="in ground truth, not in output">imm</del><ins title="in output, not in ground truth">un</ins>e<del title="in ground truth, not in output">r</del> dah<ins title="in output, not in ground truth">e getracht
+ſolt. Wr ſ</ins>in ge<del title="in ground truth, not in output">br</del><ins title="in output, not in ground truth">h</ins>a<del title="in ground truth, not in output">ch</del><ins title="in output, not in ground truth">lt</ins>t <del title="in ground truth, not in output">hätte. Immerhin gefällt mi</del><ins title="in output, not in ground truth">w</ins>r <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">J</ins>hre <del title="in ground truth, not in output">Ide</del><ins title="in output, not in ground truth">Pt</ins>e, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ch<del title="in ground truth, not in output">öne f</del><ins title="in output, not in ground truth">ü„
+F</ins>re<del title="in ground truth, not in output">m</del><ins title="in output, not in ground truth">nn</ins>d<del title="in ground truth, not in output">e</del> Sachen <del title="in ground truth, not in output">gut </del>zu<del title="in ground truth, not in output"> üb</del><ins title="in output, not in ground truth">znl</ins>e<del title="in ground truth, not in output">rs</del><ins title="in output, not in ground truth">ſch</ins>e<del title="in ground truth, not in output">tzen</del>, <del title="in ground truth, not in output">a</del><ins title="in output, not in ground truth">u</ins>us<ins title="in output, not in ground truth">?
+</ins>nehme<ins title="in output, not in ground truth">i</ins>n<del title="in ground truth, not in output">d.</del><ins title="in output, not in ground truth">?</ins> V<del title="in ground truth, not in output">i</del>ell<del title="in ground truth, not in output">e</del>icht <del title="in ground truth, not in output">wird </del><ins title="in output, not in ground truth">an</ins>es <ins title="in output, not in ground truth">no</ins>e<del title="in ground truth, not in output">in</del><ins title="in output, not in ground truth"> M</ins>en<del title="in ground truth, not in output"> Weg </del><ins title="in output, not in ground truth">
+</ins>für <del title="in ground truth, not in output">S</del><ins title="in output, not in ground truth">ſ</ins>ie be<del title="in ground truth, not in output">de</del><ins title="in output, not in ground truth">c</ins>u<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">l</ins>en, <ins title="in output, not in ground truth">obe </ins>d<del title="in ground truth, not in output">er S</del>ie zu<ins title="in output, not in ground truth">ſher</ins> <del title="in ground truth, not in output">Ihnen s</del><ins title="in output, not in ground truth">ſ</ins>elb<del title="in ground truth, not in output">st fü</del>h<del title="in ground truth, not in output">rt</del><ins title="in output, not in ground truth">e
+eſil</ins>.</pre><details><summary>Output as written</summary><pre>liebe Aufan ſollichnſtjemhet, daß
+die wanier Strruſſ.anheen wrtfeſchrek.
+iſt, ſ. Call ich ihn zu nicht geſchrieken. Aber
+ſ wars werdt, nich geweint, daßs E ſich
+wklde ds Sheck mit K feilſon, zen
+zuleſſen. Mowariſſrul von mich
+ager was miszicktes une dahe getracht
+ſolt. Wr ſin gehaltt wr Jhre Pte, ſchü„
+Frennd Sachen zuznleſche, uus?
+nehmein? Vellicht anes noe Men
+für ſie beculen, obe die zuſher ſelbhe
+eſil.
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/kraken/german_handwriting.mlmodel/real-schnitzler-to-beer-hofmann-1896.txt · PAGE-XML beside it</p></div><div class="pane" id="real-schnitzler-to-beer-hofmann-1896-1" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.278</span><span class="stat"><b>wer</b> 0.512</span><span class="stat"><b>cer_norm</b> 0.278</span><span class="stat"><b>wer_norm</b> 0.512</span><span class="stat"><b>lines</b> 12</span><span class="stat"><b>$</b> 0.0237</span><span class="stat"><b>s</b> 77.13</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><del title="in ground truth, not in output">l</del><ins title="in output, not in ground truth">L</ins>ieber Richard, hätt ich nicht gewußt, da<del title="in ground truth, not in output">ss S</del><ins title="in output, not in ground truth">ß
+d</ins>ie <ins title="in output, not in ground truth">ar</ins>me<ins title="in output, not in ground truth"> W</ins>i<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">rthschaft</ins>e<del title="in ground truth, not in output">n B</del>ri<del title="in ground truth, not in output">ef so nehme</del>n w<del title="in ground truth, not in output">i</del>e<del title="in ground truth, not in output"> er </del><ins title="in output, not in ground truth">g</ins>gesch<del title="in ground truth, not in output">r</del>i<del title="in ground truth, not in output">eben </del><ins title="in output, not in ground truth">ckt
+</ins>ist, so hätt<del title="in ground truth, not in output">e</del> ich ih<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">r</ins> <del title="in ground truth, not in output">j</del><ins title="in output, not in ground truth">g</ins>a<ins title="in output, not in ground truth">r</ins> nicht geschrieben. Aber<ins title="in output, not in ground truth">
+ich war</ins> so w<del title="in ground truth, not in output">ar’s w</del><ins title="in output, not in ground truth">e</ins>i<del title="in ground truth, not in output">eder</del><ins title="in output, not in ground truth">t</ins> nicht ge<del title="in ground truth, not in output">mei</del><ins title="in output, not in ground truth">war</ins>nt, da<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ß</ins> Sie sich<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>ein<del title="in ground truth, not in output">bi</del>l<ins title="in output, not in ground truth">äßt </ins>de<del title="in ground truth, not in output">n müssen, das</del><ins title="in output, not in ground truth">r</ins> S<del title="in ground truth, not in output">ch</del><ins title="in output, not in ground truth">t</ins>rei<del title="in ground truth, not in output">ben</del><ins title="in output, not in ground truth">t</ins> mit der <del title="in ground truth, not in output">Z</del><ins title="in output, not in ground truth">Forts</ins>e<del title="in ground truth, not in output">i</del>t<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">zun</ins>g<del title="in ground truth, not in output">anz</del> sein<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>zu lassen. Wo<del title="in ground truth, not in output"> wä</del><ins title="in output, not in ground truth">rübe</ins>r ich <ins title="in output, not in ground truth">fro</ins>h<del title="in ground truth, not in output">eute</del>, w<del title="in ground truth, not in output">enn</del><ins title="in output, not in ground truth">ar</ins> mich<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>irgend was <del title="in ground truth, not in output">m</del><ins title="in output, not in ground truth">unsch</ins>i<del title="in ground truth, not in output">sglü</del>ck<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">lich</ins>es <del title="in ground truth, not in output">immer</del><ins title="in output, not in ground truth">thun</ins> dahin gebracht<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>h<del title="in ground truth, not in output">ä</del><ins title="in output, not in ground truth">a</ins>tte. Immerhin gefällt mir Ihre Idee, schöne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>fremde Sachen gut zu übersetzen, <del title="in ground truth, not in output">a</del><ins title="in output, not in ground truth">n</ins>u<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">r zu
+</ins>nehmend. Vielleicht <del title="in ground truth, not in output">w</del><ins title="in output, not in ground truth">f</ins>i<del title="in ground truth, not in output">r</del><ins title="in output, not in ground truth">n</ins>d<ins title="in output, not in ground truth">et</ins> e<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">iner</ins> einen Weg<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>für Sie be<del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">itr</ins>e<del title="in ground truth, not in output">u</del>ten, <del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">ab</ins>er Sie <del title="in ground truth, not in output">zu Ihn</del><ins title="in output, not in ground truth">müss</ins>en selbst<del title="in ground truth, not in output"> fü</del><ins title="in output, not in ground truth">
+se</ins>h<del title="in ground truth, not in output">rt</del><ins title="in output, not in ground truth">en</ins>.</pre><details><summary>Output as written</summary><pre>Lieber Richard, hätt ich nicht gewußt, daß
+die arme Wirthschafterin weggeschickt
+ist, so hätt ich ihr gar nicht geschrieben. Aber
+ich war so weit nicht gewarnt, daß Sie sich
+einläßt der Streit mit der Fortsetzung sein
+zu lassen. Worüber ich froh, war mich
+irgend was unschickliches thun dahin gebracht
+hatte. Immerhin gefällt mir Ihre Idee, schöne
+fremde Sachen gut zu übersetzen, nur zu
+nehmend. Vielleicht findet einer einen Weg
+für Sie beitreten, aber Sie müssen selbst
+sehen.
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/openrouter/google_gemini-3.8-flash/real-schnitzler-to-beer-hofmann-1896.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-schnitzler-to-beer-hofmann-1896-2" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.196</span><span class="stat"><b>wer</b> 0.463</span><span class="stat"><b>cer_norm</b> 0.175</span><span class="stat"><b>wer_norm</b> 0.402</span><span class="stat"><b>lines</b> 12</span><span class="stat"><b>$</b> 0.0063</span><span class="stat"><b>s</b> 6.85</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre>lieber Richard, hätt ich nicht gewußt, da<del title="in ground truth, not in output">ss S</del><ins title="in output, not in ground truth">ß
+d</ins>ie <del title="in ground truth, not in output">mein</del><ins title="in output, not in ground truth">g</ins>en<del title="in ground truth, not in output"> Brief so nehmen wi</del><ins title="in output, not in ground truth">au</ins>e <ins title="in output, not in ground truth">Adreſſe unſer</ins>er <del title="in ground truth, not in output">ge</del><ins title="in output, not in ground truth">au</ins>s<ins title="in output, not in ground truth">zuſ</ins>chr<ins title="in output, not in ground truth">e</ins>i<del title="in ground truth, not in output">e</del>ben<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>i<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o hätt<del title="in ground truth, not in output">e</del> ich ih<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">r</ins> ja nicht ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chrieben. Aber<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>s<del title="in ground truth, not in output">o</del> war<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth"> </ins>s <del title="in ground truth, not in output">w</del><ins title="in output, not in ground truth">m</ins>i<del title="in ground truth, not in output">ede</del>r nicht ge<del title="in ground truth, not in output">mei</del><ins title="in output, not in ground truth">woh</ins>nt, da<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ß</ins> Sie <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ich<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>einbilden<del title="in ground truth, not in output"> müssen</del>, d<del title="in ground truth, not in output">as</del><ins title="in output, not in ground truth">er</ins> <del title="in ground truth, not in output">Sch</del><ins title="in output, not in ground truth">B</ins>r<ins title="in output, not in ground truth">i</ins>e<del title="in ground truth, not in output">iben</del><ins title="in output, not in ground truth">f</ins> mit der <del title="in ground truth, not in output">Zei</del><ins title="in output, not in ground truth">Poſ</ins>t ganz <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">fr</ins>ei<del title="in ground truth, not in output">n </del><ins title="in output, not in ground truth">
+</ins>zu<del title="in ground truth, not in output"> </del>la<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>en. Wo wär ich heute, wenn mich<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>irgend was <del title="in ground truth, not in output">mis</del><ins title="in output, not in ground truth">un</ins>glück<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">lich</ins>es immer dahin gebracht<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>hätte. <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">J</ins>mmerhin gefällt mir Ihre <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">J</ins>dee, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chön<del title="in ground truth, not in output">e </del><ins title="in output, not in ground truth">
+</ins>fremde Sachen gut zu über<del title="in ground truth, not in output">setz</del><ins title="in output, not in ground truth">laſſ</ins>en, aus<ins title="in output, not in ground truth">zu-
+</ins>nehmen<del title="in ground truth, not in output">d</del>. Vielleicht wird es einen Weg<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>für Sie bedeuten, der Sie zu <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">J</ins>h<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">r</ins>e<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">m</ins> <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">S</ins>elb<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>führt.</pre><details><summary>Output as written</summary><pre>lieber Richard, hätt ich nicht gewußt, daß
+die genaue Adreſſe unſerer auszuſchreiben
+iſt, ſo hätt ich ihr ja nicht geſchrieben. Aber
+s war s mir nicht gewohnt, daß Sie ſich
+einbilden, der Brief mit der Poſt ganz frei
+zulaſſen. Wo wär ich heute, wenn mich
+irgend was unglückliches immer dahin gebracht
+hätte. Jmmerhin gefällt mir Ihre Jdee, ſchön
+fremde Sachen gut zu überlaſſen, auszu-
+nehmen. Vielleicht wird es einen Weg
+für Sie bedeuten, der Sie zu Jhrem Selbſt
+führt.
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/openrouter/google_gemini-3.1-pro-preview/real-schnitzler-to-beer-hofmann-1896.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-schnitzler-to-beer-hofmann-1896-3" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.482</span><span class="stat"><b>wer</b> 0.793</span><span class="stat"><b>cer_norm</b> 0.482</span><span class="stat"><b>wer_norm</b> 0.793</span><span class="stat"><b>lines</b> 12</span><span class="stat"><b>$</b> 0.0945</span><span class="stat"><b>s</b> 278.27</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><del title="in ground truth, not in output">l</del><ins title="in output, not in ground truth">L</ins>ieber Richard, <del title="in ground truth, not in output">hä</del><ins title="in output, not in ground truth">freu</ins>t<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">e</ins> ich <del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">m</ins>ich<del title="in ground truth, not in output">t</del> g<del title="in ground truth, not in output">ewußt</del><ins title="in output, not in ground truth">ar</ins>, da<del title="in ground truth, not in output">ss S</del><ins title="in output, not in ground truth">ß
+d</ins>ie <del title="in ground truth, not in output">mei</del><ins title="in output, not in ground truth">ga</ins>n<ins title="in output, not in ground truth">z</ins>en Brief<del title="in ground truth, not in output"> </del>s<del title="in ground truth, not in output">o ne</del><ins title="in output, not in ground truth">c</ins>h<del title="in ground truth, not in output">m</del><ins title="in output, not in ground truth">aft</ins>en w<del title="in ground truth, not in output">i</del>e<del title="in ground truth, not in output"> er </del><ins title="in output, not in ground truth">g</ins>ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">bra</ins>ch<del title="in ground truth, not in output">rieben </del><ins title="in output, not in ground truth">t
+</ins>ist, so h<del title="in ground truth, not in output">ä</del><ins title="in output, not in ground truth">a</ins>tte ich ih<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">r</ins> ja <del title="in ground truth, not in output">ni</del><ins title="in output, not in ground truth">au</ins>ch<del title="in ground truth, not in output">t</del> geschrieben. Aber<del title="in ground truth, not in output"> so war’s wieder nicht geme</del><ins title="in output, not in ground truth">
+[?...]
+E</ins>in<del title="in ground truth, not in output">t, dass Sie sich einbi</del><ins title="in output, not in ground truth">f</ins>l<del title="in ground truth, not in output">den müssen, das Schreiben mit</del><ins title="in output, not in ground truth">uß</ins> der <del title="in ground truth, not in output">Z</del><ins title="in output, not in ground truth">Sprach</ins>e<ins title="in output, not in ground truth"> auf d</ins>i<ins title="in output, not in ground truth">e for</ins>t<del title="in ground truth, not in output"> ganz sein </del><ins title="in output, not in ground truth">[...]
+</ins>zu<del title="in ground truth, not in output"> </del>lassen. W<del title="in ground truth, not in output">o wä</del><ins title="in output, not in ground truth">a</ins>r<ins title="in output, not in ground truth">um</ins> i<del title="in ground truth, not in output">ch</del><ins title="in output, not in ground truth">st</ins> <del title="in ground truth, not in output">heu</del><ins title="in output, not in ground truth">spä</ins>t<del title="in ground truth, not in output">e</del>, w<ins title="in output, not in ground truth">i</ins>e<del title="in ground truth, not in output">nn</del> mich<del title="in ground truth, not in output"> ir</del><ins title="in output, not in ground truth">
+[...]</ins>gend was mi<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ß</ins>glückt<del title="in ground truth, not in output">es</del> <del title="in ground truth, not in output">immer</del><ins title="in output, not in ground truth">und</ins> dahin<del title="in ground truth, not in output"> </del>gebracht<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>h<del title="in ground truth, not in output">ä</del><ins title="in output, not in ground truth">a</ins>tte. Immerhin gefällt mir <del title="in ground truth, not in output">I</del><ins title="in output, not in ground truth">se</ins>hr<del title="in ground truth, not in output">e</del> <del title="in ground truth, not in output">Idee</del><ins title="in output, not in ground truth">gut</ins>, schön<del title="in ground truth, not in output">e fremde Sachen gut zu übersetzen, aus</del><ins title="in output, not in ground truth">
+...
+</ins>nehmen<del title="in ground truth, not in output">d</del>. Vielleicht wi<ins title="in output, not in ground truth">ede</ins>r<del title="in ground truth, not in output">d es</del> einen <del title="in ground truth, not in output">We</del><ins title="in output, not in ground truth">Ta</ins>g<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>für <del title="in ground truth, not in output">S</del><ins title="in output, not in ground truth">d</ins>ie b<ins title="in output, not in ground truth">r</ins>e<del title="in ground truth, not in output">deu</del><ins title="in output, not in ground truth">i</ins>ten, <del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">ab</ins>er <del title="in ground truth, not in output">S</del><ins title="in output, not in ground truth">d</ins>ie z<del title="in ground truth, not in output">u I</del><ins title="in output, not in ground truth">wisc</ins>h<del title="in ground truth, not in output">n</del>en <ins title="in output, not in ground truth">Fel</ins>se<ins title="in output, not in ground truth">n
+[?[...]Ju</ins>l<del title="in ground truth, not in output">bst führt</del><ins title="in output, not in ground truth">[</ins>.<ins title="in output, not in ground truth">..]]</ins></pre><details><summary>Output as written</summary><pre>Lieber Richard, freute ich mich gar, daß
+die ganzen Briefschaften weggebracht
+ist, so hatte ich ihr ja auch geschrieben. Aber
+[?...]
+Einfluß der Sprache auf die fort[...]
+zulassen. Warum ist spät, wie mich
+[...]gend was mißglückt und dahingebracht
+hatte. Immerhin gefällt mir sehr gut, schön
+...
+nehmen. Vielleicht wieder einen Tag
+für die breiten, aber die zwischen Felsen
+[?[...]Jul[...]]
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/hybrid/google_gemini-3.8-flash/real-schnitzler-to-beer-hofmann-1896.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-schnitzler-to-beer-hofmann-1896-4" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.580</span><span class="stat"><b>wer</b> 0.890</span><span class="stat"><b>cer_norm</b> 0.569</span><span class="stat"><b>wer_norm</b> 0.866</span><span class="stat"><b>lines</b> 12</span><span class="stat"><b>$</b> 0.0024</span><span class="stat"><b>s</b> 41.38</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><del title="in ground truth, not in output">l</del><ins title="in output, not in ground truth">L</ins>ieber Richard, <ins title="in output, not in ground truth">fü</ins>h<del title="in ground truth, not in output">ätt</del><ins title="in output, not in ground truth">l</ins> ich <del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">m</ins>ich<ins title="in output, not in ground truth"> eigen</ins>t<ins title="in output, not in ground truth">lich ganz</ins> ge<del title="in ground truth, not in output">w</del><ins title="in output, not in ground truth">s</ins>u<del title="in ground truth, not in output">ßt</del><ins title="in output, not in ground truth">nd</ins>, d<del title="in ground truth, not in output">ass </del><ins title="in output, not in ground truth">er
+</ins>Sie meine<del title="in ground truth, not in output">n</del><ins title="in output, not in ground truth">m</ins> Brief <ins title="in output, not in ground truth">Len</ins>s<ins title="in output, not in ground truth">ens ausgefunde
+ſp. ſ</ins>o <del title="in ground truth, not in output">ne</del><ins title="in output, not in ground truth">ſall iſt i</ins>h<ins title="in output, not in ground truth">r zu </ins>m<ins title="in output, not in ground truth">üſſ</ins>en <del title="in ground truth, not in output">wie er </del>ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ch<del title="in ground truth, not in output">ri</del>e<del title="in ground truth, not in output">ben ist, so </del>h<del title="in ground truth, not in output">ätte ich ihn ja nicht geschrieb</del>en. Aber<ins title="in output, not in ground truth">
+ſ</ins> <del title="in ground truth, not in output">so w</del><ins title="in output, not in ground truth">eſch</ins>ar<del title="in ground truth, not in output">’s</del><ins title="in output, not in ground truth">ö</ins> <del title="in ground truth, not in output">w</del><ins title="in output, not in ground truth">eſc</ins>i<del title="in ground truth, not in output">ede</del>r<ins title="in output, not in ground truth">tz</ins> <del title="in ground truth, not in output">nicht </del><ins title="in output, not in ground truth">aufſ</ins>ge<del title="in ground truth, not in output">mei</del><ins title="in output, not in ground truth">wu</ins>nt, da<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>s Sie <ins title="in output, not in ground truth">[?für]
+wirklich ihre An</ins>sich<del title="in ground truth, not in output"> einbilden müssen, das Schreiben</del><ins title="in output, not in ground truth">t</ins> mit <del title="in ground truth, not in output">de</del><ins title="in output, not in ground truth">so fast Jah</ins>r <del title="in ground truth, not in output">Ze</del>i<del title="in ground truth, not in output">t ganz se</del><ins title="in output, not in ground truth">m
+v</ins>i<del title="in ground truth, not in output">n zu </del>lassen. W<ins title="in output, not in ground truth">iew</ins>o<ins title="in output, not in ground truth">hl es spät,</ins> w<del title="in ground truth, not in output">ä</del><ins title="in output, not in ground truth">a</ins>r <ins title="in output, not in ground truth">m</ins>i<del title="in ground truth, not in output">ch </del><ins title="in output, not in ground truth">r
+zuge</ins>he<del title="in ground truth, not in output">ute,</del><ins title="in output, not in ground truth">n</ins> wenn <del title="in ground truth, not in output">m</del><ins title="in output, not in ground truth">es s</ins>ich <del title="in ground truth, not in output">irg</del><ins title="in output, not in ground truth">thun lass</ins>en<del title="in ground truth, not in output">d wa</del><ins title="in output, not in ground truth">
+felb</ins>s<del title="in ground truth, not in output"> misglück</del>t<del title="in ground truth, not in output">es immer dahin gebracht hätte</del>. <del title="in ground truth, not in output">Imm</del><ins title="in output, not in ground truth">Fräul</ins>e<del title="in ground truth, not in output">rh</del>in gefällt mir <ins title="in output, not in ground truth">sehr gut, </ins>Ihr<del title="in ground truth, not in output">e</del> <del title="in ground truth, not in output">Idee, s</del><ins title="in output, not in ground truth">Sohn
+Brau</ins>ch<del title="in ground truth, not in output">öne fremde</del> Sach<ins title="in output, not in ground truth">s</ins>en gut zu <del title="in ground truth, not in output">über</del><ins title="in output, not in ground truth">... Sach</ins>s<del title="in ground truth, not in output">etz</del>en, <ins title="in output, not in ground truth">wie
+unspr</ins>a<del title="in ground truth, not in output">usn</del><ins title="in output, not in ground truth">ch</ins>e<del title="in ground truth, not in output">hmend</del>. <del title="in ground truth, not in output">Vie</del><ins title="in output, not in ground truth">Wa</ins>l<del title="in ground truth, not in output">leic</del><ins title="in output, not in ground truth">t</ins>h<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">off</ins> <del title="in ground truth, not in output">w</del><ins title="in output, not in ground truth">s</ins>ir<del title="in ground truth, not in output">d e</del><ins title="in output, not in ground truth">h</ins>s <ins title="in output, not in ground truth">m</ins>einen <del title="in ground truth, not in output">Weg </del><ins title="in output, not in ground truth">Ihny
+</ins>für <del title="in ground truth, not in output">S</del><ins title="in output, not in ground truth">s</ins>ie <del title="in ground truth, not in output">bedeu</del><ins title="in output, not in ground truth">lach</ins>ten, <del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">ab</ins>er <del title="in ground truth, not in output">S</del><ins title="in output, not in ground truth">s</ins>ie <del title="in ground truth, not in output">zu Ihn</del><ins title="in output, not in ground truth">wiß</ins>en selbst<del title="in ground truth, not in output"> führt.</del></pre><details><summary>Output as written</summary><pre>Lieber Richard, fühl ich mich eigentlich ganz gesund, der
+Sie meinem Brief Lensens ausgefunde
+ſp. ſo ſall iſt ihr zu müſſen geſchehen. Aber
+ſ eſcharö eſcirtz aufſgewunt, daſs Sie [?für]
+wirklich ihre Ansicht mit so fast Jahr im
+vilassen. Wiewohl es spät, war mir
+zugehen wenn es sich thun lassen
+felbst. Fräulein gefällt mir sehr gut, Ihr Sohn
+Brauch Sachsen gut zu ... Sachsen, wie
+unsprache. Walthoff sirhs meinen Ihny
+für sie lachten, aber sie wißen selbst
+
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/hand-20261105/hybrid/anthropic_claude-haiku-5.5/real-schnitzler-to-beer-hofmann-1896.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-schnitzler-to-beer-hofmann-1896-gt" style="display:none"><pre>lieber Richard, hätt ich nicht gewußt, dass Sie meinen Brief so nehmen wie er geschrieben ist, so hätte ich ihn ja nicht geschrieben. Aber so war’s wieder nicht gemeint, dass Sie sich einbilden müssen, das Schreiben mit der Zeit ganz sein zu lassen. Wo wär ich heute, wenn mich irgend was misglücktes immer dahin gebracht hätte. Immerhin gefällt mir Ihre Idee, schöne fremde Sachen gut zu übersetzen, ausnehmend. Vielleicht wird es einen Weg für Sie bedeuten, der Sie zu Ihnen selbst führt.
+</pre></div></div></div></section>
+<script>
+document.querySelectorAll('.tabs').forEach(t => t.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  t.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+  const page = t.parentElement; page.querySelectorAll('.pane').forEach(p => p.style.display = p.id === b.dataset.target ? 'block' : 'none');
+}));
+</script><!-- mueser-review:start -->
+<style>/* Shared reading room: source first, evidence one disclosure away. */
+body.review-ui {
+  --bg:#f6f5f0; --panel:#fffefa; --ink:#25342f; --muted:#667169;
+  --line:#dcded5; --accent:#335f4c; --soft:#eaf0e7; --warn:#956129;
+  --del:#f8ddd6; --ins:#dfecdc;
+  background:var(--bg); color:var(--ink); margin:0;
+  font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.review-ui *, .review-ui *::before, .review-ui *::after { box-sizing:border-box; }
+.review-ui [hidden] { display:none!important; }
+.review-ui a { color:var(--accent); text-underline-offset:4px; }
+.review-ui button,.review-ui input,.review-ui select { font:inherit; color:inherit; }
+.review-ui button,.review-ui select { cursor:pointer; }
+.review-ui :focus-visible { outline:3px solid #b17937; outline-offset:4px; }
+.review-ui h1,.review-ui h2,.review-ui h3 { color:var(--ink); line-height:1.18; }
+.review-ui h1 { font:normal clamp(30px,3.5vw,48px)/1.12 Georgia,serif; letter-spacing:-1.2px; margin:12px 0 18px; max-width:1000px; }
+.review-ui h2 { font:normal 27px/1.2 Georgia,serif; margin:0 0 18px; }
+.review-ui h3 { font-size:16px; margin:18px 0 12px; }
+.review-ui p { margin:10px 0 18px; }
+.review-ui .mono,.review-ui code { font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; overflow-wrap:anywhere; }
+.review-ui .muted { color:var(--muted); }
+.review-ui .eyebrow { font:600 10px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-transform:uppercase; letter-spacing:1.8px; color:var(--muted); }
+.review-topbar { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:17px 32px; border-bottom:1px solid var(--line); background:var(--panel); }
+.review-topbar a { text-decoration:none; font-size:13px; }
+.review-brand { display:flex; align-items:center; gap:12px; font-weight:650; }
+.review-brand::before { content:"M"; display:grid; place-items:center; width:30px; height:30px; background:var(--accent); color:white; font:20px Georgia,serif; }
+.review-topbar .top-links { display:flex; gap:22px; flex-wrap:wrap; }
+.review-ui .review-header { max-width:none; padding:32px 40px 24px; margin:0; border-bottom:1px solid var(--line); }
+.review-header .lead { max-width:720px; color:var(--muted); font-size:16px; margin-bottom:0; }
+.review-header .methodology { margin-top:18px; max-width:1000px; }
+.review-ui details { border:1px solid var(--line); border-radius:5px; background:var(--panel); margin:12px 0; }
+.review-ui summary { padding:13px 17px; cursor:pointer; font-size:13px; font-weight:600; }
+.review-ui details[open]>summary { border-bottom:1px solid var(--line); margin-bottom:14px; }
+.review-ui details>p,.review-ui details>pre,.review-ui details>ul,.review-ui details>table,.review-ui details>div { margin:14px 18px; }
+.review-ui details>details { margin:14px 18px; }
+.review-ui .review-shell { display:grid; grid-template-columns:235px minmax(0,1fr); max-width:1800px; margin:auto; }
+.source-nav { padding:26px 18px; border-right:1px solid var(--line); align-self:start; position:sticky; top:0; max-height:100vh; overflow:auto; }
+.source-nav .eyebrow { padding:0 10px; }
+.source-nav input { display:block; width:100%; min-width:0; background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:9px 10px; font-size:12px; margin:16px 0 22px; }
+.source-nav .source-group { font-size:10px; font-weight:600; letter-spacing:1.3px; text-transform:uppercase; padding:15px 10px 7px; color:var(--muted); }
+.source-nav a { display:block; color:var(--ink); text-decoration:none; padding:11px 12px; margin:3px 0; font-size:13px; line-height:1.45; border-left:2px solid transparent; border-radius:0 4px 4px 0; }
+.source-nav a:hover { background:#eeeee7; }
+.source-nav a[aria-current="page"] { background:var(--soft); border-left-color:var(--accent); color:var(--accent); font-weight:600; }
+.source-nav small { display:block; color:var(--muted); font-size:11px; font-weight:400; margin-top:4px; }
+.source-nav .nav-foot { border-top:1px solid var(--line); padding:18px 10px; margin-top:24px; color:var(--muted); font-size:11px; }
+.review-content { min-width:0; padding:26px 32px 60px; }
+.review-ui .review-content>section { padding:0; max-width:none; margin:0; }
+.review-ui .review-content>.run-evidence { margin:0 0 22px; }
+.source-bar { display:flex; gap:16px; justify-content:space-between; align-items:center; padding-bottom:20px; }
+.source-bar h2 { margin:7px 0 0; }
+.source-bar .source-kind { display:block; color:var(--muted); font-size:11px; margin-top:7px; }
+.source-pager { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.source-pager button { border:1px solid var(--line); background:var(--panel); width:34px; height:34px; border-radius:4px; }
+.source-pager button:disabled { opacity:.35; cursor:default; }
+.source-counter { font:11px ui-monospace,monospace; color:var(--muted); margin:0 6px; }
+.review-ui .page { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:24px; border:0; margin:0; padding:0; }
+.review-ui .page>div { min-width:0; }
+.review-ui .source-image { align-self:start; position:sticky; top:22px; padding:18px; border:1px solid var(--line); background:#eeede5; border-radius:5px; }
+.source-image .image-label { display:flex; justify-content:space-between; gap:10px; margin-bottom:14px; font-size:10px; text-transform:uppercase; letter-spacing:1.3px; color:var(--muted); }
+.review-ui .page img { display:block; width:100%; height:auto; border:0; box-shadow:0 2px 12px #26382d12; }
+.review-ui .source-image p { font-size:12px; line-height:1.6; }
+.source-image .image-hint { margin:12px 0 0; text-align:center; font-size:11px; }
+.review-ui .reading-column>h3:first-child { margin-top:0; }
+.review-ui .reading-column { padding:20px 24px; background:var(--panel); border:1px solid var(--line); border-radius:5px; }
+.reader-picker { display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1.2px; margin-bottom:18px; }
+.reader-picker select { display:block; width:100%; max-width:100%; padding:11px 34px 11px 12px; margin-top:9px; background:var(--bg); border:1px solid var(--line); border-radius:4px; font-size:13px; text-transform:none; letter-spacing:0; font-weight:500; }
+.reader-note { font-size:11px; color:var(--muted); margin-top:-10px!important; }
+.review-ui pre,.review-ui .text { font:17px/1.85 Georgia,"Times New Roman",serif; white-space:pre-wrap; overflow-wrap:anywhere; word-break:normal; background:transparent; border:0; border-radius:0; padding:0; margin:20px 0; }
+.review-ui .text { padding:0; }
+.review-ui details pre { font:12px/1.7 ui-monospace,monospace; margin:18px; }
+.review-ui .pane>p:has(.stat) { display:flex; flex-wrap:wrap; gap:12px 20px; padding:16px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.review-ui .stat { display:block; margin:0; font:16px/1.5 ui-monospace,monospace; }
+.review-ui .stat b { display:block; font:500 10px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.review-ui .provenance summary { font-weight:500; color:var(--muted); }
+.review-ui .table-scroll { max-width:100%; overflow:auto; margin:14px 0; }
+.review-ui table { border-collapse:collapse; width:100%; font:12px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+.review-ui td,.review-ui th { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+.review-ui th { font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-weight:600; background:var(--bg); }
+.review-ui td.num { text-align:right; font-variant-numeric:tabular-nums; }
+.review-ui .matrix { min-width:850px; }
+.review-ui .matrix th { text-transform:none; letter-spacing:0; }
+.review-ui .chip { display:inline-block; padding:2px 6px; margin:3px 5px 3px 0; font:11px/1.5 ui-monospace,monospace; background:var(--soft); border-radius:3px; overflow-wrap:anywhere; }
+.review-ui mark { background:#efe5cb; border-bottom:1px solid #c8b57d; color:inherit; cursor:pointer; }
+.review-ui mark.strong { background:#eed3a8; border-color:#9e7130; }
+.review-ui mark.selected { outline:2px solid var(--accent); outline-offset:2px; }
+.review-ui .highlight-review mark:not(.strong),.review-ui .highlight-none mark { background:transparent; border-color:transparent; }
+.highlight-picker { display:flex; align-items:center; gap:12px; margin:18px 0 12px; font-size:12px; }
+.highlight-picker select { min-width:0; max-width:100%; background:var(--bg); border:1px solid var(--line); padding:7px 9px; border-radius:4px; font-size:12px; }
+.consensus-metrics { display:flex; flex-wrap:wrap; gap:20px; border-bottom:1px solid var(--line); padding:0 0 16px; margin-bottom:16px; }
+.consensus-metrics span { display:block; color:var(--muted); font-size:10px; }
+.consensus-metrics strong { font:24px/1.7 Georgia,serif; }
+.annotation-help { font-size:12px; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--line); }
+.annotation-detail { position:sticky; bottom:14px; background:var(--soft); border:1px solid var(--accent); padding:14px; border-radius:4px; font-size:12px; white-space:pre-wrap; overflow-wrap:anywhere; max-height:220px; overflow:auto; box-shadow:0 4px 16px #25342f14; }
+.annotation-detail button { float:right; background:transparent; border:0; font-size:17px; }
+.review-list { display:grid; gap:8px; }
+.review-list details { margin:0; }
+.review-list summary { display:flex; align-items:baseline; gap:12px; }
+.review-list .review-number { color:var(--muted); font:11px ui-monospace,monospace; min-width:22px; }
+.review-list .review-base { flex:1; min-width:0; font:16px/1.5 Georgia,serif; overflow-wrap:anywhere; }
+.review-list .review-weight { font:10px/1.5 ui-monospace,monospace; color:var(--muted); white-space:nowrap; }
+.review-ui .full-evidence { grid-column:1/-1; min-width:0; }
+.review-ui .consensus-stats { font-size:12px; margin:0 0 18px; padding-bottom:14px; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+.review-ui .layout-source { margin-bottom:24px; }
+.review-ui .layout-source .page { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.review-ui .layout-source .page>div { padding:16px; background:#eeede5; border:1px solid var(--line); border-radius:5px; }
+.review-ui .layout-source .page>div>p { min-height:48px; }
+.review-ui .fig svg { pointer-events:none; }
+.review-ui .layout-source .fig rect { pointer-events:all; }
+.review-ui .layout-tools { display:flex; gap:20px; align-items:center; margin:0 0 20px; font-size:12px; }
+.review-ui .leg { display:flex; flex-wrap:wrap; gap:8px; }
+.review-ui .leg span { font-size:11px; }
+/* Collection landing page. */
+.review-home main { max-width:1240px; padding:0 40px 70px; }
+.collection-hero { display:grid; grid-template-columns:1.25fr .75fr; gap:50px; padding:60px 0 45px; align-items:center; border-bottom:1px solid var(--line); }
+.collection-hero h1 { font-size:clamp(38px,5vw,66px); line-height:1.05; max-width:700px; }
+.collection-hero .sub { font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; max-width:620px; }
+.hero-image { position:relative; height:290px; overflow:hidden; background:#eae6d8; border:1px solid #d9d2bc; }
+.hero-image img { width:78%; display:block; margin:25px auto; transform:rotate(-5deg); box-shadow:0 6px 24px #342b2024; }
+.hero-image figcaption { position:absolute; bottom:0; left:0; right:0; padding:11px 15px; background:#eeeadfee; font:10px/1.4 ui-monospace,monospace; color:#645f51; }
+.collection-links { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+.collection-links a,.case-actions a { font-size:12px; text-decoration:none; border:1px solid var(--line); border-radius:4px; padding:9px 14px; background:var(--panel); }
+.collection-links a:first-child { background:var(--accent); border-color:var(--accent); color:white; }
+.review-ui .collection-intro { padding:26px 0 0; }
+.review-ui .collection-intro>h2 { font:24px Georgia,serif; }
+.review-ui .collection-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:22px 0 44px; }
+.review-ui .case-card { padding:25px; border:1px solid var(--line); background:var(--panel); border-radius:5px; display:flex; flex-direction:column; min-width:0; }
+.case-card h2 { font:27px/1.2 Georgia,serif; margin:8px 0 12px; }
+.case-card .case-desc { color:var(--muted); font-size:14px; margin:0 0 18px; }
+.case-card .case-result { font-size:12px; padding:14px 0; border-top:1px solid var(--line); margin:16px 0 0; }
+.case-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:auto; }
+.case-actions a:first-child { background:var(--soft); color:var(--accent); border-color:#c9d7c6; }
+.case-card details { background:transparent; margin:18px 0 0; border:0; border-top:1px solid var(--line); border-radius:0; }
+.case-card details summary { padding:12px 0 0; color:var(--muted); font-weight:400; }
+.review-home .flow { display:grid; grid-template-columns:1fr; gap:12px; }
+.review-home .step { padding:0 0 0 14px; border:0; border-left:2px solid var(--line); border-radius:0; background:transparent; font-size:12px; }
+.review-home .step h3 { font-size:13px; margin:6px 0; }
+.review-home .step .k { font-size:9px; }
+.review-home .flow .out { border-color:var(--accent); }
+.review-home .collection-notes { padding:22px 0; border-top:1px solid var(--line); }
+.review-home .collection-notes p { max-width:850px; }
+.review-home .legend { font-size:11px; }
+.review-home .collection-footer { font-size:12px; color:var(--muted); }
+/* Maps: quiet chrome around an expansive canvas, separate filters and evidence. */
+.review-map { height:100vh; display:flex; flex-direction:column; }
+.review-map .review-topbar { flex-shrink:0; padding:12px 24px; }
+.review-map>header { display:block; padding:20px 28px 16px; border:0; }
+.review-map>header h1 { font:32px/1.15 Georgia,serif; margin:0 0 8px; }
+.review-map>header .sub { display:block; font:12px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; max-width:1000px; }
+.review-map #counts { font:11px/1.6 ui-monospace,monospace; color:var(--accent); margin-top:8px; }
+.review-map>.controls { padding:12px 28px; background:var(--panel); gap:12px 22px; flex-shrink:0; align-items:flex-start; border-top:1px solid var(--line); }
+.review-map .controls label { font-size:12px; }
+.review-map .controls input[type=range] { width:120px; accent-color:var(--accent); }
+.review-map .controls select { background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:4px 7px; font-size:12px; }
+.review-map .controls details { margin:0; background:transparent; }
+.review-map .controls details summary { padding:5px 10px; font-size:11px; }
+.review-map .controls details>div { display:flex; flex-wrap:wrap; gap:12px; margin:12px; }
+.review-map main { flex:1; min-height:250px; height:auto; display:grid; grid-template-columns:minmax(0,1fr) 360px; }
+.review-map aside { padding:24px; min-width:0; background:var(--panel); border-left:1px solid var(--line); font-size:13px; overflow:auto; }
+.review-map aside h2 { font:25px Georgia,serif; margin:0 0 15px; }
+.review-map aside h3 { font-size:13px; }
+.review-map aside table { font-size:11px; }
+.review-map aside td { padding:8px 4px; }
+.review-map .unresolved { padding-left:18px; }
+.review-map .unresolved li { padding:10px 0; font-size:12px; border-bottom:1px solid var(--line); }
+.review-map .cand { padding:13px; border-radius:4px; font-size:12px; }
+.review-map .cand.chosen { background:var(--soft); border-color:#b6c8b2; }
+.review-map .legend { font-size:10px; }
+:root[data-theme="dark"] .review-map { --bg:#202923; --panel:#253129; --ink:#edf1e9; --muted:#bbc7ba; --line:#425247; --accent:#b2d7b8; --soft:#354938; }
+.review-ui .skip-link { position:absolute; left:16px; top:-80px; z-index:100; background:var(--panel); padding:12px; }
+.review-ui .skip-link:focus { top:10px; }
+@media(min-width:1600px) { .review-ui .page { gap:32px; } .review-ui .reading-column { padding:28px 36px; } }
+@media(max-width:1100px) { .review-ui .review-shell { grid-template-columns:195px minmax(0,1fr); } .review-content { padding:24px; } .review-ui .page { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; } .review-ui .reading-column { padding:16px; } .review-map main { grid-template-columns:minmax(0,1fr) 320px; } }
+@media(max-width:800px) {
+  .review-topbar { padding:12px 18px; } .review-topbar .eyebrow { display:none; } .review-topbar .top-links { gap:12px; } .review-topbar a { font-size:11px; }
+  .review-ui .review-header { padding:26px 20px; } .review-ui h1 { letter-spacing:-.6px; }
+  .review-ui .review-shell { display:block; } .source-nav { position:static; max-height:260px; border-right:0; border-bottom:1px solid var(--line); padding:18px 20px; }
+  .source-nav input { margin:12px 0; } .source-nav .nav-foot { display:none; } .source-nav a { display:inline-block; vertical-align:top; min-width:170px; max-width:100%; }
+  .source-nav .source-group { padding-top:8px; } .review-content { padding:22px 20px 40px; }
+  .review-ui .page,.review-ui .layout-source .page { grid-template-columns:1fr; } .review-ui .source-image { position:static; } .review-ui .source-image img { max-height:65vh; object-fit:contain; }
+  .source-bar { align-items:flex-start; } .source-bar h2 { font-size:24px; } .source-pager { gap:3px; }
+  .review-ui .collection-grid { grid-template-columns:1fr; } .review-home main { padding:0 20px 40px; }
+  .collection-hero { grid-template-columns:1fr; gap:20px; padding:36px 0; } .hero-image { display:none; }
+  .review-map { height:auto; min-height:100vh; } .review-map main { display:flex; flex-direction:column; } .review-map #map { height:55vh; min-height:320px; }
+  .review-map aside { overflow:visible; border-left:0; border-top:1px solid var(--line); } .review-map .controls { padding:14px 20px; } .review-map .controls>label:first-child { flex-wrap:wrap; }
+}
+@media print {
+  .review-ui [hidden] { display:block!important; } .review-topbar,.source-nav,.source-pager,.reader-picker,.skip-link { display:none!important; }
+  .review-ui .review-shell,.review-ui .page { display:block; } .review-ui .source-image { position:static; max-width:45%; } .review-content { padding:0; }
+}
+</style>
+<script>window.REVIEW_CONFIG={"kind": "report", "home": "../../../../index.html"};
+/* Progressive enhancement only: the generated research content remains intact. */
+(() => {
+  'use strict';
+  const config = window.REVIEW_CONFIG;
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+  const link = (text, href) => { const a = el('a', '', text); a.href = href; return a; };
+  const disclosure = (title, nodes = [], cls = '') => {
+    const d = el('details', cls); d.append(el('summary', '', title), ...nodes); return d;
+  };
+  const wrapTable = t => {
+    if (t.parentElement.classList.contains('table-scroll')) return;
+    const box = el('div', 'table-scroll'); box.tabIndex = 0;
+    box.setAttribute('role', 'region'); box.setAttribute('aria-label', 'Scrollable evidence table');
+    t.before(box); box.append(t);
+  };
+  const labels = {
+    'real-gartenlaube-1853-p001': ['Die Gartenlaube', '1853 · Fraktur print'],
+    'real-grimm-khm-1812-i-p093': ['Grimm’s fairy tales', '1812 · Fraktur print'],
+    'real-schiller-musenalmanach-1796-p093': ['Schiller’s Musenalmanach', '1796 · Antiqua print'],
+    'real-kaskel-to-schnorr-1864': ['Kaskel to Schnorr', '1864 · Secretary’s hand'],
+    'real-schnitzler-to-beer-hofmann-1896': ['Schnitzler to Beer-Hofmann', '1896 · Private correspondence'],
+    'real-poesiealbum-hedwig-1901-p02': ['Hedwig’s poetry album', '1901 · Handwritten album'],
+  };
+  const sourceName = id => labels[id] || (/^synth-/.test(id)
+    ? [`Synthetic page ${Number(id.replace('synth-', ''))}`, 'Invented text · Rendered sample']
+    : [id.replace(/^real-/, '').replaceAll('-', ' '), 'Source page']);
+
+  document.body.classList.add('review-ui', `review-${config.kind}`);
+  const top = el('nav', 'review-topbar'); top.setAttribute('aria-label', 'Project navigation');
+  const brand = link('German sources', config.home); brand.className = 'review-brand';
+  const topLinks = el('div', 'top-links');
+  if (config.kind !== 'home') topLinks.append(link('All experiments', config.home));
+  if (config.kind === 'consensus') topLinks.append(link('Compare readers', '../index.html'));
+  if (config.consensus) topLinks.append(link('Review disagreements', config.consensus));
+  if (config.kind === 'home') topLinks.append(el('span', 'eyebrow', 'Bok Center · Learning Lab'));
+  top.append(brand, topLinks); document.body.prepend(top);
+  const skip = link('Skip to content', '#review-main'); skip.className = 'skip-link'; document.body.prepend(skip);
+
+  function makeHeader() {
+    const header = $('body > header'); if (!header) return;
+    header.className = 'review-header';
+    const title = $('h1', header);
+    const original = [...header.children].filter(n => n !== title);
+    const type = {report:'Compare the readers', consensus:'Human review', layout:'Understand the page'}[config.kind];
+    header.prepend(el('div', 'eyebrow', `Transcription / ${type}`));
+    const lead = {
+      report:'Choose a source, then compare its readers. The image and transcription sit side by side; scores, differences, and provenance are available below.',
+      consensus:'Read the source beside a shared starting text. Select a highlighted passage to see the alternatives, then work through the passages that need a decision.',
+      layout:'Compare how a vision model and Kraken divide the same page. Switch sources to inspect regions, line counts, and reading order.',
+    }[config.kind];
+    header.append(el('p', 'lead', lead), disclosure('About this experiment · methods and definitions', original, 'methodology'));
+    if (config.kind === 'consensus') {
+      const exports = el('div', 'collection-links');
+      exports.append(link('Download review spreadsheet ↓', 'checkin.csv'), link('Full consensus data ↓', 'consensus.json'));
+      header.append(exports);
+    }
+  }
+
+  function prepareReport(page) {
+    const imageCol = page.children[0], reading = page.children[1];
+    imageCol.classList.add('source-image'); reading.classList.add('reading-column');
+    const tabs = $('.tabs', reading);
+    if (tabs) {
+      const buttons = $$('button', tabs);
+      const picker = el('label', 'reader-picker', 'Reader'); const select = el('select');
+      select.setAttribute('aria-label', `Reader for ${sourceName(page.id)[0]}`);
+      buttons.forEach(b => { const o = el('option', '', b.textContent); o.value = b.dataset.target; select.append(o); });
+      picker.append(select); tabs.before(picker); tabs.hidden = true;
+      select.addEventListener('change', () => buttons.find(b => b.dataset.target === select.value)?.click());
+      // Select by this page's measured normalised error, never a mixed-corpus mean.
+      const scores = buttons.map(b => {
+        const pane = document.getElementById(b.dataset.target);
+        const stat = $$('.stat', pane).find(s => $('b', s)?.textContent === 'cer_norm');
+        return {button:b, score:stat ? Number(stat.textContent.replace('cer_norm', '').trim()) : Infinity};
+      });
+      const best = scores.reduce((a, b) => b.score < a.score ? b : a, scores[0]);
+      if (best && Number.isFinite(best.score)) {
+        select.value = best.button.dataset.target; best.button.click();
+        picker.after(el('p', 'reader-note', 'Starts with the lowest measured normalised character error on this page.'));
+      }
+    }
+    $$('.pane', reading).forEach(pane => {
+      const rawDetails = $$(':scope > details', pane).find(d => $('summary', d)?.textContent === 'Output as written');
+      if (rawDetails) {
+        const raw = $('pre', rawDetails), diff = $(':scope > pre', pane);
+        const explanation = diff?.previousElementSibling;
+        const evidence = disclosure('Compare with reference text · highlighted differences');
+        if (diff) { diff.before(raw); if (explanation) evidence.append(explanation); evidence.append(diff); }
+        rawDetails.replaceWith(evidence);
+      }
+      const path = $$(':scope > p', pane).find(p => p.textContent.startsWith('output:'));
+      if (path) { const details = disclosure('Source files and prompt fingerprint', [], 'provenance'); path.before(details); details.append(path); }
+      const names = {cer:'Character error', cer_norm:'Normalised error', wer:'Word error', wer_norm:'Normalised word error', lines:'Lines', '$':'Cost · USD', s:'Seconds'};
+      $$('.stat b', pane).forEach(b => { if (names[b.textContent]) b.textContent = names[b.textContent]; });
+      // Retain backend notes (including incomplete line crops) as visible evidence.
+    });
+  }
+
+  function prepareConsensus(page) {
+    const imageCol = page.children[0], reading = page.children[1];
+    imageCol.classList.add('source-image'); reading.classList.add('reading-column');
+    const matrix = $('.matrix', imageCol);
+    if (matrix) {
+      const caption = matrix.nextElementSibling;
+      const d = disclosure('Reader agreement · full matrix and reliability', caption ? [matrix, caption] : [matrix], 'full-evidence');
+      page.append(d);
+    }
+    const stats = $(':scope > p.mono', imageCol);
+    if (stats) {
+      const metrics = el('div', 'consensus-metrics');
+      for (const [label, pattern, percent] of [
+        ['Reader agreement', /agreement ([\d.]+)/, true],
+        ['Reference error · norm', /medoid CER norm ([\d.]+)/, false],
+        ['Passages to review', /(\d+) on the check-in list/, false],
+      ]) {
+        const value = stats.textContent.match(pattern)?.[1]; if (value == null) continue;
+        const metric = el('div'); metric.append(el('span', '', label), el('strong', '', percent ? `${(Number(value)*100).toFixed(1)}%` : value)); metrics.append(metric);
+      }
+      stats.className = 'consensus-stats';
+      reading.prepend(metrics, disclosure('Starting reader, family gap, and complete scores', [stats]));
+    }
+    const text = $('.text', reading);
+    if (text) {
+      const heading = text.previousElementSibling;
+      if (heading?.tagName === 'H3') heading.textContent = 'A starting text to review';
+      const highlights = el('label', 'highlight-picker', 'Highlight '), select = el('select');
+      [['review','Passages needing review'],['all','All disagreements'],['none','Read without highlights']].forEach(([value, label]) => { const o = el('option', '', label); o.value = value; select.append(o); });
+      select.setAttribute('aria-label', 'Highlight disagreements'); highlights.append(select);
+      text.classList.add('highlight-review');
+      select.onchange = () => { text.classList.remove('highlight-review', 'highlight-all', 'highlight-none'); text.classList.add(`highlight-${select.value}`); };
+      text.before(highlights, el('p', 'annotation-help', 'Select a marked passage to inspect the alternatives. Agreement measures how similar the readings are; it does not establish correctness.'));
+      const detail = el('div', 'annotation-detail'); detail.hidden = true;
+      detail.setAttribute('role', 'status'); detail.setAttribute('aria-live', 'polite');
+      const close = el('button', '', '×'); close.setAttribute('aria-label', 'Close alternatives');
+      const contents = el('div'); detail.append(close, contents); text.after(detail);
+      close.onclick = () => { detail.hidden = true; $('mark.selected', text)?.classList.remove('selected'); };
+      $$('mark', text).forEach(mark => {
+        mark.tabIndex = 0; mark.setAttribute('role', 'button');
+        mark.setAttribute('aria-label', `Alternatives for ${mark.textContent || 'an insertion'}`);
+        const show = () => {
+          $$('mark.selected', text).forEach(m => m.classList.remove('selected'));
+          mark.classList.add('selected'); contents.textContent = mark.title.split(' / ').join('\n\n'); detail.hidden = false;
+        };
+        mark.onclick = show;
+        mark.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(); } if (e.key === 'Escape') close.click(); };
+      });
+    }
+    const checks = $(':scope > table', reading);
+    if (checks) {
+      const heading = checks.previousElementSibling;
+      const review = el('div', 'review-list');
+      $$('tr', checks).slice(1).forEach(row => {
+        const c = [...row.cells]; if (c.length < 5) return;
+        const d = disclosure(''); const s = $('summary', d);
+        s.append(el('span', 'review-number', `#${c[0].textContent}`), el('span', 'review-base', c[1].textContent || '(insertion)'), el('span', 'review-weight', `${c[3].textContent} readers · weight ${c[2].textContent}`));
+        const alternatives = el('div'); alternatives.append(...c[4].childNodes); d.append(alternatives); review.append(d);
+      });
+      const group = disclosure(`Passages to review · ${review.children.length}`, [el('p', 'muted', heading?.textContent || ''), review]);
+      if (heading?.tagName === 'H3') heading.remove(); checks.replaceWith(group);
+    }
+  }
+
+  function readingWorkspace() {
+    makeHeader();
+    let pages;
+    if (config.kind === 'layout') {
+      const section = $('body > section');
+      const headings = $$(':scope > h2', section);
+      pages = headings.map(h => {
+        const article = el('article', 'layout-source'); article.id = h.firstChild.textContent.trim();
+        h.before(article); article.append(h);
+        while (article.nextSibling && !(article.nextSibling.nodeType === 1 && article.nextSibling.tagName === 'H2')) article.append(article.nextSibling);
+        const table = $(':scope > table', article);
+        if (table) { const d = disclosure('Region inventory · types, hands, lines, and notes'); table.before(d); d.append(table); }
+        const tools = el('div', 'layout-tools'); const label = el('label'); const check = el('input');
+        check.type = 'checkbox'; check.checked = true; label.append(check, document.createTextNode(' Show segmentation boxes')); tools.append(label);
+        const figures = $('.page', article); figures.before(tools);
+        check.onchange = () => $$('svg', article).forEach(svg => svg.hidden = !check.checked);
+        return article;
+      });
+    } else {
+      pages = $$('body > section > .page');
+      pages.forEach(p => config.kind === 'consensus' ? prepareConsensus(p) : prepareReport(p));
+    }
+    if (!pages.length) return;
+    const shell = el('div', 'review-shell'), nav = el('aside', 'source-nav'), main = el('main', 'review-content');
+    main.id = 'review-main'; main.tabIndex = -1;
+    nav.setAttribute('aria-label', 'Source navigator');
+    nav.append(el('div', 'eyebrow', `${pages.length} source pages`));
+    const search = el('input'); search.type = 'search'; search.placeholder = 'Find a source…'; search.setAttribute('aria-label', 'Find a source'); nav.append(search);
+    const navigation = el('nav'); navigation.setAttribute('aria-label', 'Choose a source'); nav.append(navigation);
+    const bar = el('div', 'source-bar'), sourceTitle = el('div');
+    sourceTitle.append(el('div', 'eyebrow', 'Source'), el('h2'), el('span', 'source-kind'));
+    const pager = el('div', 'source-pager'); const prev = el('button', '', '←'), next = el('button', '', '→'), counter = el('span', 'source-counter');
+    prev.setAttribute('aria-label', 'Previous source'); next.setAttribute('aria-label', 'Next source'); pager.append(prev, counter, next); bar.append(sourceTitle, pager); main.append(bar);
+    const navItems = [];
+    for (const [synthetic, groupTitle] of [[false, 'Historical sources'], [true, 'Synthetic samples']]) {
+      const members = pages.filter(p => /^synth-/.test(p.id) === synthetic); if (!members.length) continue;
+      const group = el('div'); group.append(el('div', 'source-group', groupTitle)); navigation.append(group);
+      members.forEach(page => {
+        const [name, subtitle] = sourceName(page.id); const a = link(name, `#${page.id}`); a.append(el('small', '', subtitle));
+        a.title = page.id; a.dataset.source = page.id; group.append(a); navItems.push(a);
+      });
+    }
+    const empty = el('p', 'muted', 'No matching sources.'); empty.hidden = true; navigation.append(empty);
+    search.oninput = () => {
+      const q = search.value.toLowerCase(); navItems.forEach(a => { a.hidden = !(a.textContent + a.dataset.source).toLowerCase().includes(q); });
+      $$(':scope > div', navigation).forEach(g => { g.hidden = !$$('a', g).some(a => !a.hidden); });
+      empty.hidden = navItems.some(a => !a.hidden);
+    };
+    nav.append(el('p', 'nav-foot', 'Historical sources and synthetic samples stay separate. Every reading retains its source and method.'));
+    const sections = $$('body > section');
+    sections.forEach(section => {
+      if (pages.some(p => section.contains(p))) {
+        const redundant = $(':scope > h2', section);
+        if (redundant?.textContent === 'Every page, every backend') redundant.remove();
+        main.append(section);
+      } else {
+        const d = disclosure('All readers · scores, costs, and run details', [...section.childNodes], 'run-evidence');
+        const mixed = pages.some(p => /^synth-/.test(p.id)) && pages.some(p => !/^synth-/.test(p.id));
+        if (mixed) $('summary', d).after(el('p', 'muted', 'This original summary averages historical and synthetic pages together. Use the individual source scores to judge performance on real material.'));
+        main.append(d); section.remove();
+      }
+    });
+    shell.append(nav, main); document.body.append(shell);
+    pages.forEach(page => {
+      const originalHeading = config.kind === 'layout' ? $(':scope > h2', page) : $(':scope > div:first-child > h2, :scope > div:first-child > h3', page);
+      if (originalHeading) {
+        if (config.kind === 'layout') { originalHeading.className = 'mono muted'; originalHeading.style.fontSize = '12px'; }
+        else { const d = disclosure('Source identifier', [el('p', 'mono', page.id)], 'provenance'); originalHeading.replaceWith(d); }
+      }
+      const image = $('.source-image', page);
+      if (image) { image.prepend(el('div', 'image-label', 'Original document')); image.append(el('p', 'image-hint', 'Open the image for a closer look ↗')); }
+    });
+    let active = 0;
+    const activate = id => {
+      const found = pages.findIndex(p => p.id === id); active = found < 0 ? 0 : found;
+      const page = pages[active]; pages.forEach(p => { p.hidden = p !== page; });
+      navItems.forEach(a => { if (a.dataset.source === page.id) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+      const [name, sub] = sourceName(page.id); $('h2', sourceTitle).textContent = name; $('.source-kind', sourceTitle).textContent = sub;
+      counter.textContent = `${active + 1} / ${pages.length}`; prev.disabled = active === 0; next.disabled = active === pages.length - 1;
+    };
+    function choose(id) { history.replaceState(null, '', `#${encodeURIComponent(id)}`); activate(id); }
+    navItems.forEach(a => a.onclick = e => { e.preventDefault(); choose(a.dataset.source); if (innerWidth < 801) bar.scrollIntoView({block:'start'}); });
+    prev.onclick = () => choose(pages[active - 1].id); next.onclick = () => choose(pages[active + 1].id);
+    const fromHash = () => { let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) {} activate(id); };
+    window.addEventListener('hashchange', fromHash); fromHash();
+  }
+
+  function home() {
+    const main = $('body > main'); main.id = 'review-main';
+    const h1 = $('h1', main), sub = $('.sub', main), legend = $('.legend', main);
+    const hero = el('header', 'collection-hero'), words = el('div');
+    words.append(el('div', 'eyebrow', 'A research collection / November 2026'), h1, sub);
+    const actions = el('div', 'collection-links'); actions.append(link('Explore transcription ↓', '#transcription'), link('Explore maps ↓', '#maps')); words.append(actions);
+    const figure = el('figure', 'hero-image'); const img = el('img'); img.src = '01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/real-grimm-khm-1812-i-p093.jpg'; img.alt = 'A page of Grimm’s fairy tales, printed in Fraktur in 1812';
+    figure.append(img, el('figcaption', '', 'GRIMM · 1812 · A SOURCE IN THIS COLLECTION')); hero.append(words, figure); main.prepend(hero);
+    const headers = $$(':scope > h2', main);
+    const descriptions = [
+      'Compare nine readers on printed sources, then inspect the passages where their readings diverge.',
+      'Follow the same comparison through letters and an album, from a clear hand to difficult photographs.',
+      'See how readers divide a page into regions and lines before they transcribe it.',
+      'Follow 24 historical place names from a ledger to a map, with the reason for every match.',
+      'Inspect the historical map search and the evidence behind the decision to leave the overlay off.',
+      'Trace a map point all the way back to the page and line where its name appeared.',
+      'Explore place-name histories around Breslau and the changes recorded across 1945.',
+    ];
+    let grid, count = 0;
+    headers.forEach(h => {
+      const section = el('section'); h.before(section); section.append(h);
+      while (section.nextSibling && !(section.nextSibling.nodeType === 1 && section.nextSibling.tagName === 'H2')) section.append(section.nextSibling);
+      const flow = $('.flow', section), output = flow && $('.out', flow);
+      const isCase = /^(Transcription|Maps) ·/.test(h.textContent);
+      if (isCase) {
+        const isText = h.textContent.startsWith('Transcription');
+        if (count === 0 || count === 3) {
+          const intro = el('div', 'collection-intro'); intro.id = isText ? 'transcription' : 'maps';
+          intro.append(el('div', 'eyebrow', isText ? '01 / Read the sources' : '02 / Locate the places'), el('h2', '', isText ? 'Transcription & review' : 'Maps & place histories'));
+          section.before(intro); grid = el('div', 'collection-grid'); section.before(grid);
+        }
+        section.className = 'case-card'; grid.append(section);
+        h.textContent = h.textContent.split(' · ').slice(1).join(' · ');
+        section.prepend(el('div', 'eyebrow', `Experiment ${String(count + 1).padStart(2, '0')}`));
+        h.after(el('p', 'case-desc', descriptions[count]));
+        const actions = el('div', 'case-actions');
+        if (output) $$('a', output).forEach(a => { const copy = a.cloneNode(true); if (copy.textContent === 'Explorer') copy.textContent = 'Compare readers ↗'; if (copy.textContent === 'Consensus') copy.textContent = 'Review disagreements ↗'; if (copy.textContent === 'Map') copy.textContent = 'Explore map ↗'; actions.append(copy); });
+        const result = $(':scope > p.num', section); if (result) result.classList.add('case-result');
+        section.append(actions);
+        if (flow) { const d = disclosure('How this experiment works', [flow]); section.append(d); }
+        count++;
+      } else {
+        section.className = 'collection-notes';
+        if (h.textContent === 'The shape of the work') {
+          const d = disclosure('The complete workflow · from page to map', [...section.childNodes]); if (legend) d.append(legend); section.append(d);
+        }
+        if (h.textContent === 'Where the evidence is') { const table = $('table', section); if (table) section.append(disclosure('Find the files behind a result', [table])); }
+      }
+    });
+  }
+
+  function maps() {
+    const main = $('body > main'); main.id = 'review-main';
+    const controls = $('.controls');
+    const advanced = disclosure('Map options'); const options = el('div'); advanced.append(options);
+    ['allmaps', 'overlayOpacity', 'theme'].forEach(id => { const input = document.getElementById(id); if (input) options.append(input.closest('label')); });
+    const legend = $('.legend', controls); if (legend) options.append(legend);
+    controls.append(advanced);
+    $('#yearMin').setAttribute('aria-label', 'Start year'); $('#yearMax').setAttribute('aria-label', 'End year');
+    const aside = $('aside', main), unresolved = $('#unresolvedList');
+    if (unresolved) {
+      const explanation = unresolved.previousElementSibling, heading = explanation?.previousElementSibling;
+      const d = disclosure(`Unresolved names · ${unresolved.children.length}`);
+      if (heading?.tagName === 'H2') heading.remove();
+      if (explanation) d.append(explanation); d.append(unresolved); aside.append(d);
+    }
+    const detail = $('#detail');
+    if (detail) {
+      const groupEvidence = () => {
+        if ($('.cand', detail) && !$('.candidate-disclosure', detail)) {
+          $$(':scope > h3', detail).filter(h => h.textContent.startsWith('Gazetteer candidates')).forEach(h => {
+            const d = disclosure(h.textContent, [], 'candidate-disclosure'); h.before(d); h.remove();
+            while (d.nextElementSibling && d.nextElementSibling.tagName !== 'H3') d.append(d.nextElementSibling);
+          });
+        }
+        $$('table', detail).forEach(wrapTable);
+      };
+      new MutationObserver(groupEvidence).observe(detail, {childList:true});
+    }
+    // Existing MapLibre listeners remain attached to the original controls.
+    advanced.addEventListener('toggle', () => window.dispatchEvent(new Event('resize')));
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  if (config.kind === 'home') home();
+  else if (config.kind === 'map') maps();
+  else readingWorkspace();
+  $$('table').forEach(wrapTable);
+})();
+</script>
+<!-- mueser-review:end -->
+</body></html>

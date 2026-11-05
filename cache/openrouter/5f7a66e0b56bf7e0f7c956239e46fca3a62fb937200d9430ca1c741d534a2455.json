@@ -1,0 +1,136 @@
+{
+ "namespace": "openrouter",
+ "key": "5f7a66e0b56bf7e0f7c956239e46fca3a62fb937200d9430ca1c741d534a2455",
+ "fetched_at": "2026-11-05T15:16:58Z",
+ "request": {
+  "model": "anthropic/claude-haiku-5.5",
+  "temperature": 0.0,
+  "max_tokens": 2000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given the image of exactly one line of text cut from a historical German document (Fraktur print, or Kurrent/Sütterlin handwriting). Transcribe that line diplomatically and nothing else.\n\n- Keep original spelling and punctuation; keep ſ (long s), ß, ä ö ü, superscript-e umlauts as aͤ oͤ uͤ; keep abbreviations and a trailing hyphen if the line ends with one.\n- Do not complete words cut off at the crop edge; write what is visible.\n- Do not modernise, translate or add words. If part of the line is unreadable write [...] there; if a word is doubtful write it as [?word].\n- If the crop is not text (an ornament, a rule, a blank), return an empty string.\n- Set \"uncertain\": true if you are not confident in the whole line.\n- Return JSON only: {\"text\": \"...\", \"uncertain\": false}."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this one line (handwriting, de). JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "line",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "text",
+      "uncertain"
+     ],
+     "properties": {
+      "text": {
+       "type": "string"
+      },
+      "uncertain": {
+       "type": "boolean"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/03-layout-and-hybrid/inputs/work/crops/real-schnitzler-to-beer-hofmann-1896/l003.png"
+ },
+ "raw": {
+  "id": "gen-1793891815-6rDbiU12ocOO8iL1W92g",
+  "object": "chat.completion",
+  "created": 1793891815,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Azure",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"text\": \"ſ eſcharö eſcirtz aufſgewunt, daſs Sie [?für]\", \"uncertain\": true}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "signature": "CAQS4wkKEAgTGAI4AUIIdGhpbmtpbmcSDBE1WXFLDmrXi+lmmhoMKxYt2ntG/10nDgY2IjB0XIfA2oSi/dEPifc7jlBpY3fnxD63ZaTPGfNAYAptrpcsHOLmIvM2tIl5XpX7tOEqgAmignXrfJjRPiFmP27+Wu+ecOq4svjZCmgb6ZGwqTXTGr5vklVdaK7gm2K1ujme7dB8lkV/KSKJMHNfX+miVIqf50+UvSTkVLRJ0JUu3QSjT/eVPGHlof7FrdYobSw9lF2MPBTMgLtF8FxVZ+XJtHtjSA1kiZy4XRPT1dsz4gzuSUQlAR2GsrzhVWaU4McSmOc/3e0rlqBYr9+PJ5lF2mZF7UOlbhycRKjJwTBIDKx5hyQHSy2IT6yA54oLjsBwLphe2+OJpHgF/5qdIMCEXql3Jl8GHy0f3a/e2p4035K0BrNx9BnZbHc9h4pn1H0RKrgDwrwlSmBw9rLG6GkxdOWCGwjrZADmH8bnvZBv+bgzM9ZaKtKJeSzqjRJjaFGNQ7bXAq00xH6rU6i+X2cy54hQFWouafdng3CC2elWXm+PlWRZJ75s/AiNi7tk9bwVX7urhvcOcK4FnvGWhXvYqa9tVX9+g0BsWOsbjenBBhiLEsgquoqeGaB+xqQPJUqqwnm8THfrno2GvG2r2BWtevqZyt2Uk7PG55oYcrhIMYl00MSVDaI1+Ls8rYHjBh0jSnLhewTI/fLaeSQr90w94m1x01eBFESDwQVDKTV9MixWZQ29UpmdhXE383KBoHhVV2WoC5DA55QtkzfDTn140iHLqQBD0KbHtj4mqXh9SKy1TKY+jE6tC9q1tmuu11IUoUunjylnhXbtd9m7BudyjYZsXbnQG9bg3eeegcA9VSWPqBl+m3r8vVyFj6fm7Y139kq2bs1+u1//ixYpocJ9mA+n1rrEVrxQUoZLGDV/LblsdeSQpGYM+vXor+hC1wKLN9lbPw7RdyyvzFi8WSsG6EM0ItQEwofbRyT83phgt1QLiUMZVSpbb2/gmLRNdFfot88U0ASTHM+RWj/iCa/3UeqCtxgpD25Og/TwRSvMWx6xYBxCcyGovUkNWCQfTOliSEiAAhs2GyToApmODezTce4EtLtxfG9Yy4mrPQ1yFtbdvOO35/BVfWdBSfvysMU3u2OSO4fzMJgNmRAbSgtV7ZIds6mhXIGnKU1nCPacRX3NFJzzgPK4xMKyzUANUhFTQZobFmqHtoIOYdIPu5Ulsfsy9MwWd7tqytY3JYdCAdqIsws3Y6OsPvNLi5Ks8G4MrF2r/qmm6Wh6NHw4Vg9RrNhdcSOs5iD9PJSKT4K09LKIn64JoWEkVVWMMzME5f0I4Y8z/G+lWzcl2xTBucPoT4w/fSRK70ayOObN3LKehXkgIgP+aagbBMC6xmH1fbXDmHllJaTzwnpCIFkXEO2OpwX+taveTmaBAwcgXdtIuFZcj2Y7lU7BvpkUl07XpNo4cAhVyZ/Duh5O6DmK/mXIYn7WWR+IOlWNoLOCFyQli5gvPxDEBLBKspA301emLFGLCs0DW8zolrBGVSmWoN8lxUaKw7yR7afRL6R9bVRiQyw1WaLq9sbcxwUPKQsPN+xjxUV3I0XDUndXJlcPSXPwPoqRUD1M9JIVNeJQI2qINp+efiKZvKBOJhF5WBd1YkYkUToYAQ==.eyJlbmRwb2ludF9zbHVnIjoiYW50aHJvcGljL2NsYXVkZS1oYWlrdS01LjUtMjAyNjEwMDd8YXp1cmUvZ2xvYmFsIn0",
+       "format": "anthropic-claude-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 757,
+   "completion_tokens": 351,
+   "total_tokens": 1108,
+   "cost": 0.0002512,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002512,
+    "upstream_inference_prompt_cost": 7.57e-05,
+    "upstream_inference_completions_cost": 0.0001755
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 303,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"text\": \"ſ eſcharö eſcirtz aufſgewunt, daſs Sie [?für]\", \"uncertain\": true}",
+  "parsed": {
+   "text": "ſ eſcharö eſcirtz aufſgewunt, daſs Sie [?für]",
+   "uncertain": true
+  },
+  "usage": {
+   "prompt_tokens": 757,
+   "completion_tokens": 351,
+   "total_tokens": 1108,
+   "cost": 0.0002512,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0002512,
+    "upstream_inference_prompt_cost": 7.57e-05,
+    "upstream_inference_completions_cost": 0.0001755
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 303,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0002512,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Azure",
+  "seconds": 3.3
+ },
+ "meta": {}
+}
