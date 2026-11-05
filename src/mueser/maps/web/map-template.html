@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+  :root { --bg:#fbfaf7; --ink:#1e1c1a; --muted:#6b6660; --line:#e4dfd6; --panel:#ffffff; --accent:#c8102e; --auto:#2a78d6; --reviewed:#1f8a4c; --unres:#9a9a9a; --warn:#b35c00; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#15151a; --ink:#ecebe6; --muted:#a39f98; --line:#2c2c33; --panel:#1d1d23; } }
+  :root[data-theme="dark"] { --bg:#15151a; --ink:#ecebe6; --muted:#a39f98; --line:#2c2c33; --panel:#1d1d23; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--ink); font: 15px/1.45 "Source Serif 4", Georgia, serif; }
+  header { padding:12px 16px; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:baseline; flex-wrap:wrap; }
+  header h1 { font-size:20px; margin:0; font-weight:600; }
+  header .sub { color:var(--muted); font-size:14px; }
+  main { display:grid; grid-template-columns: 1fr 380px; height: calc(100% - 52px); }
+  #map { height:100%; }
+  aside { border-left:1px solid var(--line); overflow:auto; padding:12px 14px; background:var(--panel); font-size:14px; }
+  .controls { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; padding:8px 16px; border-bottom:1px solid var(--line); font-family: ui-sans-serif, system-ui, sans-serif; font-size:13px; }
+  .controls label { display:inline-flex; gap:6px; align-items:center; }
+  input[type=range] { width:220px; }
+  .legend span { display:inline-flex; align-items:center; gap:4px; margin-right:10px; }
+  .dot { width:11px; height:11px; border-radius:50%; display:inline-block; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.25); }
+  .dot.auto { background:var(--auto);} .dot.reviewed { background:var(--reviewed);} .dot.unres { background:transparent; border:2px dashed var(--unres); }
+  h2 { font-size:15px; margin:10px 0 6px; font-weight:600; }
+  h3 { font-size:14px; margin:12px 0 4px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; }
+  .cand { border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin:6px 0; }
+  .cand.chosen { border-color:var(--accent); }
+  .tag { font-family: ui-sans-serif, system-ui, sans-serif; font-size:11px; padding:1px 6px; border-radius:10px; background:var(--line); margin-left:4px; }
+  .muted { color:var(--muted); }
+  .unresolved li { margin:3px 0; }
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  td, th { text-align:left; padding:3px 4px; border-bottom:1px solid var(--line); vertical-align:top; }
+  details > summary { cursor:pointer; }
+  .maplibregl-popup-content { font: 13px/1.4 Georgia, serif; color:#1e1c1a; max-width:300px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; grid-template-rows: 55vh 1fr; } aside { border-left:0; border-top:1px solid var(--line);} }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">__TITLE__</h1>
+  <span class="sub" id="subtitle"></span>
+  <span class="sub" id="counts"></span>
+</header>
+<div class="controls">
+  <label>Years <input type="range" id="yearMin"> <span id="yearMinLabel" class="mono"></span> – <input type="range" id="yearMax"> <span id="yearMaxLabel" class="mono"></span></label>
+  <label><input type="checkbox" id="undated" checked> include undated</label>
+  <label>Type <select id="typeFilter"><option value="">all</option></select></label>
+  <label>Status <select id="statusFilter"><option value="">all</option><option value="auto">auto</option><option value="reviewed">reviewed</option></select></label>
+  <label><input type="checkbox" id="allmaps"> historical map overlay</label>
+  <label>Overlay opacity <input type="range" id="overlayOpacity" min="0" max="100" value="70" style="width:90px"></label>
+  <span class="legend"><span><i class="dot auto"></i>auto-resolved</span><span><i class="dot reviewed"></i>reviewed</span><span><i class="dot unres"></i>unresolved (listed, not drawn)</span></span>
+  <label>Theme <select id="theme"><option value="auto">auto</option><option value="light">light</option><option value="dark">dark</option></select></label>
+</div>
+<main>
+  <div id="map"></div>
+  <aside>
+    <div id="detail"><h2>Click a point</h2><p class="muted">Each point is one or more mentions resolved to the same gazetteer entry. The panel shows every mention with its page and line, and every candidate the gazetteers returned with its score, so the choice can be checked.</p></div>
+    <h2>Unresolved names</h2>
+    <p class="muted">Names no gazetteer could place with enough confidence. They are in <span class="mono">review.csv</span> for a person to decide.</p>
+    <ul class="unresolved" id="unresolvedList"></ul>
+  </aside>
+</main>
+<script>
+const GEOJSON = /*__GEOJSON__*/null;
+const UNRESOLVED = /*__UNRESOLVED__*/null;
+const DECISIONS = /*__DECISIONS__*/null;
+const CONFIG = /*__CONFIG__*/null;
+
+document.getElementById('subtitle').textContent = CONFIG.subtitle || '';
+const themeSel = document.getElementById('theme');
+themeSel.onchange = () => { if (themeSel.value === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', themeSel.value); };
+
+const feats = GEOJSON.features;
+const years = feats.flatMap(f => [f.properties.year_start, f.properties.year_end]).filter(y => y != null);
+const yMin = years.length ? Math.min(...years) : 1700, yMax = years.length ? Math.max(...years) : 1900;
+const yearMin = document.getElementById('yearMin'), yearMax = document.getElementById('yearMax');
+[yearMin, yearMax].forEach(r => { r.min = yMin; r.max = yMax; });
+yearMin.value = yMin; yearMax.value = yMax;
+const types = [...new Set(feats.map(f => f.properties.type))].sort();
+const typeSel = document.getElementById('typeFilter');
+types.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; typeSel.appendChild(o); });
+
+const map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreemap.org/styles/positron', center: [13.4, 51.5], zoom: 4.6, attributionControl: true });
+map.addControl(new maplibregl.NavigationControl(), 'top-left');
+
+function filtered() {
+  const lo = +yearMin.value, hi = +yearMax.value, undated = document.getElementById('undated').checked;
+  const t = typeSel.value, s = document.getElementById('statusFilter').value;
+  return feats.filter(f => {
+    const p = f.properties;
+    if (t && p.type !== t) return false;
+    if (s && p.resolution_status !== s) return false;
+    if (p.year_start == null && p.year_end == null) return undated;
+    const a = p.year_start ?? p.year_end, b = p.year_end ?? p.year_start;
+    return b >= lo && a <= hi;
+  });
+}
+
+function grouped(fs) {
+  // one circle per place_uri (or per coordinate pair), sized by number of mentions
+  const g = new Map();
+  for (const f of fs) {
+    const k = f.properties.place_uri || f.geometry.coordinates.join(',');
+    if (!g.has(k)) g.set(k, { type: 'Feature', geometry: f.geometry, properties: { key: k, label: f.properties.normalized || f.properties.surface_form, status: f.properties.resolution_status, n: 0, mentions: [] } });
+    const e = g.get(k); e.properties.n++; e.properties.mentions.push(f.properties);
+    if (f.properties.resolution_status === 'reviewed') e.properties.status = 'reviewed';
+  }
+  return { type: 'FeatureCollection', features: [...g.values()] };
+}
+
+function refresh() {
+  const fs = filtered();
+  const fc = grouped(fs);
+  map.getSource('places').setData(fc);
+  document.getElementById('yearMinLabel').textContent = yearMin.value;
+  document.getElementById('yearMaxLabel').textContent = yearMax.value;
+  document.getElementById('counts').textContent = `${fs.length} of ${feats.length} mentions · ${fc.features.length} places · ${UNRESOLVED.length} unresolved`;
+}
+
+map.on('load', () => {
+  map.addSource('places', { type: 'geojson', data: grouped(feats) });
+  map.addLayer({ id: 'places-circles', type: 'circle', source: 'places', paint: {
+    'circle-radius': ['interpolate', ['linear'], ['sqrt', ['get', 'n']], 1, 6, 5, 16],
+    'circle-color': ['match', ['get', 'status'], 'reviewed', '#1f8a4c', '#2a78d6'],
+    'circle-opacity': 0.8, 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1.5 } });
+  map.addLayer({ id: 'places-labels', type: 'symbol', source: 'places', layout: { 'text-field': ['get', 'label'], 'text-size': 11, 'text-offset': [0, 1.2], 'text-anchor': 'top', 'text-font': ['Noto Sans Regular'] }, paint: { 'text-color': '#333', 'text-halo-color': '#fff', 'text-halo-width': 1 } });
+  map.on('click', 'places-circles', e => showDetail(e.features[0]));
+  map.on('click', 'places-labels', e => showDetail(e.features[0]));
+  map.on('mouseenter', 'places-circles', () => map.getCanvas().style.cursor = 'pointer');
+  map.on('mouseleave', 'places-circles', () => map.getCanvas().style.cursor = '');
+  refresh();
+  if (feats.length) {
+    const b = new maplibregl.LngLatBounds();
+    feats.forEach(f => b.extend(f.geometry.coordinates));
+    map.fitBounds(b, { padding: 60, maxZoom: 7 });
+  }
+  setupAllmaps();
+});
+['input', 'change'].forEach(ev => { yearMin.addEventListener(ev, () => { if (+yearMin.value > +yearMax.value) yearMax.value = yearMin.value; refresh(); }); yearMax.addEventListener(ev, () => { if (+yearMax.value < +yearMin.value) yearMin.value = yearMax.value; refresh(); }); });
+document.getElementById('undated').onchange = refresh; typeSel.onchange = refresh; document.getElementById('statusFilter').onchange = refresh;
+
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+function showDetail(f) {
+  const p = f.properties; const mentions = typeof p.mentions === 'string' ? JSON.parse(p.mentions) : p.mentions;
+  const uri = p.key.startsWith('http') ? p.key : null;
+  let html = `<h2>${esc(p.label)} <span class="tag">${esc(p.status)}</span></h2>`;
+  if (uri) html += `<p class="mono"><a href="${esc(uri)}" target="_blank" rel="noopener">${esc(uri)}</a></p>`;
+  html += `<h3>${mentions.length} mention${mentions.length === 1 ? '' : 's'}</h3><table><tr><th>as written</th><th>where</th><th>date</th></tr>`;
+  for (const m of mentions) html += `<tr><td>${esc(m.surface_form)}</td><td class="mono">${esc(m.source_doc_id)} · ${esc(m.source_page_id)}${m.source_line_index != null ? ' · l.' + m.source_line_index : ''}</td><td class="mono">${esc(m.date_start || '')}${m.date_end ? '–' + esc(m.date_end) : ''}</td></tr>`;
+  html += `</table>`;
+  const names = [...new Set(mentions.map(m => m.normalized || m.surface_form))];
+  for (const name of names) {
+    const d = DECISIONS[name]; if (!d) continue;
+    html += `<h3>Gazetteer candidates for “${esc(name)}”</h3><p class="muted">${esc(d.reason)}</p>`;
+    for (const c of d.candidates) {
+      const chosen = d.chosen && c.uri === d.chosen.uri;
+      html += `<div class="cand${chosen ? ' chosen' : ''}"><b>${esc(c.label)}</b> <span class="tag">${esc(c.source)}</span> <span class="tag">score ${(+c.score).toFixed(2)}</span>${chosen ? ' <span class="tag" style="background:var(--accent);color:#fff">chosen</span>' : ''}<br>` +
+        `<span class="mono muted">${c.lat != null ? (+c.lat).toFixed(3) + ', ' + (+c.lon).toFixed(3) : 'no coordinates'}${c.feature_type ? ' · ' + esc(c.feature_type) : ''}${c.admin ? ' · ' + esc(c.admin) : ''}${c.valid_from || c.valid_to ? ' · ' + esc(c.valid_from || '?') + '–' + esc(c.valid_to || '?') : ''}</span>` +
+        (c.alt_names && c.alt_names.length ? `<br><span class="muted">also: ${esc(c.alt_names.slice(0, 6).join(', '))}</span>` : '') +
+        (c.uri ? `<br><a class="mono" href="${esc(c.uri)}" target="_blank" rel="noopener">${esc(c.uri)}</a>` : '') + `</div>`;
+    }
+  }
+  document.getElementById('detail').innerHTML = html;
+}
+
+const ul = document.getElementById('unresolvedList');
+const byName = new Map();
+for (const u of UNRESOLVED) { const k = u.normalized || u.surface_form; if (!byName.has(k)) byName.set(k, []); byName.get(k).push(u); }
+for (const [name, us] of [...byName.entries()].sort()) {
+  const li = document.createElement('li');
+  const d = DECISIONS[name];
+  li.innerHTML = `<b>${esc(name)}</b> <span class="muted">(${us.length})</span> <span class="muted">${d ? esc(d.reason) : ''}</span>` +
+    (d && d.candidates.length ? ` <details><summary>${d.candidates.length} candidate${d.candidates.length === 1 ? '' : 's'}</summary>` + d.candidates.map(c => `<div class="cand"><b>${esc(c.label)}</b> <span class="tag">${esc(c.source)}</span> <span class="tag">${(+c.score).toFixed(2)}</span><br><span class="mono muted">${c.lat != null ? (+c.lat).toFixed(3) + ', ' + (+c.lon).toFixed(3) : 'no coordinates'}${c.admin ? ' · ' + esc(c.admin) : ''}</span></div>`).join('') + `</details>` : '');
+  ul.appendChild(li);
+}
+
+// Allmaps: overlay a georeferenced IIIF map scan from a Georeference Annotation URL.
+let warped = null;
+async function setupAllmaps() {
+  const cb = document.getElementById('allmaps'), op = document.getElementById('overlayOpacity');
+  if (!CONFIG.allmapsAnnotation) { cb.disabled = true; cb.parentElement.title = 'Set ALLMAPS_ANNOTATION_URL in .env and rebuild to enable'; cb.parentElement.classList.add('muted'); return; }
+  cb.onchange = async () => {
+    if (cb.checked && !warped) {
+      try {
+        const mod = await import('https://esm.sh/@allmaps/maplibre@1');
+        warped = new mod.WarpedMapLayer();
+        map.addLayer(warped, 'places-circles');
+        await warped.addGeoreferenceAnnotationByUrl(CONFIG.allmapsAnnotation);
+        warped.setOpacity(op.value / 100);
+      } catch (e) { alert('Could not load the Allmaps overlay: ' + e.message); cb.checked = false; }
+    } else if (warped) { map.setLayoutProperty(warped.id, 'visibility', cb.checked ? 'visible' : 'none'); }
+  };
+  op.oninput = () => { if (warped) warped.setOpacity(op.value / 100); };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ll-26-27/mueser-prototypes/shared/schema/record.schema.json",
+  "title": "Record",
+  "description": "One mention of a place, person, event or organisation, as it appears in a source, with its provenance and (for places) its resolution to a gazetteer entry. Output of the text half; input of the maps half.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "surface_form", "source", "resolution_status"],
+  "properties": {
+    "id": { "type": "string", "description": "Stable hash of (doc_id, page_id, line_index, surface_form, type)." },
+    "type": { "type": "string", "enum": ["place", "person", "event", "org", "other"] },
+    "surface_form": { "type": "string", "description": "Verbatim text as written in the source, including historical spelling." },
+    "normalized": { "type": ["string", "null"], "description": "Modern or standard form, if known. Never replaces surface_form." },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["doc_id", "page_id"],
+      "properties": {
+        "doc_id": { "type": "string" },
+        "page_id": { "type": "string" },
+        "line_index": { "type": ["integer", "null"], "description": "0-based line in the transcription, or null if unknown." },
+        "bbox": {
+          "type": ["array", "null"], "items": { "type": "number" }, "minItems": 4, "maxItems": 4,
+          "description": "[x, y, w, h] in image pixels, or null for backends that do not segment."
+        },
+        "iiif_canvas": { "type": ["string", "null"], "format": "uri" },
+        "transcription_backend": { "type": ["string", "null"], "description": "backend/model that produced the line, e.g. tesseract/frak2021 or openrouter/qwen/qwen3-vl-30b-a3b-instruct" },
+        "extraction_method": { "type": ["string", "null"], "description": "how the mention was found: manual, ner/<model>, llm/<model>, csv" }
+      }
+    },
+    "date_start": { "type": ["string", "null"], "description": "ISO-8601 or EDTF, e.g. 1743, 1743-05, 1743~, 174X. Stored as text." },
+    "date_end": { "type": ["string", "null"] },
+    "year_start": { "type": ["integer", "null"], "description": "Derived sortable year from date_start." },
+    "year_end": { "type": ["integer", "null"], "description": "Derived sortable year from date_end (or date_start)." },
+    "place_uri": { "type": ["string", "null"], "description": "GOV / Wikidata / WHG / GeoNames URI of the accepted candidate." },
+    "lat": { "type": ["number", "null"] },
+    "lon": { "type": ["number", "null"] },
+    "resolution_status": { "type": "string", "enum": ["auto", "reviewed", "unresolved"] },
+    "resolution_source": { "type": ["string", "null"], "description": "which resolver supplied the accepted candidate: gov, wikidata, whg, geonames, manual" },
+    "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "notes": { "type": ["string", "null"] }
+  }
+}

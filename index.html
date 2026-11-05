@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>German sources, transcribed and mapped</title>
+<style>
+  :root { --bg:#fbfaf7; --ink:#1e1c1a; --muted:#6b6660; --line:#e4dfd6; --panel:#fff; --accent:#c8102e; --code:#2a78d6; --model:#b35c00; --lookup:#1f8a4c; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#15151a; --ink:#ecebe6; --muted:#a39f98; --line:#2c2c33; --panel:#1d1d23; } }
+  :root[data-theme="dark"] { --bg:#15151a; --ink:#ecebe6; --muted:#a39f98; --line:#2c2c33; --panel:#1d1d23; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 Georgia, "Source Serif 4", serif; }
+  main { max-width:1100px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:28px; margin:0 0 4px; } h2 { font-size:20px; margin:32px 0 8px; } h3 { font-size:16px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 20px; }
+  .legend { font-family: ui-sans-serif, system-ui, sans-serif; font-size:13px; color:var(--muted); margin:8px 0 16px; }
+  .legend span { display:inline-block; margin-right:14px; } .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+  .flow { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:10px; align-items:stretch; }
+  .step { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:8px; padding:10px 12px; font-size:14px; }
+  .step.code { border-left-color:var(--code); } .step.model { border-left-color:var(--model); } .step.lookup { border-left-color:var(--lookup); } .step.out { border-left-color:var(--accent); }
+  .step .k { font-family: ui-sans-serif, system-ui, sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .step a { color:inherit; }
+  .num { font-variant-numeric: tabular-nums; }
+  .cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:14px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+  .card p { margin:6px 0; font-size:15px; }
+  .btn { display:inline-block; font-family: ui-sans-serif, system-ui, sans-serif; font-size:13px; border:1px solid var(--accent); color:var(--accent); border-radius:14px; padding:3px 10px; text-decoration:none; margin:6px 6px 0 0; }
+  .muted { color:var(--muted); }
+  table { border-collapse:collapse; font-size:14px; width:100%; } td, th { text-align:left; padding:4px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .arrow { text-align:center; color:var(--muted); font-size:22px; padding:0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>German sources, transcribed and mapped</h1>
+  <p class="sub">Research prototypes for Ben · Bok Center Learning Lab · built 4 November 2026. This page is the map of the repository: what each step is, what kind of thing it is, and where its output is.</p>
+
+  <div class="legend"><span><i style="background:var(--code)"></i>deterministic code</span><span><i style="background:var(--lookup)"></i>cached lookup of a public service</span><span><i style="background:var(--model)"></i>model judgment, prompt and model recorded</span><span><i style="background:var(--accent)"></i>what you open</span></div>
+
+  <h2>Transcription · Fraktur print</h2>
+  <div class="flow">
+    <div class="step code"><div class="k">0 · render</div><h3>Synthetic pages</h3>An invented 1786 journal set in two Fraktur faces with recorded blur, speckle, rotation. Exact ground truth.</div>
+    <div class="step lookup"><div class="k">1 · fetch</div><h3>Real pages + Wikisource text</h3>Schiller 1796, Grimm 1812, Gartenlaube 1853, with revision ids.</div>
+    <div class="step code"><div class="k">2 · bake-off</div><h3>Five backends read eight pages</h3>Tesseract ×4, Kraken. Text, PAGE-XML, JSON per reading; <code>run.json</code> per run.</div>
+    <div class="step code"><div class="k">3 · score</div><h3>CER raw and normalised</h3>Edits per ground-truth character, before and after ſ→s and friends.</div>
+    <div class="step out"><div class="k">open</div><h3><a href="01-use-cases/transcription/01-fraktur-print-bakeoff/outputs/index.html">Explorer</a></h3>Image beside every reading with the diff, cost, time, prompt. <a class="muted" href="01-use-cases/transcription/01-fraktur-print-bakeoff/README.md">Guide</a></div>
+  </div>
+  <p class="num muted">Kraken <code>german_print</code> on the real pages: CER 0.015 · 0.029 · 0.034. Tesseract <code>frak2021</code>: 0.026 · 0.093 · 0.074. Vision models join when a key is in <code>.env</code>.</p>
+
+  <h2>Transcription · Kurrent handwriting</h2>
+  <div class="flow">
+    <div class="step code"><div class="k">0 · render</div><h3>Synthetic letters</h3>Two letters and an accounts page in Wiegel Kurrent.</div>
+    <div class="step lookup"><div class="k">1 · fetch</div><h3>Real pages + Commons transcriptions</h3>Kaskel 1864, Schnitzler 1896, a 1901 album page.</div>
+    <div class="step code"><div class="k">2 · bake-off</div><h3>Kraken handwriting model; Tesseract as control</h3><code>--mode hand</code>.</div>
+    <div class="step model"><div class="k">waiting</div><h3>Vision models, Transkribus</h3>Wired, skipped with the reason until keys exist.</div>
+    <div class="step out"><div class="k">open</div><h3><a href="01-use-cases/transcription/02-kurrent-handwriting/outputs/index.html">Explorer</a></h3><a class="muted" href="01-use-cases/transcription/02-kurrent-handwriting/README.md">Guide</a></div>
+  </div>
+  <p class="num muted">Kraken on the 1864 letter: CER 0.21; on the 1901 album photograph: 0.82. Tesseract: 1.0, which is what the wrong tool looks like.</p>
+
+  <h2>Maps · Places to map</h2>
+  <div class="flow">
+    <div class="step code"><div class="k">1 · load</div><h3>Ledger → records</h3>24 rows, names as a 1786 clerk wrote them; each row becomes a record with the row as its source.</div>
+    <div class="step lookup"><div class="k">2 · resolve</div><h3>GOV · Wikidata · WHG</h3>Candidates with score, type, time span, population. Every reply cached.</div>
+    <div class="step code"><div class="k">2 · decide</div><h3>A rule with a written reason</h3>Agreement within 5 km; a clear margin; a 10× population tie-break; else review.</div>
+    <div class="step code"><div class="k">3–5 · store, export, build</div><h3>DuckDB → GeoJSON, SQLite → one HTML file</h3>Datasette serves the SQLite with a cluster map.</div>
+    <div class="step out"><div class="k">open</div><h3><a href="01-use-cases/maps/01-places-to-map/outputs/index.html">Map</a></h3>Click a point for every candidate and the reason. <a class="muted" href="01-use-cases/maps/01-places-to-map/README.md">Guide</a></div>
+  </div>
+  <p class="num muted">21 of 24 names auto-resolved (9 by agreement, 12 by population with a flag); Halle, Neustadt, Stettin in <code>review.csv</code>.</p>
+
+  <h2>Maps · Historical map overlay</h2>
+  <div class="flow">
+    <div class="step lookup"><div class="k">1 · discover</div><h3>Allmaps index at each point</h3>4,200 georeferenced sheets; scale from control-point spread; containment check.</div>
+    <div class="step code"><div class="k">verdict</div><h3>None sound for this route</h3>So the toggle ships off. The table shows what was checked.</div>
+    <div class="step out"><div class="k">open</div><h3><a href="01-use-cases/maps/02-historical-map-overlay/outputs/georeferenced-maps.csv">Table</a></h3><a class="muted" href="01-use-cases/maps/02-historical-map-overlay/README.md">Guide: how to georeference one and turn the overlay on</a></div>
+  </div>
+
+  <h2>Maps · From page to map (the bridge)</h2>
+  <div class="flow">
+    <div class="step code"><div class="k">input</div><h3>Kraken's OCR of the five journal pages</h3>Errors included: "Verlin", "Rönigsberg", "Lolberg".</div>
+    <div class="step model"><div class="k">2 · extract</div><h3>Mention list</h3>Made in session by Claude (Fable 5.1), method recorded; the API path does the same with a JSON schema.</div>
+    <div class="step code"><div class="k">3 · verify</div><h3>Verbatim check per line</h3>88 of 89 mentions kept; the one that spans two lines rejected and reported.</div>
+    <div class="step lookup"><div class="k">resolve</div><h3>Same gazetteers, same rule</h3>36 of 56 names; the rest, rivers, regions, buildings, quarters, in review.</div>
+    <div class="step out"><div class="k">open</div><h3><a href="01-use-cases/maps/03-from-page-to-map/outputs/index.html">Map</a></h3>Every point names its page and line. <a class="muted" href="01-use-cases/maps/03-from-page-to-map/README.md">Guide</a></div>
+  </div>
+
+  <h2>One journey through all five</h2>
+  <p>The journal pages were rendered from an invented text whose places are the ledger's rows; Kraken's reading of those pages is the bridge's input; the overlay search runs on the points the ledger resolved. Follow "Breßlau" from a Fraktur line in the first explorer to a GOV record in the last map.</p>
+
+  <h2>Where the evidence is</h2>
+  <table>
+    <tr><th>question</th><th>file</th></tr>
+    <tr><td>Which model read this page, with what prompt, when, at what cost?</td><td><code>outputs/runs/&lt;run_id&gt;/&lt;backend&gt;/&lt;model&gt;/&lt;page&gt;.json</code> and <code>run.json</code></td></tr>
+    <tr><td>What did the gazetteer actually answer?</td><td><code>cache/gazetteer_&lt;source&gt;/&lt;hash&gt;.json</code> (request and raw reply)</td></tr>
+    <tr><td>Why is this dot here?</td><td><code>operations/work/decisions.json</code>, and the panel on the map</td></tr>
+    <tr><td>What is still a person's call?</td><td><code>operations/work/review.csv</code>, column <code>your_choice</code></td></tr>
+    <tr><td>Where did this ground truth come from?</td><td><code>inputs/gt/provenance.json</code></td></tr>
+    <tr><td>What is invented?</td><td>every <code>synthetic-text/README.md</code>, and the word "synthetic" in file names</td></tr>
+  </table>
+
+  <p class="muted" style="margin-top:28px">Keys and accounts: <a href="resources/accounts.md">resources/accounts.md</a>. Rules for a coding assistant: <a href="CLAUDE.md">CLAUDE.md</a>. The scoping note: <a href="HANDOFF.md">HANDOFF.md</a>.</p>
+</main>
+</body>
+</html>
