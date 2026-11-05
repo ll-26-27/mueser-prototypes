@@ -16,6 +16,7 @@ from typing import Optional
 import typer
 
 from mueser.shared import env
+from mueser.shared.review import enhance_html
 
 app = typer.Typer(help="Build the single-file MapLibre viewer.")
 TEMPLATE = Path(__file__).parent / "web" / "map-template.html"
@@ -47,7 +48,7 @@ def build(geojson: Path = typer.Option(..., exists=True), out: Path = typer.Opti
                 .replace("/*__CONFIG__*/null", json.dumps(config, ensure_ascii=False))
                 .replace("__TITLE__", title))
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(html, encoding="utf-8")
+    out.write_text(enhance_html(html, out, "map"), encoding="utf-8")
     typer.echo(f"{len(fc['features'])} points, {len(unres)} unresolved -> {out}")
 
 

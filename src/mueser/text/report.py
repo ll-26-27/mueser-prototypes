@@ -18,6 +18,7 @@ from typing import Optional
 import typer
 
 from mueser import REPO_ROOT
+from mueser.shared.review import enhance_html
 from .backends.openrouter import PROMPT_PATH, load_prompt
 from .evaluate import char_diff, normalize
 
@@ -156,7 +157,7 @@ document.querySelectorAll('.tabs').forEach(t => t.addEventListener('click', e =>
 }));
 </script></body></html>""")
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text("".join(parts), encoding="utf-8")
+    out.write_text(enhance_html("".join(parts), out, "report"), encoding="utf-8")
     typer.echo(f"{len(page_ids)} pages × {len(backends)} backends -> {out}")
 
 
