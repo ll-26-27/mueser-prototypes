@@ -1,19 +1,18 @@
 # Fraktur print bake-off: summary
 
-**Purpose.** Measure how well each available OCR backend reads German
-Fraktur print, on pages whose correct text is known, before any of Ben's
-own pages have been corrected.
+**Purpose.** Measure how well each available reader handles German Fraktur
+print, on pages whose correct text is known, before any of Ben's own pages
+have been corrected.
 
-**Workflow.** Render five synthetic pages from an invented 1786 journal
-(exact ground truth) and fetch three real pages with Wikisource
-transcriptions; run five local backends on all eight; score each reading raw
-and normalised; build an explorer that shows the diff.
+**Workflow.** Five synthetic pages from an invented 1786 journal (exact
+ground truth) and three real pages with Wikisource transcriptions; four
+Tesseract models, Kraken and four vision-language models; scores raw and
+normalised; an explorer with the diff; a consensus with a check-in list.
 
-**Findings.** Kraken's `german_print` model is the best on the real pages
-(normalised CER 0.015–0.034) and Tesseract `frak2021` second (0.026–0.093);
-on synthetic pages the ranking flips, which is why synthetic scores are an
-upper bound and not a finding about sources. No vision-language model has
-been scored yet: that is the next run, and it costs about a cent a page.
+**Findings.** Gemini 3.8 Flash and 3.1 Pro read the real Fraktur pages at
+normalised CER 0.010–0.018, Kraken at 0.029–0.034, the best Tesseract at
+0.074–0.093; on the Antiqua page Kraken is best. Haiku modernises ſ on
+every line and the raw column shows it. The whole vision run cost $0.23.
 
-**Limits.** Three real pages. Wikisource ground truth normalises ſ and drops
-prose line breaks. No handwriting here (see `02-kurrent-handwriting/`).
+**Limits.** Three real pages; Wikisource ground truth normalises ſ and
+drops prose line breaks; no handwriting here.

@@ -1,0 +1,192 @@
+{
+ "namespace": "openrouter",
+ "key": "fce12cea8ea3632bfc32dea0fc198d6196ef5baa25d313d806e00fc7c11f863a",
+ "fetched_at": "2026-11-05T14:19:48Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/synth-03.png"
+ },
+ "raw": {
+  "id": "gen-1793888375-OjdRRUoDPTW27JldCE7S",
+  "object": "chat.completion",
+  "created": 1793888375,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\": [{\"text\": \"Aus dem Haushaltungsbuche, 1786\"}, {\"text\": \"Den 12 Junius. Für die Post von Breslau bis Liegnitz 2 Thaler 8 Groschen.\"}, {\"text\": \"Den 17 Junius. Dem Wirth in Bunzlau für Nachtlager und Essen 1 Thaler 12 Groschen. Für sechs\"}, {\"text\": \"Krüge 3 Thaler.\"}, {\"text\": \"Den 19 Junius. In Dresden, Gasthof zum goldenen Engel, drey Nächte 6 Thaler.\"}, {\"text\": \"Den 2 Julius. Berlin. Dem Kaufmann Itzig für Wohnung 7 Thaler.\"}, {\"text\": \"Den 22 Julius. Danzig. Für die Überfahrt nach Elbing 1 Thaler 4 Groschen.\"}, {\"text\": \"Summa bis Danzig: 47 Thaler 18 Groschen.\"}], \"script\": \"kurrent\", \"notes\": \"Modern calligraphic execution of Kurrentschrift.\"}",
+     "refusal": null,
+     "reasoning": "**Interpreting German Text**\n\nI'm focused on accurately transcribing the handwritten German document. It appears to be an entry from a household ledger dated 1786, detailing a post expense from Breslau to Liegnitz.\n\n**Analyzing Document Details**\n\nI'm scrutinizing the script and spelling of the German ledger. Initial analysis of lines 3-8 reveals specific entries for lodging and travel expenses in Bunzlau, Dresden, Berlin, and Danzig. The peculiar \"ß\" or \"ſ-h\" combination in \"Haußhaltungsbuche\" requires further clarification for accurate transcription.\n\n**Deciphering German Script**\n\nI'm currently examining the finer points of the Kurrent script, particularly the usage of the long 's' and its descender. I've also clarified the date format and confirmed the presence of a u-bogen in \"Junius,\" \"Breslau,\" and \"Liegnitz.\" The sum total entry at the end of the page has a macron over the 'u'.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Interpreting German Text**\n\nI'm focused on accurately transcribing the handwritten German document. It appears to be an entry from a household ledger dated 1786, detailing a post expense from Breslau to Liegnitz.\n\n**Analyzing Document Details**\n\nI'm scrutinizing the script and spelling of the German ledger. Initial analysis of lines 3-8 reveals specific entries for lodging and travel expenses in Bunzlau, Dresden, Berlin, and Danzig. The peculiar \"ß\" or \"ſ-h\" combination in \"Haußhaltungsbuche\" requires further clarification for accurate transcription.\n\n**Deciphering German Script**\n\nI'm currently examining the finer points of the Kurrent script, particularly the usage of the long 's' and its descender. I've also clarified the date format and confirmed the presence of a u-bogen in \"Junius,\" \"Breslau,\" and \"Liegnitz.\" The sum total entry at the end of the page has a macron over the 'u'.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1492,
+   "total_tokens": 3203,
+   "cost": 0.00687825,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00687825,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.005595
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1273,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\": [{\"text\": \"Aus dem Haushaltungsbuche, 1786\"}, {\"text\": \"Den 12 Junius. Für die Post von Breslau bis Liegnitz 2 Thaler 8 Groschen.\"}, {\"text\": \"Den 17 Junius. Dem Wirth in Bunzlau für Nachtlager und Essen 1 Thaler 12 Groschen. Für sechs\"}, {\"text\": \"Krüge 3 Thaler.\"}, {\"text\": \"Den 19 Junius. In Dresden, Gasthof zum goldenen Engel, drey Nächte 6 Thaler.\"}, {\"text\": \"Den 2 Julius. Berlin. Dem Kaufmann Itzig für Wohnung 7 Thaler.\"}, {\"text\": \"Den 22 Julius. Danzig. Für die Überfahrt nach Elbing 1 Thaler 4 Groschen.\"}, {\"text\": \"Summa bis Danzig: 47 Thaler 18 Groschen.\"}], \"script\": \"kurrent\", \"notes\": \"Modern calligraphic execution of Kurrentschrift.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Aus dem Haushaltungsbuche, 1786"
+    },
+    {
+     "text": "Den 12 Junius. Für die Post von Breslau bis Liegnitz 2 Thaler 8 Groschen."
+    },
+    {
+     "text": "Den 17 Junius. Dem Wirth in Bunzlau für Nachtlager und Essen 1 Thaler 12 Groschen. Für sechs"
+    },
+    {
+     "text": "Krüge 3 Thaler."
+    },
+    {
+     "text": "Den 19 Junius. In Dresden, Gasthof zum goldenen Engel, drey Nächte 6 Thaler."
+    },
+    {
+     "text": "Den 2 Julius. Berlin. Dem Kaufmann Itzig für Wohnung 7 Thaler."
+    },
+    {
+     "text": "Den 22 Julius. Danzig. Für die Überfahrt nach Elbing 1 Thaler 4 Groschen."
+    },
+    {
+     "text": "Summa bis Danzig: 47 Thaler 18 Groschen."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Modern calligraphic execution of Kurrentschrift."
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1492,
+   "total_tokens": 3203,
+   "cost": 0.00687825,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00687825,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.005595
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1273,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00687825,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 67.78
+ },
+ "meta": {}
+}

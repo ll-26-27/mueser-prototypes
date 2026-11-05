@@ -50,7 +50,36 @@ lettering and ornaments too) where the model counts 34 lines of text.
 
 ## The hybrid reading
 
-HYBRID_RESULTS
+Run `print-20261105`, the three real print pages. Normalised CER:
+
+| page | Kraken (segment + read) | Gemini 3.8 Flash, whole page | **hybrid**: Kraken lines + Gemini 3.8 Flash | **hybrid**: Kraken lines + Claude Haiku 5.5 |
+|---|---|---|---|---|
+| Schiller 1796 (Antiqua) | 0.015 | 0.021 | **0.010** | 0.011 |
+| Grimm 1812 | 0.029 | **0.010** | 0.024 | 0.117 |
+| Gartenlaube 1853 (masthead, two columns) | 0.034 | **0.014** | 0.038 | 0.065 |
+| mean | 0.026 | 0.015 | 0.024 | 0.064 |
+| $ per page | 0 | 0.014 | 0.110 | 0.005 |
+| seconds per page | 14 | 31 | 297 | 68 |
+
+What the hybrid buys and costs. It is the only reading that is both
+model-quality and **positioned**: every line has Kraken's polygon, so the
+PAGE-XML is complete and a line can be shown on the image. On the clean
+Antiqua page it is the best reading of all. On the two Fraktur pages it
+is a little worse than the whole-page reading, because Kraken's forty
+polygons on the Gartenlaube page include the masthead lettering and
+ornaments, which the model dutifully reads, and because a line read alone
+has no context to repair a doubtful letter. Haiku per line is cheap and
+weak; Gemini per line is strong and, at forty calls a page with reasoning
+tokens on each, eight times the price of reading the page whole.
+
+The handwriting half (run `hand-20261105`: the three real Kurrent pages,
+with Gemini 3.1 Pro added as a whole-page reader) was still running when
+this README was written and is reported in `outputs/index-hand.html` and
+`outputs/bakeoff_hand-20261105.json` once complete.
+
+`outputs/index.html` shows the four readings of each print page with the
+diff; `outputs/consensus-print/` is the consensus of the four, which puts
+8 to 32 spans per page on the check-in list.
 
 ## The pipeline
 

@@ -1,0 +1,514 @@
+{
+ "namespace": "openrouter",
+ "key": "b13455b4e3a33f32a0ef23581436f470ae5235df65c6f81ac79f1b130939ab19",
+ "fetched_at": "2026-11-05T14:08:27Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are analysing the layout of a page from a historical German document for a scholar. Do not transcribe the page. Map it.\n\nReturn JSON matching the schema. Coordinates are fractions of the image width and height (0.0 to 1.0): bbox = [x, y, w, h] with x,y the top-left corner. Be as precise as you can; a box should enclose the ink of what it describes.\n\n1. `regions`: every block of content, with `kind` one of: main_text (body text), heading (title, section head, running header), column (one column of a multi-column page; give each column its own region), page_number, catchword (the word at the foot anticipating the next page), signature_mark (printer's sheet mark), marginalia (notes in a margin, in the same or another hand), interlinear (writing between the lines), correction (strike-through, insertion, overwriting), stamp_or_seal, date_line, salutation, signature (a person's signature), address, table, figure, ornament, other.\n2. For each region, `lines`: every line of text inside it, top to bottom, each with its own bbox. Count carefully: a scholar will check your line count against the page. Do not merge lines. Do not invent lines where there is only ornament.\n3. `hand`: for each region, \"print\", \"handwriting\" or \"mixed\"; and `script`: fraktur, antiqua, kurrent, suetterlin, latin_cursive, mixed, unknown.\n4. `later_hand`: true if the region appears to be written by a different person or at a later time than the main text (different ink, different letterforms, a librarian's number, a reader's note). Say why in `note`.\n5. `reading_order`: the region ids in the order a reader would follow (columns left to right, then down; marginalia after the line they belong to is fine).\n6. `page_notes`: anything a human should know: damage, show-through, skew, cropped edges, a second page visible, uncertainty about columns.\n\nPrecision over completeness in the boxes; completeness over precision in the counts. If you cannot tell two kinds apart, choose `other` and explain in `note`."
+   },
+   {
+    "role": "user",
+    "content": "Map the layout of this page. Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "layout",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "regions",
+      "reading_order",
+      "page_notes"
+     ],
+     "properties": {
+      "regions": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "id",
+         "kind",
+         "bbox",
+         "hand",
+         "script",
+         "later_hand",
+         "note",
+         "lines"
+        ],
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "kind": {
+          "type": "string",
+          "enum": [
+           "main_text",
+           "heading",
+           "column",
+           "page_number",
+           "catchword",
+           "signature_mark",
+           "marginalia",
+           "interlinear",
+           "correction",
+           "stamp_or_seal",
+           "date_line",
+           "salutation",
+           "signature",
+           "address",
+           "table",
+           "figure",
+           "ornament",
+           "other"
+          ]
+         },
+         "bbox": {
+          "type": "array",
+          "items": {
+           "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "hand": {
+          "type": "string",
+          "enum": [
+           "print",
+           "handwriting",
+           "mixed"
+          ]
+         },
+         "script": {
+          "type": "string",
+          "enum": [
+           "fraktur",
+           "antiqua",
+           "kurrent",
+           "suetterlin",
+           "latin_cursive",
+           "mixed",
+           "unknown"
+          ]
+         },
+         "later_hand": {
+          "type": "boolean"
+         },
+         "note": {
+          "type": "string"
+         },
+         "lines": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "additionalProperties": false,
+           "required": [
+            "bbox"
+           ],
+           "properties": {
+            "bbox": {
+             "type": "array",
+             "items": {
+              "type": "number"
+             },
+             "minItems": 4,
+             "maxItems": 4
+            }
+           }
+          }
+         }
+        }
+       }
+      },
+      "reading_order": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "page_notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/03-layout-and-hybrid/inputs/pages/real-grimm-khm-1812-i-p093.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887677-ppal5DIfOj1Wno6FtU5c",
+  "object": "chat.completion",
+  "created": 1793887677,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"regions\": [\n    {\n      \"id\": \"r_page_number\",\n      \"kind\": \"page_number\",\n      \"bbox\": [0.288, 0.142, 0.134, 0.022],\n      \"hand\": \"print\",\n      \"script\": \"antiqua\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.288, 0.142, 0.134, 0.022]\n        }\n      ]\n    },\n    {\n      \"id\": \"r_main_text\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.12, 0.169, 0.473, 0.58],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.12, 0.169, 0.468, 0.025]\n        },\n        {\n          \"bbox\": [0.121, 0.191, 0.472, 0.025]\n        },\n        {\n          \"bbox\": [0.122, 0.211, 0.177, 0.022]\n        },\n        {\n          \"bbox\": [0.207, 0.237, 0.316, 0.021]\n        },\n        {\n          \"bbox\": [0.208, 0.258, 0.24, 0.022]\n        },\n        {\n          \"bbox\": [0.121, 0.28, 0.466, 0.024]\n        },\n        {\n          \"bbox\": [0.121, 0.302, 0.468, 0.024]\n        },\n        {\n          \"bbox\": [0.121, 0.323, 0.467, 0.023]\n        },\n        {\n          \"bbox\": [0.121, 0.344, 0.471, 0.022]\n        },\n        {\n          \"bbox\": [0.121, 0.364, 0.467, 0.024]\n        },\n        {\n          \"bbox\": [0.121, 0.385, 0.467, 0.023]\n        },\n        {\n          \"bbox\": [0.122, 0.404, 0.468, 0.024]\n        },\n        {\n          \"bbox\": [0.122, 0.424, 0.467, 0.024]\n        },\n        {\n          \"bbox\": [0.123, 0.444, 0.464, 0.024]\n        },\n        {\n          \"bbox\": [0.124, 0.464, 0.466, 0.024]\n        },\n        {\n          \"bbox\": [0.124, 0.482, 0.222, 0.022]\n        },\n        {\n          \"bbox\": [0.163, 0.504, 0.328, 0.021]\n        },\n        {\n          \"bbox\": [0.162, 0.523, 0.354, 0.022]\n        },\n        {\n          \"bbox\": [0.123, 0.547, 0.464, 0.023]\n        },\n        {\n          \"bbox\": [0.124, 0.567, 0.465, 0.022]\n        },\n        {\n          \"bbox\": [0.124, 0.588, 0.464, 0.022]\n        },\n        {\n          \"bbox\": [0.124, 0.608, 0.465, 0.023]\n        },\n        {\n          \"bbox\": [0.125, 0.628, 0.463, 0.023]\n        },\n        {\n          \"bbox\": [0.125, 0.648, 0.463, 0.023]\n        },\n        {\n          \"bbox\": [0.124, 0.669, 0.464, 0.023]\n        },\n        {\n          \"bbox\": [0.124, 0.689, 0.463, 0.022]\n        },\n        {\n          \"bbox\": [0.125, 0.709, 0.464, 0.022]\n        },\n        {\n          \"bbox\": [0.125, 0.728, 0.462, 0.021]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"r_page_number\",\n    \"r_main_text\"\n  ],\n  \"page_notes\": \"Noticeable show-through from the verso page throughout the upper half of the text area. The gutter and binding edge are visible on the left.\"\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Document Structure**\n\nI'm currently breaking down the visual elements on the page. My focus is on identifying distinct text blocks and their spatial relationships to understand the document's layout, starting with the page number and then the main body text.\n\n**Classifying Dialogue and Narration**\n\nI'm now differentiating between spoken words and descriptive text. This involves recognizing quotation marks and shifts in sentence structure to isolate dialogue from the narrative flow, specifically identifying the pigeons' speech.\n\n**Refining Text Boundaries**\n\nI'm now meticulously examining the bounding box coordinates for each line. My goal is to precisely delineate the main text area, confirming its boundaries against the identified page number region, and ensuring accurate line segmentation.\n\n**Sorting Dialogue Elements**\n\nI'm now arranging the identified dialogue segments chronologically. My focus is on sequencing these distinct speech patterns to reconstruct the conversation accurately, specifically ordering the pigeons' utterances.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Document Structure**\n\nI'm currently breaking down the visual elements on the page. My focus is on identifying distinct text blocks and their spatial relationships to understand the document's layout, starting with the page number and then the main body text.\n\n**Classifying Dialogue and Narration**\n\nI'm now differentiating between spoken words and descriptive text. This involves recognizing quotation marks and shifts in sentence structure to isolate dialogue from the narrative flow, specifically identifying the pigeons' speech.\n\n**Refining Text Boundaries**\n\nI'm now meticulously examining the bounding box coordinates for each line. My goal is to precisely delineate the main text area, confirming its boundaries against the identified page number region, and ensuring accurate line segmentation.\n\n**Sorting Dialogue Elements**\n\nI'm now arranging the identified dialogue segments chronologically. My focus is on sequencing these distinct speech patterns to reconstruct the conversation accurately, specifically ordering the pigeons' utterances.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1/7puQqtZUaszykDdEbMhUkd54z3uyveNPTWOmQKpVx4GOyWHUYRUgKjVuBvEdLZ+kZCUYHayYQaDCkmpp9IwmIdlLbkdpOs43VylT9S/UY02wHU8VlGYrs6Lel6Bf+2rxDq8KS5d9JV5oPSdWyOrQyd9zGHAwJGXoRDnb+FU9LYe4e07JryykZgFI47HA61SDGRNDX3ogHEZLcGdmW1N4cUd5WV9ZPBIuv1fcU251ECOyXKKrU6EObrH8k5Ks18SBgQmsHhaq5qCE5QXrzaWAQbmVFT7G0FpyKFYyDZ2HTpaOApwFwVUUBGyOpcT6/MeRtv31HvDscLM3PHr/0R88O7YSWGpKJQOeF8H7WAf9+fTkFgP7B1rqlt4QmHLgjJCDHmEX1KbIDCNSme0DiDteLJj7xTtGeniP5QoZ1rcnHvM7QUa/AA6DUCx2oGOjKyS6uK+JDlTNL5ZeCyBj3TLBqIqvyPCpjqdL0H6f9u3PJ2nHONUzAL1I1ug29njYFKi7zIlHXQn7dn+T06fi/e4MSzbvqCwOG0zwFmaq1pz8K2TJ0NSrl456Ou6W28DKURVnc8cszkA5cBKJIDwitUSdkUSIeLM/n5mU8OIzDl0sSKW1j/uIW7jNnP6aunZAA4ntn7Bgnv5KnpzA/lHZrQyddzCU/+Mm9SJJKynTwWf5KBwFoP1jE/kHKJwy72mrcgQey9uaz1/9P7Tos+AjYN/KDKK+XNAQCc02duD70eXNsFPs6y6unf2QOI+Ak9bn+vMxDx/XiPPpFBQyzd1J2FYqLVwF21ioLfX7zjhbdSbEuN+AUDeBqJxGmp7KVCCXdvzTJeHI9RS4HeKH8ok1Ww67OOaBRTFCk63piVyLy+NiXQrdQ1+ndCbvIxmxZ7rvGym4xtBj4F+FifcvsdbY6QbLZu3kW++KTiwY5B0Tswd5D6h6s+CmHM/gsZimYlSzXcC/2BC0AwM4biTcVtQiwO0aZ9bzT7h7Rxb6KgQtcJ/qqn68MCOkbzQx0KaTrL35uaQtABp1A4lvy47axX5puHw+xVDVOc8IajdVJF5vHuM0gCIff40iw1d+/hJKtID/+/nWcL8IfNJ+pUebIT/9/7NK/FgGTgJ/cIRTriQg2skgmePFcStvotZ55fp9oKSvdw0oi3wdvVdFAhMVkkDBjNJ7LeRzHGoYvajzLYgpx1+45cGPCw1wmIVu50H4v/BwcNDrhX4pmLvc3ydYnITSo8OZHF03vIEfLjQ72d71CrT53r8FPsrBKgv6HwsJnnS5fHDuqiALXbo1/3djXUFQ3r5RoqaJFol6JHBKzsUXMsoyI0Iwc1h2IkuHGimzeaCKEaRqa/DXUr7jmjcr7TDX3SeugnCU8KpPJyzhZOfFEZwEb0IzNY6OUgQoq+nXWDdsLQnKMIpiI/92JenD9H4LQVW6ZooDsp5lmk442xOZ3FgM5CwHiGT36Xqwrvx9Ym1vQVFvvbcsN+o/F4ye0OM9vmWk+g/6UdvWvzv13NSYd5Wh/Q9nNGBXSXpo7QK+nmq8qC1HmA4HU6UVJeXvxSJfWCjY0CX8Gnn1jMA3j0bpdPftJZV4Iom/lRROtVqn3wav3OQVa72Zfkr4XZjnw8zbVr3iLShVRY7Ab8A3ByeC91oZlhtvyzKOdjbjyzRIG6M/AkHmWViILMlT9eYU49h8lSkBZdfFFtCr9WMDs1S6p95F89qI31Lii+1FpO9VEryelwv9mklgGg4Ru704+wQ0YCe7lLedNaJueG3mvtGn1hzJPvpFhTNQk9YUygvczhwZC/YzfyPDTZzaj8YN/dCnuWDqtaJpP0tDRxvjRSdztZMVQXXqdPaybf/LTHu5sbBjqre2P9n7dtbJy42CiPyoZQosGzGy8X8BOqxtNIJOJtF7oXQtu+JYI/B56+iKBrFYtUCNSMTpFwvmgqzoqXF7vwzZpL7rx4v8MLvfoC1c3piKA/zFE5SdUYT6gqHgSJdl799ZraudjZx2Or5L7YS2qR/wZDF0I/W7j+fyE3mWhPNlZ0lXxgBmhd9KoIJF8kF13+lgoc7bflzpFjjQyQ9D2ucJpRwmK/KERifcyg9KNJGynWEzjf+oR+YK5L6eD9ZRZUoDJj1GrykoYmdjf8h1cTRsD0fP3fnd3otl8p1fAuWCFPHBxOobtsGYeaRdpmVmCs1PFfDRRODvcGm753JwsECyTpc5CanDYvoMh+z5+NsW58mETlYEdAAae3rWkF4U/DuKM/4raBOKJo/wCgxUHo7RwhaODyOckZSzBicqlMuaSw6UBSzVT/tmBipBvOFZG/sK7h2KxdkR4oOaPb/TYqBrFoYyUGIHB2d1sh9KJf730+K7dd7pBrxXFFruXrVOHnKhpU7YDBtg2fW2PbqIYv2hinT5ce+Dfc6p0+6c8qTXVExyVVhSyCcfUhT4Uz/b2fUYrkUu+MtrhgzzRljLcYwt186h0Wrcc/hqpcNgu9dSZ9LpAyyU9AIzBCyH9ncqr7ilvFN5cQoTNR5yN0KDlcf7NYNfKssVcNyglEbxlnP2yBcRMcRAtA8732SjWIoStOb1K2fPKuqQ4riDrrr+kKin50j9V6eGNSNSyGaPFYL7HC+658+txCuXiR6K+Q2hRFQ/QWjDKpCe04dTyJQWXkTwLIs7l7c8CK0SNTJBGyQPakgosuhmsK8J8qR0ca0y+sPcio0JELB4Ge35cnaeqKarjP3RKv2GyvMpX9TjqnLRKhj80gH7d/mF8yGOlhWSsy6LN+fJOX3h9VSvoWMy2/0jWRnq6Az196FFjqrxcP9i6Xo9b/Ae9mfE6R4wTgLRlF2D4q94pV0teUrjgJS1Jaz54t5tWG01BBwgW/+gwd6D5X6Qs2QkvU2kfZf5Uod4G0Tsmmlh9GDIhFIR1J7DYr831xGD7fakOqY0S6bRA1bgACioqgAf51FOub37SPCRQRZQoDuwfEY3xvqbScovM2E6aUxoo1mNe66HX87wZ8wSpkXPDlkQhmaHOQaaJaLgKIH6nEB+IBwTQe0Ee4fEJA1MFYDTgN4u6JVpVIw1liim8zrz9vSiWdpMHQrewc1mVMtFOEKu31ayXnp2fCT3/lIbOUpCl6Wfthu5N+VcvBHVnSpnH5hy8oGIuqaq2QphShk4iEcI973F25T7UluHDlTm//tvQ10UU3HOhKqi+CK52YU3j1UiBrrAwV1yiCUfhFv/9VqPxJNFxSD8Dw2m1ETx22I15quMWhnrm/0InO1f5WKg0VdfIbb/J9+t+K51e+L5E+49l3nh/5bNp7m11dsj7qb1S0ia+3q7bkHXGjzh7zPJl3j7vdW6z5c+a6/LNLWizUa1XTOrOyc2zB1yuJEO92YioVwbnBppWyZyJ4jc5ZVjEHO13gZjBh4P7YtPGo6oI9ylNmBV+i1XR7C2vKiN6mRlN2+1vn/tOMKqaUz0tit18OIbJGHv23zD2Uyx3YgWmZtHLo7OTuTBK0+0jrFMLGlpjH5qm0AMvcF73nDbG2XF8Q9mP6/Vjw/HUuq88+FAIBr/vXax3YSBrvR3wh7r7FGxA9vYxHXSB5YeDw63P9/228JcOvHaFpNPP9j8KcbknK8zd15w6bF64jQ8T3yEX5tKbkANXsClgJ7f9bd31LUbpVNt8Y5M5ncfaG6DERQZeG37F/OCTkdprIo8JITyLn49C5QZD4A+6hPtwSbZ8cJdBD9Jq4ZfeebmOltzDVewD4W251xtBUk8X/Wq0FI4PhQrkOsdaVN/7Gu8GNwJ5YHyafebkS+aJYUn6vpgX3HT2/jB+0RcVKitz3w9LEomflJsAvZXPoYktOvZlG7l7wmmLe0THdOFVO4wjR744WCERpONznBi+OPHSYc3SsEnGKUNq1V6Si2T9xh0j8rKkx+L136TeR0zSHPtxF0Pvqdm2eoWgv8tsRISTywG2gpB3UPIgcYDNvHmPsJVRwDvgnkvuJUdIYTAnub8oSVKJu+YXFZp651m+r0QBBhYCEueHC9QmtXA/unJ2e+pLjyyGBznnpO9GQw2UyiTkE3BaMMIbtbfUjJw6TuNp+k7DejORc8Hn7mpEUeTxl2P6dmPJPfNID0JHMQb6oC4zP2Z7qwdjGBHbs/JrvrbHBmXA4baM0UVV+HjT0a7jYYpTaKGslHUYKMYrVd3jdb1E/vj3IqhFSTpF7gxeHYiAY2tgkM2i0OC/MPZTqNSCClCYJZ+QM1cXpf41nFLlEX5b9fxZNx/Zj0Q+JAqNMpaL2VoKFh4foW7vYyjsN5AJWug9/jJC7d8SbGQpcNaFlCnV8sbZyyCx/EcN7RKyiIlpjNin33ehIYeZY6Eqin+jvAFeau/dFXnKTNh258Htqf6dP06MHPUBIXbLMTfzILX6m1Y6IZ+qfvvDi7yn3PA70gPSWCcPsmmH+WTGSEe31I/DlOzrww84FUKyNoKoMFp7Bo6zFe3kQAIV2WhypNWTN39Cp13X1DgfLL7zaw/xza/Ioym5iKz9Pndt4CALoZ5Kt76aHY9cvLC271m7vZspRKQugYYSQ27IVG/UIZHOavijlBWqL1zudiGjLnK6i/d6lS4ezwU6wqnAcNZglMMIsnXQ43zybCpJJmSQFTJYLgwGnzJEFDpxEO+lmVBBDF4kGrjRCK/C03bMOmHwaoLRB8yqE4EYPS3VAgV/DK5wqqjnTWIrIjKmgza0ZZWum4HcZvli1T+ZGW1Fic/1BybIAPZSFCNDMcEyfDiteZfsMLZIrx0tLA02eCLYRDRcIYbC5oeXY0g3p1SZQObv47W2uFBp5TWMATausmEGndjQh/tK7R+idIgDvRj5m9L322krvokaMxacviXsP89y5qV3xWLdbN2/t/lcwc3TOaBM4VuMCG6vw8T92kfGCxKa/PAlxcPQHJ1hK+8fKA1T2fwR0cQcL9HLYKd4tPR7zYKd95olc9zOah3vflhml4TK68b1N4dJCFnI2D/5Ntv44koNlUFecoUspp3G2fAcOpGoLJhMRPgWsRvxVEzEOFbcen4sGxR2wFrBJ/MaVels914oqwaAv36vDwXZQjPpjyNVomgOqZwwluwTbGzNcajpKgb/3N+oX7aH/tJL9aMP+MyjeA4UGWKqDfW5LiUw+JC1LhX+vFd92Wcx7kq2YtxMIMqppG6DQtLRzks3jR3XTTieakyjb5vZJxET4Mc+K9AsK3rWoFH/dadKU/yM0cmIzxmKY6hq0MFNxLaOSCHZtuAhQfnupo6G3JjTvsm++fB0vHoLbLEytodjyUIqieUXtp2gZtBliroU4l8r4CIhiIslaxMG/72qJE82RxYPveC7Eymj3ILkf0a6yW9pX10mzZYYcdf7lNAaS+5lkRxwhHUaXyS4qMnnY4CZuQcr27uyIUsZFwK0ItmJABPUeKBNg/uUG0TDBqXJjGj8r7EU9Y8hy9DzQ7sJ3VMJ4XbH1hq1JbClwsT8IzqfHGqdt31IAkUf4BlK1dim8fRvJLiqoNKN1IRLiAhqR7EdWbnTjsWiPlDhDUoDTYJGfincyCRx5uEC8ZKNzM/XqwW0pnMUmcGu+qYzKaLSXjIChUON/Z8vZQM14CZvbzWBGU9W7VwdVI5rADb0lP7qsicGXDEWfjfO7IyiZAHecADtF6jrhKCjwmSndwnfvIPR/UpaRaaN5tQxT1Wpg3XqMhJIhrMbyJPJ3TCO3aQGkpVmvzJUCSD33boGwpxl1+vcckXVuaSt6UbT7uv8gfkxkbSu4qZWkKJug75S8qZl6zOc5TduVm8qwl/Hbi1sLU3gK6cXo0sytx/4g1RcZF8CldYKXz+BET0k7UStJPDsnlREeKz8Cy8C4+ocWfZUL5VwaABjoeudcFM7eAx+YHyFcCbp3PogD6cZ1iaPXj4RrNfTDXBPpl/CglFguYAQ9usdHbJtorSDDupSEjJOiWfODSNpyvfzhNbPzJrbVpB1dlsUQwO5CWjIOqS3OE5Hy0PMsv7vEXgqWavITTdEMx4M7PzsPV9PtN1wjzdp6wXQ8VIU95004sFCmcrYqiIGZulWz/nTX36GQRFJ2V+R17nZ/eoyDsur5V8kQKCqSUAJphq+GhTGu79bPmCOKxoNA/x5fM9oC4HDF/fJmN8xUAJt8Xv9zHbdVIEK7iCQ9boZ6DZ318VUSIn+E7ZWI6GQu7ZUNeP6poQJyzRKmAJ3QxuECQVnkd7goaBVC3t2wZgg6o0hYx/OJB33+1S1jxk7OL7KE8GQChRKmRJr9842p9ygfrxUY/0fBHVbKfCvmaRW34i4CzJYuzLItgG1QtC6Iy9fg3aisteLPSR+0TSUz1oWHDQAD8ymRIGbH6P6vYp42ya11QV8opoJakPBYb3DESciVqFAUS2SMC7DRMwsSf+4aLNRmBZU+fv4RVqmubHf2DTmMFO0n22/nsf/L1RtebApQV3yHRIQtKJ5Pikk11MgyOaTppPH0TIjPOhzkDHQWIFMqJJmmR9dceA2LLrLbdA325hpFW6IqtNRExy5bN3IMBrODs7c8t7/SPx6opRK41B4vn0gJZL3S03CwHajgXxseFI8yOhbfzwQ/9Ju+XkCFr5/zUH3PhaXauljE1A8c3wsqVQgKbPVqzrL1C1CHAHMKpaecSUES43V6vDTLwc2GmUPeg0Kf4SPcTiAQpUjeml7OJ56fV3i9cdkxtFgCG36ZsQdQ/ov8pL/igQqsDDqrnY28GVOlt+f50UjEdkQQAuH1z73Z+bGmn+cUP3ZvGiuXgXCf8jvTao/61PVTECrlzZoi7d8YvqGij7D54XYc9PNEM20CbfQZ9325tI2DZEg8+0RMCwANopbnUJYtYnnZQ9h/KniUnbnqshkzUmuSzHiBsaqsnaOGnqx9nlxxSwDLTzh9n1L1eKUEysHz47Qj4ZuJOdvAoGZsKHKQDIZg5phezHYDux/z3AmyLelA//n0ASR6UssmQXqFmPTruH89f0BbnCkiOOlPQ4CfS8r80+5IVGZ3uJWop2cT7LMBxVQp77S8UgBRm2bmPuHYUphAh9Um/PvuxcjDycmQVx0JUSMErOsTEhcabI8zgeLgYPrKfOJoYtneG/Hf5rp7WOBKaFW9FoKM7b54tNavGSjk6R/bl9l3PWiEkFqLMXYjdaggDUTPoy2XUlPQeK1+JI=",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2164,
+   "completion_tokens": 3362,
+   "total_tokens": 5526,
+   "cost": 0.0142305,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0142305,
+    "upstream_inference_prompt_cost": 0.001623,
+    "upstream_inference_completions_cost": 0.0126075
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1953,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"regions\": [\n    {\n      \"id\": \"r_page_number\",\n      \"kind\": \"page_number\",\n      \"bbox\": [0.288, 0.142, 0.134, 0.022],\n      \"hand\": \"print\",\n      \"script\": \"antiqua\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.288, 0.142, 0.134, 0.022]\n        }\n      ]\n    },\n    {\n      \"id\": \"r_main_text\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.12, 0.169, 0.473, 0.58],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.12, 0.169, 0.468, 0.025]\n        },\n        {\n          \"bbox\": [0.121, 0.191, 0.472, 0.025]\n        },\n        {\n          \"bbox\": [0.122, 0.211, 0.177, 0.022]\n        },\n        {\n          \"bbox\": [0.207, 0.237, 0.316, 0.021]\n        },\n        {\n          \"bbox\": [0.208, 0.258, 0.24, 0.022]\n        },\n        {\n          \"bbox\": [0.121, 0.28, 0.466, 0.024]\n        },\n        {\n          \"bbox\": [0.121, 0.302, 0.468, 0.024]\n        },\n        {\n          \"bbox\": [0.121, 0.323, 0.467, 0.023]\n        },\n        {\n          \"bbox\": [0.121, 0.344, 0.471, 0.022]\n        },\n        {\n          \"bbox\": [0.121, 0.364, 0.467, 0.024]\n        },\n        {\n          \"bbox\": [0.121, 0.385, 0.467, 0.023]\n        },\n        {\n          \"bbox\": [0.122, 0.404, 0.468, 0.024]\n        },\n        {\n          \"bbox\": [0.122, 0.424, 0.467, 0.024]\n        },\n        {\n          \"bbox\": [0.123, 0.444, 0.464, 0.024]\n        },\n        {\n          \"bbox\": [0.124, 0.464, 0.466, 0.024]\n        },\n        {\n          \"bbox\": [0.124, 0.482, 0.222, 0.022]\n        },\n        {\n          \"bbox\": [0.163, 0.504, 0.328, 0.021]\n        },\n        {\n          \"bbox\": [0.162, 0.523, 0.354, 0.022]\n        },\n        {\n          \"bbox\": [0.123, 0.547, 0.464, 0.023]\n        },\n        {\n          \"bbox\": [0.124, 0.567, 0.465, 0.022]\n        },\n        {\n          \"bbox\": [0.124, 0.588, 0.464, 0.022]\n        },\n        {\n          \"bbox\": [0.124, 0.608, 0.465, 0.023]\n        },\n        {\n          \"bbox\": [0.125, 0.628, 0.463, 0.023]\n        },\n        {\n          \"bbox\": [0.125, 0.648, 0.463, 0.023]\n        },\n        {\n          \"bbox\": [0.124, 0.669, 0.464, 0.023]\n        },\n        {\n          \"bbox\": [0.124, 0.689, 0.463, 0.022]\n        },\n        {\n          \"bbox\": [0.125, 0.709, 0.464, 0.022]\n        },\n        {\n          \"bbox\": [0.125, 0.728, 0.462, 0.021]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"r_page_number\",\n    \"r_main_text\"\n  ],\n  \"page_notes\": \"Noticeable show-through from the verso page throughout the upper half of the text area. The gutter and binding edge are visible on the left.\"\n}",
+  "parsed": {
+   "regions": [
+    {
+     "id": "r_page_number",
+     "kind": "page_number",
+     "bbox": [
+      0.288,
+      0.142,
+      0.134,
+      0.022
+     ],
+     "hand": "print",
+     "script": "antiqua",
+     "later_hand": false,
+     "note": "",
+     "lines": [
+      {
+       "bbox": [
+        0.288,
+        0.142,
+        0.134,
+        0.022
+       ]
+      }
+     ]
+    },
+    {
+     "id": "r_main_text",
+     "kind": "main_text",
+     "bbox": [
+      0.12,
+      0.169,
+      0.473,
+      0.58
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "",
+     "lines": [
+      {
+       "bbox": [
+        0.12,
+        0.169,
+        0.468,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.121,
+        0.191,
+        0.472,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.122,
+        0.211,
+        0.177,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.207,
+        0.237,
+        0.316,
+        0.021
+       ]
+      },
+      {
+       "bbox": [
+        0.208,
+        0.258,
+        0.24,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.121,
+        0.28,
+        0.466,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.121,
+        0.302,
+        0.468,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.121,
+        0.323,
+        0.467,
+        0.023
+       ]
+      },
+      {
+       "bbox": [
+        0.121,
+        0.344,
+        0.471,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.121,
+        0.364,
+        0.467,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.121,
+        0.385,
+        0.467,
+        0.023
+       ]
+      },
+      {
+       "bbox": [
+        0.122,
+        0.404,
+        0.468,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.122,
+        0.424,
+        0.467,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.123,
+        0.444,
+        0.464,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.124,
+        0.464,
+        0.466,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.124,
+        0.482,
+        0.222,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.163,
+        0.504,
+        0.328,
+        0.021
+       ]
+      },
+      {
+       "bbox": [
+        0.162,
+        0.523,
+        0.354,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.123,
+        0.547,
+        0.464,
+        0.023
+       ]
+      },
+      {
+       "bbox": [
+        0.124,
+        0.567,
+        0.465,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.124,
+        0.588,
+        0.464,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.124,
+        0.608,
+        0.465,
+        0.023
+       ]
+      },
+      {
+       "bbox": [
+        0.125,
+        0.628,
+        0.463,
+        0.023
+       ]
+      },
+      {
+       "bbox": [
+        0.125,
+        0.648,
+        0.463,
+        0.023
+       ]
+      },
+      {
+       "bbox": [
+        0.124,
+        0.669,
+        0.464,
+        0.023
+       ]
+      },
+      {
+       "bbox": [
+        0.124,
+        0.689,
+        0.463,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.125,
+        0.709,
+        0.464,
+        0.022
+       ]
+      },
+      {
+       "bbox": [
+        0.125,
+        0.728,
+        0.462,
+        0.021
+       ]
+      }
+     ]
+    }
+   ],
+   "reading_order": [
+    "r_page_number",
+    "r_main_text"
+   ],
+   "page_notes": "Noticeable show-through from the verso page throughout the upper half of the text area. The gutter and binding edge are visible on the left."
+  },
+  "usage": {
+   "prompt_tokens": 2164,
+   "completion_tokens": 3362,
+   "total_tokens": 5526,
+   "cost": 0.0142305,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0142305,
+    "upstream_inference_prompt_cost": 0.001623,
+    "upstream_inference_completions_cost": 0.0126075
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1953,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0142305,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 30.68
+ },
+ "meta": {}
+}

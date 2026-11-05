@@ -1,0 +1,261 @@
+{
+ "namespace": "openrouter",
+ "key": "081ea1b397e404ac185e4fa8b3d416258ceeda40bc384c4d232011bdade1f79f",
+ "fetched_at": "2026-11-05T14:10:44Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/real-gartenlaube-1853-p001.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887805-8CpOokyT264dMOeeIw1G",
+  "object": "chat.completion",
+  "created": 1793887805,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\"text\": \"Zweite Auflage.\"},\n    {\"text\": \"№. 1. 1853.\"},\n    {\"text\": \"Die Gartenlaube.\"},\n    {\"text\": \"Familien-Blatt. — Verantwortlicher Redakteur Ferdinand Stolle.\"},\n    {\"text\": \"Wöchentlich ein ganzer Bogen mit Illustrationen.\"},\n    {\"text\": \"Durch alle Buchhandlungen und Poſtämter für 10 Ngr. vierteljährlich zu beziehen.\"},\n    {\"text\": \"An unſere Freunde und Leſer!\"},\n    {\"text\": \"Grüß Euch Gott, lieben Leute im deutſchen Lande! .\"},\n    {\"text\": \"Zu den vielen Geſchenken, die Euch der heilige Chriſt beſcheert hat, kommen auch wir mit einer Gabe — mit einem neuen\"},\n    {\"text\": \"Blättchen! Seht’s Euch an in ruhiger Stunde. Was wir wollen und bringen — das Alles können wir Euch freilich nicht im\"},\n    {\"text\": \"Voraus ſagen und aus der erſten Nummer werdet Ihr’s auch nicht ganz erſehen können; wir hoffen indeß, es ſoll Euch gefallen.\"},\n    {\"text\": \"Wenn Ihr im Kreiſe Eurer Lieben die langen Winterabende am traulichen Ofen ſitzt oder im Frühlinge, wenn vom Apfelbaume\"},\n    {\"text\": \"die weiß und rothen Blüthen fallen, mit einigen Freunden in der ſchattigen Laube — dann leſet unſere Schrift. Ein Blatt ſoll’s\"},\n    {\"text\": \"werden für’s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der\"},\n    {\"text\": \"noch Luſt hat am Guten und Edlen! Fern von aller raiſonnirenden Politik und allem Meinungsſtreit in Religions= und andern\"},\n    {\"text\": \"Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geſchichte des Menſchenherzens und der Völker, in die\"},\n    {\"text\": \"Kämpfe menſchlicher Leidenſchaften und vergangener Zeiten.\"},\n    {\"text\": \"Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkſtätten des menſchlichen Wiſſens, in die freie\"},\n    {\"text\": \"Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann ſollt\"},\n    {\"text\": \"Ihr hören von den ſchönen Geheimniſſen der Natur, von dem künſtlichen Bau des Menſchen und ſeiner Organe, von Allem, was da\"},\n    {\"text\": \"lebt und ſchwebt und kreucht und ſchleicht, was Ihr täglich ſeht und doch nicht kennt. Und was außerdem noch von Intereſſe iſt im\"},\n    {\"text\": \"Thun und Treiben der Menſchen — Ihr ſollt’s finden in unſerm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch\"},\n    {\"text\": \"verzierende und erklärende Abbildungen bringt von anerkannten Künſtlern.\"},\n    {\"text\": \"So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber ſoll der Hauch der Poeſie ſchweben wie der\"},\n    {\"text\": \"Duft auf der blühenden Blume, und es ſoll Euch anheimeln in unſrer Gartenlaube, in der Ihr gut=deutſche Gemüthlichkeit findet, die\"},\n    {\"text\": \"zu Herzen ſpricht.\"},\n    {\"text\": \"So probirt’s denn mit uns und damit Gott befohlen!\"},\n    {\"text\": \"Ferdin. Stolle, Redakteur. Ernst Keil, Verleger.\"},\n    {\"text\": \"Die Gartenlaube erſcheint wöchentlich mit vielen Illuſtrationen und koſtet vierteljährlich nur 10 Ngr. Alle Buchhandlungen\"},\n    {\"text\": \"und Poſtämter nehmen Beſtellungen an.\"},\n    {\"text\": \"Leipzig, Ende December 1852. Die Verlagshandlung.\"}\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Oval ownership stamp '(Richter)' at upper left. Large masthead woodcut illustration above main title.\"\n}",
+     "refusal": null,
+     "reasoning": "**Transcribing German Page**\n\nI'm currently focused on transcribing the content from the German page. My primary goal is to accurately capture the text from \"Die Gartenlaube,\" including the header details and any relevant annotations like the stamp.\n\n**Capturing German Text**\n\nI'm meticulously transcribing the German text. Currently, I'm processing the title, subtitle, subscription details, and the opening of the article \"An unsere Freunde und Leser!\" noting peculiar punctuation.\n\n**Reading German Passage**\n\nI'm diligently processing the German text, working through sections related to cozy evenings by the fire and springtime blooming. My focus is on accurately transcribing descriptions of nature, human anatomy, and scientific exploration, ensuring fidelity to the original phrasing.\n\n**Deciphering German Text**\n\nI'm continuing my work on the German text, now focusing on the concluding paragraphs that promise entertainment and enlightenment. I'm also noting the publisher and editor's details, along with the weekly subscription information and publication date.\n\n**Reviewing German Characters**\n\nI'm double-checking the typography, specifically discerning the nuanced rendering of \"№.\" and identifying the mix of Fraktur and Antiqua fonts used for titles and key terms, noting \"Illustrationen\" is in Antiqua.\n\n**Confirming Font Usage**\n\nI'm verifying the use of Antiqua for specific terms while maintaining direct transcription. My current task involves carefully examining the historical 'long s' character throughout the German text to ensure absolute accuracy in my rendering.\n\n**Interpreting German Passage**\n\nI'm diligently working through the provided German passage, focusing on translating the sections that discuss shared experiences with friends and the journal's aim to be a source of good storytelling, covering human history, emotions, and the natural world.\n\n**Capturing Publisher Details**\n\nI'm now processing the final details, specifically the publisher and editor's names. I'm considering the best way to represent their placement, as they appear in two columns on the page.\n\n**Resolving Publisher Placement**\n\nI'm focusing on accurately representing the publisher and editor's details. Considering the two-column layout, I've decided to place each name on a separate line, aligning with typical German typographical conventions for signatures and ensuring left-to-right reading order.\n\n**Recording Ownership Mark**\n\nI'm addressing the oval ownership stamp. Though it's not printed text, its presence on the page warrants consideration. I've decided to note it in the annotations, acknowledging its role as an external mark rather than integral content.\n\n**Revising German Text**\n\nI'm currently re-examining the full transcription, making final adjustments to ensure all German characters, including the 'long s', are perfectly rendered. I'm also verifying the correct placement of publisher and editor details, now noting the ownership stamp as an annotation.\n\n**Revising German Hyphenation**\n\nI'm meticulously reviewing the German text, specifically scrutinizing hyphenation at line breaks and within compound words. My current focus is on accurately capturing the distinction between a single hyphen and the double hyphen used with spaces, as seen in \"Religions = und\".\n\n**Revising German Hyphenation**\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Transcribing German Page**\n\nI'm currently focused on transcribing the content from the German page. My primary goal is to accurately capture the text from \"Die Gartenlaube,\" including the header details and any relevant annotations like the stamp.\n\n**Capturing German Text**\n\nI'm meticulously transcribing the German text. Currently, I'm processing the title, subtitle, subscription details, and the opening of the article \"An unsere Freunde und Leser!\" noting peculiar punctuation.\n\n**Reading German Passage**\n\nI'm diligently processing the German text, working through sections related to cozy evenings by the fire and springtime blooming. My focus is on accurately transcribing descriptions of nature, human anatomy, and scientific exploration, ensuring fidelity to the original phrasing.\n\n**Deciphering German Text**\n\nI'm continuing my work on the German text, now focusing on the concluding paragraphs that promise entertainment and enlightenment. I'm also noting the publisher and editor's details, along with the weekly subscription information and publication date.\n\n**Reviewing German Characters**\n\nI'm double-checking the typography, specifically discerning the nuanced rendering of \"№.\" and identifying the mix of Fraktur and Antiqua fonts used for titles and key terms, noting \"Illustrationen\" is in Antiqua.\n\n**Confirming Font Usage**\n\nI'm verifying the use of Antiqua for specific terms while maintaining direct transcription. My current task involves carefully examining the historical 'long s' character throughout the German text to ensure absolute accuracy in my rendering.\n\n**Interpreting German Passage**\n\nI'm diligently working through the provided German passage, focusing on translating the sections that discuss shared experiences with friends and the journal's aim to be a source of good storytelling, covering human history, emotions, and the natural world.\n\n**Capturing Publisher Details**\n\nI'm now processing the final details, specifically the publisher and editor's names. I'm considering the best way to represent their placement, as they appear in two columns on the page.\n\n**Resolving Publisher Placement**\n\nI'm focusing on accurately representing the publisher and editor's details. Considering the two-column layout, I've decided to place each name on a separate line, aligning with typical German typographical conventions for signatures and ensuring left-to-right reading order.\n\n**Recording Ownership Mark**\n\nI'm addressing the oval ownership stamp. Though it's not printed text, its presence on the page warrants consideration. I've decided to note it in the annotations, acknowledging its role as an external mark rather than integral content.\n\n**Revising German Text**\n\nI'm currently re-examining the full transcription, making final adjustments to ensure all German characters, including the 'long s', are perfectly rendered. I'm also verifying the correct placement of publisher and editor details, now noting the ownership stamp as an annotation.\n\n**Revising German Hyphenation**\n\nI'm meticulously reviewing the German text, specifically scrutinizing hyphenation at line breaks and within compound words. My current focus is on accurately capturing the distinction between a single hyphen and the double hyphen used with spaces, as seen in \"Religions = und\".\n\n**Revising German Hyphenation**\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1699,
+   "completion_tokens": 4872,
+   "total_tokens": 6571,
+   "cost": 0.01954425,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01954425,
+    "upstream_inference_prompt_cost": 0.00127425,
+    "upstream_inference_completions_cost": 0.01827
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 3858,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\"text\": \"Zweite Auflage.\"},\n    {\"text\": \"№. 1. 1853.\"},\n    {\"text\": \"Die Gartenlaube.\"},\n    {\"text\": \"Familien-Blatt. — Verantwortlicher Redakteur Ferdinand Stolle.\"},\n    {\"text\": \"Wöchentlich ein ganzer Bogen mit Illustrationen.\"},\n    {\"text\": \"Durch alle Buchhandlungen und Poſtämter für 10 Ngr. vierteljährlich zu beziehen.\"},\n    {\"text\": \"An unſere Freunde und Leſer!\"},\n    {\"text\": \"Grüß Euch Gott, lieben Leute im deutſchen Lande! .\"},\n    {\"text\": \"Zu den vielen Geſchenken, die Euch der heilige Chriſt beſcheert hat, kommen auch wir mit einer Gabe — mit einem neuen\"},\n    {\"text\": \"Blättchen! Seht’s Euch an in ruhiger Stunde. Was wir wollen und bringen — das Alles können wir Euch freilich nicht im\"},\n    {\"text\": \"Voraus ſagen und aus der erſten Nummer werdet Ihr’s auch nicht ganz erſehen können; wir hoffen indeß, es ſoll Euch gefallen.\"},\n    {\"text\": \"Wenn Ihr im Kreiſe Eurer Lieben die langen Winterabende am traulichen Ofen ſitzt oder im Frühlinge, wenn vom Apfelbaume\"},\n    {\"text\": \"die weiß und rothen Blüthen fallen, mit einigen Freunden in der ſchattigen Laube — dann leſet unſere Schrift. Ein Blatt ſoll’s\"},\n    {\"text\": \"werden für’s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der\"},\n    {\"text\": \"noch Luſt hat am Guten und Edlen! Fern von aller raiſonnirenden Politik und allem Meinungsſtreit in Religions= und andern\"},\n    {\"text\": \"Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geſchichte des Menſchenherzens und der Völker, in die\"},\n    {\"text\": \"Kämpfe menſchlicher Leidenſchaften und vergangener Zeiten.\"},\n    {\"text\": \"Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkſtätten des menſchlichen Wiſſens, in die freie\"},\n    {\"text\": \"Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann ſollt\"},\n    {\"text\": \"Ihr hören von den ſchönen Geheimniſſen der Natur, von dem künſtlichen Bau des Menſchen und ſeiner Organe, von Allem, was da\"},\n    {\"text\": \"lebt und ſchwebt und kreucht und ſchleicht, was Ihr täglich ſeht und doch nicht kennt. Und was außerdem noch von Intereſſe iſt im\"},\n    {\"text\": \"Thun und Treiben der Menſchen — Ihr ſollt’s finden in unſerm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch\"},\n    {\"text\": \"verzierende und erklärende Abbildungen bringt von anerkannten Künſtlern.\"},\n    {\"text\": \"So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber ſoll der Hauch der Poeſie ſchweben wie der\"},\n    {\"text\": \"Duft auf der blühenden Blume, und es ſoll Euch anheimeln in unſrer Gartenlaube, in der Ihr gut=deutſche Gemüthlichkeit findet, die\"},\n    {\"text\": \"zu Herzen ſpricht.\"},\n    {\"text\": \"So probirt’s denn mit uns und damit Gott befohlen!\"},\n    {\"text\": \"Ferdin. Stolle, Redakteur. Ernst Keil, Verleger.\"},\n    {\"text\": \"Die Gartenlaube erſcheint wöchentlich mit vielen Illuſtrationen und koſtet vierteljährlich nur 10 Ngr. Alle Buchhandlungen\"},\n    {\"text\": \"und Poſtämter nehmen Beſtellungen an.\"},\n    {\"text\": \"Leipzig, Ende December 1852. Die Verlagshandlung.\"}\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Oval ownership stamp '(Richter)' at upper left. Large masthead woodcut illustration above main title.\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Zweite Auflage."
+    },
+    {
+     "text": "№. 1. 1853."
+    },
+    {
+     "text": "Die Gartenlaube."
+    },
+    {
+     "text": "Familien-Blatt. — Verantwortlicher Redakteur Ferdinand Stolle."
+    },
+    {
+     "text": "Wöchentlich ein ganzer Bogen mit Illustrationen."
+    },
+    {
+     "text": "Durch alle Buchhandlungen und Poſtämter für 10 Ngr. vierteljährlich zu beziehen."
+    },
+    {
+     "text": "An unſere Freunde und Leſer!"
+    },
+    {
+     "text": "Grüß Euch Gott, lieben Leute im deutſchen Lande! ."
+    },
+    {
+     "text": "Zu den vielen Geſchenken, die Euch der heilige Chriſt beſcheert hat, kommen auch wir mit einer Gabe — mit einem neuen"
+    },
+    {
+     "text": "Blättchen! Seht’s Euch an in ruhiger Stunde. Was wir wollen und bringen — das Alles können wir Euch freilich nicht im"
+    },
+    {
+     "text": "Voraus ſagen und aus der erſten Nummer werdet Ihr’s auch nicht ganz erſehen können; wir hoffen indeß, es ſoll Euch gefallen."
+    },
+    {
+     "text": "Wenn Ihr im Kreiſe Eurer Lieben die langen Winterabende am traulichen Ofen ſitzt oder im Frühlinge, wenn vom Apfelbaume"
+    },
+    {
+     "text": "die weiß und rothen Blüthen fallen, mit einigen Freunden in der ſchattigen Laube — dann leſet unſere Schrift. Ein Blatt ſoll’s"
+    },
+    {
+     "text": "werden für’s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der"
+    },
+    {
+     "text": "noch Luſt hat am Guten und Edlen! Fern von aller raiſonnirenden Politik und allem Meinungsſtreit in Religions= und andern"
+    },
+    {
+     "text": "Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geſchichte des Menſchenherzens und der Völker, in die"
+    },
+    {
+     "text": "Kämpfe menſchlicher Leidenſchaften und vergangener Zeiten."
+    },
+    {
+     "text": "Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkſtätten des menſchlichen Wiſſens, in die freie"
+    },
+    {
+     "text": "Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann ſollt"
+    },
+    {
+     "text": "Ihr hören von den ſchönen Geheimniſſen der Natur, von dem künſtlichen Bau des Menſchen und ſeiner Organe, von Allem, was da"
+    },
+    {
+     "text": "lebt und ſchwebt und kreucht und ſchleicht, was Ihr täglich ſeht und doch nicht kennt. Und was außerdem noch von Intereſſe iſt im"
+    },
+    {
+     "text": "Thun und Treiben der Menſchen — Ihr ſollt’s finden in unſerm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch"
+    },
+    {
+     "text": "verzierende und erklärende Abbildungen bringt von anerkannten Künſtlern."
+    },
+    {
+     "text": "So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber ſoll der Hauch der Poeſie ſchweben wie der"
+    },
+    {
+     "text": "Duft auf der blühenden Blume, und es ſoll Euch anheimeln in unſrer Gartenlaube, in der Ihr gut=deutſche Gemüthlichkeit findet, die"
+    },
+    {
+     "text": "zu Herzen ſpricht."
+    },
+    {
+     "text": "So probirt’s denn mit uns und damit Gott befohlen!"
+    },
+    {
+     "text": "Ferdin. Stolle, Redakteur. Ernst Keil, Verleger."
+    },
+    {
+     "text": "Die Gartenlaube erſcheint wöchentlich mit vielen Illuſtrationen und koſtet vierteljährlich nur 10 Ngr. Alle Buchhandlungen"
+    },
+    {
+     "text": "und Poſtämter nehmen Beſtellungen an."
+    },
+    {
+     "text": "Leipzig, Ende December 1852. Die Verlagshandlung."
+    }
+   ],
+   "script": "fraktur",
+   "notes": "Oval ownership stamp '(Richter)' at upper left. Large masthead woodcut illustration above main title."
+  },
+  "usage": {
+   "prompt_tokens": 1699,
+   "completion_tokens": 4872,
+   "total_tokens": 6571,
+   "cost": 0.01954425,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01954425,
+    "upstream_inference_prompt_cost": 0.00127425,
+    "upstream_inference_completions_cost": 0.01827
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 3858,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.01954425,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 39.49
+ },
+ "meta": {}
+}

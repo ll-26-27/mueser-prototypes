@@ -1,0 +1,201 @@
+{
+ "namespace": "openrouter",
+ "key": "0980a03becd46fcfdaa8ee40583fbdc05f0ab4c19b4e3c988102cf308a3bfc87",
+ "fetched_at": "2026-11-05T14:18:40Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/synth-02.png"
+ },
+ "raw": {
+  "id": "gen-1793888293-6Q22elMQsHVwhS7ina3H",
+  "object": "chat.completion",
+  "created": 1793888293,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\": [{\"text\": \"Brief aus Stettin, den 21. August 1786\"}, {\"text\": \"Vornehmster Herr Rath!\"}, {\"text\": \"Ew. Wohlgebornen Schreiben vom 3ten dieses habe ich in danzig richtig erhalten. Die Krüge aus\"}, {\"text\": \"Lauzkau sind wohl verpackt und gehen mit dem Schiffer Hinrieß nach Berlin ab, wo sie Ende des\"}, {\"text\": \"Monats eintreffen sollen.\"}, {\"text\": \"Was die Karte von Schlesien betrifft, so hat der Buchhändler Korn in Breßlau keine mehr\"}, {\"text\": \"vorräthig; ich habe aber in Leipzig bey Breitkopf ein Exemplar gesehen, das er für vier Thaler\"}, {\"text\": \"abläßt.\"}, {\"text\": \"Mit vollkommener Hochachtung verharre ich\"}, {\"text\": \"Ew. Wohlgebornen ergebenster Diener\"}, {\"text\": \"J. G. Lehmann.\"}], \"script\": \"kurrent\", \"notes\": \"Neat calligraphic Kurrent hand with occasional Latin script elements for proper names/foreign words.\"}",
+     "refusal": null,
+     "reasoning": "**Transcribing German Script**\n\nI'm working on transcribing a German document written in Kurrent script. The header indicates it's a letter from Stettin dated August 21, 1786, and the salutation is \"Vornahmster Herr Rath!\". The first paragraph of the content begins with \"Ew. Wohlgebornen Schreiben vom 3ten dieses habe\".\n\n**Clarifying Document Details**\n\nI'm clarifying specifics from the German Kurrent document. I've confirmed the city in paragraph one is likely Danzig. I'm also re-examining the name of the origin of the jugs, considering \"Lauzkau.\"\n\n**Transcribing Document Details**\n\nI'm verifying word transcriptions, specifically \"verpackt\" from the line \"Lauzkau sind wohl verpackt.\" I'm also examining \"Hinrieß\" versus \"Hinrichs,\" noting the stylistic similarities in the Kurrent script for 'ß' and 'chs' in this context.\n\n**Distinguishing Kurrent Letters**\n\nI'm scrutinizing the distinction between 'e' and 'a' in \"Vornehmster,\" comparing it with 'a' in \"Rath.\" My analysis suggests it is indeed an 'e' based on the formation. I am also re-evaluating the spelling of \"Hinrichs\" versus \"Hinriess.\"\n\n**Revising Kurrent Interpretation**\n\nI'm revisiting the \"V\" in \"Vornehmster\" and confirming it as a \"V\" based on comparison with \"Wohlgebornen.\" I'm also re-examining the numeral \"3ten,\" leaning towards \"3.\" The name \"Lauzkau\" is being considered with variations.\n\n**Confirming German Text**\n\nI'm refining my transcription of the German Kurrent text. I've confirmed \"Was\" over \"Daß\" by comparing the 'W' with \"Wohlgebornen.\" I'm also identifying \"Breitkopf\" as a Leipzig publisher, which strengthens the context for the \"Exemplar\" mention.\n\n**Refining Text Interpretation**\n\nI'm meticulously reviewing specific phrases and names. I've now transcribed \"ü-r vier Thaler\" and the closing \"Mit vollkommener Hochachtung verharre ich Ew. Wohlgebornen ergebenster Diener J. G. Lehmann.\" I'm also confirming \"Vornehmster\" and \"Krüge.\"\n\n**Interpreting Kurrent Script**\n\nI'm continuing to refine my understanding of the Kurrent script. I've confirmed \"Lauzkau\" as a potential place name and have identified \"Hinrieß\" as a more likely transcription for the surname. The overall script style is a neat, regular Kurrent.\n\n**Confirming German Text**\n\n**Differentiating Kurrent Capitals**\n\nI'm now focusing on distinguishing between uppercase and lowercase 'd' in the Kurrent script. The initial 'd' in what appears to be \"Danzig\" presents a lowercase form, but the capital 'D' in \"Diener\" is distinctly different. I'm considering diplomatic transcription to maintain original appearance.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Transcribing German Script**\n\nI'm working on transcribing a German document written in Kurrent script. The header indicates it's a letter from Stettin dated August 21, 1786, and the salutation is \"Vornahmster Herr Rath!\". The first paragraph of the content begins with \"Ew. Wohlgebornen Schreiben vom 3ten dieses habe\".\n\n**Clarifying Document Details**\n\nI'm clarifying specifics from the German Kurrent document. I've confirmed the city in paragraph one is likely Danzig. I'm also re-examining the name of the origin of the jugs, considering \"Lauzkau.\"\n\n**Transcribing Document Details**\n\nI'm verifying word transcriptions, specifically \"verpackt\" from the line \"Lauzkau sind wohl verpackt.\" I'm also examining \"Hinrieß\" versus \"Hinrichs,\" noting the stylistic similarities in the Kurrent script for 'ß' and 'chs' in this context.\n\n**Distinguishing Kurrent Letters**\n\nI'm scrutinizing the distinction between 'e' and 'a' in \"Vornehmster,\" comparing it with 'a' in \"Rath.\" My analysis suggests it is indeed an 'e' based on the formation. I am also re-evaluating the spelling of \"Hinrichs\" versus \"Hinriess.\"\n\n**Revising Kurrent Interpretation**\n\nI'm revisiting the \"V\" in \"Vornehmster\" and confirming it as a \"V\" based on comparison with \"Wohlgebornen.\" I'm also re-examining the numeral \"3ten,\" leaning towards \"3.\" The name \"Lauzkau\" is being considered with variations.\n\n**Confirming German Text**\n\nI'm refining my transcription of the German Kurrent text. I've confirmed \"Was\" over \"Daß\" by comparing the 'W' with \"Wohlgebornen.\" I'm also identifying \"Breitkopf\" as a Leipzig publisher, which strengthens the context for the \"Exemplar\" mention.\n\n**Refining Text Interpretation**\n\nI'm meticulously reviewing specific phrases and names. I've now transcribed \"ü-r vier Thaler\" and the closing \"Mit vollkommener Hochachtung verharre ich Ew. Wohlgebornen ergebenster Diener J. G. Lehmann.\" I'm also confirming \"Vornehmster\" and \"Krüge.\"\n\n**Interpreting Kurrent Script**\n\nI'm continuing to refine my understanding of the Kurrent script. I've confirmed \"Lauzkau\" as a potential place name and have identified \"Hinrieß\" as a more likely transcription for the surname. The overall script style is a neat, regular Kurrent.\n\n**Confirming German Text**\n\n**Differentiating Kurrent Capitals**\n\nI'm now focusing on distinguishing between uppercase and lowercase 'd' in the Kurrent script. The initial 'd' in what appears to be \"Danzig\" presents a lowercase form, but the capital 'D' in \"Diener\" is distinctly different. I'm considering diplomatic transcription to maintain original appearance.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 4133,
+   "total_tokens": 5844,
+   "cost": 0.016782,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.016782,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.01549875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 3889,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\": [{\"text\": \"Brief aus Stettin, den 21. August 1786\"}, {\"text\": \"Vornehmster Herr Rath!\"}, {\"text\": \"Ew. Wohlgebornen Schreiben vom 3ten dieses habe ich in danzig richtig erhalten. Die Krüge aus\"}, {\"text\": \"Lauzkau sind wohl verpackt und gehen mit dem Schiffer Hinrieß nach Berlin ab, wo sie Ende des\"}, {\"text\": \"Monats eintreffen sollen.\"}, {\"text\": \"Was die Karte von Schlesien betrifft, so hat der Buchhändler Korn in Breßlau keine mehr\"}, {\"text\": \"vorräthig; ich habe aber in Leipzig bey Breitkopf ein Exemplar gesehen, das er für vier Thaler\"}, {\"text\": \"abläßt.\"}, {\"text\": \"Mit vollkommener Hochachtung verharre ich\"}, {\"text\": \"Ew. Wohlgebornen ergebenster Diener\"}, {\"text\": \"J. G. Lehmann.\"}], \"script\": \"kurrent\", \"notes\": \"Neat calligraphic Kurrent hand with occasional Latin script elements for proper names/foreign words.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Brief aus Stettin, den 21. August 1786"
+    },
+    {
+     "text": "Vornehmster Herr Rath!"
+    },
+    {
+     "text": "Ew. Wohlgebornen Schreiben vom 3ten dieses habe ich in danzig richtig erhalten. Die Krüge aus"
+    },
+    {
+     "text": "Lauzkau sind wohl verpackt und gehen mit dem Schiffer Hinrieß nach Berlin ab, wo sie Ende des"
+    },
+    {
+     "text": "Monats eintreffen sollen."
+    },
+    {
+     "text": "Was die Karte von Schlesien betrifft, so hat der Buchhändler Korn in Breßlau keine mehr"
+    },
+    {
+     "text": "vorräthig; ich habe aber in Leipzig bey Breitkopf ein Exemplar gesehen, das er für vier Thaler"
+    },
+    {
+     "text": "abläßt."
+    },
+    {
+     "text": "Mit vollkommener Hochachtung verharre ich"
+    },
+    {
+     "text": "Ew. Wohlgebornen ergebenster Diener"
+    },
+    {
+     "text": "J. G. Lehmann."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Neat calligraphic Kurrent hand with occasional Latin script elements for proper names/foreign words."
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 4133,
+   "total_tokens": 5844,
+   "cost": 0.016782,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.016782,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.01549875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 3889,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.016782,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 245.79
+ },
+ "meta": {}
+}

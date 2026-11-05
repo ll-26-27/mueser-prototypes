@@ -28,6 +28,56 @@ class MissingCredential(RuntimeError):
     pass
 
 
+class JSONReplyError(RuntimeError):
+    """The model answered, but not with parseable JSON. ``raw`` keeps the whole response for the record."""
+
+    def __init__(self, message: str, raw: dict | None = None):
+        super().__init__(message)
+        self.raw = raw
+
+
+def parse_json_reply(text: str):
+    """Tolerant JSON extraction: strip code fences, then take the first balanced {...} or [...] block."""
+    t = (text or "").strip()
+    if t.startswith("```"):
+        t = t.strip("`")
+        if t.lower().startswith("json"):
+            t = t[4:]
+        t = t.strip()
+    for candidate in (t,):
+        try:
+            return json.loads(candidate)
+        except json.JSONDecodeError:
+            pass
+    start = min([i for i in (t.find("{"), t.find("[")) if i >= 0], default=-1)
+    if start < 0:
+        return None
+    depth, in_str, esc = 0, False, False
+    opener = t[start]; closer = "}" if opener == "{" else "]"
+    for i in range(start, len(t)):
+        ch = t[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch == opener:
+            depth += 1
+        elif ch == closer:
+            depth -= 1
+            if depth == 0:
+                try:
+                    return json.loads(t[start:i + 1])
+                except json.JSONDecodeError:
+                    return None
+    return None
+
+
 def image_data_url(path: Path) -> str:
     mime = mimetypes.guess_type(str(path))[0] or "image/png"
     b64 = base64.b64encode(Path(path).read_bytes()).decode("ascii")
@@ -108,12 +158,13 @@ def chat(
             text = data["choices"][0]["message"]["content"] or ""
             parsed_json = None
             if schema:
-                stripped = text.strip()
-                if stripped.startswith("```"):
-                    stripped = stripped.strip("`")
-                    if stripped.startswith("json"):
-                        stripped = stripped[4:]
-                parsed_json = json.loads(stripped)
+                parsed_json = parse_json_reply(text)
+                if parsed_json is None:
+                    finish = data["choices"][0].get("finish_reason") or data["choices"][0].get("native_finish_reason")
+                    # A malformed or empty reply is not a transport error: retry once, then give up with the raw text kept.
+                    if attempt < 1:
+                        raise RuntimeError(f"no JSON in reply (finish_reason={finish}): {text[:120]!r}")
+                    raise JSONReplyError(f"no JSON in reply after retry (finish_reason={finish}): {text[:200]!r}", raw=data)
             usage = data.get("usage", {}) or {}
             result = {
                 "text": text, "parsed": parsed_json, "usage": usage,
@@ -126,6 +177,8 @@ def chat(
             cache.put(ck, request=req, raw=data, parsed=result)
             log_cost(step, model, usage, cached=False)
             return {**result, "cached": False, "raw": data, "key": ck}
+        except JSONReplyError:
+            raise
         except Exception as e:  # noqa: BLE001
             last_err = e
             if attempt < retries:

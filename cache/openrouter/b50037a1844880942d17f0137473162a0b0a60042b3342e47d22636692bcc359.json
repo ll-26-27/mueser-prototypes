@@ -1,0 +1,201 @@
+{
+ "namespace": "openrouter",
+ "key": "b50037a1844880942d17f0137473162a0b0a60042b3342e47d22636692bcc359",
+ "fetched_at": "2026-11-05T14:14:34Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/synth-01.png"
+ },
+ "raw": {
+  "id": "gen-1793888062-Ve4SgTgtIZbXtcGrXCiK",
+  "object": "chat.completion",
+  "created": 1793888062,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\": [{\"text\": \"Brief aus Königſberg, den 29 Julius 1786\"}, {\"text\": \"Liebſte Schweſter!\"}, {\"text\": \"Geſtern ſind wir glücklich in Königſberg angekommen, nachdem uns der Weg von Elbing\"}, {\"text\": \"über die Nehrung zwey volle Tage gekoſtet hat. Der Sand iſt tief und die Pferde waren\"}, {\"text\": \"müde. Wir wohnen bey dem Kaufmann Saturgus am Pregel, deſſen Frau Dich grüßen\"}, {\"text\": \"läßt.\"}, {\"text\": \"Heute Vormittag haben wir den Profeſſor Kant beſucht. Er iſt klein und freundlich und\"}, {\"text\": \"ſpricht von allem, nur nicht von ſeinen Büchern. Morgen fahren wir nach Memel, und von\"}, {\"text\": \"da, ſo Gott will, über Tilſit zurück.\"}, {\"text\": \"Schreibe mir nach Danzig, poſte reſtante. Ich bin und bleibe Dein treuer Bruder\"}, {\"text\": \"Friedrich.\"}], \"script\": \"kurrent\", \"notes\": \"\"}",
+     "refusal": null,
+     "reasoning": "**Decoding Incoming Text**\n\nI'm currently deciphering a handwritten German document in Kurrent script. My initial focus is on accurately transcribing the first line, \"Brief aus Königsberg, den 29 Julius 1786,\" paying close attention to the nuances of the script.\n\n**Transcribing Kurrent Script**\n\nI'm meticulously verifying the transcription of the initial line, focusing on the correct rendering of \"Julius\" and its looped 's'. The identification of \"Saturgus\" as a confirmed acquaintance of Kant is a significant breakthrough.\n\n**Analyzing Letter 's' Forms**\n\nI'm now focusing on differentiating between the long 'ſ' and round 's' in the text. It appears the usage is not entirely consistent, and I'm cross-referencing instances in lines 1 through 4 to establish a more reliable pattern for transcription.\n\n**Distinguishing Long 's'**\n\nI'm now distinguishing between long and round 's' forms in lines 5 through 9, noting occurrences in words like \"iſt,\" \"deſſen,\" \"Profeſſor,\" and \"ſeinen.\" The German spelling variations are becoming clearer.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Decoding Incoming Text**\n\nI'm currently deciphering a handwritten German document in Kurrent script. My initial focus is on accurately transcribing the first line, \"Brief aus Königsberg, den 29 Julius 1786,\" paying close attention to the nuances of the script.\n\n**Transcribing Kurrent Script**\n\nI'm meticulously verifying the transcription of the initial line, focusing on the correct rendering of \"Julius\" and its looped 's'. The identification of \"Saturgus\" as a confirmed acquaintance of Kant is a significant breakthrough.\n\n**Analyzing Letter 's' Forms**\n\nI'm now focusing on differentiating between the long 'ſ' and round 's' in the text. It appears the usage is not entirely consistent, and I'm cross-referencing instances in lines 1 through 4 to establish a more reliable pattern for transcription.\n\n**Distinguishing Long 's'**\n\nI'm now distinguishing between long and round 's' forms in lines 5 through 9, noting occurrences in words like \"iſt,\" \"deſſen,\" \"Profeſſor,\" and \"ſeinen.\" The German spelling variations are becoming clearer.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1636,
+   "total_tokens": 3347,
+   "cost": 0.00741825,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00741825,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.006135
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1385,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\": [{\"text\": \"Brief aus Königſberg, den 29 Julius 1786\"}, {\"text\": \"Liebſte Schweſter!\"}, {\"text\": \"Geſtern ſind wir glücklich in Königſberg angekommen, nachdem uns der Weg von Elbing\"}, {\"text\": \"über die Nehrung zwey volle Tage gekoſtet hat. Der Sand iſt tief und die Pferde waren\"}, {\"text\": \"müde. Wir wohnen bey dem Kaufmann Saturgus am Pregel, deſſen Frau Dich grüßen\"}, {\"text\": \"läßt.\"}, {\"text\": \"Heute Vormittag haben wir den Profeſſor Kant beſucht. Er iſt klein und freundlich und\"}, {\"text\": \"ſpricht von allem, nur nicht von ſeinen Büchern. Morgen fahren wir nach Memel, und von\"}, {\"text\": \"da, ſo Gott will, über Tilſit zurück.\"}, {\"text\": \"Schreibe mir nach Danzig, poſte reſtante. Ich bin und bleibe Dein treuer Bruder\"}, {\"text\": \"Friedrich.\"}], \"script\": \"kurrent\", \"notes\": \"\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Brief aus Königſberg, den 29 Julius 1786"
+    },
+    {
+     "text": "Liebſte Schweſter!"
+    },
+    {
+     "text": "Geſtern ſind wir glücklich in Königſberg angekommen, nachdem uns der Weg von Elbing"
+    },
+    {
+     "text": "über die Nehrung zwey volle Tage gekoſtet hat. Der Sand iſt tief und die Pferde waren"
+    },
+    {
+     "text": "müde. Wir wohnen bey dem Kaufmann Saturgus am Pregel, deſſen Frau Dich grüßen"
+    },
+    {
+     "text": "läßt."
+    },
+    {
+     "text": "Heute Vormittag haben wir den Profeſſor Kant beſucht. Er iſt klein und freundlich und"
+    },
+    {
+     "text": "ſpricht von allem, nur nicht von ſeinen Büchern. Morgen fahren wir nach Memel, und von"
+    },
+    {
+     "text": "da, ſo Gott will, über Tilſit zurück."
+    },
+    {
+     "text": "Schreibe mir nach Danzig, poſte reſtante. Ich bin und bleibe Dein treuer Bruder"
+    },
+    {
+     "text": "Friedrich."
+    }
+   ],
+   "script": "kurrent",
+   "notes": ""
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1636,
+   "total_tokens": 3347,
+   "cost": 0.00741825,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00741825,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.006135
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1385,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00741825,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 12.42
+ },
+ "meta": {}
+}

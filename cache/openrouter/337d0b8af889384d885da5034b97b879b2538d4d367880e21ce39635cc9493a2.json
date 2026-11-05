@@ -1,0 +1,551 @@
+{
+ "namespace": "openrouter",
+ "key": "337d0b8af889384d885da5034b97b879b2538d4d367880e21ce39635cc9493a2",
+ "fetched_at": "2026-11-05T14:08:55Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are analysing the layout of a page from a historical German document for a scholar. Do not transcribe the page. Map it.\n\nReturn JSON matching the schema. Coordinates are fractions of the image width and height (0.0 to 1.0): bbox = [x, y, w, h] with x,y the top-left corner. Be as precise as you can; a box should enclose the ink of what it describes.\n\n1. `regions`: every block of content, with `kind` one of: main_text (body text), heading (title, section head, running header), column (one column of a multi-column page; give each column its own region), page_number, catchword (the word at the foot anticipating the next page), signature_mark (printer's sheet mark), marginalia (notes in a margin, in the same or another hand), interlinear (writing between the lines), correction (strike-through, insertion, overwriting), stamp_or_seal, date_line, salutation, signature (a person's signature), address, table, figure, ornament, other.\n2. For each region, `lines`: every line of text inside it, top to bottom, each with its own bbox. Count carefully: a scholar will check your line count against the page. Do not merge lines. Do not invent lines where there is only ornament.\n3. `hand`: for each region, \"print\", \"handwriting\" or \"mixed\"; and `script`: fraktur, antiqua, kurrent, suetterlin, latin_cursive, mixed, unknown.\n4. `later_hand`: true if the region appears to be written by a different person or at a later time than the main text (different ink, different letterforms, a librarian's number, a reader's note). Say why in `note`.\n5. `reading_order`: the region ids in the order a reader would follow (columns left to right, then down; marginalia after the line they belong to is fine).\n6. `page_notes`: anything a human should know: damage, show-through, skew, cropped edges, a second page visible, uncertainty about columns.\n\nPrecision over completeness in the boxes; completeness over precision in the counts. If you cannot tell two kinds apart, choose `other` and explain in `note`."
+   },
+   {
+    "role": "user",
+    "content": "Map the layout of this page. Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "layout",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "regions",
+      "reading_order",
+      "page_notes"
+     ],
+     "properties": {
+      "regions": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "id",
+         "kind",
+         "bbox",
+         "hand",
+         "script",
+         "later_hand",
+         "note",
+         "lines"
+        ],
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "kind": {
+          "type": "string",
+          "enum": [
+           "main_text",
+           "heading",
+           "column",
+           "page_number",
+           "catchword",
+           "signature_mark",
+           "marginalia",
+           "interlinear",
+           "correction",
+           "stamp_or_seal",
+           "date_line",
+           "salutation",
+           "signature",
+           "address",
+           "table",
+           "figure",
+           "ornament",
+           "other"
+          ]
+         },
+         "bbox": {
+          "type": "array",
+          "items": {
+           "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "hand": {
+          "type": "string",
+          "enum": [
+           "print",
+           "handwriting",
+           "mixed"
+          ]
+         },
+         "script": {
+          "type": "string",
+          "enum": [
+           "fraktur",
+           "antiqua",
+           "kurrent",
+           "suetterlin",
+           "latin_cursive",
+           "mixed",
+           "unknown"
+          ]
+         },
+         "later_hand": {
+          "type": "boolean"
+         },
+         "note": {
+          "type": "string"
+         },
+         "lines": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "additionalProperties": false,
+           "required": [
+            "bbox"
+           ],
+           "properties": {
+            "bbox": {
+             "type": "array",
+             "items": {
+              "type": "number"
+             },
+             "minItems": 4,
+             "maxItems": 4
+            }
+           }
+          }
+         }
+        }
+       }
+      },
+      "reading_order": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "page_notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/03-layout-and-hybrid/inputs/pages/real-kaskel-to-schnorr-1864.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887708-AUVCY566nomWaQAe8eJR",
+  "object": "chat.completion",
+  "created": 1793887708,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"regions\": [\n    {\n      \"id\": \"reg_p84\",\n      \"kind\": \"page_number\",\n      \"bbox\": [0.23, 0.041, 0.033, 0.032],\n      \"hand\": \"handwriting\",\n      \"script\": \"unknown\",\n      \"later_hand\": true,\n      \"note\": \"Archival pagination '84' in pencil\",\n      \"lines\": [\n        {\n          \"bbox\": [0.23, 0.041, 0.033, 0.032]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_salutation\",\n      \"kind\": \"salutation\",\n      \"bbox\": [0.035, 0.126, 0.388, 0.142],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.035, 0.126, 0.388, 0.142]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_main_p1\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.024, 0.316, 0.468, 0.585],\n      \"hand\": \"handwriting\",\n      \"script\": \"mixed\",\n      \"later_hand\": false,\n      \"note\": \"Kurrent with proper name 'Meyerbeer's' in Latin cursive\",\n      \"lines\": [\n        {\n          \"bbox\": [0.024, 0.316, 0.463, 0.108]\n        },\n        {\n          \"bbox\": [0.037, 0.395, 0.442, 0.063]\n        },\n        {\n          \"bbox\": [0.034, 0.444, 0.435, 0.076]\n        },\n        {\n          \"bbox\": [0.03, 0.505, 0.438, 0.101]\n        },\n        {\n          \"bbox\": [0.048, 0.579, 0.436, 0.071]\n        },\n        {\n          \"bbox\": [0.03, 0.638, 0.444, 0.107]\n        },\n        {\n          \"bbox\": [0.025, 0.706, 0.438, 0.066]\n        },\n        {\n          \"bbox\": [0.032, 0.755, 0.457, 0.093]\n        },\n        {\n          \"bbox\": [0.043, 0.819, 0.449, 0.082]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_main_p2\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.552, 0.174, 0.428, 0.475],\n      \"hand\": \"handwriting\",\n      \"script\": \"mixed\",\n      \"later_hand\": false,\n      \"note\": \"Kurrent with proper name 'Raoul' in Latin cursive\",\n      \"lines\": [\n        {\n          \"bbox\": [0.552, 0.174, 0.428, 0.099]\n        },\n        {\n          \"bbox\": [0.556, 0.252, 0.427, 0.084]\n        },\n        {\n          \"bbox\": [0.569, 0.32, 0.297, 0.09]\n        },\n        {\n          \"bbox\": [0.571, 0.379, 0.4, 0.068]\n        },\n        {\n          \"bbox\": [0.562, 0.429, 0.419, 0.082]\n        },\n        {\n          \"bbox\": [0.568, 0.499, 0.413, 0.072]\n        },\n        {\n          \"bbox\": [0.563, 0.555, 0.323, 0.094]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_closing\",\n      \"kind\": \"other\",\n      \"bbox\": [0.655, 0.627, 0.326, 0.146],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"Valediction and closing formula ('Gott erhalte Sie! / Ihr treu ergebener')\",\n      \"lines\": [\n        {\n          \"bbox\": [0.655, 0.627, 0.296, 0.126]\n        },\n        {\n          \"bbox\": [0.672, 0.697, 0.309, 0.076]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_date\",\n      \"kind\": \"date_line\",\n      \"bbox\": [0.531, 0.758, 0.179, 0.1],\n      \"hand\": \"handwriting\",\n      \"script\": \"mixed\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.531, 0.758, 0.179, 0.066]\n        },\n        {\n          \"bbox\": [0.584, 0.812, 0.081, 0.046]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_sig\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.738, 0.753, 0.229, 0.111],\n      \"hand\": \"handwriting\",\n      \"script\": \"latin_cursive\",\n      \"later_hand\": false,\n      \"note\": \"Signature 'Carl Kaskel' with paraph flourish underneath\",\n      \"lines\": [\n        {\n          \"bbox\": [0.771, 0.753, 0.196, 0.06]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"reg_p84\",\n    \"reg_salutation\",\n    \"reg_main_p1\",\n    \"reg_main_p2\",\n    \"reg_closing\",\n    \"reg_date\",\n    \"reg_sig\"\n  ],\n  \"page_notes\": \"Two facing pages of a manuscript letter opening. Clear, sweeping Kurrent hand with French/Italian proper names (Meyerbeer's, Raoul) and signature (Carl Kaskel) in Latin cursive.\"\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Manuscript Contents**\n\nI'm currently detailing the visual elements of this double-page manuscript opening. My focus is on identifying and noting specific components like page numbering, salutations, and the distribution of the main text across both pages, along with the closing.\n\n**Mapping Manuscript Details**\n\nI've now meticulously mapped out the left page of the manuscript. My work includes pinpointing the page number, the salutation, and all lines of the main text, along with their precise coordinates.\n\n**Counting Manuscript Lines**\n\nI've confirmed the precise line count for the left page, discovering nine lines of text. I am now proceeding to enumerate the lines on the right page and the closing elements.\n\n**Documenting Signature and Date**\n\nI've pinpointed the signature \"Carl Kaskel\" and the paraph, and have also identified the two-line date \"am 30t Juny / 1864\". My next step is to meticulously re-verify all identified regions.\n\n**Classifying Text Elements**\n\nI am now discerning the classification for the identified text sections, specifically for \"Gott erhalte Sie!\" and \"Ihr treu ergebener.\" I'm evaluating options within the established schema, considering `salutation`, `other`, or even `main_text` for these phrases to best represent their contextual function.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Manuscript Contents**\n\nI'm currently detailing the visual elements of this double-page manuscript opening. My focus is on identifying and noting specific components like page numbering, salutations, and the distribution of the main text across both pages, along with the closing.\n\n**Mapping Manuscript Details**\n\nI've now meticulously mapped out the left page of the manuscript. My work includes pinpointing the page number, the salutation, and all lines of the main text, along with their precise coordinates.\n\n**Counting Manuscript Lines**\n\nI've confirmed the precise line count for the left page, discovering nine lines of text. I am now proceeding to enumerate the lines on the right page and the closing elements.\n\n**Documenting Signature and Date**\n\nI've pinpointed the signature \"Carl Kaskel\" and the paraph, and have also identified the two-line date \"am 30t Juny / 1864\". My next step is to meticulously re-verify all identified regions.\n\n**Classifying Text Elements**\n\nI am now discerning the classification for the identified text sections, specifically for \"Gott erhalte Sie!\" and \"Ihr treu ergebener.\" I'm evaluating options within the established schema, considering `salutation`, `other`, or even `main_text` for these phrases to best represent their contextual function.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2157,
+   "completion_tokens": 3959,
+   "total_tokens": 6116,
+   "cost": 0.016464,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.016464,
+    "upstream_inference_prompt_cost": 0.00161775,
+    "upstream_inference_completions_cost": 0.01484625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2162,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"regions\": [\n    {\n      \"id\": \"reg_p84\",\n      \"kind\": \"page_number\",\n      \"bbox\": [0.23, 0.041, 0.033, 0.032],\n      \"hand\": \"handwriting\",\n      \"script\": \"unknown\",\n      \"later_hand\": true,\n      \"note\": \"Archival pagination '84' in pencil\",\n      \"lines\": [\n        {\n          \"bbox\": [0.23, 0.041, 0.033, 0.032]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_salutation\",\n      \"kind\": \"salutation\",\n      \"bbox\": [0.035, 0.126, 0.388, 0.142],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.035, 0.126, 0.388, 0.142]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_main_p1\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.024, 0.316, 0.468, 0.585],\n      \"hand\": \"handwriting\",\n      \"script\": \"mixed\",\n      \"later_hand\": false,\n      \"note\": \"Kurrent with proper name 'Meyerbeer's' in Latin cursive\",\n      \"lines\": [\n        {\n          \"bbox\": [0.024, 0.316, 0.463, 0.108]\n        },\n        {\n          \"bbox\": [0.037, 0.395, 0.442, 0.063]\n        },\n        {\n          \"bbox\": [0.034, 0.444, 0.435, 0.076]\n        },\n        {\n          \"bbox\": [0.03, 0.505, 0.438, 0.101]\n        },\n        {\n          \"bbox\": [0.048, 0.579, 0.436, 0.071]\n        },\n        {\n          \"bbox\": [0.03, 0.638, 0.444, 0.107]\n        },\n        {\n          \"bbox\": [0.025, 0.706, 0.438, 0.066]\n        },\n        {\n          \"bbox\": [0.032, 0.755, 0.457, 0.093]\n        },\n        {\n          \"bbox\": [0.043, 0.819, 0.449, 0.082]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_main_p2\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.552, 0.174, 0.428, 0.475],\n      \"hand\": \"handwriting\",\n      \"script\": \"mixed\",\n      \"later_hand\": false,\n      \"note\": \"Kurrent with proper name 'Raoul' in Latin cursive\",\n      \"lines\": [\n        {\n          \"bbox\": [0.552, 0.174, 0.428, 0.099]\n        },\n        {\n          \"bbox\": [0.556, 0.252, 0.427, 0.084]\n        },\n        {\n          \"bbox\": [0.569, 0.32, 0.297, 0.09]\n        },\n        {\n          \"bbox\": [0.571, 0.379, 0.4, 0.068]\n        },\n        {\n          \"bbox\": [0.562, 0.429, 0.419, 0.082]\n        },\n        {\n          \"bbox\": [0.568, 0.499, 0.413, 0.072]\n        },\n        {\n          \"bbox\": [0.563, 0.555, 0.323, 0.094]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_closing\",\n      \"kind\": \"other\",\n      \"bbox\": [0.655, 0.627, 0.326, 0.146],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"Valediction and closing formula ('Gott erhalte Sie! / Ihr treu ergebener')\",\n      \"lines\": [\n        {\n          \"bbox\": [0.655, 0.627, 0.296, 0.126]\n        },\n        {\n          \"bbox\": [0.672, 0.697, 0.309, 0.076]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_date\",\n      \"kind\": \"date_line\",\n      \"bbox\": [0.531, 0.758, 0.179, 0.1],\n      \"hand\": \"handwriting\",\n      \"script\": \"mixed\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.531, 0.758, 0.179, 0.066]\n        },\n        {\n          \"bbox\": [0.584, 0.812, 0.081, 0.046]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_sig\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.738, 0.753, 0.229, 0.111],\n      \"hand\": \"handwriting\",\n      \"script\": \"latin_cursive\",\n      \"later_hand\": false,\n      \"note\": \"Signature 'Carl Kaskel' with paraph flourish underneath\",\n      \"lines\": [\n        {\n          \"bbox\": [0.771, 0.753, 0.196, 0.06]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"reg_p84\",\n    \"reg_salutation\",\n    \"reg_main_p1\",\n    \"reg_main_p2\",\n    \"reg_closing\",\n    \"reg_date\",\n    \"reg_sig\"\n  ],\n  \"page_notes\": \"Two facing pages of a manuscript letter opening. Clear, sweeping Kurrent hand with French/Italian proper names (Meyerbeer's, Raoul) and signature (Carl Kaskel) in Latin cursive.\"\n}",
+  "parsed": {
+   "regions": [
+    {
+     "id": "reg_p84",
+     "kind": "page_number",
+     "bbox": [
+      0.23,
+      0.041,
+      0.033,
+      0.032
+     ],
+     "hand": "handwriting",
+     "script": "unknown",
+     "later_hand": true,
+     "note": "Archival pagination '84' in pencil",
+     "lines": [
+      {
+       "bbox": [
+        0.23,
+        0.041,
+        0.033,
+        0.032
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_salutation",
+     "kind": "salutation",
+     "bbox": [
+      0.035,
+      0.126,
+      0.388,
+      0.142
+     ],
+     "hand": "handwriting",
+     "script": "kurrent",
+     "later_hand": false,
+     "note": "",
+     "lines": [
+      {
+       "bbox": [
+        0.035,
+        0.126,
+        0.388,
+        0.142
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_main_p1",
+     "kind": "main_text",
+     "bbox": [
+      0.024,
+      0.316,
+      0.468,
+      0.585
+     ],
+     "hand": "handwriting",
+     "script": "mixed",
+     "later_hand": false,
+     "note": "Kurrent with proper name 'Meyerbeer's' in Latin cursive",
+     "lines": [
+      {
+       "bbox": [
+        0.024,
+        0.316,
+        0.463,
+        0.108
+       ]
+      },
+      {
+       "bbox": [
+        0.037,
+        0.395,
+        0.442,
+        0.063
+       ]
+      },
+      {
+       "bbox": [
+        0.034,
+        0.444,
+        0.435,
+        0.076
+       ]
+      },
+      {
+       "bbox": [
+        0.03,
+        0.505,
+        0.438,
+        0.101
+       ]
+      },
+      {
+       "bbox": [
+        0.048,
+        0.579,
+        0.436,
+        0.071
+       ]
+      },
+      {
+       "bbox": [
+        0.03,
+        0.638,
+        0.444,
+        0.107
+       ]
+      },
+      {
+       "bbox": [
+        0.025,
+        0.706,
+        0.438,
+        0.066
+       ]
+      },
+      {
+       "bbox": [
+        0.032,
+        0.755,
+        0.457,
+        0.093
+       ]
+      },
+      {
+       "bbox": [
+        0.043,
+        0.819,
+        0.449,
+        0.082
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_main_p2",
+     "kind": "main_text",
+     "bbox": [
+      0.552,
+      0.174,
+      0.428,
+      0.475
+     ],
+     "hand": "handwriting",
+     "script": "mixed",
+     "later_hand": false,
+     "note": "Kurrent with proper name 'Raoul' in Latin cursive",
+     "lines": [
+      {
+       "bbox": [
+        0.552,
+        0.174,
+        0.428,
+        0.099
+       ]
+      },
+      {
+       "bbox": [
+        0.556,
+        0.252,
+        0.427,
+        0.084
+       ]
+      },
+      {
+       "bbox": [
+        0.569,
+        0.32,
+        0.297,
+        0.09
+       ]
+      },
+      {
+       "bbox": [
+        0.571,
+        0.379,
+        0.4,
+        0.068
+       ]
+      },
+      {
+       "bbox": [
+        0.562,
+        0.429,
+        0.419,
+        0.082
+       ]
+      },
+      {
+       "bbox": [
+        0.568,
+        0.499,
+        0.413,
+        0.072
+       ]
+      },
+      {
+       "bbox": [
+        0.563,
+        0.555,
+        0.323,
+        0.094
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_closing",
+     "kind": "other",
+     "bbox": [
+      0.655,
+      0.627,
+      0.326,
+      0.146
+     ],
+     "hand": "handwriting",
+     "script": "kurrent",
+     "later_hand": false,
+     "note": "Valediction and closing formula ('Gott erhalte Sie! / Ihr treu ergebener')",
+     "lines": [
+      {
+       "bbox": [
+        0.655,
+        0.627,
+        0.296,
+        0.126
+       ]
+      },
+      {
+       "bbox": [
+        0.672,
+        0.697,
+        0.309,
+        0.076
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_date",
+     "kind": "date_line",
+     "bbox": [
+      0.531,
+      0.758,
+      0.179,
+      0.1
+     ],
+     "hand": "handwriting",
+     "script": "mixed",
+     "later_hand": false,
+     "note": "",
+     "lines": [
+      {
+       "bbox": [
+        0.531,
+        0.758,
+        0.179,
+        0.066
+       ]
+      },
+      {
+       "bbox": [
+        0.584,
+        0.812,
+        0.081,
+        0.046
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_sig",
+     "kind": "signature",
+     "bbox": [
+      0.738,
+      0.753,
+      0.229,
+      0.111
+     ],
+     "hand": "handwriting",
+     "script": "latin_cursive",
+     "later_hand": false,
+     "note": "Signature 'Carl Kaskel' with paraph flourish underneath",
+     "lines": [
+      {
+       "bbox": [
+        0.771,
+        0.753,
+        0.196,
+        0.06
+       ]
+      }
+     ]
+    }
+   ],
+   "reading_order": [
+    "reg_p84",
+    "reg_salutation",
+    "reg_main_p1",
+    "reg_main_p2",
+    "reg_closing",
+    "reg_date",
+    "reg_sig"
+   ],
+   "page_notes": "Two facing pages of a manuscript letter opening. Clear, sweeping Kurrent hand with French/Italian proper names (Meyerbeer's, Raoul) and signature (Carl Kaskel) in Latin cursive."
+  },
+  "usage": {
+   "prompt_tokens": 2157,
+   "completion_tokens": 3959,
+   "total_tokens": 6116,
+   "cost": 0.016464,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.016464,
+    "upstream_inference_prompt_cost": 0.00161775,
+    "upstream_inference_completions_cost": 0.01484625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2162,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.016464,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 27.81
+ },
+ "meta": {}
+}

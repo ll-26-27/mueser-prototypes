@@ -1,0 +1,740 @@
+{
+ "namespace": "openrouter",
+ "key": "9e87d42ce1b6c0cddd8e806fd3b5b5dc2feec9e51ee95c21987f85c0264de60b",
+ "fetched_at": "2026-11-05T14:07:57Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are analysing the layout of a page from a historical German document for a scholar. Do not transcribe the page. Map it.\n\nReturn JSON matching the schema. Coordinates are fractions of the image width and height (0.0 to 1.0): bbox = [x, y, w, h] with x,y the top-left corner. Be as precise as you can; a box should enclose the ink of what it describes.\n\n1. `regions`: every block of content, with `kind` one of: main_text (body text), heading (title, section head, running header), column (one column of a multi-column page; give each column its own region), page_number, catchword (the word at the foot anticipating the next page), signature_mark (printer's sheet mark), marginalia (notes in a margin, in the same or another hand), interlinear (writing between the lines), correction (strike-through, insertion, overwriting), stamp_or_seal, date_line, salutation, signature (a person's signature), address, table, figure, ornament, other.\n2. For each region, `lines`: every line of text inside it, top to bottom, each with its own bbox. Count carefully: a scholar will check your line count against the page. Do not merge lines. Do not invent lines where there is only ornament.\n3. `hand`: for each region, \"print\", \"handwriting\" or \"mixed\"; and `script`: fraktur, antiqua, kurrent, suetterlin, latin_cursive, mixed, unknown.\n4. `later_hand`: true if the region appears to be written by a different person or at a later time than the main text (different ink, different letterforms, a librarian's number, a reader's note). Say why in `note`.\n5. `reading_order`: the region ids in the order a reader would follow (columns left to right, then down; marginalia after the line they belong to is fine).\n6. `page_notes`: anything a human should know: damage, show-through, skew, cropped edges, a second page visible, uncertainty about columns.\n\nPrecision over completeness in the boxes; completeness over precision in the counts. If you cannot tell two kinds apart, choose `other` and explain in `note`."
+   },
+   {
+    "role": "user",
+    "content": "Map the layout of this page. Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "layout",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "regions",
+      "reading_order",
+      "page_notes"
+     ],
+     "properties": {
+      "regions": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "id",
+         "kind",
+         "bbox",
+         "hand",
+         "script",
+         "later_hand",
+         "note",
+         "lines"
+        ],
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "kind": {
+          "type": "string",
+          "enum": [
+           "main_text",
+           "heading",
+           "column",
+           "page_number",
+           "catchword",
+           "signature_mark",
+           "marginalia",
+           "interlinear",
+           "correction",
+           "stamp_or_seal",
+           "date_line",
+           "salutation",
+           "signature",
+           "address",
+           "table",
+           "figure",
+           "ornament",
+           "other"
+          ]
+         },
+         "bbox": {
+          "type": "array",
+          "items": {
+           "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "hand": {
+          "type": "string",
+          "enum": [
+           "print",
+           "handwriting",
+           "mixed"
+          ]
+         },
+         "script": {
+          "type": "string",
+          "enum": [
+           "fraktur",
+           "antiqua",
+           "kurrent",
+           "suetterlin",
+           "latin_cursive",
+           "mixed",
+           "unknown"
+          ]
+         },
+         "later_hand": {
+          "type": "boolean"
+         },
+         "note": {
+          "type": "string"
+         },
+         "lines": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "additionalProperties": false,
+           "required": [
+            "bbox"
+           ],
+           "properties": {
+            "bbox": {
+             "type": "array",
+             "items": {
+              "type": "number"
+             },
+             "minItems": 4,
+             "maxItems": 4
+            }
+           }
+          }
+         }
+        }
+       }
+      },
+      "reading_order": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "page_notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/03-layout-and-hybrid/inputs/pages/real-gartenlaube-1853-p001.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887635-lvOf3Ot4zMbifyUFhKCk",
+  "object": "chat.completion",
+  "created": 1793887635,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"regions\": [\n    {\n      \"id\": \"reg_stamp\",\n      \"kind\": \"stamp_or_seal\",\n      \"bbox\": [0.165, 0.011, 0.126, 0.052],\n      \"hand\": \"print\",\n      \"script\": \"antiqua\",\n      \"later_hand\": true,\n      \"note\": \"Oval ownership/library ink stamp with name 'Richter'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.182, 0.021, 0.093, 0.028]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_edition\",\n      \"kind\": \"heading\",\n      \"bbox\": [0.404, 0.024, 0.151, 0.023],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Edition note: 'Zweite Auflage.'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.404, 0.024, 0.151, 0.023]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_issue\",\n      \"kind\": \"heading\",\n      \"bbox\": [0.043, 0.054, 0.081, 0.022],\n      \"hand\": \"print\",\n      \"script\": \"antiqua\",\n      \"later_hand\": false,\n      \"note\": \"Issue number: '№ 1.'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.043, 0.054, 0.081, 0.022]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_year\",\n      \"kind\": \"date_line\",\n      \"bbox\": [0.842, 0.054, 0.071, 0.022],\n      \"hand\": \"print\",\n      \"script\": \"antiqua\",\n      \"later_hand\": false,\n      \"note\": \"Publication year: '1853.'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.842, 0.054, 0.071, 0.022]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_masthead_fig\",\n      \"kind\": \"figure\",\n      \"bbox\": [0.035, 0.047, 0.902, 0.395],\n      \"hand\": \"print\",\n      \"script\": \"unknown\",\n      \"later_hand\": false,\n      \"note\": \"Large woodcut masthead vignette depicting a reading family in an arbor with integrated title lettering 'Die Gartenlaube.'\",\n      \"lines\": []\n    },\n    {\n      \"id\": \"reg_subtitle\",\n      \"kind\": \"heading\",\n      \"bbox\": [0.176, 0.457, 0.612, 0.022],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Subtitle and editor statement\",\n      \"lines\": [\n        {\n          \"bbox\": [0.176, 0.457, 0.612, 0.022]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_pub_info\",\n      \"kind\": \"other\",\n      \"bbox\": [0.164, 0.488, 0.635, 0.038],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Periodicity and subscription pricing information\",\n      \"lines\": [\n        {\n          \"bbox\": [0.312, 0.489, 0.339, 0.015]\n        },\n        {\n          \"bbox\": [0.164, 0.509, 0.635, 0.016]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_heading_editorial\",\n      \"kind\": \"heading\",\n      \"bbox\": [0.328, 0.542, 0.298, 0.021],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.328, 0.542, 0.298, 0.021]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_editorial_body\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.035, 0.565, 0.897, 0.282],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.099, 0.565, 0.348, 0.016]\n        },\n        {\n          \"bbox\": [0.070, 0.578, 0.862, 0.016]\n        },\n        {\n          \"bbox\": [0.036, 0.593, 0.892, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.607, 0.875, 0.015]\n        },\n        {\n          \"bbox\": [0.070, 0.621, 0.863, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.635, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.649, 0.896, 0.016]\n        },\n        {\n          \"bbox\": [0.036, 0.663, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.677, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.692, 0.402, 0.015]\n        },\n        {\n          \"bbox\": [0.070, 0.705, 0.863, 0.016]\n        },\n        {\n          \"bbox\": [0.036, 0.720, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.734, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.748, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.762, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.776, 0.505, 0.015]\n        },\n        {\n          \"bbox\": [0.070, 0.790, 0.863, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.804, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.819, 0.123, 0.015]\n        },\n        {\n          \"bbox\": [0.070, 0.832, 0.362, 0.015]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_sig_stolle\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.108, 0.850, 0.224, 0.018],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Editor signature line\",\n      \"lines\": [\n        {\n          \"bbox\": [0.108, 0.850, 0.224, 0.018]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_sig_keil\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.695, 0.851, 0.180, 0.018],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Publisher signature line\",\n      \"lines\": [\n        {\n          \"bbox\": [0.695, 0.851, 0.180, 0.018]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_footer_notice\",\n      \"kind\": \"other\",\n      \"bbox\": [0.036, 0.875, 0.895, 0.046],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Subscription notice and date of announcement\",\n      \"lines\": [\n        {\n          \"bbox\": [0.069, 0.875, 0.862, 0.016]\n        },\n        {\n          \"bbox\": [0.036, 0.890, 0.264, 0.016]\n        },\n        {\n          \"bbox\": [0.100, 0.904, 0.198, 0.016]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_closing_publ\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.638, 0.918, 0.222, 0.019],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Signoff 'Die Verlagshandlung.'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.638, 0.918, 0.222, 0.019]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"reg_stamp\",\n    \"reg_edition\",\n    \"reg_issue\",\n    \"reg_year\",\n    \"reg_masthead_fig\",\n    \"reg_subtitle\",\n    \"reg_pub_info\",\n    \"reg_heading_editorial\",\n    \"reg_editorial_body\",\n    \"reg_sig_stolle\",\n    \"reg_sig_keil\",\n    \"reg_footer_notice\",\n    \"reg_closing_publ\"\n  ],\n  \"page_notes\": \"First page of Die Gartenlaube (1853, No. 1, Zweite Auflage). Some smudging and water stains along the lower margin; oval library or ownership stamp 'Richter' over the top left header area.\"\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Page Structure**\n\nI'm currently focused on identifying distinct regions within the provided historical German page. My initial step involves examining the top section for what appears to be a stamp or seal, and I'm noting its coordinates.\n\n**Classifying Page Elements**\n\nI'm now focusing on categorizing the identified regions. I've tentatively labeled the \"Richter\" oval as a stamp or seal, potentially an ownership mark, and have begun segmenting the top line into distinct headings, a page number, and a date.\n\n**Distinguishing Title Elements**\n\nI'm now refining the classification of the masthead. I've determined \"Die Gartenlaube\" is an integrated part of the woodcut title vignette, not separate. I'm classifying the entire woodcut scene as a `figure`, with the title lettering within it.\n\n**Classifying Content Regions**\n\nI'm now processing the subscription details and the opening section of the main body text. I've identified a publication information block and am segmenting the subsequent \"An unsere Freunde und Leser!\" as a heading. The primary content following this is being marked as main text.\n\n**Reading Narrative Sections**\n\nI'm now reviewing the text immediately following the heading \"An unsere Freunde und Leser!\". I've identified the subsequent lines as continuing the main narrative, focusing on the content of the publication and its intended audience.\n\n**Summarizing Narrative Content**\n\nI'm currently processing the main narrative, focusing on the lines describing life and human activities. I'm identifying the purpose of the publication as entertaining and educational, and noting the concluding encouraging remarks for readers to engage with the content.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Page Structure**\n\nI'm currently focused on identifying distinct regions within the provided historical German page. My initial step involves examining the top section for what appears to be a stamp or seal, and I'm noting its coordinates.\n\n**Classifying Page Elements**\n\nI'm now focusing on categorizing the identified regions. I've tentatively labeled the \"Richter\" oval as a stamp or seal, potentially an ownership mark, and have begun segmenting the top line into distinct headings, a page number, and a date.\n\n**Distinguishing Title Elements**\n\nI'm now refining the classification of the masthead. I've determined \"Die Gartenlaube\" is an integrated part of the woodcut title vignette, not separate. I'm classifying the entire woodcut scene as a `figure`, with the title lettering within it.\n\n**Classifying Content Regions**\n\nI'm now processing the subscription details and the opening section of the main body text. I've identified a publication information block and am segmenting the subsequent \"An unsere Freunde und Leser!\" as a heading. The primary content following this is being marked as main text.\n\n**Reading Narrative Sections**\n\nI'm now reviewing the text immediately following the heading \"An unsere Freunde und Leser!\". I've identified the subsequent lines as continuing the main narrative, focusing on the content of the publication and its intended audience.\n\n**Summarizing Narrative Content**\n\nI'm currently processing the main narrative, focusing on the lines describing life and human activities. I'm identifying the purpose of the publication as entertaining and educational, and noting the concluding encouraging remarks for readers to engage with the content.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2164,
+   "completion_tokens": 5502,
+   "total_tokens": 7666,
+   "cost": 0.0222555,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0222555,
+    "upstream_inference_prompt_cost": 0.001623,
+    "upstream_inference_completions_cost": 0.0206325
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2584,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"regions\": [\n    {\n      \"id\": \"reg_stamp\",\n      \"kind\": \"stamp_or_seal\",\n      \"bbox\": [0.165, 0.011, 0.126, 0.052],\n      \"hand\": \"print\",\n      \"script\": \"antiqua\",\n      \"later_hand\": true,\n      \"note\": \"Oval ownership/library ink stamp with name 'Richter'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.182, 0.021, 0.093, 0.028]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_edition\",\n      \"kind\": \"heading\",\n      \"bbox\": [0.404, 0.024, 0.151, 0.023],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Edition note: 'Zweite Auflage.'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.404, 0.024, 0.151, 0.023]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_issue\",\n      \"kind\": \"heading\",\n      \"bbox\": [0.043, 0.054, 0.081, 0.022],\n      \"hand\": \"print\",\n      \"script\": \"antiqua\",\n      \"later_hand\": false,\n      \"note\": \"Issue number: '№ 1.'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.043, 0.054, 0.081, 0.022]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_year\",\n      \"kind\": \"date_line\",\n      \"bbox\": [0.842, 0.054, 0.071, 0.022],\n      \"hand\": \"print\",\n      \"script\": \"antiqua\",\n      \"later_hand\": false,\n      \"note\": \"Publication year: '1853.'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.842, 0.054, 0.071, 0.022]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_masthead_fig\",\n      \"kind\": \"figure\",\n      \"bbox\": [0.035, 0.047, 0.902, 0.395],\n      \"hand\": \"print\",\n      \"script\": \"unknown\",\n      \"later_hand\": false,\n      \"note\": \"Large woodcut masthead vignette depicting a reading family in an arbor with integrated title lettering 'Die Gartenlaube.'\",\n      \"lines\": []\n    },\n    {\n      \"id\": \"reg_subtitle\",\n      \"kind\": \"heading\",\n      \"bbox\": [0.176, 0.457, 0.612, 0.022],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Subtitle and editor statement\",\n      \"lines\": [\n        {\n          \"bbox\": [0.176, 0.457, 0.612, 0.022]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_pub_info\",\n      \"kind\": \"other\",\n      \"bbox\": [0.164, 0.488, 0.635, 0.038],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Periodicity and subscription pricing information\",\n      \"lines\": [\n        {\n          \"bbox\": [0.312, 0.489, 0.339, 0.015]\n        },\n        {\n          \"bbox\": [0.164, 0.509, 0.635, 0.016]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_heading_editorial\",\n      \"kind\": \"heading\",\n      \"bbox\": [0.328, 0.542, 0.298, 0.021],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.328, 0.542, 0.298, 0.021]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_editorial_body\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.035, 0.565, 0.897, 0.282],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"\",\n      \"lines\": [\n        {\n          \"bbox\": [0.099, 0.565, 0.348, 0.016]\n        },\n        {\n          \"bbox\": [0.070, 0.578, 0.862, 0.016]\n        },\n        {\n          \"bbox\": [0.036, 0.593, 0.892, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.607, 0.875, 0.015]\n        },\n        {\n          \"bbox\": [0.070, 0.621, 0.863, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.635, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.649, 0.896, 0.016]\n        },\n        {\n          \"bbox\": [0.036, 0.663, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.677, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.692, 0.402, 0.015]\n        },\n        {\n          \"bbox\": [0.070, 0.705, 0.863, 0.016]\n        },\n        {\n          \"bbox\": [0.036, 0.720, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.734, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.748, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.762, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.776, 0.505, 0.015]\n        },\n        {\n          \"bbox\": [0.070, 0.790, 0.863, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.804, 0.896, 0.015]\n        },\n        {\n          \"bbox\": [0.036, 0.819, 0.123, 0.015]\n        },\n        {\n          \"bbox\": [0.070, 0.832, 0.362, 0.015]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_sig_stolle\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.108, 0.850, 0.224, 0.018],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Editor signature line\",\n      \"lines\": [\n        {\n          \"bbox\": [0.108, 0.850, 0.224, 0.018]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_sig_keil\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.695, 0.851, 0.180, 0.018],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Publisher signature line\",\n      \"lines\": [\n        {\n          \"bbox\": [0.695, 0.851, 0.180, 0.018]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_footer_notice\",\n      \"kind\": \"other\",\n      \"bbox\": [0.036, 0.875, 0.895, 0.046],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Subscription notice and date of announcement\",\n      \"lines\": [\n        {\n          \"bbox\": [0.069, 0.875, 0.862, 0.016]\n        },\n        {\n          \"bbox\": [0.036, 0.890, 0.264, 0.016]\n        },\n        {\n          \"bbox\": [0.100, 0.904, 0.198, 0.016]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_closing_publ\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.638, 0.918, 0.222, 0.019],\n      \"hand\": \"print\",\n      \"script\": \"fraktur\",\n      \"later_hand\": false,\n      \"note\": \"Signoff 'Die Verlagshandlung.'\",\n      \"lines\": [\n        {\n          \"bbox\": [0.638, 0.918, 0.222, 0.019]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"reg_stamp\",\n    \"reg_edition\",\n    \"reg_issue\",\n    \"reg_year\",\n    \"reg_masthead_fig\",\n    \"reg_subtitle\",\n    \"reg_pub_info\",\n    \"reg_heading_editorial\",\n    \"reg_editorial_body\",\n    \"reg_sig_stolle\",\n    \"reg_sig_keil\",\n    \"reg_footer_notice\",\n    \"reg_closing_publ\"\n  ],\n  \"page_notes\": \"First page of Die Gartenlaube (1853, No. 1, Zweite Auflage). Some smudging and water stains along the lower margin; oval library or ownership stamp 'Richter' over the top left header area.\"\n}",
+  "parsed": {
+   "regions": [
+    {
+     "id": "reg_stamp",
+     "kind": "stamp_or_seal",
+     "bbox": [
+      0.165,
+      0.011,
+      0.126,
+      0.052
+     ],
+     "hand": "print",
+     "script": "antiqua",
+     "later_hand": true,
+     "note": "Oval ownership/library ink stamp with name 'Richter'",
+     "lines": [
+      {
+       "bbox": [
+        0.182,
+        0.021,
+        0.093,
+        0.028
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_edition",
+     "kind": "heading",
+     "bbox": [
+      0.404,
+      0.024,
+      0.151,
+      0.023
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "Edition note: 'Zweite Auflage.'",
+     "lines": [
+      {
+       "bbox": [
+        0.404,
+        0.024,
+        0.151,
+        0.023
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_issue",
+     "kind": "heading",
+     "bbox": [
+      0.043,
+      0.054,
+      0.081,
+      0.022
+     ],
+     "hand": "print",
+     "script": "antiqua",
+     "later_hand": false,
+     "note": "Issue number: '№ 1.'",
+     "lines": [
+      {
+       "bbox": [
+        0.043,
+        0.054,
+        0.081,
+        0.022
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_year",
+     "kind": "date_line",
+     "bbox": [
+      0.842,
+      0.054,
+      0.071,
+      0.022
+     ],
+     "hand": "print",
+     "script": "antiqua",
+     "later_hand": false,
+     "note": "Publication year: '1853.'",
+     "lines": [
+      {
+       "bbox": [
+        0.842,
+        0.054,
+        0.071,
+        0.022
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_masthead_fig",
+     "kind": "figure",
+     "bbox": [
+      0.035,
+      0.047,
+      0.902,
+      0.395
+     ],
+     "hand": "print",
+     "script": "unknown",
+     "later_hand": false,
+     "note": "Large woodcut masthead vignette depicting a reading family in an arbor with integrated title lettering 'Die Gartenlaube.'",
+     "lines": []
+    },
+    {
+     "id": "reg_subtitle",
+     "kind": "heading",
+     "bbox": [
+      0.176,
+      0.457,
+      0.612,
+      0.022
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "Subtitle and editor statement",
+     "lines": [
+      {
+       "bbox": [
+        0.176,
+        0.457,
+        0.612,
+        0.022
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_pub_info",
+     "kind": "other",
+     "bbox": [
+      0.164,
+      0.488,
+      0.635,
+      0.038
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "Periodicity and subscription pricing information",
+     "lines": [
+      {
+       "bbox": [
+        0.312,
+        0.489,
+        0.339,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.164,
+        0.509,
+        0.635,
+        0.016
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_heading_editorial",
+     "kind": "heading",
+     "bbox": [
+      0.328,
+      0.542,
+      0.298,
+      0.021
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "",
+     "lines": [
+      {
+       "bbox": [
+        0.328,
+        0.542,
+        0.298,
+        0.021
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_editorial_body",
+     "kind": "main_text",
+     "bbox": [
+      0.035,
+      0.565,
+      0.897,
+      0.282
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "",
+     "lines": [
+      {
+       "bbox": [
+        0.099,
+        0.565,
+        0.348,
+        0.016
+       ]
+      },
+      {
+       "bbox": [
+        0.07,
+        0.578,
+        0.862,
+        0.016
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.593,
+        0.892,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.607,
+        0.875,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.07,
+        0.621,
+        0.863,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.635,
+        0.896,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.649,
+        0.896,
+        0.016
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.663,
+        0.896,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.677,
+        0.896,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.692,
+        0.402,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.07,
+        0.705,
+        0.863,
+        0.016
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.72,
+        0.896,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.734,
+        0.896,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.748,
+        0.896,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.762,
+        0.896,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.776,
+        0.505,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.07,
+        0.79,
+        0.863,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.804,
+        0.896,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.819,
+        0.123,
+        0.015
+       ]
+      },
+      {
+       "bbox": [
+        0.07,
+        0.832,
+        0.362,
+        0.015
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_sig_stolle",
+     "kind": "signature",
+     "bbox": [
+      0.108,
+      0.85,
+      0.224,
+      0.018
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "Editor signature line",
+     "lines": [
+      {
+       "bbox": [
+        0.108,
+        0.85,
+        0.224,
+        0.018
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_sig_keil",
+     "kind": "signature",
+     "bbox": [
+      0.695,
+      0.851,
+      0.18,
+      0.018
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "Publisher signature line",
+     "lines": [
+      {
+       "bbox": [
+        0.695,
+        0.851,
+        0.18,
+        0.018
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_footer_notice",
+     "kind": "other",
+     "bbox": [
+      0.036,
+      0.875,
+      0.895,
+      0.046
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "Subscription notice and date of announcement",
+     "lines": [
+      {
+       "bbox": [
+        0.069,
+        0.875,
+        0.862,
+        0.016
+       ]
+      },
+      {
+       "bbox": [
+        0.036,
+        0.89,
+        0.264,
+        0.016
+       ]
+      },
+      {
+       "bbox": [
+        0.1,
+        0.904,
+        0.198,
+        0.016
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_closing_publ",
+     "kind": "signature",
+     "bbox": [
+      0.638,
+      0.918,
+      0.222,
+      0.019
+     ],
+     "hand": "print",
+     "script": "fraktur",
+     "later_hand": false,
+     "note": "Signoff 'Die Verlagshandlung.'",
+     "lines": [
+      {
+       "bbox": [
+        0.638,
+        0.918,
+        0.222,
+        0.019
+       ]
+      }
+     ]
+    }
+   ],
+   "reading_order": [
+    "reg_stamp",
+    "reg_edition",
+    "reg_issue",
+    "reg_year",
+    "reg_masthead_fig",
+    "reg_subtitle",
+    "reg_pub_info",
+    "reg_heading_editorial",
+    "reg_editorial_body",
+    "reg_sig_stolle",
+    "reg_sig_keil",
+    "reg_footer_notice",
+    "reg_closing_publ"
+   ],
+   "page_notes": "First page of Die Gartenlaube (1853, No. 1, Zweite Auflage). Some smudging and water stains along the lower margin; oval library or ownership stamp 'Richter' over the top left header area."
+  },
+  "usage": {
+   "prompt_tokens": 2164,
+   "completion_tokens": 5502,
+   "total_tokens": 7666,
+   "cost": 0.0222555,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0222555,
+    "upstream_inference_prompt_cost": 0.001623,
+    "upstream_inference_completions_cost": 0.0206325
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2584,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0222555,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 41.51
+ },
+ "meta": {}
+}

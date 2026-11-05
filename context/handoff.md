@@ -1,6 +1,14 @@
 # HANDOFF — Faculty research prototypes: German text transcription + maps/data
 
-*The scoping note this repository was built from, kept verbatim below (4 November 2026). Paths and tools were adjusted during the build; see `README.md` for what exists.*
+*The scoping note this repository was built from, 4 November 2026, kept verbatim below the rule. What exists now is described in the top-level `README.md`; the build departed from the note in these places:*
+
+- *Layout: one package, `src/mueser/{text,maps,shared}`, and the use cases under `01-use-cases/`, instead of `text/` and `maps/` halves with their own `src/`. The shared schema is at `shared/schema/` as specified.*
+- *Hosted HTR: eScriptorium (REST backend, `escriptorium.py`) is the platform wired in; Transkribus is an optional stub because its API needs a paid plan. Mistral OCR is wired but optional and unused.*
+- *Vision models: Gemini 3.8 Flash and 3.1 Pro, Qwen3-VL 235B, Claude Haiku and Sonnet 5.5 through OpenRouter; plus a layout pass and a consensus step the note did not ask for.*
+- *Gazetteers: GOV through its JSON API (`/api/searchByNameAndType`, `/api/searchByBoundingBox`), not SOAP; Wikidata through the entity API, because the SPARQL endpoint was rate-limited during an outage.*
+- *Evaluation: CER is computed in the repo (raw and normalised) rather than by dinglehopper, so the normalisation is visible.*
+- *Fixtures: synthetic pages rendered from invented text, plus public-domain Wikisource and Commons pages, instead of GT4HistOCR lines.*
+- *Phase T4 (fine-tuning) was not started.*
 
 ---
 

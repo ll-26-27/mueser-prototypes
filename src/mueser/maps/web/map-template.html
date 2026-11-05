@@ -95,7 +95,8 @@ function filtered() {
     if (t && p.type !== t) return false;
     if (s && p.resolution_status !== s) return false;
     if (p.year_start == null && p.year_end == null) return undated;
-    const a = p.year_start ?? p.year_end, b = p.year_end ?? p.year_start;
+    // An open interval ("1945/.." or "../1945") has one null end and means "from then on" / "until then".
+    const a = p.year_start ?? -Infinity, b = p.year_end ?? Infinity;
     return b >= lo && a <= hi;
   });
 }

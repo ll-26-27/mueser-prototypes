@@ -1,0 +1,216 @@
+{
+ "namespace": "openrouter",
+ "key": "4907022110b330dbc15fa60f72e1ffbc5ffbc46cbe80500e03775659c2c758bf",
+ "fetched_at": "2026-11-05T14:11:58Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/synth-01.png"
+ },
+ "raw": {
+  "id": "gen-1793887900-wqQzOdjl3w7AcXH9Mwki",
+  "object": "chat.completion",
+  "created": 1793887900,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\"text\": \"Reiſe=Tagebuch von Breßlau nach Königsberg, im Sommer 1786.\"},\n    {\"text\": \"Den 12. Junius 1786 reiſeten wir des Morgens um fünf Uhr von Breßlau ab. Der\"},\n    {\"text\": \"Herr von Zedlitz hatte uns Briefe an die Magiſträte der Städte mitgegeben, durch\"},\n    {\"text\": \"welche wir kommen würden, und ſein Bedienter begleitete uns bis vor das\"},\n    {\"text\": \"Oder=Thor. Der Weg gieng über Neumarkt, wo wir die Pferde wechſelten, nach\"},\n    {\"text\": \"Liegnitz, einer wohlgebauten Stadt an der Katzbach, die wir gegen Abend\"},\n    {\"text\": \"erreichten. Man zeigte uns das Schloß und die Ritter=Akademie, welche der\"},\n    {\"text\": \"König im Jahre 1708 geſtiftet hat.\"},\n    {\"text\": \"Den 14ten fuhren wir über Haynau nach Bunzlau. Die Töpfer=Waaren dieſer\"},\n    {\"text\": \"Stadt ſind in ganz Schleſien berühmt, und wir kauften einige Krüge für unſere\"},\n    {\"text\": \"Freunde in Berlin. Die Gegend iſt fruchtbar, und die Dörfer ſind beſſer gebauet\"},\n    {\"text\": \"als in der Mark.\"},\n    {\"text\": \"Den 15ten kamen wir nach Görlitz, wo wir zwey Tage blieben. Der Rathsherr\"},\n    {\"text\": \"Anton führte uns auf die Landeskrone, von welcher man das Rieſengebirge ſieht.\"},\n    {\"text\": \"In der Peterskirche ſahen wir die Bibliothek, welche über zehntauſend Bände\"},\n    {\"text\": \"enthalten ſoll.\"}\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Fraktur Doppelbindestriche als '=' wiedergegeben.\"\n}",
+     "refusal": null,
+     "reasoning": "**Transcribing Fraktur Text**\n\nI'm focusing on accurately transcribing the provided German Fraktur text, line by line. My current task is processing \"Reiſe-Tagebuch von Breßlau nach Königsberg, im Sommer 1786.\" followed by \"Den 12. Junius 1786 reiſeten wir des Morgens um fünf\".\n\n**Extracting Details from Diary**\n\nI'm diligently transcribing the remainder of this travel diary, noting the cities visited and key observations. I've now processed entries detailing the journey from Breslau to Görlitz, including mentions of Neumarkt, Liegnitz, Haynau, and Bunzlau's pottery.\n\n**Refining Hyphenation Rules**\n\nI'm now meticulously reviewing the transcription's handling of Fraktur hyphens. My current focus is on standardizing the representation of the specific double-slash glyph (⸗) observed in compound words like \"Reiſe=Tagebuch\" and \"Töpfer=Waaren,\" deliberating between using '=' or '-' for clarity and fidelity.\n\n**Checking Long S Usage**\n\nI'm reviewing the transcription for correct usage of the long 's' (ſ) versus the round 's' (s). I'm also verifying the appropriate character for 'ß', and how hyphens within compound words are represented, comparing '=' and '-' based on common Fraktur conventions.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Transcribing Fraktur Text**\n\nI'm focusing on accurately transcribing the provided German Fraktur text, line by line. My current task is processing \"Reiſe-Tagebuch von Breßlau nach Königsberg, im Sommer 1786.\" followed by \"Den 12. Junius 1786 reiſeten wir des Morgens um fünf\".\n\n**Extracting Details from Diary**\n\nI'm diligently transcribing the remainder of this travel diary, noting the cities visited and key observations. I've now processed entries detailing the journey from Breslau to Görlitz, including mentions of Neumarkt, Liegnitz, Haynau, and Bunzlau's pottery.\n\n**Refining Hyphenation Rules**\n\nI'm now meticulously reviewing the transcription's handling of Fraktur hyphens. My current focus is on standardizing the representation of the specific double-slash glyph (⸗) observed in compound words like \"Reiſe=Tagebuch\" and \"Töpfer=Waaren,\" deliberating between using '=' or '-' for clarity and fidelity.\n\n**Checking Long S Usage**\n\nI'm reviewing the transcription for correct usage of the long 's' (ſ) versus the round 's' (s). I'm also verifying the appropriate character for 'ß', and how hyphens within compound words are represented, comparing '=' and '-' based on common Fraktur conventions.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1723,
+   "total_tokens": 3434,
+   "cost": 0.0077445,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0077445,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.00646125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1263,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\"text\": \"Reiſe=Tagebuch von Breßlau nach Königsberg, im Sommer 1786.\"},\n    {\"text\": \"Den 12. Junius 1786 reiſeten wir des Morgens um fünf Uhr von Breßlau ab. Der\"},\n    {\"text\": \"Herr von Zedlitz hatte uns Briefe an die Magiſträte der Städte mitgegeben, durch\"},\n    {\"text\": \"welche wir kommen würden, und ſein Bedienter begleitete uns bis vor das\"},\n    {\"text\": \"Oder=Thor. Der Weg gieng über Neumarkt, wo wir die Pferde wechſelten, nach\"},\n    {\"text\": \"Liegnitz, einer wohlgebauten Stadt an der Katzbach, die wir gegen Abend\"},\n    {\"text\": \"erreichten. Man zeigte uns das Schloß und die Ritter=Akademie, welche der\"},\n    {\"text\": \"König im Jahre 1708 geſtiftet hat.\"},\n    {\"text\": \"Den 14ten fuhren wir über Haynau nach Bunzlau. Die Töpfer=Waaren dieſer\"},\n    {\"text\": \"Stadt ſind in ganz Schleſien berühmt, und wir kauften einige Krüge für unſere\"},\n    {\"text\": \"Freunde in Berlin. Die Gegend iſt fruchtbar, und die Dörfer ſind beſſer gebauet\"},\n    {\"text\": \"als in der Mark.\"},\n    {\"text\": \"Den 15ten kamen wir nach Görlitz, wo wir zwey Tage blieben. Der Rathsherr\"},\n    {\"text\": \"Anton führte uns auf die Landeskrone, von welcher man das Rieſengebirge ſieht.\"},\n    {\"text\": \"In der Peterskirche ſahen wir die Bibliothek, welche über zehntauſend Bände\"},\n    {\"text\": \"enthalten ſoll.\"}\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Fraktur Doppelbindestriche als '=' wiedergegeben.\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Reiſe=Tagebuch von Breßlau nach Königsberg, im Sommer 1786."
+    },
+    {
+     "text": "Den 12. Junius 1786 reiſeten wir des Morgens um fünf Uhr von Breßlau ab. Der"
+    },
+    {
+     "text": "Herr von Zedlitz hatte uns Briefe an die Magiſträte der Städte mitgegeben, durch"
+    },
+    {
+     "text": "welche wir kommen würden, und ſein Bedienter begleitete uns bis vor das"
+    },
+    {
+     "text": "Oder=Thor. Der Weg gieng über Neumarkt, wo wir die Pferde wechſelten, nach"
+    },
+    {
+     "text": "Liegnitz, einer wohlgebauten Stadt an der Katzbach, die wir gegen Abend"
+    },
+    {
+     "text": "erreichten. Man zeigte uns das Schloß und die Ritter=Akademie, welche der"
+    },
+    {
+     "text": "König im Jahre 1708 geſtiftet hat."
+    },
+    {
+     "text": "Den 14ten fuhren wir über Haynau nach Bunzlau. Die Töpfer=Waaren dieſer"
+    },
+    {
+     "text": "Stadt ſind in ganz Schleſien berühmt, und wir kauften einige Krüge für unſere"
+    },
+    {
+     "text": "Freunde in Berlin. Die Gegend iſt fruchtbar, und die Dörfer ſind beſſer gebauet"
+    },
+    {
+     "text": "als in der Mark."
+    },
+    {
+     "text": "Den 15ten kamen wir nach Görlitz, wo wir zwey Tage blieben. Der Rathsherr"
+    },
+    {
+     "text": "Anton führte uns auf die Landeskrone, von welcher man das Rieſengebirge ſieht."
+    },
+    {
+     "text": "In der Peterskirche ſahen wir die Bibliothek, welche über zehntauſend Bände"
+    },
+    {
+     "text": "enthalten ſoll."
+    }
+   ],
+   "script": "fraktur",
+   "notes": "Fraktur Doppelbindestriche als '=' wiedergegeben."
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1723,
+   "total_tokens": 3434,
+   "cost": 0.0077445,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0077445,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.00646125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1263,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0077445,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 18.57
+ },
+ "meta": {}
+}

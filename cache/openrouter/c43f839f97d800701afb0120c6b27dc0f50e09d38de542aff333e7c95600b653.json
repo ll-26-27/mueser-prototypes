@@ -1,0 +1,186 @@
+{
+ "namespace": "openrouter",
+ "key": "c43f839f97d800701afb0120c6b27dc0f50e09d38de542aff333e7c95600b653",
+ "fetched_at": "2026-11-05T14:22:25Z",
+ "request": {
+  "model": "anthropic/claude-haiku-5.5",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/synth-03.png"
+ },
+ "raw": {
+  "id": "gen-1793888537-5OH8gskGpBcbejKtuOVy",
+  "object": "chat.completion",
+  "created": 1793888537,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Anthropic",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\":[{\"text\":\"Aus dem [?Haushaltungsbuch], 1786\"},{\"text\":\"Den 12. Junii. Für die Post von Breslau bis Liegnitz 2 Thaler 8 Groschen.\"},{\"text\":\"Den 14. Junii. Dem Wirth in Lünzlau für Nachtlager und Essen 1 Thaler 12 Groschen. Für frisch\"},{\"text\":\"[?Pferde] 3 Thaler.\"},{\"text\":\"Den 19. Junii. In Sprottau, Gasthof zum goldnen Engel, drey Nächte 6 Thaler.\"},{\"text\":\"Den 2. Julii. Berlin. Dem Kaufmann Itzig für Wohnung 4 Thaler.\"},{\"text\":\"Den 22. Julii. Danzig. Für die Überfahrt nach Elbing 1 Thaler 4 Groschen.\"},{\"text\":\"Summa bis Danzig: [?47] Thaler 18 Groschen.\"}],\"script\":\"kurrent\",\"notes\":\"Copperplate-style Kurrent hand, page otherwise clean. Title, the word after 'Für frisch' and the summa figure are uncertain. Lines 3 and 4 may be a continuation of line 2 (wrapped), kept as separate lines per the page.\"}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "signature": "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.eyJlbmRwb2ludF9zbHVnIjoiYW50aHJvcGljL2NsYXVkZS1oYWlrdS01LjUtMjAyNjEwMDd8YW50aHJvcGljIn0",
+       "format": "anthropic-claude-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 5604,
+   "completion_tokens": 1507,
+   "total_tokens": 7111,
+   "cost": 0.0013139,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0013139,
+    "upstream_inference_prompt_cost": 0.0005604,
+    "upstream_inference_completions_cost": 0.0007535
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1059,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\":[{\"text\":\"Aus dem [?Haushaltungsbuch], 1786\"},{\"text\":\"Den 12. Junii. Für die Post von Breslau bis Liegnitz 2 Thaler 8 Groschen.\"},{\"text\":\"Den 14. Junii. Dem Wirth in Lünzlau für Nachtlager und Essen 1 Thaler 12 Groschen. Für frisch\"},{\"text\":\"[?Pferde] 3 Thaler.\"},{\"text\":\"Den 19. Junii. In Sprottau, Gasthof zum goldnen Engel, drey Nächte 6 Thaler.\"},{\"text\":\"Den 2. Julii. Berlin. Dem Kaufmann Itzig für Wohnung 4 Thaler.\"},{\"text\":\"Den 22. Julii. Danzig. Für die Überfahrt nach Elbing 1 Thaler 4 Groschen.\"},{\"text\":\"Summa bis Danzig: [?47] Thaler 18 Groschen.\"}],\"script\":\"kurrent\",\"notes\":\"Copperplate-style Kurrent hand, page otherwise clean. Title, the word after 'Für frisch' and the summa figure are uncertain. Lines 3 and 4 may be a continuation of line 2 (wrapped), kept as separate lines per the page.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Aus dem [?Haushaltungsbuch], 1786"
+    },
+    {
+     "text": "Den 12. Junii. Für die Post von Breslau bis Liegnitz 2 Thaler 8 Groschen."
+    },
+    {
+     "text": "Den 14. Junii. Dem Wirth in Lünzlau für Nachtlager und Essen 1 Thaler 12 Groschen. Für frisch"
+    },
+    {
+     "text": "[?Pferde] 3 Thaler."
+    },
+    {
+     "text": "Den 19. Junii. In Sprottau, Gasthof zum goldnen Engel, drey Nächte 6 Thaler."
+    },
+    {
+     "text": "Den 2. Julii. Berlin. Dem Kaufmann Itzig für Wohnung 4 Thaler."
+    },
+    {
+     "text": "Den 22. Julii. Danzig. Für die Überfahrt nach Elbing 1 Thaler 4 Groschen."
+    },
+    {
+     "text": "Summa bis Danzig: [?47] Thaler 18 Groschen."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Copperplate-style Kurrent hand, page otherwise clean. Title, the word after 'Für frisch' and the summa figure are uncertain. Lines 3 and 4 may be a continuation of line 2 (wrapped), kept as separate lines per the page."
+  },
+  "usage": {
+   "prompt_tokens": 5604,
+   "completion_tokens": 1507,
+   "total_tokens": 7111,
+   "cost": 0.0013139,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0013139,
+    "upstream_inference_prompt_cost": 0.0005604,
+    "upstream_inference_completions_cost": 0.0007535
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1059,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0013139,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Anthropic",
+  "seconds": 7.86
+ },
+ "meta": {}
+}

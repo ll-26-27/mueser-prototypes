@@ -1,0 +1,213 @@
+{
+ "namespace": "openrouter",
+ "key": "ba61280b3451ccf74f70713979de84fb584eba54e06608b903164ae59aa6c283",
+ "fetched_at": "2026-11-05T14:14:28Z",
+ "request": {
+  "model": "google/gemini-3.1-pro-preview",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/synth-02.png"
+ },
+ "raw": {
+  "id": "gen-1793888040-MiuCuDtppcEw4eNOUKpn",
+  "object": "chat.completion",
+  "created": 1793888040,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\n      \"text\": \"Von Görlitz nach Dreßden.\"\n    },\n    {\n      \"text\": \"Den 17ten reiſeten wir nach Bautzen, der Hauptſtadt der Oberlauſitz. Die Stadt\"\n    },\n    {\n      \"text\": \"liegt auf einem Felſen über der Spree, und hat viele alte Thürme. Hier wohnen\"\n    },\n    {\n      \"text\": \"Wenden und Deutſche bey einander, und man hört auf dem Markte beyde\"\n    },\n    {\n      \"text\": \"Sprachen.\"\n    },\n    {\n      \"text\": \"Den 19ten erreichten wir Dreßden gegen Mittag. Wir ſtiegen in dem Gaſthofe zum\"\n    },\n    {\n      \"text\": \"goldenen Engel ab, und giengen ſogleich auf die Brücke, welche mit Recht für die\"\n    },\n    {\n      \"text\": \"ſchönſte in Deutſchland gehalten wird. Den folgenden Tag beſahen wir die\"\n    },\n    {\n      \"text\": \"Gemälde-Gallerie, das grüne Gewölbe und die Bibliothek. Herr Hofrath Adelung\"\n    },\n    {\n      \"text\": \"empfieng uns ſehr freundlich.\"\n    },\n    {\n      \"text\": \"Den 21ten fuhren wir die Elbe hinab nach Meißen, wo wir die Porcellan-Fabrik\"\n    },\n    {\n      \"text\": \"beſuchten. Man erlaubt den Fremden nicht, die Maſſe zu ſehen, aber die\"\n    },\n    {\n      \"text\": \"Mahler-Stuben ſtehen jedem offen.\"\n    },\n    {\n      \"text\": \"Den 23ten kamen wir nach Leipzig. Die Meſſe war vorüber, und die Stadt war\"\n    },\n    {\n      \"text\": \"ruhig. Wir beſuchten den Buchhändler Breitkopf und ſahen ſeine Druckerey.\"\n    }\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Clean printed page, no damage.\"\n}",
+     "refusal": null,
+     "reasoning": "**Deciphering Historical German Text**\n\nI'm focusing on accurately transcribing this historical German document. My process involves a diplomatic transcription, meticulously preserving original spellings, punctuation, the long 's' (ſ), umlauts, and abbreviations. Each line of the source text will be represented on a single line in my output.\n\n**Capturing Fraktur Details**\n\nI'm currently working on a detailed transcription of the provided German Fraktur text. My focus is on accurately rendering all original elements, including spelling, punctuation, and specific characters like the long 's' (ſ). I am ensuring each source line is represented distinctly in my output.\n\n**Reconstructing Original Text**\n\nI am diligently working through the provided German text, focusing on a precise, diplomatic transcription. My efforts are concentrated on capturing the original spelling, punctuation, and historical characters like the long 's' (ſ) and umlauts, ensuring each line from the source is accurately mirrored in my output.\n\n**Verifying Textual Accuracy**\n\nI am meticulously checking each transcribed line against the source, paying close attention to ligatures and character interpretations, particularly the nuanced use of the long 's' (ſ) and distinguishing it from the standard 's' in words like \"Maſſe\".\n\n**Clarifying Character Representations**\n\nI'm wrestling with the nuances of Fraktur orthography, specifically the distinction between 'ß', 'ss', and ligatures like 'ſz'. I'm cross-referencing examples like \"Maſſe\" and \"Meſſe\" (both appearing as 'ſſ') against words like \"Dreßden\" ('ß') to ensure accurate representation in my transcription.\n\n**Confirming Character Sequences**\n\nI'm performing detailed character-by-character verification of previously transcribed words, confirming the correct usage of the long 's' (ſ) in common occurrences like \"Gaſthofe\" and \"Hauptſtadt\".\n\n**Confirming Character Sequences**\n\nI'm performing detailed character-by-character verification of previously transcribed words, confirming the correct usage of the long 's' (ſ) in common occurrences like \"Gaſthofe\" and \"Hauptſtadt\". I'm also clarifying subtle differences between 'tz' ligatures and single 'z' instances, and ensuring accurate rendering of 'ß'.\n\n**Verifying Specific Word Spellings**\n\nI'm double-checking instances of \"Mahler-Stuben\" and \"aller_ie\", ensuring each character and hyphen is accurately captured as per the original Fraktur. My focus is on precise textual reconstruction.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Deciphering Historical German Text**\n\nI'm focusing on accurately transcribing this historical German document. My process involves a diplomatic transcription, meticulously preserving original spellings, punctuation, the long 's' (ſ), umlauts, and abbreviations. Each line of the source text will be represented on a single line in my output.\n\n**Capturing Fraktur Details**\n\nI'm currently working on a detailed transcription of the provided German Fraktur text. My focus is on accurately rendering all original elements, including spelling, punctuation, and specific characters like the long 's' (ſ). I am ensuring each source line is represented distinctly in my output.\n\n**Reconstructing Original Text**\n\nI am diligently working through the provided German text, focusing on a precise, diplomatic transcription. My efforts are concentrated on capturing the original spelling, punctuation, and historical characters like the long 's' (ſ) and umlauts, ensuring each line from the source is accurately mirrored in my output.\n\n**Verifying Textual Accuracy**\n\nI am meticulously checking each transcribed line against the source, paying close attention to ligatures and character interpretations, particularly the nuanced use of the long 's' (ſ) and distinguishing it from the standard 's' in words like \"Maſſe\".\n\n**Clarifying Character Representations**\n\nI'm wrestling with the nuances of Fraktur orthography, specifically the distinction between 'ß', 'ss', and ligatures like 'ſz'. I'm cross-referencing examples like \"Maſſe\" and \"Meſſe\" (both appearing as 'ſſ') against words like \"Dreßden\" ('ß') to ensure accurate representation in my transcription.\n\n**Confirming Character Sequences**\n\nI'm performing detailed character-by-character verification of previously transcribed words, confirming the correct usage of the long 's' (ſ) in common occurrences like \"Gaſthofe\" and \"Hauptſtadt\".\n\n**Confirming Character Sequences**\n\nI'm performing detailed character-by-character verification of previously transcribed words, confirming the correct usage of the long 's' (ſ) in common occurrences like \"Gaſthofe\" and \"Hauptſtadt\". I'm also clarifying subtle differences between 'tz' ligatures and single 'z' instances, and ensuring accurate rendering of 'ß'.\n\n**Verifying Specific Word Spellings**\n\nI'm double-checking instances of \"Mahler-Stuben\" and \"aller_ie\", ensuring each character and hyphen is accurately captured as per the original Fraktur. My focus is on precise textual reconstruction.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1/GL3n2+cAoLgTjP4H0U8L3g+eEiyjxfTdzvmdaHw/6fqvQpT6zsmxX/ny0u8fT3Wlfm4HQj/D/lS5OJ6fnEzLcv2jYPZ30EPxUlv8ry1fwuekrnhM+SHZih8Bbn0iOESvi8xOQD2LVhnqauguYyPQ0OYNhO0v1ZJkGHQNqIwJuYiKeNDNOARqQoJ+IerloddRvgHOFpymWCH648/iA/5Jyj2N5egyxs3WmH6QuSNqKgaPgKBHWJcKld4NUcwI9ymsoRdOWfVOIVsanJ0k67f2eEw4z+BYNZIxMlyeOo62eQqvLbFxcBYfWKnFAo7IIzZN3yVrmcvXc3ym0qIZMNBfnMW25WCEas3yEp1EmTXNQN8FeoQjnuSQjY3DMMGxKNr9eV2o182v27i6+kEWGY3FY72Fj0drtBVOUZxT0kZLyt30NxOXh++4ijfs5wODHpsxqfcGQiFJWwnR2uTYar5QX/eJRWz3uzZMiYSb5hfFM7cqtrnY1KnK6tFYcEwEUABCOVXi9piF4Ut1a+5UNyt/Ikkj90KbT1kKRBHByXlLCn6knYI0+SkC5/KnS8EM1yUp+TKWirLmyuTwXyEnO4WrYSaW5QNksM5tyCfuJMuuiEyXSYVrlm7p9dg6sx3oLCrC5JuLqZJ28BMiFrSKHLPzuxJNKMkarV39evPl1921FUPNldqODXnJ8ts0FfFhIK4WqJ2jRWyin0koBBbRx7Lks0KsecN/G5AJQQAhiv6Ax3MqLxCUPaHfFs/aPY7v/7L8Yz7KUpmKDzoK4EeDzcPi6IqUU5ugPDi9SEw4uPkMsrN0pQNxNv8GVstSvI+ltifRggmTLD19/HCwnCHXt+7YXTQUFXszzbqwffFWMPtY0UlUPTayVsZHJ6I7gG3zXNCtObSNPcndYlW/2sYiKcTk1FOdFgrb9809OsGKEF0DvBRVRIe1M6hopsfvMeNMetuSApAJEKq/W9F6+B+gGSem0KUEi5vGdOtZDoZ1h6TTJmPSQ3HLeffrcYof+mcJOYoj4RuHAY+udqnnzuh3x8eOY9Rzr4ibSJeW6zoeFvN891pLPqVhjKUKGn4S4J5K84DFicPA9i+L5FuSPQFD4Y5SVzcthm/9ksj+RfmPSImDIiMs+FaYn6ShSBhtnW7vH662hycdOdLC3Og6C2Z2gKQBsP818yrP9EdwWGhAplbci7vVwJta6R0+x/6Rm9S8A4fNfje+vuSLZ3aTOLBDdLarijkMmyx3WVhOFU1/5FwkgDQxBUfjqIWMeDaLPsqhfNstTBvdOtIy4pjpMxFZ0t8XzrOTub6QGy8kQXUPbVMOP/yAzA1VjA4Dq3GcYDtTKrTKu+zOj+bnRUxoQo4UP86z2+U3FzFairAI6c1j738dF3/kVHnS8NCiXdT4Fa5gCY5vmcJVZXn/oDa5bRfZk2g6wXoOQSCGjlk8gFEKxYkl12G6NXEj0tShWiaSIM/2t2do+uKnQ32DRU6gdZ7nVw77w4TlRZ2hG4yQvQ1OIBFnhFE1KQzHD0aAYPLntyAeOUe28jCMc2MXPAmph9v9+v0g9nsgAg2Nmn3mmnTLKC9yWhEAcoyqrGfAnxNzkj6NcHK+JHr6he2b/PqW4/UWb0HClXoos+g0iHdc7on+8ZxuuHUerGYkYnS0V4H8ubLBo871CQxWiPBgGdqW6PdiO8+hvES0I359fa7qjbVeJxYqtm5J0jMZXmeY33Qa39EF9Tiaj2WrZqupJC68lNtg1BAbAjn8CbeeF/NCIoYZk6w3BhLw8mx+2qrz6iFCD1EweEJKdjMTsrJPwiWx6ayu0ISzIRdqOL6jLLziG0W1JQyNF4Szr2hXgjasylMKaNkVOVKtAgVO+Vff+KEQzZlzh07zjHfQnJJitc8WqMDOMlIfKl3n+U3liZpdfSOJFD3Scu1Rc+HW+wWDtZlo/vW2DyYIw3mO97BtPqy0tGHhgLtq+sjp0o1ost/YykyGPLvg84B5cO6KVbSnvGpMd3Fe8+MYks0MysjZu/55OhDnS+ZNBsaVvYlCCeEsD5xXW7L1+GGgN4BG8TyCqqR2gTQ3VukaN+YgQ81GFSoxjCT86bTeKZyaRJ2G3kP0cLCgzDgDspjSsxy+YOjbBfaxxUNuBYb08P/XZm0ntYeTu2S4bnmEIy1QV5GJFSJ6UD6ntOrE/PhaZPJv9t54z+27SNziy/ozCvhDyHEm33vc+gJ+PaOMExl04dkQ2JrAIfosfEV4YXtdclTmmvXgKn8CBbYWgByNoemwvn4BaIAB2F/E2FS2X3ypVe+qbnAKjddv2r37u5Xa1sB6y2GEbY27UQIHSXp4qvkLIwXl6HWSepM3wqsK4LMFXvWTsomYh05Jti1MbL/qNCJpKJer4vHbX0Cqr4k3JuqdZHGP0M5NcCRs+ahwzv0k/9+M5yPgVQnAmhzCqBAfOnHxoNZWiY56j4rlVgEISzliWYKGPRUcrosPkuajpWR/2purDdFbGzqZ/X/KPXgc+B7dLPAZBbAK350GBSX299WVRFPdV6E6Lf1rW6KG3OWP3cqG/U3n0vjuI4IQAtqaCaU6/tMKTbZbQIIDfqBIF9Z9rUB6+FohqkW1IVC/q3Ca5uROR36hqzxHXOYdTRVYA8/hRnvID+J0EB6hgMS9DbpYopsGzbhlvIVI2vdsFf9/v/UQ8krzS1lyNkXeX+/VSyc7MRgp72eBVIm/m2+xtdMOr6rh34+4TPfpAO6/NvjuAJ54Jyfw9XWxx7pXrk2UJCBoFfy5X3o4UGgo/eJGDJYv1VWWSeUryyodJ4yfqJKNBXitsGKe4lzwd3xDmsBcgGANskR+QxcM7+KF+ur3VwldZ+mFWjPzzdrF53X5WoqYTTPfkJ+rhnrp1Iygxzpsv8YScYAxrq3ftZqu8DlkuN6UFf55EQMdkxG3YzdpuLypjW8K6MItlD5vp+OyqNOsIji0DAWNQxZHr9LGobQ27doQ+SPJPiqSEYNzenATJ3rTAwmIOwTKL0WW4dwX+kiW29POQmcEMUavPp67/zXv4XGS8M1RW5YWot/xtOSIIyyLr3wWicBAFi0EMGO+WKJaTi/xGLbrD2Pbbx53Z/JseEiifGdVFFvFFgJSzeTe7Fk2L4mKXH6dypH9E0gG19IqeORtYdo9wk23Bl9Fa5Zog4fcVXxp8FblJRPOMC4TQ5xOSdpAyNdyvxfQnjid1gsjUUApu+P/gyMo6Ce1sAVE+HL3PzM8AMQizcOa//b+rU40F+hUhOxQXrOEoCsA0Il1wKvR83MwACO/MjrYILEzjQrLYOmi5jrN+eXRYA5SbWfTlLo6o8L1f65BXOUvN8Nb8MexVPaWR/YHdCXrwL+sxh6z11WhK92kiNfO1Is36nGuZMw1kwrF0uN7Rpiw4mRkCawhpK+t56Y7nuiVpSb2pVCCMRm8rlum90kY5xypjTyEpby4/BNvOwhzcv4YcMLAg11fFqbkzVTPkmTm8Ld3RzdEITQA+kJB8XInLybcHOrRfI06wTTqO76agb3naUzDj3f7W3Wm3Bukiss8edKiVgNBEVGTvD07yNzB5P6qZOr9PyxRYk/nQSCwlmLJSXj13oEC4OnYaCXl7UwKJB/tAgUpOkwd4gwKH9QLU0fFIqRnuq8G+yHLo+vqrdcaT0srtbF9wziRQ7kvdNuKRV5zpfSZIesoy5Qu+D2G0LuS3N5ASNLcdjN5z0Yykcfv7+R9iJtaWd1Sj61gOhAEdHWJ99ZJZBzNk/cUomTOH+dsuqjVGujyeoYKZ+X6ZMwTwXf545KK73/nhDEolNSm/58nXcbpxUgEpH6MjTKmRZUcoVb/O2DlKHZPN7pQgqf2G1Pw4GX+nIIasx6PbMnhCP1t8Uc+1GRB6b/QOavghd3MUYm3bDNM94xMRnEHDKL+mRZ+kuTEcAtyBf00rLRKbRwtc4k25trCFNdwoQh2DWOEPdOn314sqQWoiGK98lLELCGTc4eVQACF/4/XIT/dTDq/RjApxVDBuLeyEXl8VyX5CNXKRRTGhiLsw4+bwHNlYVyQrwIYdj/tqa4CVktwbqPpRvi9zhgNH4Q7JpCJMoTX/76hwFRvI/T4M0yC3FLXh0cYVg7NQmBHc4F19Biafc3erW1TILLiINVHAMijrejM2Hs2SLUzXgz9Md3Hz3BWFrszFrx59aRvnW/lOyYBOLuG+wN80HBNaCeZE39IN1EBnkrDw3RptPjbxjJdAjDdqMwzF+OVjxH1jCqlr0lib1NVcTPHycF9Cv/IgIJk2FiLfbdQQmB5njD+WXT67G+QhHCd0nObZQyvkaIdQZgOjL/sOOoUq16d8fUrv9WTmN9MfAQjxgNM8Z4LbOoI2lmhoaQx5oTiDjDFEnyzseS5whhdII3nU+5wJI4T0zfKX3ukBHmQCXPe/Slq5/aGMhYJtpWgUva1sA0c3yAjGnVXDaAMZ86v0Rbrhdh4ZBN1PbFQsNyN8yyhkkRJD/2zaskWCIrgARfifDgT0KIpXLfhrDm9jSDl7PDYMiHiDZznl+/LIG4OV9ZgpBNYrVj8V4aZL69vHzRY2q0XbynjxBvXadfkGxM3jswtSoczXtdLaN4xQvGlcmAOmU7UB2sjVI0B+06l/Y89w58JjwEN9HaFI7GDMn+F/eV/6amuEl3aRuzQlsaOyiTrA48lHuBbmjwSPJ6GDEbE7jMFpmx1Q/ZAVK/RJf1Wa55AZNFkHjV11xDXqoUdgEKAcCRJRbpaJ1mKkPyPi4mLiD/yeVZU023rGqP/SC9yifXB1DSBXoxVy/gEoiSoNmHXjX8v2VlGlqhTwq/fihLY2MbjrZn5RE7sJ+RVv3kjCnPq0AHJlKhPit1nErxn8EP5sHGjwe7ql24sArhzTAJ0msMunRtmLvwYX41hkJurlpKoepky1OJs8usuPB5NQNRGto9564kwEZgMHfIDgT6KM9MC4jGRRYma+mA48YKSUpNPHY9Aqz1FB/97Ein/397/Eb+3eLwchYZ9daU0LkE92B1NJuNK5Qt4ynhGU19gi3PWl1uyCwgu4H9vFVnzU7OQM5rUJWVajPdVawJMHS6ccKbdE5BAvhdyj88NTfKtWa/qStV57Bu2qGTi6DJsDPHyrBn3HSvJoyvDI1Gbdp5e6lnwsBu/+QwKZUe1egYt7nc6qFl9WCyMd6pJpF8rd8q/PJDpFBQh84deSX0OyZsEKlcp4m9NrHCQRQtwJYA8/ggMxTNcjF9IlM8FGaojmwz1ED4iN/vNHPw7zminog3d45A+m2Za4edk3ly3ea/JyXJiW6qxsJUj1xl4lC64JUETdkqIEjJ+lCFqmZBPRu9q00yprBqRH5ZLBSZm4bvkmfLq5dT80wxZIq89Mcp0JLOLFPwtw7Rc/vt8gRRn51iC8BscOccGEb3ZYKCMF9D6fGNJbE+t3dI1GWzbHh9gAFeYTPM+Pji4iqvIpb81cftzljscm6L8fGki63oTcP8o60U3eE8M7363TR0/wYghWoRzDeCECC0ALr1XaFJNdiuzm23b5PktrS6D4QvZDYkeZK4p6ljR65oBqARLYz8SUu7N9qhyA/3sw6/7X0z9kI293iQ5smM+i6r7B9Ic2b8DON/ozEU92b3MuIOkfC43t4jPqp5PV86PkjTJFJyFnkvrndpaqBfQODqHRCZDVsPiHR4qIo5gNmirNo4LYAk0IdGewKIbzr0GGTnyZjpes6tH3KxuRru6N81T9iUOkRwncnIr8h69lmnHu/VfXxkZVIWHTZIdlHJbJNJTrhel2o2F8wo9yYX/Q9gdhS7p3t1L0NwItZidO008H3k2RzHx8P2qzRmcawexg1ay6cXzPFYOcYtcKJJUWtYF6rN2PMp+5n51JbQJ8df9SsgEVD0bbvxAguZ5VgaqhjHAeWxrGFQKk9cxGoPi9yvqWyHLc07TVeZ5JgoudzFV0l4ZSDPAmk9bMu3F6uKG/YRvmnF7BcktppM/4+HFcp42tfmN+GK2YeXFsNJiA/FeBsilNEfjVGWho0VjwDeo92USBWSLJBsQEJTYYzs/PcGU5iHYw7rHTPSHs+d9YfyEeC2IEpDUm3menesdf6PSY9Aoxnj9ILe1sYmoutbObfTQaDbSl26EVq7iiRBOqQ1vvfpjWKtpowKwOiuV43iJHoHmBwfKq27ENVm8c828YlML2ncrktu6aOA+XdoNm2iHFX0xFKgrdJ71Kz8quZJue2ZG0dLuKnY47D39556z6NHc+WBnCkSIzsLOvsUqqOc3klIc2FZ22+maYi01+55RS98agKSGzq3qt8xMSoFCowCW08VARwMfdAxtrOEo6FSHBLcb6pFG5A4V13dGU15GGeTRgbqj+Iliwjs423mcxSjdnbRCnIGcCy3H3xNyIBmdrJ5fSm6QGzT1lD/QJKtGTXWF58PsBIMXoPJMTniX3Ylc/CAHCC0QJw2sYHnG+XLzhuMSLUtMu89IiYTmTZ3CNBM5yJzyJd0e8lrJTqhP0MuwszltEPEHd4of98S8/nKGqIlkuQH/47QrVmKlSh+q8bb2A+dD3fPzhH5F5leQjqka81zOdoi5KojsP3k5alKZjP84GF3T9pIyI8cy/9/nHqURtRX4Kvb15kwW0S3drfWJez4r+Y2kiEPmyd9eoVWacVeFC4CNP/AwIm8E4mvGFmQbOFhOgLpkHmNj0aHUCvjbBK4q0sFE0lBGWNMHppWwUSzLjzSQ8e55lKF0vQbuHfCW6/sUJvjFOi5gfJaIBbuKzFQ4KdcA1qY7rQb1s6Qg4z9tx7xH92+xhhGTAFuTJi2BjwCtJnOYsU9r98UmCFFc4mO14HGBM8tgntGvizwj+MuYVQOwFU1iesT5C4PqncVJY7begEgceXNCJpxrgle0lYyVPhc7XZJy8nQ9cqsMgc89qg1N1xPfYXNRAwhnHXQaO5fEYhw+lXhuQXPkaNpKHzshnT491Yay8PfGLtL0UJjgSmgD1L6GQ1u7s6JHAIZhkrSnvQDwYmg2T7x3XufekGixETL3yZV1O3BfMqjfq4vFjHsNFXOLs0215WDd3caXMyRDtIoXW+nBRr0FX4ROrgINZ2ZxJnwq0pARzgLJsA9ucuDWImwwkp9PFxi+r6MPBvq6XsqKXbq4NlYibxtbmtuUd+HfiZnqMrlOG5HZHkrW9fnV7APmEDnGHJQdaG7IVjf1KL1mE3AZ5KKbhr4lVikndMweDbSaAUxlcqBPn55OpdvwCmpVYrhEt0pXUkDP1l/DIOpt9iQ8NKTmlH320TN7rKpiRdN6AM+6SASlmkogSEcmn0JBdTq48WVJPMbDkPba83L0Cn/YCMiCUeABFfJFg5zVX7S/e/N/TOhuc2H7P7K4rOVH1BbpiJeDJUK2M3BIBP0JF1qpcMNPoZb/CqcHWP0uCD3WKIRXcjh3RpLVQw6icEmsw9pLmUJU6JqDZVoyJUshdhrK93nc5a5pxX3ZiDOUao1mEZ5MF25eQGht6mfXBhWuFb7/e1XM2oQRXWvDZ8EInVZ/UPunCOTy4naurR6Y+ZvYhZi9QQtAKrQApu5YWExnoEXgyUxc7bXZTdcROh+fPuYRUGLFzeFFyrYDEz8x2+VFwol49k5wzjIx8e4te5xH9/CDkjiFcWSDmKJZiY+rMZraF8sHdn7zUJpGhxUSLM13oaJfQqivGHtlnzFNyq/Pyo4uVgaP2XLZEpJpgXJvUejyBKqH9fsj8rQOxzarNFx5A8R/5v8ajFV9a5g0ALIxkE7W8MHytrRodS/U8YMCunIK4zv2ZrwuyWMARtJ3uv92jx5S7DOslx+vW8aKLpg7YN7WkQILaMDUvtYl8kT5sZIW1yOsZ4fApRuf9dNU6mIOHI0SeGvToA79WjA9ikUfNb7JIwVVC5tVUirgzzgg7ytlCixdqu75YjH4B/VfvFQiwYl2IQiWB7r7s+ENr20ZW/C2xS2owdtj2L934P0ETz+ffqqrOnWKikox7Jd4bHEn6cvPH4RUwG3l+rgcauv9NtDlgurrJFQm7wS2oXOH5m1s8DNeGy4v4gKlPnPpyloqMFOyNW9lrvFJaMoevrw/A5J3crWRfhosXUb6vehVkvZLIme2fvAmz81ImgR5A88YwyY4Opad3x6nT6ABrz4Qe9HvPa/RpAXvwnE4qD444P4V/flkNwlFrFPGzXQVIAxgGkd1aB3TPjhs7md+JPns5jvNkFc9dpi8izbWXDnZ1tuuIG+CcnHksxBVUkX/sIFXOwoZv5tNvx1I9fCxVZZrlfOsCS2W1zh+8bek0+WBtuXErTqmI5+P8BwbTQqiAS5Lti9PzKR2pskHu932/nQKTR3Rewwt/XluaLdOJ+8+PcGVV1Vattw37I2CbD/12eQlleSgZhSt3JqeZ7eh29X/Q17YWVVNTKsJ7hkawy/oEnwbUQeOl2dIaXHlXHKIw7m0GJIqKhyWffD9R/WFuIEJi2VucKNTSIxx7F/1ii/qbr/QyNdSerM1MJRZfirottP8ZRLSB4+OQOCRDBvZm3Z+QgJGb6XIaoSf0t9kkoD92jY1OOKzotiux6UtAAUz4cdWBMMRY1Pu//CMdqYegqFpJlhrdn0orcnXFGIsjYPjpWzHDLkARocDyoWOx5Hv8XnRjlpnSZMhSGs5m98wRfF0WyHnTqKuxtCt/KB2kUCQ2dj2Dh/vJiyRJnFv0fQF91ev3jejD7/ZVXc3IDoYi9g/UFyZJAxWinBjfUMneVydqMMIXMcfoZbqCIaOVlcZYMIH5CSLJeFbcASuFh1U/RJbfG2Tyz2qDrseSu13GF/GnMlJuC5DA7yYMCgnW+2baL7oCQOxqnp9sUl4fiaYkzMB6WfF4vciZmShF4dvDOuvPoOAGct2GK7Aar20F7egvW0pD8A7neTvpAmyNRSOPD+j35e5OvJ9UYk3nhGCPZ1F7UIkzaH06dRIqjf9k5ndr3liJmYJ2llLZX7cSSD04O3OsaCNfaBmbnhmrfQtgOAX7Cwvz+hSMSK1Uzr7XM37Nh7NsbFoQlrExC4R+kJiDMbQ4+g/Yb9OBpsrL41fHy8+np4wF7eKRQy27ec6gW4drP3pxtDcwcGqMcL8/HFxFxurNlKEwP47jVoSRpHZejVeVps/OyuBZFwObvckZvojuTGVQo9/TyPcRYhjEyw6zbd3zH8zH6G0LnbUaXvbLqlqjPj5YxU1mncN0yWacFOE0eIFkRk6Vm0V0goJu9uckOo+dtU3ZEaCNFfJg0U6GEWNF0wu9h3uSsx3DiSjGTAXESqgCJLZS9N8dDp0seFs0380kZS7g6Do7lrcAVmkQ+lFICfZeIGBOwBcq7wu0ZSWnIp7db1+36ed9eER4eIIYgo7rvQMiZsJNax8HWY7AU85vxsz0ZyYsyEP6SaL+xo1qRGiYJ6gSATD8CnuhlQtqfwtpZX5mMwByB0Pj/zBT3hyY8RGlFotKtQEYElhwjHqOv3QgMRkXEhwbJSDZ0XhD5rhd00/ny9qBKHQCZCWe848maergWwCCOHywGJTleY/ZDg1arbppGYAN0ZRzByRombrc8698FbjPaEw/Fn05PRU5El3nr0j1mgXhDaG8DPUzcykUR5RD8SPvam/3QL6xyujcLmVA2QvGoBskjw8WsAYAse2lsBHIWvkPfWopsw/nqfx+XcZT15zbyIssAL24TjunODswOTsbvfbNaakW3duQHYBNbHCYLSd41mZ+Y3Laix++LpEFGvO2BIySXSMX2dsVzXYaSpnWkwBNh32VicbUBK7p7PIg0hjQXaidoHXFxQ4NP5+Rt/CUShBG7oUi1mm05iY1HYCNVo7EQRahKspBF4P06XQyM4orQAeMBUH3ixWJW9JZkBTHu2UZ+kZDhfl7E71mBl2cWXPIPcSZsxxVLbozM5xHCmT3bh42pBo0SW2+wN8RlY8GTxB5xBaidt1Km8Mh6qcEHlH4xzMllv3l0cagcB/QYp+pKmABYsrCmxJhzrs5aSH7V5RhVX6BqePEUcGqTBrpZetuadYKcN9FHR1Y0FiWBoeDjAhyvOUBkb2VX8OyrvZ6KQ9Al57UZWNfdNssbFOL6vw7rjo5yWc8PuzgsxFGCd7GjntlXAAlQ8br8K0qifu545t1x3mxaBvniJjpyhWnSgD9KSg/v72DkrVKbD3Ef+mpyK8/oX0h7/ApFsh2illR1lH+i3a39Y1rCEUitEfkJzRQr9zRvpy2LAKgInnlSiKOIXE/Et7M2hs+caF7GWOVzew/6JftHuPi+bSf+D+c0wlpj/czhX9uJBRfyTDJkFZO4v0Or3S7vBF3IZEZa+iiRuTyZnfXHlyV079BukFQ+kah5OKCX5B+t7hLuGsOVAJA5Any3SsVL5LK96ZiSM0EXqsXS6R5REBiXa5JJQzgyBZo10nRsaiGV7sv+rv/GfThr54Z5gFT5MvX0PasQCcH+eWWP60XX12oCMo4f1e0dTPhamDc+NCDIefvfKI8Ar2fBJyMS+LgljDQLXFmuStrqtucJEvP10rH5jV/mMARoVHb8gmIVG5Shc463Iysg9Os/QIQqrYrnw5G4a+/GYh5x+AqsKwWy03REaiMHhp9CbGeWzGiB7iEwjUj6Bp0q4j4VK16o3NvQkuiwV3FDbzQs6xTIMMELd2cHVeeg/zthctrF9VEV9b81vgjG4E811XHOx3Z/Z30MxRYjt5rV2IYbsXzUXDAELdNggf9RBDn7SUx4e0O8eNvp0PzPfm0u3eO5/hyt1i4p5B1dFDrBLQ8q6RjJlr1LPUJDBm2Zi2u5m3yWPdxC2T39uZJJEHAduFfil5MrV1LNvjrKCRihHnkbdLLP5DIVOHUnJ/JXOO06wXUUuVBcnnIB+/NQwLmlV6JpNcMGhAfccd7WVLOQqtYWPPaYMAgOzutCMk6Sm5N3BH89nJL1C5PH31mAXgB/L4AOR/Y+PmSHT44TQwPjEc5fkHtjLG22/gwZURF/3sGHoaewGgYkKY1jLeJuqh2LOvhQHTjQhP3fWjo2XaUhOCo/DaANldTMbLSnRjtQV0vYF1VRXzk2wmUkDIYYMQw+H3TzBg70WPZMHS50sZu5nZzhwd2phaMgWq8guURJo4c2x/SXDfV3aazw2YpJv1kD9LBgtqjZe25XTakWbVf5JKBiFoJgY/KpyofaF8qUqPPER4E4TwsNrF7tw2hYpJTVh8tpV1XbPTXV2p9Sx6zT4OQKrnuTtEgPxDQFgaYNDQlFcAYm1a6cdZgvV9rFKS0HYVt6h+Y56u9mewTIJX2nQP9XF8LozTgYd4Dseknu+2MikVjR/LIFMbBAZPrypYfLCZCILRDIAoYa2N3aGL7D0sN30neFFOMk+Kg3DiRH3/jRVaAJvYMiLnQuUCsLz6/8jXgWO6kUYaBkJlxEEwYV/X9ouuhLNpYln0HZ28lIK/XtyCw7Dp03ayWgWP+TrCSXYmemF29hsHWDgfEtRoUBxF4knM8xAxe5IWMHR1bJXWyRIqA7NkHa/OfDD6O+ggzOsZ7AO5l/I+64c7HmkQi/cGciNaPTcq+Pq1rE4o1NN3K40o/POTHx8l5rboPIPuke3hJKyph0JuKD5bymFJKUHK2Gdgi8S76t4SmcXPD8W1YaCZGaiPnRSEV2VI6rU2v/RtxxYUvRKzcE+HOkNlPgJ7JbJ2/CT9AeR/Z2WcczIRupOtNKPEgdTwZEDBzkg17utTX7OhZqjhPOlJHYHDj9trlupPYCkTIyRerUIFUVMc9qSdEqeD2gtf/5trKW1mNcbh9mSX9pAMP3VCHJnbnKHXPkru0+C1alL+UFeqn5LIY9b1YwUawDB3BMdUcS18iZbflPhJ4sEUcN4liN6fEaiXCVAQwcjTLsPwoqPyhd4OtRriutPN7ud1+CRYE91Yfy7qU0sx2qbLun3ovghAPnIZbHNJuECIbdOu4RkQ3BToFw7ZOTvnIdMcwgnQ57aBF6BsCBGX6K8PxvlsORrfSIhqTshyCYacJx5+hjV+00YnHV/adt6o+TK5qLa1BGQun0qNEbrDn0LZehHLBDlPzkJUngTnrkoqFcApOpK+xoR43WWqhOTx68YAFRfND1ntT+jSKDplUvZTwfPk86YFlSvAGT0lJaCPPI8gxlhJTcdqPd4YLq4KsGZrVt5dplgQULRf5hSIAA4AgFPnO5obqpOQJRGmGFvl/cEf3zQS5wNSuGtKiBLfxJ+Ztk7ouQzHCO0VwYXu1m+b9o91L7Jo1DutTQIpUfZSj7VkydrNFjJ65FZVcBSolA77EPEvMy9RYyVEsZGMqDJhVU7eTxvBkr8yT13A+MiJc3tl3uRtyz+iKZ+7yCHQuI4T9UFuXz5mFcdQLEX2cn7A32YChcQB4sdsji0RsGIgSIjI8FfNlzcj3oF6CZr08isCWgccIbE/WQhglD4sD7vcWFUsgozA2LmmuSpyFFrPRH/8NmwG6/gHFqXidD9k7ttOwaCRV+uYdSTMZKoyUDuDbgtpOX6VDiwyHDXF/c4vTJj8ti2pzhSfUQWaal+RPQYEfqqyeP0tFqFxCMEFdCB3yxyBKm7I3Ab1H79ZWyFqNiVHAXM/+FpBgJ6TPcWExblwuCtRo331zuCMW4umIqSGknBwvOVnqzTKIVxR79AV7x0+fGJpNO/o81PsqyHQ1/2wl2oJRLMMc7+ptxzkmxnVb+otIAsE3JAB0b2m9bHLuJjlC+AYn/svRhzbWF6wudUJd8loeTmhLsIoLfDwJ+8E/nldPH4053qOJxkS8T8+2seIecMCcBSFSoDCSU/jSYBIZmOi/jIa3Eukycav5PN0sdhAl36y6xowkSgoqgUY+Yimzkfu6SLaU4oZR4V+t29JtbnO7Ls9GxVF55KgYkI2qrti6Qtda+GuqHqHmcJGK+mqwVofSCDAnApSoSQONJLyAKRa4fGz4zLpraS3x9wqFM5IU5HSwdnxrTdTnwK8/GFeoWnc0ivmht3j8UunKYGzTXkmQYmDDRMCQCnAKvmpUFVOC9I21KrwarNIIF+4zbTLah/qU3Zs64MQYOJ2gn+TMPH0VgnUChQO86V23KvkHwtBRoN4Qr0238xl6DPLnsZV+dwxkqh1Aa7al0A/erx7uv5IfJ/9vCqE2ZJXYMt25FSwHCkuy63XFnB8mJtKxwVtRNeeWUYDWqv9+Jmbe4vcq+GaH0u+AR1JSjgCjhkp7hMagdQEFNPb/6oXRSYbLfaJJEdCCU+lLjf28dit7KRJTQQoqq065DNLynQkspcWO0hp6jlAOfbooD5yFvBbkgsNWHpzJbySM3Ta+JkMzxFhBZJMTzzj6ONfBU4d95Np0qa2qKHDeu2yxUGI3PrdiM/vxl/ml6KoNtlb151wOErZq+4C6dnkuCOrNSuDy3x80K8DVftR165XysZLPTK+d6+g62btfhEih4NdVsRfNqZUvDQQcmwC26Fg+ed4QTlXPkdQZyJPdt0c8DoegESJYWa2CJof7bb2lovMve7QxS64zSV5BXcIx9B14o/sIjPUtgU8vp5S0JuKrPliYpZ7geMAXXLi1SaVTd3xos23F1aTlvnXe9pzo4YnUKrDwwPIaOp5JWcUwGtIpaNNd7eK4BNhkKzy3fGJejYEd1ECouQM2cHDRRrzy8mxzDS5DmLFGtUpRGq8V+atRPUmbob8d6nJhlcRA27Ff31J5dam3YwBq2lCslPAwHMPZ3tVlq8ilDoCVzVFURsUETs4WJWaNRFdSCttjxgraY0T3k54epKavjcP3OUiYkwM=",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 3493,
+   "total_tokens": 5204,
+   "cost": 0.045338,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.045338,
+    "upstream_inference_prompt_cost": 0.003422,
+    "upstream_inference_completions_cost": 0.041916
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2987,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\n      \"text\": \"Von Görlitz nach Dreßden.\"\n    },\n    {\n      \"text\": \"Den 17ten reiſeten wir nach Bautzen, der Hauptſtadt der Oberlauſitz. Die Stadt\"\n    },\n    {\n      \"text\": \"liegt auf einem Felſen über der Spree, und hat viele alte Thürme. Hier wohnen\"\n    },\n    {\n      \"text\": \"Wenden und Deutſche bey einander, und man hört auf dem Markte beyde\"\n    },\n    {\n      \"text\": \"Sprachen.\"\n    },\n    {\n      \"text\": \"Den 19ten erreichten wir Dreßden gegen Mittag. Wir ſtiegen in dem Gaſthofe zum\"\n    },\n    {\n      \"text\": \"goldenen Engel ab, und giengen ſogleich auf die Brücke, welche mit Recht für die\"\n    },\n    {\n      \"text\": \"ſchönſte in Deutſchland gehalten wird. Den folgenden Tag beſahen wir die\"\n    },\n    {\n      \"text\": \"Gemälde-Gallerie, das grüne Gewölbe und die Bibliothek. Herr Hofrath Adelung\"\n    },\n    {\n      \"text\": \"empfieng uns ſehr freundlich.\"\n    },\n    {\n      \"text\": \"Den 21ten fuhren wir die Elbe hinab nach Meißen, wo wir die Porcellan-Fabrik\"\n    },\n    {\n      \"text\": \"beſuchten. Man erlaubt den Fremden nicht, die Maſſe zu ſehen, aber die\"\n    },\n    {\n      \"text\": \"Mahler-Stuben ſtehen jedem offen.\"\n    },\n    {\n      \"text\": \"Den 23ten kamen wir nach Leipzig. Die Meſſe war vorüber, und die Stadt war\"\n    },\n    {\n      \"text\": \"ruhig. Wir beſuchten den Buchhändler Breitkopf und ſahen ſeine Druckerey.\"\n    }\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Clean printed page, no damage.\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Von Görlitz nach Dreßden."
+    },
+    {
+     "text": "Den 17ten reiſeten wir nach Bautzen, der Hauptſtadt der Oberlauſitz. Die Stadt"
+    },
+    {
+     "text": "liegt auf einem Felſen über der Spree, und hat viele alte Thürme. Hier wohnen"
+    },
+    {
+     "text": "Wenden und Deutſche bey einander, und man hört auf dem Markte beyde"
+    },
+    {
+     "text": "Sprachen."
+    },
+    {
+     "text": "Den 19ten erreichten wir Dreßden gegen Mittag. Wir ſtiegen in dem Gaſthofe zum"
+    },
+    {
+     "text": "goldenen Engel ab, und giengen ſogleich auf die Brücke, welche mit Recht für die"
+    },
+    {
+     "text": "ſchönſte in Deutſchland gehalten wird. Den folgenden Tag beſahen wir die"
+    },
+    {
+     "text": "Gemälde-Gallerie, das grüne Gewölbe und die Bibliothek. Herr Hofrath Adelung"
+    },
+    {
+     "text": "empfieng uns ſehr freundlich."
+    },
+    {
+     "text": "Den 21ten fuhren wir die Elbe hinab nach Meißen, wo wir die Porcellan-Fabrik"
+    },
+    {
+     "text": "beſuchten. Man erlaubt den Fremden nicht, die Maſſe zu ſehen, aber die"
+    },
+    {
+     "text": "Mahler-Stuben ſtehen jedem offen."
+    },
+    {
+     "text": "Den 23ten kamen wir nach Leipzig. Die Meſſe war vorüber, und die Stadt war"
+    },
+    {
+     "text": "ruhig. Wir beſuchten den Buchhändler Breitkopf und ſahen ſeine Druckerey."
+    }
+   ],
+   "script": "fraktur",
+   "notes": "Clean printed page, no damage."
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 3493,
+   "total_tokens": 5204,
+   "cost": 0.045338,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.045338,
+    "upstream_inference_prompt_cost": 0.003422,
+    "upstream_inference_completions_cost": 0.041916
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2987,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.045338,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "seconds": 29.16
+ },
+ "meta": {}
+}

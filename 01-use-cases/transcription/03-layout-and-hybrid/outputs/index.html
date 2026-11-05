@@ -1,0 +1,1305 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hybrid reading, print: Kraken&#x27;s lines read by a vision model</title>
+<style>
+:root { --bg:#fbfaf7; --ink:#1e1c1a; --muted:#6b6660; --line:#e4dfd6; --panel:#fff; --accent:#c8102e; --del:#ffd6d6; --ins:#d6f0dd; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#15151a; --ink:#ecebe6; --muted:#a39f98; --line:#2c2c33; --panel:#1d1d23; --del:#5a2222; --ins:#1f4a2c; } }
+:root[data-theme="dark"] { --bg:#15151a; --ink:#ecebe6; --muted:#a39f98; --line:#2c2c33; --panel:#1d1d23; --del:#5a2222; --ins:#1f4a2c; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 Georgia, "Source Serif 4", serif; }
+header, section { padding:16px 24px; max-width:1500px; margin:0 auto; }
+h1 { font-size:24px; margin:0 0 6px; } h2 { font-size:18px; margin:24px 0 8px; } h3 { font-size:15px; margin:12px 0 4px; }
+.muted { color:var(--muted); } .mono { font-family: ui-monospace, Menlo, monospace; font-size:12.5px; }
+table { border-collapse:collapse; font-size:14px; } td, th { padding:4px 10px; border-bottom:1px solid var(--line); text-align:left; } td.num { text-align:right; font-variant-numeric: tabular-nums; }
+.page { display:grid; grid-template-columns: minmax(280px, 42%) 1fr; gap:18px; border-top:1px solid var(--line); padding-top:14px; margin-top:14px; }
+.page img { width:100%; height:auto; border:1px solid var(--line); background:#fff; }
+.tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; font-family: ui-sans-serif, system-ui, sans-serif; font-size:13px; }
+.tabs button { border:1px solid var(--line); background:var(--panel); color:var(--ink); border-radius:14px; padding:3px 10px; cursor:pointer; }
+.tabs button[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); font-weight:600; }
+pre { white-space:pre-wrap; word-break:break-word; background:var(--panel); border:1px solid var(--line); padding:10px; border-radius:6px; font-size:13.5px; line-height:1.55; }
+del { background:var(--del); text-decoration:line-through; } ins { background:var(--ins); text-decoration:none; }
+details { margin:8px 0; } summary { cursor:pointer; }
+.stat { display:inline-block; margin-right:14px; }
+@media (max-width:900px) { .page { grid-template-columns:1fr; } }
+</style></head><body>
+<header><h1>Hybrid reading, print: Kraken&#x27;s lines read by a vision model</h1><p>Three real print pages. Kraken segments and reads; Gemini 3.8 Flash reads the whole page; and in hybrid mode Gemini 3.8 Flash and Claude Haiku 5.5 read Kraken's line crops one at a time, so the reading keeps every line's coordinates.</p>
+<p class="muted">Run <span class="mono">print-20261105</span>. CER = character error rate against the ground truth (0.05 = one wrong character in twenty); "norm" = after the declared normalisation (ſ→s, superscript umlauts, hyphenation, whitespace). Costs are what the provider reported, or list price per page for Mistral OCR; cached calls cost nothing to rerun.</p></header>
+<section><h2>Summary (mean over pages)</h2><table><tr><th>backend</th><th>model</th><th>pages</th><th>CER</th><th>WER</th><th>CER norm</th><th>WER norm</th><th>$ / page</th><th>s / page</th></tr><tr><td>openrouter</td><td class='mono'>google/gemini-3.8-flash</td><td class='num'>3</td><td class='num'>0.026</td><td class='num'>0.118</td><td class='num'>0.015</td><td class='num'>0.048</td><td class='num'>0.0135</td><td class='num'>30.5</td></tr><tr><td>kraken</td><td class='mono'>german_print.mlmodel</td><td class='num'>3</td><td class='num'>0.048</td><td class='num'>0.203</td><td class='num'>0.026</td><td class='num'>0.096</td><td class='num'>0.0000</td><td class='num'>13.5</td></tr><tr><td>hybrid</td><td class='mono'>google/gemini-3.8-flash</td><td class='num'>3</td><td class='num'>0.049</td><td class='num'>0.196</td><td class='num'>0.024</td><td class='num'>0.073</td><td class='num'>0.1100</td><td class='num'>297.4</td></tr><tr><td>hybrid</td><td class='mono'>anthropic/claude-haiku-5.5</td><td class='num'>3</td><td class='num'>0.081</td><td class='num'>0.211</td><td class='num'>0.064</td><td class='num'>0.115</td><td class='num'>0.0046</td><td class='num'>68.3</td></tr></table><details><summary>The prompt sent to every vision-language model (<span class='mono'>src/mueser/text/backends/prompts/transcribe_de.md</span>)</summary><pre>You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.
+
+Rules:
+
+1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep &quot;Thür&quot;, &quot;seyn&quot;, &quot;Gebäu&quot;). Do not translate.
+2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus &quot;e&quot; superscript marker: aͤ, oͤ, uͤ.
+3. Keep abbreviations as written (e.g. &quot;u.&quot; not &quot;und&quot;, &quot;Hr.&quot; not &quot;Herr&quot;). Keep hyphenation at line ends as the page has it (&quot;Ver-&quot; / &quot;zeichnis&quot;).
+4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.
+5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never &quot;correct&quot; a reading toward a word you expect.
+6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent &quot;e&quot; looks like &quot;n&quot;, &quot;h&quot; has a loop below the line, &quot;s&quot; has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.
+7. Return JSON only, matching the schema: {&quot;lines&quot;: [{&quot;text&quot;: &quot;...&quot;}], &quot;script&quot;: &quot;fraktur|antiqua|kurrent|suetterlin|mixed|unknown&quot;, &quot;notes&quot;: &quot;...&quot;}. &quot;notes&quot; is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short.</pre></details><details><summary>The normalisation used for the “norm” columns</summary><pre>The declared normalisation. Keep it small and listed in the README.
+
+ſ→s · aͤ oͤ uͤ → ä ö ü · ꝛ→r · quotation marks and dashes unified · end-of-line hyphenation joined · whitespace collapsed</pre></details></section><section><h2>Every page, every backend</h2><div class="page" id="real-gartenlaube-1853-p001"><div><h3>real-gartenlaube-1853-p001</h3><a href="../inputs/pages-print/real-gartenlaube-1853-p001.jpg" target="_blank"><img src="../inputs/pages-print/real-gartenlaube-1853-p001.jpg" alt="page real-gartenlaube-1853-p001" loading="lazy"></a></div><div><div class="tabs"><button aria-pressed="true" data-target="real-gartenlaube-1853-p001-0">kraken · german_print.mlmodel</button><button aria-pressed="false" data-target="real-gartenlaube-1853-p001-1">openrouter · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-gartenlaube-1853-p001-2">hybrid · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-gartenlaube-1853-p001-3">hybrid · anthropic/claude-haiku-5.5</button><button aria-pressed="false" data-target="real-gartenlaube-1853-p001-gt">ground truth</button></div><div class="pane" id="real-gartenlaube-1853-p001-0" style="display:block"><p class="mono"><span class="stat"><b>cer</b> 0.061</span><span class="stat"><b>wer</b> 0.210</span><span class="stat"><b>cer_norm</b> 0.034</span><span class="stat"><b>wer_norm</b> 0.065</span><span class="stat"><b>lines</b> 40</span><span class="stat"><b>$</b> 0.0000</span><span class="stat"><b>s</b> 18.14</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">(o. 1.
+
+1i
+5
+22
+</ins>Zweite Auflage.
+<del title="in ground truth, not in output">No. 1.</del><ins title="in output, not in ground truth">2</ins>
+<del title="in ground truth, not in output">1853.</del><ins title="in output, not in ground truth">7</ins>
+<del title="in ground truth, not in output">Die Gartenlaube.
+F</del><ins title="in output, not in ground truth">J</ins>amilien<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">⸗</ins>Blatt.<del title="in ground truth, not in output"> –</del> Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer <del title="in ground truth, not in output">B</del><ins title="in output, not in ground truth">P</ins>ogen mit <del title="in ground truth, not in output">Il</del><ins title="in output, not in ground truth">J</ins>lu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>trationen.
+Durch alle Buchhandlungen und Po<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tämter für 10 Ngr. vierteljährlich zu beziehen.
+<ins title="in output, not in ground truth">1853.
+
+</ins>An un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ere Freunde und <del title="in ground truth, not in output">L</del><ins title="in output, not in ground truth">T</ins>e<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>er!
+Grüß Euch Gott, lieben Leute im deut<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen Lande!<ins title="in output, not in ground truth">.</ins>
+Zu den vielen Ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenken, die Euch der heilige Chri<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t be<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>cheert hat, kommen auch wir mit einer Gabe <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> mit einem neuen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Blättchen<del title="in ground truth, not in output">!</del><ins title="in output, not in ground truth">:</ins> Seht<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s Euch an in ruhiger Stunde. Was wir wollen und bringen <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> das Alles können wir Euch freilich nicht im<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Voraus <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agen und aus der er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ten Nummer werdet Ihr<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s auch nicht ganz er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ehen können; wir hoffen indeß, es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll Euch gefallen.
+Wenn <del title="in ground truth, not in output">i</del><ins title="in output, not in ground truth">I</ins>hr im Krei<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>e Eurer Lieben die langen Winterabende am traulichen Ofen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>itzt oder im Frühlinge, wenn vom Apfelbaume<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>die weiß und rothen Blüthen fallen, mit einigen Freunden in der <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chattigen Laube <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> dann le<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>et un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ere Schrift. Ein Blatt <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>werden für<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>noch Lu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t hat am Guten und Edlen! Fern von aller rai<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>onnirenden Politik und allem Meinungs<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>treit in Religions<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">⸗</ins> und andern<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chichte des Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenherzens und der Völker, in die<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Kämpfe men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chlicher Leiden<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werk<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tätten des men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chlichen Wi<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>ens, in die freie<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollt<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Ihr hören von den <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chönen Geheimni<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>en der Natur, von dem kün<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tlichen Bau des Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>einer Organe, von Allem, was da<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>lebt und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chwebt und kreucht und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chleicht, was Ihr täglich <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>eht und doch nicht kennt. Und was außerdem noch von Intere<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>e i<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t im<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Thun und Treiben der Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> Ihr <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollt<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s finden in un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>erm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>verzierende und erklärende Abbildungen bringt von anerkannten Kün<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll der Hauch der Poe<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ie <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chweben wie der<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Duft auf der blühenden Blume, und es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll Euch anheimeln in un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>rer Gartenlaube, in der Ihr gut<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">⸗</ins>deut<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>che Gemüthlichkeit findet, die<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>zu Herzen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>pricht.
+So probirt<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle,<ins title="in output, not in ground truth"> Redakteur.</ins>
+Ern<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t Keil,<ins title="in output, not in ground truth"> Verleger.</ins>
+Die Gartenla<del title="in ground truth, not in output">u</del><ins title="in output, not in ground truth">n</ins>be er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>cheint wöchentlich <del title="in ground truth, not in output">m</del><ins title="in output, not in ground truth">ſ</ins>i<ins title="in output, not in ground truth">ſ</ins>t vielen Illu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>trationen und ko<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tet vierteljährlich nur 10 <del title="in ground truth, not in output">N</del><ins title="in output, not in ground truth">A</ins>gr. Alle Buchhandlungen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>und Po<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>täm<del title="in ground truth, not in output">t</del>er nehmen Be<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tellungen an.
+Leipzig, Ende December 1852.<del title="in ground truth, not in output"> {{AlR|</del><ins title="in output, not in ground truth">
+</ins>Die Verlagshandlung.<del title="in ground truth, not in output">}}</del></pre><details><summary>Output as written</summary><pre>(o. 1.
+
+1i
+5
+22
+Zweite Auflage.
+2
+7
+Jamilien⸗Blatt. Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer Pogen mit Jluſtrationen.
+Durch alle Buchhandlungen und Poſtämter für 10 Ngr. vierteljährlich zu beziehen.
+1853.
+
+An unſere Freunde und Teſer!
+Grüß Euch Gott, lieben Leute im deutſchen Lande!.
+Zu den vielen Geſchenken, die Euch der heilige Chriſt beſcheert hat, kommen auch wir mit einer Gabe — mit einem neuen
+Blättchen: Seht&#x27;s Euch an in ruhiger Stunde. Was wir wollen und bringen — das Alles können wir Euch freilich nicht im
+Voraus ſagen und aus der erſten Nummer werdet Ihr&#x27;s auch nicht ganz erſehen können; wir hoffen indeß, es ſoll Euch gefallen.
+Wenn Ihr im Kreiſe Eurer Lieben die langen Winterabende am traulichen Ofen ſitzt oder im Frühlinge, wenn vom Apfelbaume
+die weiß und rothen Blüthen fallen, mit einigen Freunden in der ſchattigen Laube — dann leſet unſere Schrift. Ein Blatt ſoll&#x27;s
+werden für&#x27;s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der
+noch Luſt hat am Guten und Edlen! Fern von aller raiſonnirenden Politik und allem Meinungsſtreit in Religions⸗ und andern
+Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geſchichte des Menſchenherzens und der Völker, in die
+Kämpfe menſchlicher Leidenſchaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkſtätten des menſchlichen Wiſſens, in die freie
+Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann ſollt
+Ihr hören von den ſchönen Geheimniſſen der Natur, von dem künſtlichen Bau des Menſchen und ſeiner Organe, von Allem, was da
+lebt und ſchwebt und kreucht und ſchleicht, was Ihr täglich ſeht und doch nicht kennt. Und was außerdem noch von Intereſſe iſt im
+Thun und Treiben der Menſchen — Ihr ſollt&#x27;s finden in unſerm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch
+verzierende und erklärende Abbildungen bringt von anerkannten Künſtlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber ſoll der Hauch der Poeſie ſchweben wie der
+Duft auf der blühenden Blume, und es ſoll Euch anheimeln in unſrer Gartenlaube, in der Ihr gut⸗deutſche Gemüthlichkeit findet, die
+zu Herzen ſpricht.
+So probirt&#x27;s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle, Redakteur.
+Ernſt Keil, Verleger.
+Die Gartenlanbe erſcheint wöchentlich ſiſt vielen Illuſtrationen und koſtet vierteljährlich nur 10 Agr. Alle Buchhandlungen
+und Poſtämer nehmen Beſtellungen an.
+Leipzig, Ende December 1852.
+Die Verlagshandlung.
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/kraken/german_print.mlmodel/real-gartenlaube-1853-p001.txt · PAGE-XML beside it</p></div><div class="pane" id="real-gartenlaube-1853-p001-1" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.037</span><span class="stat"><b>wer</b> 0.162</span><span class="stat"><b>cer_norm</b> 0.014</span><span class="stat"><b>wer_norm</b> 0.022</span><span class="stat"><b>lines</b> 31</span><span class="stat"><b>$</b> 0.0195</span><span class="stat"><b>s</b> 39.49</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre>Zweite Auflage.
+<del title="in ground truth, not in output">No</del><ins title="in output, not in ground truth">№</ins>. 1.<del title="in ground truth, not in output">
+</del><ins title="in output, not in ground truth"> </ins>1853.
+Die Gartenlaube.
+Familien-Blatt. <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer Bogen mit Illustrationen.
+Durch alle Buchhandlungen und Po<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tämter für 10 Ngr. vierteljährlich zu beziehen.
+An un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ere Freunde und Le<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>er!
+Grüß Euch Gott, lieben Leute im deut<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen Lande!<ins title="in output, not in ground truth"> .</ins>
+Zu den vielen Ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenken, die Euch der heilige Chri<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t be<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>cheert hat, kommen auch wir mit einer Gabe <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> mit einem neuen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Blättchen! Seht’s Euch an in ruhiger Stunde. Was wir wollen und bringen <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> das Alles können wir Euch freilich nicht im<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Voraus <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agen und aus der er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ten Nummer werdet Ihr’s auch nicht ganz er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ehen können; wir hoffen indeß, es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll Euch gefallen.
+Wenn <del title="in ground truth, not in output">i</del><ins title="in output, not in ground truth">I</ins>hr im Krei<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>e Eurer Lieben die langen Winterabende am traulichen Ofen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>itzt oder im Frühlinge, wenn vom Apfelbaume<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>die weiß und rothen Blüthen fallen, mit einigen Freunden in der <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chattigen Laube <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> dann le<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>et un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ere Schrift. Ein Blatt <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll’s<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>werden für’s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>noch Lu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t hat am Guten und Edlen! Fern von aller rai<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>onnirenden Politik und allem Meinungs<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>treit in Religions<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">=</ins> und andern<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chichte des Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenherzens und der Völker, in die<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Kämpfe men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chlicher Leiden<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werk<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tätten des men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chlichen Wi<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>ens, in die freie<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollt<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Ihr hören von den <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chönen Geheimni<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>en der Natur, von dem kün<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tlichen Bau des Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>einer Organe, von Allem, was da<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>lebt und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chwebt und kreucht und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chleicht, was Ihr täglich <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>eht und doch nicht kennt. Und was außerdem noch von Intere<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>e i<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t im<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Thun und Treiben der Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> Ihr <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollt’s finden in un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>erm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>verzierende und erklärende Abbildungen bringt von anerkannten Kün<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll der Hauch der Poe<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ie <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chweben wie der<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Duft auf der blühenden Blume, und es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll Euch anheimeln in un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>rer Gartenlaube, in der Ihr gut<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">=</ins>deut<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>che Gemüthlichkeit findet, die<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>zu Herzen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>pricht.
+So probirt’s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle,<del title="in ground truth, not in output">
+</del><ins title="in output, not in ground truth"> Redakteur. </ins>Ernst Keil,<ins title="in output, not in ground truth"> Verleger.</ins>
+Die Gartenlaube er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>cheint wöchentlich mit vielen Illu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>trationen und ko<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tet vierteljährlich nur 10 Ngr. Alle Buchhandlungen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>und Po<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tämter nehmen Be<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tellungen an.
+Leipzig, Ende December 1852. <del title="in ground truth, not in output">{{AlR|</del>Die Verlagshandlung.<del title="in ground truth, not in output">}}</del></pre><details><summary>Output as written</summary><pre>Zweite Auflage.
+№. 1. 1853.
+Die Gartenlaube.
+Familien-Blatt. — Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer Bogen mit Illustrationen.
+Durch alle Buchhandlungen und Poſtämter für 10 Ngr. vierteljährlich zu beziehen.
+An unſere Freunde und Leſer!
+Grüß Euch Gott, lieben Leute im deutſchen Lande! .
+Zu den vielen Geſchenken, die Euch der heilige Chriſt beſcheert hat, kommen auch wir mit einer Gabe — mit einem neuen
+Blättchen! Seht’s Euch an in ruhiger Stunde. Was wir wollen und bringen — das Alles können wir Euch freilich nicht im
+Voraus ſagen und aus der erſten Nummer werdet Ihr’s auch nicht ganz erſehen können; wir hoffen indeß, es ſoll Euch gefallen.
+Wenn Ihr im Kreiſe Eurer Lieben die langen Winterabende am traulichen Ofen ſitzt oder im Frühlinge, wenn vom Apfelbaume
+die weiß und rothen Blüthen fallen, mit einigen Freunden in der ſchattigen Laube — dann leſet unſere Schrift. Ein Blatt ſoll’s
+werden für’s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der
+noch Luſt hat am Guten und Edlen! Fern von aller raiſonnirenden Politik und allem Meinungsſtreit in Religions= und andern
+Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geſchichte des Menſchenherzens und der Völker, in die
+Kämpfe menſchlicher Leidenſchaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkſtätten des menſchlichen Wiſſens, in die freie
+Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann ſollt
+Ihr hören von den ſchönen Geheimniſſen der Natur, von dem künſtlichen Bau des Menſchen und ſeiner Organe, von Allem, was da
+lebt und ſchwebt und kreucht und ſchleicht, was Ihr täglich ſeht und doch nicht kennt. Und was außerdem noch von Intereſſe iſt im
+Thun und Treiben der Menſchen — Ihr ſollt’s finden in unſerm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch
+verzierende und erklärende Abbildungen bringt von anerkannten Künſtlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber ſoll der Hauch der Poeſie ſchweben wie der
+Duft auf der blühenden Blume, und es ſoll Euch anheimeln in unſrer Gartenlaube, in der Ihr gut=deutſche Gemüthlichkeit findet, die
+zu Herzen ſpricht.
+So probirt’s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle, Redakteur. Ernst Keil, Verleger.
+Die Gartenlaube erſcheint wöchentlich mit vielen Illuſtrationen und koſtet vierteljährlich nur 10 Ngr. Alle Buchhandlungen
+und Poſtämter nehmen Beſtellungen an.
+Leipzig, Ende December 1852. Die Verlagshandlung.
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/openrouter/google_gemini-3.8-flash/real-gartenlaube-1853-p001.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-gartenlaube-1853-p001-2" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.059</span><span class="stat"><b>wer</b> 0.188</span><span class="stat"><b>cer_norm</b> 0.038</span><span class="stat"><b>wer_norm</b> 0.060</span><span class="stat"><b>lines</b> 40</span><span class="stat"><b>$</b> 0.1563</span><span class="stat"><b>s</b> 401.22</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">No. 1.
+[?[...]]
+[?unſers]
+
+
+</ins>Zweite Auflage.
+<del title="in ground truth, not in output">No. 1.</del>
+<del title="in ground truth, not in output">1853.</del><ins title="in output, not in ground truth">[?A]</ins>
+<del title="in ground truth, not in output">Die Gartenlaube.
+F</del><ins title="in output, not in ground truth">f</ins>amilien<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth"> = </ins>Blatt. <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer Bogen mit Illu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>trationen.
+Durch alle Buchhandlungen und Po<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tämter für 10 Ngr. vierteljährlich zu beziehen.
+<ins title="in output, not in ground truth">1853.
+[?[...]]
+</ins>An un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ere Freunde und Le<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>er!
+Grüß Euch Gott, lieben Leute im deut<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen Lande!
+Zu den vielen Geschenken, die Euch der heilige Christ bescheert hat, kommen auch wir mit einer Gabe <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> mit einem neuen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Blättchen! Seht<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s Euch an in ruhiger Stunde. Was wir wollen und bringen <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> das Alles können wir Euch freilich nicht im<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Voraus <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agen und aus der er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ten Nummer werdet Ihr<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s auch nicht ganz er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ehen können; wir hoffen indeß, es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll Euch gefallen.
+Wenn <del title="in ground truth, not in output">i</del><ins title="in output, not in ground truth">I</ins>hr im Krei<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>e Eurer Lieben die langen Winterabende am traulichen Ofen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>itzt oder im Frühlinge, wenn vom Apfelbaume<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>die weiß und rothen Blüthen fallen, mit einigen Freunden in der <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chattigen Laube <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> dann le<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>et un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ere Schrift. Ein Blatt <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>werden für<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden<ins title="in output, not in ground truth"> </ins>, dem ein warmes Herz an den Rippen pocht, der<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>noch Lu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t hat am Guten und Edlen! Fern von aller rai<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>onnirenden Politik und allem Meinungs<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>treit in Religions<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth"> =</ins> und andern<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chichte des Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenherzens und der Völker, in die<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Kämpfe men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chlicher Leiden<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkstätten des menschlichen Wissens, in die freie<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollt<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Ihr hören von den <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chönen Geheimni<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>en der Natur, von dem kün<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tlichen Bau des Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>einer Organe, von Allem, was da<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>lebt und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chwebt und kreucht und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chleicht, was Ihr täglich <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>eht und doch nicht kennt. Und was außerdem noch von Intere<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>e i<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t im<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Thun und Treiben der Menschen <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> Ihr <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollt’s finden in un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>erm Blättchen, das zu all<del title="in ground truth, not in output">e</del> den Dingen, die wir Euch bieten, auch noch<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>verzierende und erklärende Abbildungen bringt von anerkannten Künstlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll der Hauch der Poe<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ie <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chweben wie der<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Duft auf der blühenden Blume, und es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll Euch anheimeln in un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>rer Gartenlaube, in der Ihr gut<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">=</ins>deut<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>che Gemüthlichkeit findet, die<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>zu Herzen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>pricht.
+So probirt<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle,<ins title="in output, not in ground truth"> Redakteur.</ins>
+Ern<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ű</ins>t Keil,<ins title="in output, not in ground truth"> Verleger.</ins>
+Die Gartenlaube er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>cheint wöchentlich mit vielen Illu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>trationen und ko<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tet vierteljährlich nur 10 Ngr. Alle Buchhandlungen<ins title="in output, not in ground truth">
+–</ins> und Postämter nehmen Bestellungen an.
+Leipzig, Ende December 1852.<del title="in ground truth, not in output"> {{AlR|</del><ins title="in output, not in ground truth">
+</ins>Die Verlagshandlung.<del title="in ground truth, not in output">}}</del></pre><details><summary>Output as written</summary><pre>No. 1.
+[?[...]]
+[?unſers]
+
+
+Zweite Auflage.
+
+[?A]
+familien = Blatt. — Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer Bogen mit Illuſtrationen.
+Durch alle Buchhandlungen und Poſtämter für 10 Ngr. vierteljährlich zu beziehen.
+1853.
+[?[...]]
+An unſere Freunde und Leſer!
+Grüß Euch Gott, lieben Leute im deutſchen Lande!
+Zu den vielen Geschenken, die Euch der heilige Christ bescheert hat, kommen auch wir mit einer Gabe — mit einem neuen
+Blättchen! Seht&#x27;s Euch an in ruhiger Stunde. Was wir wollen und bringen — das Alles können wir Euch freilich nicht im
+Voraus ſagen und aus der erſten Nummer werdet Ihr&#x27;s auch nicht ganz erſehen können; wir hoffen indeß, es ſoll Euch gefallen.
+Wenn Ihr im Kreiſe Eurer Lieben die langen Winterabende am traulichen Ofen ſitzt oder im Frühlinge, wenn vom Apfelbaume
+die weiß und rothen Blüthen fallen, mit einigen Freunden in der ſchattigen Laube — dann leſet unſere Schrift. Ein Blatt ſoll&#x27;s
+werden für&#x27;s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden , dem ein warmes Herz an den Rippen pocht, der
+noch Luſt hat am Guten und Edlen! Fern von aller raiſonnirenden Politik und allem Meinungsſtreit in Religions = und andern
+Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geſchichte des Menſchenherzens und der Völker, in die
+Kämpfe menſchlicher Leidenſchaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkstätten des menschlichen Wissens, in die freie
+Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann ſollt
+Ihr hören von den ſchönen Geheimniſſen der Natur, von dem künſtlichen Bau des Menſchen und ſeiner Organe, von Allem, was da
+lebt und ſchwebt und kreucht und ſchleicht, was Ihr täglich ſeht und doch nicht kennt. Und was außerdem noch von Intereſſe iſt im
+Thun und Treiben der Menschen — Ihr ſollt’s finden in unſerm Blättchen, das zu all den Dingen, die wir Euch bieten, auch noch
+verzierende und erklärende Abbildungen bringt von anerkannten Künstlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber ſoll der Hauch der Poeſie ſchweben wie der
+Duft auf der blühenden Blume, und es ſoll Euch anheimeln in unſrer Gartenlaube, in der Ihr gut=deutſche Gemüthlichkeit findet, die
+zu Herzen ſpricht.
+So probirt&#x27;s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle, Redakteur.
+Ernűt Keil, Verleger.
+Die Gartenlaube erſcheint wöchentlich mit vielen Illuſtrationen und koſtet vierteljährlich nur 10 Ngr. Alle Buchhandlungen
+– und Postämter nehmen Bestellungen an.
+Leipzig, Ende December 1852.
+Die Verlagshandlung.
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/hybrid/google_gemini-3.8-flash/real-gartenlaube-1853-p001.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-gartenlaube-1853-p001-3" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.083</span><span class="stat"><b>wer</b> 0.201</span><span class="stat"><b>cer_norm</b> 0.065</span><span class="stat"><b>wer_norm</b> 0.099</span><span class="stat"><b>lines</b> 40</span><span class="stat"><b>$</b> 0.0070</span><span class="stat"><b>s</b> 93.65</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">No. 1.
+
+
+
+
+</ins>Zweite Auflage.
+<del title="in ground truth, not in output">No. 1.</del>
+<del title="in ground truth, not in output">1853.
+Die Gartenlaube.</del>
+Familien<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">=</ins>Blatt. <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer Bogen mit Illustrationen.
+Durch alle Buchhandlungen und Postämter für 10 Ngr. vierteljährlich zu beziehen.
+<ins title="in output, not in ground truth">1853.
+
+</ins>An unsere Freunde und Leser!
+Grüß Euch Gott, lieben Leute im deut<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen Lande!<ins title="in output, not in ground truth"> ·
+Zu den vielen Geſchenken, die Euch der heilige Chriſt beſchert hat, kommen auch wir mit einer Gabe — mit einem neuen</ins>
+Zu den vielen Geschenken, die Euch der heilige Christ besche<del title="in ground truth, not in output">e</del>rt hat, kommen auch <del title="in ground truth, not in output">wir </del>mit einer Gabe <del title="in ground truth, not in output">– mit </del>ein<del title="in ground truth, not in output">em</del> neue<del title="in ground truth, not in output">n Blättchen! Seht’</del>s<del title="in ground truth, not in output"> Euch an in ruhiger Stunde. Was wir wollen und bringen – das Alles können wir Euch freilich nicht im </del><ins title="in output, not in ground truth">
+</ins>Voraus <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agen und aus der er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ten Nummer werdet Ihr<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s auch nicht ganz er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ehen können; wir hoffen indeß, es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll Euch gefallen.
+Wenn <del title="in ground truth, not in output">i</del><ins title="in output, not in ground truth">I</ins>hr im Krei<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>e Eurer Lieben die langen Winterabende am traulichen Ofen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>itzt oder im Frühlinge, wenn vom Apfelb<del title="in ground truth, not in output">a</del><ins title="in output, not in ground truth">ä</ins>ume<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>die weiß und rothen Blüthen fallen, mit einigen Freunden in der <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chattigen Laube – dann le<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">f</ins>et un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ere Schrift. Ein Blatt <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>werden für<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>noch Lu<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t hat am Guten und Edlen! Fern von aller rai<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>onnirenden Politik und allem Meinungs<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>treit in Religions<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">=</ins> und andern<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geschichte des Menschenherzens und der Völker, in die<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Kämpfe men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chlicher Leiden<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkstätten des menschlichen Wissens, in die freie<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">f</ins>ollt<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Ihr hören von den <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chönen Geheimni<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>en der Natur, von dem kün<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tlichen Bau des Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>einer Organe, von Allem, was da<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>lebt und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chwebt und kreucht und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chleicht, was Ihr täglich <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>eht und doch nicht kennt. Und was außerdem noch von Intere<del title="in ground truth, not in output">ss</del><ins title="in output, not in ground truth">ſſ</ins>e i<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t im<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Thun und Treiben der Men<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins> Ihr <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollt<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s finden in un<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>erm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>verzierende und erklärende Abbildungen bringt von anerkannten Künstlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>oll der Hauch der Poe<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ie <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chweben wie der<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Duft auf der blühenden Blume, und es soll Euch anheimeln in unsrer Gartenlaube, in der Ihr gut<del title="in ground truth, not in output">-</del><ins title="in output, not in ground truth">=</ins>deutsche Gemüthlichkeit findet, die<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>zu Herzen spricht.
+So probirt<del title="in ground truth, not in output">’</del><ins title="in output, not in ground truth">&#x27;</ins>s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle,<ins title="in output, not in ground truth"> Redakteur.</ins>
+Ernst Keil,<ins title="in output, not in ground truth"> Verleger.</ins>
+Die Gartenlaube er<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>cheint wöchentlich mit vielen Illustrationen und <del title="in ground truth, not in output">k</del><ins title="in output, not in ground truth">f</ins>o<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tet vierteljährlich nur 10 Ngr. Alle Buchhandlungen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>und Po<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tämter nehmen Be<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>tellungen an.
+Leipzig, Ende December 1852.<del title="in ground truth, not in output"> {{AlR|</del><ins title="in output, not in ground truth">
+</ins>Die Verlagshandlung.<del title="in ground truth, not in output">}}</del></pre><details><summary>Output as written</summary><pre>No. 1.
+
+
+
+
+Zweite Auflage.
+
+
+Familien=Blatt. — Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer Bogen mit Illustrationen.
+Durch alle Buchhandlungen und Postämter für 10 Ngr. vierteljährlich zu beziehen.
+1853.
+
+An unsere Freunde und Leser!
+Grüß Euch Gott, lieben Leute im deutſchen Lande! ·
+Zu den vielen Geſchenken, die Euch der heilige Chriſt beſchert hat, kommen auch wir mit einer Gabe — mit einem neuen
+Zu den vielen Geschenken, die Euch der heilige Christ beschert hat, kommen auch mit einer Gabe ein neues
+Voraus ſagen und aus der erſten Nummer werdet Ihr&#x27;s auch nicht ganz erſehen können; wir hoffen indeß, es ſoll Euch gefallen.
+Wenn Ihr im Kreiſe Eurer Lieben die langen Winterabende am traulichen Ofen ſitzt oder im Frühlinge, wenn vom Apfelbäume
+die weiß und rothen Blüthen fallen, mit einigen Freunden in der ſchattigen Laube – dann lefet unſere Schrift. Ein Blatt ſoll&#x27;s
+werden für&#x27;s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der
+noch Luſt hat am Guten und Edlen! Fern von aller raiſonnirenden Politik und allem Meinungsſtreit in Religions= und andern
+Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geschichte des Menschenherzens und der Völker, in die
+Kämpfe menſchlicher Leidenſchaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkstätten des menschlichen Wissens, in die freie
+Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann follt
+Ihr hören von den ſchönen Geheimniſſen der Natur, von dem künſtlichen Bau des Menſchen und ſeiner Organe, von Allem, was da
+lebt und ſchwebt und kreucht und ſchleicht, was Ihr täglich ſeht und doch nicht kennt. Und was außerdem noch von Intereſſe iſt im
+Thun und Treiben der Menſchen — Ihr ſollt&#x27;s finden in unſerm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch
+verzierende und erklärende Abbildungen bringt von anerkannten Künstlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber ſoll der Hauch der Poeſie ſchweben wie der
+Duft auf der blühenden Blume, und es soll Euch anheimeln in unsrer Gartenlaube, in der Ihr gut=deutsche Gemüthlichkeit findet, die
+zu Herzen spricht.
+So probirt&#x27;s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle, Redakteur.
+Ernst Keil, Verleger.
+Die Gartenlaube erſcheint wöchentlich mit vielen Illustrationen und foſtet vierteljährlich nur 10 Ngr. Alle Buchhandlungen
+und Poſtämter nehmen Beſtellungen an.
+Leipzig, Ende December 1852.
+Die Verlagshandlung.
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/hybrid/anthropic_claude-haiku-5.5/real-gartenlaube-1853-p001.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-gartenlaube-1853-p001-gt" style="display:none"><pre>Zweite Auflage.
+No. 1.
+1853.
+Die Gartenlaube.
+Familien-Blatt. – Verantwortlicher Redakteur Ferdinand Stolle.
+Wöchentlich ein ganzer Bogen mit Illustrationen.
+Durch alle Buchhandlungen und Postämter für 10 Ngr. vierteljährlich zu beziehen.
+An unsere Freunde und Leser!
+Grüß Euch Gott, lieben Leute im deutschen Lande!
+Zu den vielen Geschenken, die Euch der heilige Christ bescheert hat, kommen auch wir mit einer Gabe – mit einem neuen Blättchen! Seht’s Euch an in ruhiger Stunde. Was wir wollen und bringen – das Alles können wir Euch freilich nicht im Voraus sagen und aus der ersten Nummer werdet Ihr’s auch nicht ganz ersehen können; wir hoffen indeß, es soll Euch gefallen.
+Wenn ihr im Kreise Eurer Lieben die langen Winterabende am traulichen Ofen sitzt oder im Frühlinge, wenn vom Apfelbaume die weiß und rothen Blüthen fallen, mit einigen Freunden in der schattigen Laube – dann leset unsere Schrift. Ein Blatt soll’s werden für’s Haus und für die Familie, ein Buch für Groß und Klein, für Jeden, dem ein warmes Herz an den Rippen pocht, der noch Lust hat am Guten und Edlen! Fern von aller raisonnirenden Politik und allem Meinungsstreit in Religions- und andern Sachen, wollen wir Euch in wahrhaft guten Erzählungen einführen in die Geschichte des Menschenherzens und der Völker, in die Kämpfe menschlicher Leidenschaften und vergangener Zeiten.
+Dann wollen wir hinaus wandern an der Hand eines kundigen Führers in die Werkstätten des menschlichen Wissens, in die freie Natur, zu den Sternen des Himmels, zu den Blumen des Gartens, in die Wälder und in die Eingeweide der Erde, und dann sollt Ihr hören von den schönen Geheimnissen der Natur, von dem künstlichen Bau des Menschen und seiner Organe, von Allem, was da lebt und schwebt und kreucht und schleicht, was Ihr täglich seht und doch nicht kennt. Und was außerdem noch von Interesse ist im Thun und Treiben der Menschen – Ihr sollt’s finden in unserm Blättchen, das zu alle den Dingen, die wir Euch bieten, auch noch verzierende und erklärende Abbildungen bringt von anerkannten Künstlern.
+So wollen wir Euch unterhalten und unterhaltend belehren. Ueber das Ganze aber soll der Hauch der Poesie schweben wie der Duft auf der blühenden Blume, und es soll Euch anheimeln in unsrer Gartenlaube, in der Ihr gut-deutsche Gemüthlichkeit findet, die zu Herzen spricht.
+So probirt’s denn mit uns und damit Gott befohlen!
+Ferdin. Stolle,
+Ernst Keil,
+Die Gartenlaube erscheint wöchentlich mit vielen Illustrationen und kostet vierteljährlich nur 10 Ngr. Alle Buchhandlungen und Postämter nehmen Bestellungen an.
+Leipzig, Ende December 1852. {{AlR|Die Verlagshandlung.}}
+</pre></div></div></div><div class="page" id="real-grimm-khm-1812-i-p093"><div><h3>real-grimm-khm-1812-i-p093</h3><a href="../inputs/pages-print/real-grimm-khm-1812-i-p093.jpg" target="_blank"><img src="../inputs/pages-print/real-grimm-khm-1812-i-p093.jpg" alt="page real-grimm-khm-1812-i-p093" loading="lazy"></a></div><div><div class="tabs"><button aria-pressed="true" data-target="real-grimm-khm-1812-i-p093-0">kraken · german_print.mlmodel</button><button aria-pressed="false" data-target="real-grimm-khm-1812-i-p093-1">openrouter · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-grimm-khm-1812-i-p093-2">hybrid · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-grimm-khm-1812-i-p093-3">hybrid · anthropic/claude-haiku-5.5</button><button aria-pressed="false" data-target="real-grimm-khm-1812-i-p093-gt">ground truth</button></div><div class="pane" id="real-grimm-khm-1812-i-p093-0" style="display:block"><p class="mono"><span class="stat"><b>cer</b> 0.069</span><span class="stat"><b>wer</b> 0.317</span><span class="stat"><b>cer_norm</b> 0.029</span><span class="stat"><b>wer_norm</b> 0.141</span><span class="stat"><b>lines</b> 30</span><span class="stat"><b>$</b> 0.0000</span><span class="stat"><b>s</b> 12.2</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">93
+</ins>die Tauben wieder herein und thaten freund<ins title="in output, not in ground truth">⸗
+</ins>lich: „A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollen wir dir die Wicken<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>le<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>en<del title="in ground truth, not in output">?</del><ins title="in output, not in ground truth">2</ins>“ „Ja, <del title="in ground truth, not in output">–</del>
+die <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chlechten ins Kröp<del title="in ground truth, not in output">f</del><ins title="in output, not in ground truth">ſ</ins>chen,
+die guten ins Töpfchen.“
+Pick, pick! pick, pick! gings <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chwind, als<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>w<del title="in ground truth, not in output">ä</del><ins title="in output, not in ground truth">aͤ</ins>ren zwö<ins title="in output, not in ground truth">ͤ</ins>lf Hände da. Und als <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ie fertig wa<ins title="in output, not in ground truth">⸗
+</ins>ren, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agten die Tauben: „A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel, will<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>du auch auf den Ball gehen und <del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">k</ins>anzen<del title="in ground truth, not in output">?</del><ins title="in output, not in ground truth">.</ins>“ <del title="in ground truth, not in output">– </del><ins title="in output, not in ground truth">W
+</ins>„O du mein Gott, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agte es, wie kann ich in<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>meinen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chmu<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">ß</ins>zigen Kleidern hingehen?<del title="in ground truth, not in output">“ – </del><ins title="in output, not in ground truth">&#x27;1
+</ins>„Geh zu dem Bäumlein auf deiner Mutter<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Grab, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ch<del title="in ground truth, not in output">ü</del><ins title="in output, not in ground truth">u</ins>ttele daran und wün<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>che dir <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chö<ins title="in output, not in ground truth">ͤ</ins>ne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Kleider, komm aber vor Mitternacht wieder.“<del title="in ground truth, not in output"> –</del><ins title="in output, not in ground truth">
+</ins> da ging A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel hinaus, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chüttelte das<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Bäumlein und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>prach:<ins title="in output, not in ground truth">t</ins>
+„Bäumlein rüttel und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chüttel dich,
+wirf <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chöne Kleider herab für mich!“
+Kaum hatte es das ausge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agt, da lag ein präch<ins title="in output, not in ground truth">⸗
+</ins>tig <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ilbern Kleid vor ihm, Perlen, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>eidene<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Strümpfe mit <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ilbernen Zwickeln und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ilberne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Pantoffel und was <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>on<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t dazu geh<del title="in ground truth, not in output">ö</del><ins title="in output, not in ground truth">oͤ</ins>rte. A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen<ins title="in output, not in ground truth">⸗
+</ins>puttel trug alles nach Haus, und als es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ich<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>gewa<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen und angezogen hatte, da war es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o<del title="in ground truth, not in output"> s</del><ins title="in output, not in ground truth">
+ſ</ins>ch<del title="in ground truth, not in output">ö</del><ins title="in output, not in ground truth">oͤ</ins>n wie eine Ro<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>e, die der Thau gewa<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>hat. Und wie es vor die<ins title="in output, not in ground truth">:</ins> Hausthüre kam, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o<del title="in ground truth, not in output"> s</del><ins title="in output, not in ground truth">
+ſ</ins>tand da ein Wagen mit <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>echs federge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chmück<ins title="in output, not in ground truth">⸗
+</ins>ten Rappen und Bed<del title="in ground truth, not in output">i</del><ins title="in output, not in ground truth">ſ</ins>ente dabei in Blau und<ins title="in output, not in ground truth">
+7</ins></pre><details><summary>Output as written</summary><pre>93
+die Tauben wieder herein und thaten freund⸗
+lich: „Aſchenputtel, ſollen wir dir die Wicken
+leſen2“ „Ja, 
+die ſchlechten ins Kröpſchen,
+die guten ins Töpfchen.“
+Pick, pick! pick, pick! gings ſo geſchwind, als
+waͤren zwöͤlf Hände da. Und als ſie fertig wa⸗
+ren, ſagten die Tauben: „Aſchenputtel, willſt
+du auch auf den Ball gehen und kanzen.“ W
+„O du mein Gott, ſagte es, wie kann ich in
+meinen ſchmußzigen Kleidern hingehen?&#x27;1
+„Geh zu dem Bäumlein auf deiner Mutter
+Grab, ſchuttele daran und wünſche dir ſchöͤne
+Kleider, komm aber vor Mitternacht wieder.“
+ da ging Aſchenputtel hinaus, ſchüttelte das
+Bäumlein und ſprach:t
+„Bäumlein rüttel und ſchüttel dich,
+wirf ſchöne Kleider herab für mich!“
+Kaum hatte es das ausgeſagt, da lag ein präch⸗
+tig ſilbern Kleid vor ihm, Perlen, ſeidene
+Strümpfe mit ſilbernen Zwickeln und ſilberne
+Pantoffel und was ſonſt dazu gehoͤrte. Aſchen⸗
+puttel trug alles nach Haus, und als es ſich
+gewaſchen und angezogen hatte, da war es ſo
+ſchoͤn wie eine Roſe, die der Thau gewaſchen
+hat. Und wie es vor die: Hausthüre kam, ſo
+ſtand da ein Wagen mit ſechs federgeſchmück⸗
+ten Rappen und Bedſente dabei in Blau und
+7
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/kraken/german_print.mlmodel/real-grimm-khm-1812-i-p093.txt · PAGE-XML beside it</p></div><div class="pane" id="real-grimm-khm-1812-i-p093-1" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.020</span><span class="stat"><b>wer</b> 0.102</span><span class="stat"><b>cer_norm</b> 0.010</span><span class="stat"><b>wer_norm</b> 0.032</span><span class="stat"><b>lines</b> 29</span><span class="stat"><b>$</b> 0.0122</span><span class="stat"><b>s</b> 35.06</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">— 93 —
+</ins>die Tauben wieder herein und thaten freund<ins title="in output, not in ground truth">-
+</ins>lich: „Aschenputtel, sollen wir dir d<del title="in ground truth, not in output">i</del><ins title="in output, not in ground truth">t</ins>e Wicken<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>lesen?“ „Ja, <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins>
+die schlechten ins Kröpfchen,
+die guten ins Töpfchen.“
+Pick, pick! pick, pick! gings so geschwind, als<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>wären zwölf Hände da. Und als sie fertig wa<ins title="in output, not in ground truth">-
+</ins>ren, sagten die Tauben: „Aschenputtel, willst<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>du auch auf den Ball gehen und tanzen<del title="in ground truth, not in output">?</del><ins title="in output, not in ground truth">.</ins>“ <del title="in ground truth, not in output">– </del><ins title="in output, not in ground truth">—
+</ins>„O du mein Gott, sagte es, wie kann ich in<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>meinen schmutzigen Kleidern hingehen?“ <del title="in ground truth, not in output">– </del><ins title="in output, not in ground truth">—
+</ins>„Geh zu dem Bäumlein auf deiner Mutter<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Grab, schüttele daran und wünsche dir schöne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Kleider, komm aber vor Mitternacht wieder.“<del title="in ground truth, not in output"> –</del><ins title="in output, not in ground truth">
+—</ins> da ging Aschenputtel hinaus, schüttelte das<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Bäumlein und sprach:
+„Bäumlein rüttel und schüttel dich,
+wirf schöne Kleider herab für mich!“
+Kaum hatte es das ausgesagt, da lag ein präch<ins title="in output, not in ground truth">-
+</ins>tig silbern Kleid vor ihm, Perlen, seidene<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Strümpfe mit silbernen Zwickeln und silberne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Pantoffel und was sonst dazu gehörte. Aschen<ins title="in output, not in ground truth">-
+</ins>puttel trug alles nach Haus, und als es sich<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>gewaschen und angezogen hatte, da war es so<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>schön wie eine Rose, die der Thau gewaschen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>hat. Und wie es vor die Hausthüre kam, so<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>stand da ein Wagen mit sechs federgeschmück<ins title="in output, not in ground truth">-
+</ins>ten Rappen und Bediente dabei in Blau und</pre><details><summary>Output as written</summary><pre>— 93 —
+die Tauben wieder herein und thaten freund-
+lich: „Aschenputtel, sollen wir dir dte Wicken
+lesen?“ „Ja, —
+die schlechten ins Kröpfchen,
+die guten ins Töpfchen.“
+Pick, pick! pick, pick! gings so geschwind, als
+wären zwölf Hände da. Und als sie fertig wa-
+ren, sagten die Tauben: „Aschenputtel, willst
+du auch auf den Ball gehen und tanzen.“ —
+„O du mein Gott, sagte es, wie kann ich in
+meinen schmutzigen Kleidern hingehen?“ —
+„Geh zu dem Bäumlein auf deiner Mutter
+Grab, schüttele daran und wünsche dir schöne
+Kleider, komm aber vor Mitternacht wieder.“
+— da ging Aschenputtel hinaus, schüttelte das
+Bäumlein und sprach:
+„Bäumlein rüttel und schüttel dich,
+wirf schöne Kleider herab für mich!“
+Kaum hatte es das ausgesagt, da lag ein präch-
+tig silbern Kleid vor ihm, Perlen, seidene
+Strümpfe mit silbernen Zwickeln und silberne
+Pantoffel und was sonst dazu gehörte. Aschen-
+puttel trug alles nach Haus, und als es sich
+gewaschen und angezogen hatte, da war es so
+schön wie eine Rose, die der Thau gewaschen
+hat. Und wie es vor die Hausthüre kam, so
+stand da ein Wagen mit sechs federgeschmück-
+ten Rappen und Bediente dabei in Blau und
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/openrouter/google_gemini-3.8-flash/real-grimm-khm-1812-i-p093.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-grimm-khm-1812-i-p093-2" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.077</span><span class="stat"><b>wer</b> 0.339</span><span class="stat"><b>cer_norm</b> 0.024</span><span class="stat"><b>wer_norm</b> 0.097</span><span class="stat"><b>lines</b> 30</span><span class="stat"><b>$</b> 0.1241</span><span class="stat"><b>s</b> 347.44</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">93
+</ins>die Tauben wieder herein und thaten freund<ins title="in output, not in ground truth">-
+</ins>lich<ins title="in output, not in ground truth"> </ins>: „<ins title="in output, not in ground truth"> </ins>A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollen wir dir die Wicken<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>le<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>en?“ „Ja, <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins>
+die <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chlechten ins Kröpfchen,
+die guten ins T<del title="in ground truth, not in output">ö</del><ins title="in output, not in ground truth">oͤ</ins>pfchen.“
+Pick<ins title="in output, not in ground truth"> </ins>, pick! pick, pick! gings <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chwind, als<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>wären zwölf Hände da. Und als sie fertig wa<ins title="in output, not in ground truth">-
+</ins>ren, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agten die Tauben: „A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel, will<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>du auch auf den Ball gehen <ins title="in output, not in ground truth">- </ins>und tanzen<del title="in ground truth, not in output">?</del><ins title="in output, not in ground truth">.</ins>“ <del title="in ground truth, not in output">– </del><ins title="in output, not in ground truth">—
+</ins>„O du mein Gott, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agte es, wie kann ich in<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>meinen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chmu<del title="in ground truth, not in output">t</del>zigen Kleidern hingehen?<del title="in ground truth, not in output">“</del><ins title="in output, not in ground truth">&#x27;&#x27;</ins> <del title="in ground truth, not in output">– </del><ins title="in output, not in ground truth">—
+</ins>„Geh zu dem Bäumlein auf deiner Mutter<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Grab, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chüttele daran und wün<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>che dir <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chöne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Kleider, komm aber vor Mitternacht wieder.“<del title="in ground truth, not in output"> –</del><ins title="in output, not in ground truth">
+—</ins> da ging A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel hinaus, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chüttelte das<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>B<del title="in ground truth, not in output">ä</del><ins title="in output, not in ground truth">aͤ</ins>umlein und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>prach<ins title="in output, not in ground truth"> </ins>:
+„B<del title="in ground truth, not in output">ä</del><ins title="in output, not in ground truth">aͤ</ins>umlein r<del title="in ground truth, not in output">ü</del><ins title="in output, not in ground truth">uͤ</ins>ttel und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ch<del title="in ground truth, not in output">ü</del><ins title="in output, not in ground truth">uͤ</ins>ttel dich,
+wirf <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ch<del title="in ground truth, not in output">ö</del><ins title="in output, not in ground truth">oͤ</ins>ne Kleider herab f<del title="in ground truth, not in output">ü</del><ins title="in output, not in ground truth">uͤ</ins>r mich!“
+Kaum hatte es das ausge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agt, da lag ein präch<ins title="in output, not in ground truth">-
+</ins>tig <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ilbern Kleid vor ihm, Perlen, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>eidene<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Strümpfe mit <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ilbernen Zwickeln und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ilberne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Pantoffel und was <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>on<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t dazu gehörte. A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen<ins title="in output, not in ground truth">s
+</ins>puttel trug alles nach Haus, und als es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ich<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>gewa<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen und angezogen hatte, da war es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o<del title="in ground truth, not in output"> s</del><ins title="in output, not in ground truth">
+ſ</ins>chön wie eine Ro<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>e, die der Thau gewa<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>hat. Und wie es vor die Hausthüre kam, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o<del title="in ground truth, not in output"> s</del><ins title="in output, not in ground truth">
+ſ</ins>tand da ein Wagen mit <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>echs federge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chmück<ins title="in output, not in ground truth">-
+</ins>ten Rappen und Bediente dabei in Blau und<ins title="in output, not in ground truth">
+[?[...]]</ins></pre><details><summary>Output as written</summary><pre>93
+die Tauben wieder herein und thaten freund-
+lich : „ Aſchenputtel, ſollen wir dir die Wicken
+leſen?“ „Ja, —
+die ſchlechten ins Kröpfchen,
+die guten ins Toͤpfchen.“
+Pick , pick! pick, pick! gings ſo geſchwind, als
+wären zwölf Hände da. Und als sie fertig wa-
+ren, ſagten die Tauben: „Aſchenputtel, willſt
+du auch auf den Ball gehen - und tanzen.“ —
+„O du mein Gott, ſagte es, wie kann ich in
+meinen ſchmuzigen Kleidern hingehen?&#x27;&#x27; —
+„Geh zu dem Bäumlein auf deiner Mutter
+Grab, ſchüttele daran und wünſche dir ſchöne
+Kleider, komm aber vor Mitternacht wieder.“
+— da ging Aſchenputtel hinaus, ſchüttelte das
+Baͤumlein und ſprach :
+„Baͤumlein ruͤttel und ſchuͤttel dich,
+wirf ſchoͤne Kleider herab fuͤr mich!“
+Kaum hatte es das ausgeſagt, da lag ein präch-
+tig ſilbern Kleid vor ihm, Perlen, ſeidene
+Strümpfe mit ſilbernen Zwickeln und ſilberne
+Pantoffel und was ſonſt dazu gehörte. Aſchens
+puttel trug alles nach Haus, und als es ſich
+gewaſchen und angezogen hatte, da war es ſo
+ſchön wie eine Roſe, die der Thau gewaſchen
+hat. Und wie es vor die Hausthüre kam, ſo
+ſtand da ein Wagen mit ſechs federgeſchmück-
+ten Rappen und Bediente dabei in Blau und
+[?[...]]
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/hybrid/google_gemini-3.8-flash/real-grimm-khm-1812-i-p093.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-grimm-khm-1812-i-p093-3" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.149</span><span class="stat"><b>wer</b> 0.371</span><span class="stat"><b>cer_norm</b> 0.117</span><span class="stat"><b>wer_norm</b> 0.184</span><span class="stat"><b>lines</b> 30</span><span class="stat"><b>$</b> 0.0055</span><span class="stat"><b>s</b> 79.21</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">93
+</ins>die Tauben wieder herein und thaten freund<ins title="in output, not in ground truth">-
+</ins>lich: „A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ollen wir dir die Wicken<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>lesen?<del title="in ground truth, not in output">“</del><ins title="in output, not in ground truth">&quot;</ins> <del title="in ground truth, not in output">„</del><ins title="in output, not in ground truth">&quot;</ins>Ja, <del title="in ground truth, not in output">–</del><ins title="in output, not in ground truth">—</ins>
+die <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">f</ins>chlechten ins Kröpfchen,
+<del title="in ground truth, not in output">d</del><ins title="in output, not in ground truth">D</ins>ie guten ins Töpfchen.<del title="in ground truth, not in output">“</del><ins title="in output, not in ground truth">&quot;</ins>
+Pick, pick! pick, pick! gings <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o ge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chwind, als<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>wären zwölf Hände da. Und als sie fertig wa<ins title="in output, not in ground truth">-
+</ins>ren, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">f</ins>agten die Tauben: <del title="in ground truth, not in output">„</del><ins title="in output, not in ground truth">,,</ins>A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel, will<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>t <ins title="in output, not in ground truth">du auch auf den Ball
+</ins>du auch auf den Ball gehen und tanzen<del title="in ground truth, not in output">?“</del><ins title="in output, not in ground truth">.&quot;</ins> <del title="in ground truth, not in output">– </del><ins title="in output, not in ground truth">—
+</ins>„O du mein Gott, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agte es, wie kann ich in<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>meinen <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chmutzigen Kleidern hingehen?“ <del title="in ground truth, not in output">– </del><ins title="in output, not in ground truth">—
+</ins>„Geh zu dem Bäumlein auf deiner Mutter<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Grab, schüttele daran und wünsche dir schöne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Kleider, komm aber vor Mitternacht wieder.<del title="in ground truth, not in output">“ –</del><ins title="in output, not in ground truth">”
+—</ins> da ging A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chenputtel hinaus, <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chüttelte das<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Bäumlein und sprach:
+<del title="in ground truth, not in output">„</del><ins title="in output, not in ground truth">,,</ins>Bäumlein rüttel und schüttel dich,
+wirf <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chöne Kleider herab für mich!<del title="in ground truth, not in output">“</del><ins title="in output, not in ground truth">&quot;</ins>
+Kaum hatte es das ausge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>agt, da lag ein prächt<ins title="in output, not in ground truth">-
+t</ins>ig <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">f</ins>ilbern Kleid vor ihm, Perlen, seidene Strümpfe mit silbern<ins title="in output, not in ground truth"> Sandalen an den Füßen
+Strümpfe mit ſilbern</ins>en Zwickeln und <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ilberne<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>Pantoffel und was <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>onst dazu gehörte. A<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen<ins title="in output, not in ground truth">-
+</ins>puttel trug alles nach Haus, und als es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>ich<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>gewa<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen und angezogen hatte, da war es <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>o <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chön wie eine Ro<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſe, die der Thau erfriſcht hat.
+ſchön wie eine Roſ</ins>e, die der Thau gewa<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chen<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>hat. Und wie es vor die Hausthüre kam, so<del title="in ground truth, not in output"> </del><ins title="in output, not in ground truth">
+</ins>stand da ein Wagen mit <del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>echs federge<del title="in ground truth, not in output">s</del><ins title="in output, not in ground truth">ſ</ins>chmück<ins title="in output, not in ground truth">
+</ins>ten Rappen und Bediente dabei in Blau und</pre><details><summary>Output as written</summary><pre>93
+die Tauben wieder herein und thaten freund-
+lich: „Aſchenputtel, ſollen wir dir die Wicken
+lesen?&quot; &quot;Ja, —
+die fchlechten ins Kröpfchen,
+Die guten ins Töpfchen.&quot;
+Pick, pick! pick, pick! gings ſo geſchwind, als
+wären zwölf Hände da. Und als sie fertig wa-
+ren, fagten die Tauben: ,,Aſchenputtel, willſt du auch auf den Ball
+du auch auf den Ball gehen und tanzen.&quot; —
+„O du mein Gott, ſagte es, wie kann ich in
+meinen ſchmutzigen Kleidern hingehen?“ —
+„Geh zu dem Bäumlein auf deiner Mutter
+Grab, schüttele daran und wünsche dir schöne
+Kleider, komm aber vor Mitternacht wieder.”
+— da ging Aſchenputtel hinaus, ſchüttelte das
+Bäumlein und sprach:
+,,Bäumlein rüttel und schüttel dich,
+wirf ſchöne Kleider herab für mich!&quot;
+Kaum hatte es das ausgeſagt, da lag ein prächt-
+tig filbern Kleid vor ihm, Perlen, seidene Strümpfe mit silbern Sandalen an den Füßen
+Strümpfe mit ſilbernen Zwickeln und ſilberne
+Pantoffel und was ſonst dazu gehörte. Aſchen-
+puttel trug alles nach Haus, und als es ſich
+gewaſchen und angezogen hatte, da war es ſo ſchön wie eine Roſe, die der Thau erfriſcht hat.
+ſchön wie eine Roſe, die der Thau gewaſchen
+hat. Und wie es vor die Hausthüre kam, so
+stand da ein Wagen mit ſechs federgeſchmück
+ten Rappen und Bediente dabei in Blau und
+
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/hybrid/anthropic_claude-haiku-5.5/real-grimm-khm-1812-i-p093.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-grimm-khm-1812-i-p093-gt" style="display:none"><pre>die Tauben wieder herein und thaten freundlich: „Aschenputtel, sollen wir dir die Wicken lesen?“ „Ja, –
+die schlechten ins Kröpfchen,
+die guten ins Töpfchen.“
+Pick, pick! pick, pick! gings so geschwind, als wären zwölf Hände da. Und als sie fertig waren, sagten die Tauben: „Aschenputtel, willst du auch auf den Ball gehen und tanzen?“ – „O du mein Gott, sagte es, wie kann ich in meinen schmutzigen Kleidern hingehen?“ – „Geh zu dem Bäumlein auf deiner Mutter Grab, schüttele daran und wünsche dir schöne Kleider, komm aber vor Mitternacht wieder.“ – da ging Aschenputtel hinaus, schüttelte das Bäumlein und sprach:
+„Bäumlein rüttel und schüttel dich,
+wirf schöne Kleider herab für mich!“
+Kaum hatte es das ausgesagt, da lag ein prächtig silbern Kleid vor ihm, Perlen, seidene Strümpfe mit silbernen Zwickeln und silberne Pantoffel und was sonst dazu gehörte. Aschenputtel trug alles nach Haus, und als es sich gewaschen und angezogen hatte, da war es so schön wie eine Rose, die der Thau gewaschen hat. Und wie es vor die Hausthüre kam, so stand da ein Wagen mit sechs federgeschmückten Rappen und Bediente dabei in Blau und
+</pre></div></div></div><div class="page" id="real-schiller-musenalmanach-1796-p093"><div><h3>real-schiller-musenalmanach-1796-p093</h3><a href="../inputs/pages-print/real-schiller-musenalmanach-1796-p093.jpg" target="_blank"><img src="../inputs/pages-print/real-schiller-musenalmanach-1796-p093.jpg" alt="page real-schiller-musenalmanach-1796-p093" loading="lazy"></a></div><div><div class="tabs"><button aria-pressed="true" data-target="real-schiller-musenalmanach-1796-p093-0">kraken · german_print.mlmodel</button><button aria-pressed="false" data-target="real-schiller-musenalmanach-1796-p093-1">openrouter · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-schiller-musenalmanach-1796-p093-2">hybrid · google/gemini-3.8-flash</button><button aria-pressed="false" data-target="real-schiller-musenalmanach-1796-p093-3">hybrid · anthropic/claude-haiku-5.5</button><button aria-pressed="false" data-target="real-schiller-musenalmanach-1796-p093-gt">ground truth</button></div><div class="pane" id="real-schiller-musenalmanach-1796-p093-0" style="display:block"><p class="mono"><span class="stat"><b>cer</b> 0.015</span><span class="stat"><b>wer</b> 0.081</span><span class="stat"><b>cer_norm</b> 0.015</span><span class="stat"><b>wer_norm</b> 0.081</span><span class="stat"><b>lines</b> 18</span><span class="stat"><b>$</b> 0.0000</span><span class="stat"><b>s</b> 10.09</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre>Ein frisches Duftgesäusel walle<del title="in ground truth, not in output">t</del><ins title="in output, not in ground truth">i</ins>
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin ach<del title="in ground truth, not in output">!</del><ins title="in output, not in ground truth">l</ins> vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Da<del title="in ground truth, not in output">ß</del><ins title="in output, not in ground truth">ſs</ins> Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr P<del title="in ground truth, not in output">u</del><ins title="in output, not in ground truth">a</ins>rpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+<del title="in ground truth, not in output">S</del><ins title="in output, not in ground truth">s</ins>ie seufzt, »o! sü<del title="in ground truth, not in output">ß</del><ins title="in output, not in ground truth">ſs</ins>er Hirt, wo finde
+Ich nun der Unschuld Lilienkranz?<ins title="in output, not in ground truth"> </ins>«
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;</pre><details><summary>Output as written</summary><pre>Ein frisches Duftgesäusel wallei
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin achl vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Daſs Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr Parpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+sie seufzt, »o! süſser Hirt, wo finde
+Ich nun der Unschuld Lilienkranz? «
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/kraken/german_print.mlmodel/real-schiller-musenalmanach-1796-p093.txt · PAGE-XML beside it</p></div><div class="pane" id="real-schiller-musenalmanach-1796-p093-1" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.021</span><span class="stat"><b>wer</b> 0.091</span><span class="stat"><b>cer_norm</b> 0.021</span><span class="stat"><b>wer_norm</b> 0.091</span><span class="stat"><b>lines</b> 19</span><span class="stat"><b>$</b> 0.0087</span><span class="stat"><b>s</b> 16.98</span> <span class="stat muted">cached</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre><ins title="in output, not in ground truth">( 93 )
+</ins>Ein frisches Duftgesäusel wallet
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin ach! vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Da<del title="in ground truth, not in output">ß</del><ins title="in output, not in ground truth">fs</ins> Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr Purpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+Sie seufzt, »<ins title="in output, not in ground truth"> </ins>o! sü<del title="in ground truth, not in output">ß</del><ins title="in output, not in ground truth">fs</ins>er Hirt, wo finde
+Ich nun der Unschuld Lilienkranz?<ins title="in output, not in ground truth"> </ins>«
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;</pre><details><summary>Output as written</summary><pre>( 93 )
+Ein frisches Duftgesäusel wallet
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin ach! vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Dafs Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr Purpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+Sie seufzt, » o! süfser Hirt, wo finde
+Ich nun der Unschuld Lilienkranz? «
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/openrouter/google_gemini-3.8-flash/real-schiller-musenalmanach-1796-p093.txt · PAGE-XML beside it · prompt sha256 89b5666464a1…</p></div><div class="pane" id="real-schiller-musenalmanach-1796-p093-2" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.010</span><span class="stat"><b>wer</b> 0.061</span><span class="stat"><b>cer_norm</b> 0.010</span><span class="stat"><b>wer_norm</b> 0.061</span><span class="stat"><b>lines</b> 18</span><span class="stat"><b>$</b> 0.0496</span><span class="stat"><b>s</b> 143.57</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre>Ein frisches Duftgesäusel wallet
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin ach! vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Da<del title="in ground truth, not in output">ß</del><ins title="in output, not in ground truth">ſs</ins> Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr Purpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+Sie seufzt, »<ins title="in output, not in ground truth"> </ins>o! sü<del title="in ground truth, not in output">ß</del><ins title="in output, not in ground truth">ſs</ins>er Hirt, wo finde
+Ich nun der Unschuld Lilienkranz?<ins title="in output, not in ground truth"> </ins>«
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;</pre><details><summary>Output as written</summary><pre>Ein frisches Duftgesäusel wallet
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin ach! vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Daſs Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr Purpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+Sie seufzt, » o! süſser Hirt, wo finde
+Ich nun der Unschuld Lilienkranz? «
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/hybrid/google_gemini-3.8-flash/real-schiller-musenalmanach-1796-p093.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-schiller-musenalmanach-1796-p093-3" style="display:none"><p class="mono"><span class="stat"><b>cer</b> 0.011</span><span class="stat"><b>wer</b> 0.061</span><span class="stat"><b>cer_norm</b> 0.011</span><span class="stat"><b>wer_norm</b> 0.061</span><span class="stat"><b>lines</b> 18</span><span class="stat"><b>$</b> 0.0014</span><span class="stat"><b>s</b> 31.99</span></p><p class="muted">Diff against ground truth: <del>missing or wrong</del> <ins>extra or substituted</ins></p><pre>Ein frisches Duftgesäusel wallet
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin ach! vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Da<del title="in ground truth, not in output">ß</del><ins title="in output, not in ground truth">fs</ins> Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr Purpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+Sie seufzt, <del title="in ground truth, not in output">»</del><ins title="in output, not in ground truth">&quot; </ins>o! sü<del title="in ground truth, not in output">ß</del><ins title="in output, not in ground truth">fs</ins>er Hirt, wo finde
+Ich nun der Unschuld Lilienkranz?<ins title="in output, not in ground truth"> </ins>«
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;</pre><details><summary>Output as written</summary><pre>Ein frisches Duftgesäusel wallet
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin ach! vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Dafs Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr Purpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+Sie seufzt, &quot; o! süfser Hirt, wo finde
+Ich nun der Unschuld Lilienkranz? «
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;
+</pre></details><p class="mono muted">output: 01-use-cases/transcription/03-layout-and-hybrid/outputs/runs/print-20261105/hybrid/anthropic_claude-haiku-5.5/real-schiller-musenalmanach-1796-p093.txt · PAGE-XML beside it · prompt sha256 a56ccc3a40b1…</p></div><div class="pane" id="real-schiller-musenalmanach-1796-p093-gt" style="display:none"><pre>Ein frisches Duftgesäusel wallet
+Im Haine bei der Sterne Licht,
+Und Philomelens Nachtlied hallet;
+Die Hirtin ach! vernimmt es nicht.
+Man sieht erzürnt die Elfen wallen,
+Daß Lust der Keuschheit Blume bricht,
+Man hört im Haine Klagen hallen;
+Die Hirtin ach! vernimmt sie nicht.
+Doch endlich ward im Mondesschimmer
+Sie an des Schäfers Arm gesehn:
+Es tönt der Elfen Grabgewimmer,
+Wo sie berauscht im Thale gehn.
+Ihr Purpurgürtel weht im Winde,
+Ihr Auge schwimmt im feuchten Glanz;
+Sie seufzt, »o! süßer Hirt, wo finde
+Ich nun der Unschuld Lilienkranz?«
+Bei Kronen, welche Leichen schmücken,
+So wimmert es im Nebelthal;
+</pre></div></div></div></section>
+<script>
+document.querySelectorAll('.tabs').forEach(t => t.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  t.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+  const page = t.parentElement; page.querySelectorAll('.pane').forEach(p => p.style.display = p.id === b.dataset.target ? 'block' : 'none');
+}));
+</script><!-- mueser-review:start -->
+<style>/* Shared reading room: source first, evidence one disclosure away. */
+body.review-ui {
+  --bg:#f6f5f0; --panel:#fffefa; --ink:#25342f; --muted:#667169;
+  --line:#dcded5; --accent:#335f4c; --soft:#eaf0e7; --warn:#956129;
+  --del:#f8ddd6; --ins:#dfecdc;
+  background:var(--bg); color:var(--ink); margin:0;
+  font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.review-ui *, .review-ui *::before, .review-ui *::after { box-sizing:border-box; }
+.review-ui [hidden] { display:none!important; }
+.review-ui a { color:var(--accent); text-underline-offset:4px; }
+.review-ui button,.review-ui input,.review-ui select { font:inherit; color:inherit; }
+.review-ui button,.review-ui select { cursor:pointer; }
+.review-ui :focus-visible { outline:3px solid #b17937; outline-offset:4px; }
+.review-ui h1,.review-ui h2,.review-ui h3 { color:var(--ink); line-height:1.18; }
+.review-ui h1 { font:normal clamp(30px,3.5vw,48px)/1.12 Georgia,serif; letter-spacing:-1.2px; margin:12px 0 18px; max-width:1000px; }
+.review-ui h2 { font:normal 27px/1.2 Georgia,serif; margin:0 0 18px; }
+.review-ui h3 { font-size:16px; margin:18px 0 12px; }
+.review-ui p { margin:10px 0 18px; }
+.review-ui .mono,.review-ui code { font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; overflow-wrap:anywhere; }
+.review-ui .muted { color:var(--muted); }
+.review-ui .eyebrow { font:600 10px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-transform:uppercase; letter-spacing:1.8px; color:var(--muted); }
+.review-topbar { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:17px 32px; border-bottom:1px solid var(--line); background:var(--panel); }
+.review-topbar a { text-decoration:none; font-size:13px; }
+.review-brand { display:flex; align-items:center; gap:12px; font-weight:650; }
+.review-brand::before { content:"M"; display:grid; place-items:center; width:30px; height:30px; background:var(--accent); color:white; font:20px Georgia,serif; }
+.review-topbar .top-links { display:flex; gap:22px; flex-wrap:wrap; }
+.review-ui .review-header { max-width:none; padding:32px 40px 24px; margin:0; border-bottom:1px solid var(--line); }
+.review-header .lead { max-width:720px; color:var(--muted); font-size:16px; margin-bottom:0; }
+.review-header .methodology { margin-top:18px; max-width:1000px; }
+.review-ui details { border:1px solid var(--line); border-radius:5px; background:var(--panel); margin:12px 0; }
+.review-ui summary { padding:13px 17px; cursor:pointer; font-size:13px; font-weight:600; }
+.review-ui details[open]>summary { border-bottom:1px solid var(--line); margin-bottom:14px; }
+.review-ui details>p,.review-ui details>pre,.review-ui details>ul,.review-ui details>table,.review-ui details>div { margin:14px 18px; }
+.review-ui details>details { margin:14px 18px; }
+.review-ui .review-shell { display:grid; grid-template-columns:235px minmax(0,1fr); max-width:1800px; margin:auto; }
+.source-nav { padding:26px 18px; border-right:1px solid var(--line); align-self:start; position:sticky; top:0; max-height:100vh; overflow:auto; }
+.source-nav .eyebrow { padding:0 10px; }
+.source-nav input { display:block; width:100%; min-width:0; background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:9px 10px; font-size:12px; margin:16px 0 22px; }
+.source-nav .source-group { font-size:10px; font-weight:600; letter-spacing:1.3px; text-transform:uppercase; padding:15px 10px 7px; color:var(--muted); }
+.source-nav a { display:block; color:var(--ink); text-decoration:none; padding:11px 12px; margin:3px 0; font-size:13px; line-height:1.45; border-left:2px solid transparent; border-radius:0 4px 4px 0; }
+.source-nav a:hover { background:#eeeee7; }
+.source-nav a[aria-current="page"] { background:var(--soft); border-left-color:var(--accent); color:var(--accent); font-weight:600; }
+.source-nav small { display:block; color:var(--muted); font-size:11px; font-weight:400; margin-top:4px; }
+.source-nav .nav-foot { border-top:1px solid var(--line); padding:18px 10px; margin-top:24px; color:var(--muted); font-size:11px; }
+.review-content { min-width:0; padding:26px 32px 60px; }
+.review-ui .review-content>section { padding:0; max-width:none; margin:0; }
+.review-ui .review-content>.run-evidence { margin:0 0 22px; }
+.source-bar { display:flex; gap:16px; justify-content:space-between; align-items:center; padding-bottom:20px; }
+.source-bar h2 { margin:7px 0 0; }
+.source-bar .source-kind { display:block; color:var(--muted); font-size:11px; margin-top:7px; }
+.source-pager { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.source-pager button { border:1px solid var(--line); background:var(--panel); width:34px; height:34px; border-radius:4px; }
+.source-pager button:disabled { opacity:.35; cursor:default; }
+.source-counter { font:11px ui-monospace,monospace; color:var(--muted); margin:0 6px; }
+.review-ui .page { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:24px; border:0; margin:0; padding:0; }
+.review-ui .page>div { min-width:0; }
+.review-ui .source-image { align-self:start; position:sticky; top:22px; padding:18px; border:1px solid var(--line); background:#eeede5; border-radius:5px; }
+.source-image .image-label { display:flex; justify-content:space-between; gap:10px; margin-bottom:14px; font-size:10px; text-transform:uppercase; letter-spacing:1.3px; color:var(--muted); }
+.review-ui .page img { display:block; width:100%; height:auto; border:0; box-shadow:0 2px 12px #26382d12; }
+.review-ui .source-image p { font-size:12px; line-height:1.6; }
+.source-image .image-hint { margin:12px 0 0; text-align:center; font-size:11px; }
+.review-ui .reading-column>h3:first-child { margin-top:0; }
+.review-ui .reading-column { padding:20px 24px; background:var(--panel); border:1px solid var(--line); border-radius:5px; }
+.reader-picker { display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1.2px; margin-bottom:18px; }
+.reader-picker select { display:block; width:100%; max-width:100%; padding:11px 34px 11px 12px; margin-top:9px; background:var(--bg); border:1px solid var(--line); border-radius:4px; font-size:13px; text-transform:none; letter-spacing:0; font-weight:500; }
+.reader-note { font-size:11px; color:var(--muted); margin-top:-10px!important; }
+.review-ui pre,.review-ui .text { font:17px/1.85 Georgia,"Times New Roman",serif; white-space:pre-wrap; overflow-wrap:anywhere; word-break:normal; background:transparent; border:0; border-radius:0; padding:0; margin:20px 0; }
+.review-ui .text { padding:0; }
+.review-ui details pre { font:12px/1.7 ui-monospace,monospace; margin:18px; }
+.review-ui .pane>p:has(.stat) { display:flex; flex-wrap:wrap; gap:12px 20px; padding:16px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.review-ui .stat { display:block; margin:0; font:16px/1.5 ui-monospace,monospace; }
+.review-ui .stat b { display:block; font:500 10px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.review-ui .provenance summary { font-weight:500; color:var(--muted); }
+.review-ui .table-scroll { max-width:100%; overflow:auto; margin:14px 0; }
+.review-ui table { border-collapse:collapse; width:100%; font:12px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+.review-ui td,.review-ui th { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+.review-ui th { font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-weight:600; background:var(--bg); }
+.review-ui td.num { text-align:right; font-variant-numeric:tabular-nums; }
+.review-ui .matrix { min-width:850px; }
+.review-ui .matrix th { text-transform:none; letter-spacing:0; }
+.review-ui .chip { display:inline-block; padding:2px 6px; margin:3px 5px 3px 0; font:11px/1.5 ui-monospace,monospace; background:var(--soft); border-radius:3px; overflow-wrap:anywhere; }
+.review-ui mark { background:#efe5cb; border-bottom:1px solid #c8b57d; color:inherit; cursor:pointer; }
+.review-ui mark.strong { background:#eed3a8; border-color:#9e7130; }
+.review-ui mark.selected { outline:2px solid var(--accent); outline-offset:2px; }
+.review-ui .highlight-review mark:not(.strong),.review-ui .highlight-none mark { background:transparent; border-color:transparent; }
+.highlight-picker { display:flex; align-items:center; gap:12px; margin:18px 0 12px; font-size:12px; }
+.highlight-picker select { min-width:0; max-width:100%; background:var(--bg); border:1px solid var(--line); padding:7px 9px; border-radius:4px; font-size:12px; }
+.consensus-metrics { display:flex; flex-wrap:wrap; gap:20px; border-bottom:1px solid var(--line); padding:0 0 16px; margin-bottom:16px; }
+.consensus-metrics span { display:block; color:var(--muted); font-size:10px; }
+.consensus-metrics strong { font:24px/1.7 Georgia,serif; }
+.annotation-help { font-size:12px; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--line); }
+.annotation-detail { position:sticky; bottom:14px; background:var(--soft); border:1px solid var(--accent); padding:14px; border-radius:4px; font-size:12px; white-space:pre-wrap; overflow-wrap:anywhere; max-height:220px; overflow:auto; box-shadow:0 4px 16px #25342f14; }
+.annotation-detail button { float:right; background:transparent; border:0; font-size:17px; }
+.review-list { display:grid; gap:8px; }
+.review-list details { margin:0; }
+.review-list summary { display:flex; align-items:baseline; gap:12px; }
+.review-list .review-number { color:var(--muted); font:11px ui-monospace,monospace; min-width:22px; }
+.review-list .review-base { flex:1; min-width:0; font:16px/1.5 Georgia,serif; overflow-wrap:anywhere; }
+.review-list .review-weight { font:10px/1.5 ui-monospace,monospace; color:var(--muted); white-space:nowrap; }
+.review-ui .full-evidence { grid-column:1/-1; min-width:0; }
+.review-ui .consensus-stats { font-size:12px; margin:0 0 18px; padding-bottom:14px; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+.review-ui .layout-source { margin-bottom:24px; }
+.review-ui .layout-source .page { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.review-ui .layout-source .page>div { padding:16px; background:#eeede5; border:1px solid var(--line); border-radius:5px; }
+.review-ui .layout-source .page>div>p { min-height:48px; }
+.review-ui .fig svg { pointer-events:none; }
+.review-ui .layout-source .fig rect { pointer-events:all; }
+.review-ui .layout-tools { display:flex; gap:20px; align-items:center; margin:0 0 20px; font-size:12px; }
+.review-ui .leg { display:flex; flex-wrap:wrap; gap:8px; }
+.review-ui .leg span { font-size:11px; }
+/* Collection landing page. */
+.review-home main { max-width:1240px; padding:0 40px 70px; }
+.collection-hero { display:grid; grid-template-columns:1.25fr .75fr; gap:50px; padding:60px 0 45px; align-items:center; border-bottom:1px solid var(--line); }
+.collection-hero h1 { font-size:clamp(38px,5vw,66px); line-height:1.05; max-width:700px; }
+.collection-hero .sub { font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; max-width:620px; }
+.hero-image { position:relative; height:290px; overflow:hidden; background:#eae6d8; border:1px solid #d9d2bc; }
+.hero-image img { width:78%; display:block; margin:25px auto; transform:rotate(-5deg); box-shadow:0 6px 24px #342b2024; }
+.hero-image figcaption { position:absolute; bottom:0; left:0; right:0; padding:11px 15px; background:#eeeadfee; font:10px/1.4 ui-monospace,monospace; color:#645f51; }
+.collection-links { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+.collection-links a,.case-actions a { font-size:12px; text-decoration:none; border:1px solid var(--line); border-radius:4px; padding:9px 14px; background:var(--panel); }
+.collection-links a:first-child { background:var(--accent); border-color:var(--accent); color:white; }
+.review-ui .collection-intro { padding:26px 0 0; }
+.review-ui .collection-intro>h2 { font:24px Georgia,serif; }
+.review-ui .collection-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:22px 0 44px; }
+.review-ui .case-card { padding:25px; border:1px solid var(--line); background:var(--panel); border-radius:5px; display:flex; flex-direction:column; min-width:0; }
+.case-card h2 { font:27px/1.2 Georgia,serif; margin:8px 0 12px; }
+.case-card .case-desc { color:var(--muted); font-size:14px; margin:0 0 18px; }
+.case-card .case-result { font-size:12px; padding:14px 0; border-top:1px solid var(--line); margin:16px 0 0; }
+.case-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:auto; }
+.case-actions a:first-child { background:var(--soft); color:var(--accent); border-color:#c9d7c6; }
+.case-card details { background:transparent; margin:18px 0 0; border:0; border-top:1px solid var(--line); border-radius:0; }
+.case-card details summary { padding:12px 0 0; color:var(--muted); font-weight:400; }
+.review-home .flow { display:grid; grid-template-columns:1fr; gap:12px; }
+.review-home .step { padding:0 0 0 14px; border:0; border-left:2px solid var(--line); border-radius:0; background:transparent; font-size:12px; }
+.review-home .step h3 { font-size:13px; margin:6px 0; }
+.review-home .step .k { font-size:9px; }
+.review-home .flow .out { border-color:var(--accent); }
+.review-home .collection-notes { padding:22px 0; border-top:1px solid var(--line); }
+.review-home .collection-notes p { max-width:850px; }
+.review-home .legend { font-size:11px; }
+.review-home .collection-footer { font-size:12px; color:var(--muted); }
+/* Maps: quiet chrome around an expansive canvas, separate filters and evidence. */
+.review-map { height:100vh; display:flex; flex-direction:column; }
+.review-map .review-topbar { flex-shrink:0; padding:12px 24px; }
+.review-map>header { display:block; padding:20px 28px 16px; border:0; }
+.review-map>header h1 { font:32px/1.15 Georgia,serif; margin:0 0 8px; }
+.review-map>header .sub { display:block; font:12px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; max-width:1000px; }
+.review-map #counts { font:11px/1.6 ui-monospace,monospace; color:var(--accent); margin-top:8px; }
+.review-map>.controls { padding:12px 28px; background:var(--panel); gap:12px 22px; flex-shrink:0; align-items:flex-start; border-top:1px solid var(--line); }
+.review-map .controls label { font-size:12px; }
+.review-map .controls input[type=range] { width:120px; accent-color:var(--accent); }
+.review-map .controls select { background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:4px 7px; font-size:12px; }
+.review-map .controls details { margin:0; background:transparent; }
+.review-map .controls details summary { padding:5px 10px; font-size:11px; }
+.review-map .controls details>div { display:flex; flex-wrap:wrap; gap:12px; margin:12px; }
+.review-map main { flex:1; min-height:250px; height:auto; display:grid; grid-template-columns:minmax(0,1fr) 360px; }
+.review-map aside { padding:24px; min-width:0; background:var(--panel); border-left:1px solid var(--line); font-size:13px; overflow:auto; }
+.review-map aside h2 { font:25px Georgia,serif; margin:0 0 15px; }
+.review-map aside h3 { font-size:13px; }
+.review-map aside table { font-size:11px; }
+.review-map aside td { padding:8px 4px; }
+.review-map .unresolved { padding-left:18px; }
+.review-map .unresolved li { padding:10px 0; font-size:12px; border-bottom:1px solid var(--line); }
+.review-map .cand { padding:13px; border-radius:4px; font-size:12px; }
+.review-map .cand.chosen { background:var(--soft); border-color:#b6c8b2; }
+.review-map .legend { font-size:10px; }
+:root[data-theme="dark"] .review-map { --bg:#202923; --panel:#253129; --ink:#edf1e9; --muted:#bbc7ba; --line:#425247; --accent:#b2d7b8; --soft:#354938; }
+.review-ui .skip-link { position:absolute; left:16px; top:-80px; z-index:100; background:var(--panel); padding:12px; }
+.review-ui .skip-link:focus { top:10px; }
+@media(min-width:1600px) { .review-ui .page { gap:32px; } .review-ui .reading-column { padding:28px 36px; } }
+@media(max-width:1100px) { .review-ui .review-shell { grid-template-columns:195px minmax(0,1fr); } .review-content { padding:24px; } .review-ui .page { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; } .review-ui .reading-column { padding:16px; } .review-map main { grid-template-columns:minmax(0,1fr) 320px; } }
+@media(max-width:800px) {
+  .review-topbar { padding:12px 18px; } .review-topbar .eyebrow { display:none; } .review-topbar .top-links { gap:12px; } .review-topbar a { font-size:11px; }
+  .review-ui .review-header { padding:26px 20px; } .review-ui h1 { letter-spacing:-.6px; }
+  .review-ui .review-shell { display:block; } .source-nav { position:static; max-height:260px; border-right:0; border-bottom:1px solid var(--line); padding:18px 20px; }
+  .source-nav input { margin:12px 0; } .source-nav .nav-foot { display:none; } .source-nav a { display:inline-block; vertical-align:top; min-width:170px; max-width:100%; }
+  .source-nav .source-group { padding-top:8px; } .review-content { padding:22px 20px 40px; }
+  .review-ui .page,.review-ui .layout-source .page { grid-template-columns:1fr; } .review-ui .source-image { position:static; } .review-ui .source-image img { max-height:65vh; object-fit:contain; }
+  .source-bar { align-items:flex-start; } .source-bar h2 { font-size:24px; } .source-pager { gap:3px; }
+  .review-ui .collection-grid { grid-template-columns:1fr; } .review-home main { padding:0 20px 40px; }
+  .collection-hero { grid-template-columns:1fr; gap:20px; padding:36px 0; } .hero-image { display:none; }
+  .review-map { height:auto; min-height:100vh; } .review-map main { display:flex; flex-direction:column; } .review-map #map { height:55vh; min-height:320px; }
+  .review-map aside { overflow:visible; border-left:0; border-top:1px solid var(--line); } .review-map .controls { padding:14px 20px; } .review-map .controls>label:first-child { flex-wrap:wrap; }
+}
+@media print {
+  .review-ui [hidden] { display:block!important; } .review-topbar,.source-nav,.source-pager,.reader-picker,.skip-link { display:none!important; }
+  .review-ui .review-shell,.review-ui .page { display:block; } .review-ui .source-image { position:static; max-width:45%; } .review-content { padding:0; }
+}
+</style>
+<script>window.REVIEW_CONFIG={"kind": "report", "home": "../../../../index.html"};
+/* Progressive enhancement only: the generated research content remains intact. */
+(() => {
+  'use strict';
+  const config = window.REVIEW_CONFIG;
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+  const link = (text, href) => { const a = el('a', '', text); a.href = href; return a; };
+  const disclosure = (title, nodes = [], cls = '') => {
+    const d = el('details', cls); d.append(el('summary', '', title), ...nodes); return d;
+  };
+  const wrapTable = t => {
+    if (t.parentElement.classList.contains('table-scroll')) return;
+    const box = el('div', 'table-scroll'); box.tabIndex = 0;
+    box.setAttribute('role', 'region'); box.setAttribute('aria-label', 'Scrollable evidence table');
+    t.before(box); box.append(t);
+  };
+  const labels = {
+    'real-gartenlaube-1853-p001': ['Die Gartenlaube', '1853 · Fraktur print'],
+    'real-grimm-khm-1812-i-p093': ['Grimm’s fairy tales', '1812 · Fraktur print'],
+    'real-schiller-musenalmanach-1796-p093': ['Schiller’s Musenalmanach', '1796 · Antiqua print'],
+    'real-kaskel-to-schnorr-1864': ['Kaskel to Schnorr', '1864 · Secretary’s hand'],
+    'real-schnitzler-to-beer-hofmann-1896': ['Schnitzler to Beer-Hofmann', '1896 · Private correspondence'],
+    'real-poesiealbum-hedwig-1901-p02': ['Hedwig’s poetry album', '1901 · Handwritten album'],
+  };
+  const sourceName = id => labels[id] || (/^synth-/.test(id)
+    ? [`Synthetic page ${Number(id.replace('synth-', ''))}`, 'Invented text · Rendered sample']
+    : [id.replace(/^real-/, '').replaceAll('-', ' '), 'Source page']);
+
+  document.body.classList.add('review-ui', `review-${config.kind}`);
+  const top = el('nav', 'review-topbar'); top.setAttribute('aria-label', 'Project navigation');
+  const brand = link('German sources', config.home); brand.className = 'review-brand';
+  const topLinks = el('div', 'top-links');
+  if (config.kind !== 'home') topLinks.append(link('All experiments', config.home));
+  if (config.kind === 'consensus') topLinks.append(link('Compare readers', '../index.html'));
+  if (config.consensus) topLinks.append(link('Review disagreements', config.consensus));
+  if (config.kind === 'home') topLinks.append(el('span', 'eyebrow', 'Bok Center · Learning Lab'));
+  top.append(brand, topLinks); document.body.prepend(top);
+  const skip = link('Skip to content', '#review-main'); skip.className = 'skip-link'; document.body.prepend(skip);
+
+  function makeHeader() {
+    const header = $('body > header'); if (!header) return;
+    header.className = 'review-header';
+    const title = $('h1', header);
+    const original = [...header.children].filter(n => n !== title);
+    const type = {report:'Compare the readers', consensus:'Human review', layout:'Understand the page'}[config.kind];
+    header.prepend(el('div', 'eyebrow', `Transcription / ${type}`));
+    const lead = {
+      report:'Choose a source, then compare its readers. The image and transcription sit side by side; scores, differences, and provenance are available below.',
+      consensus:'Read the source beside a shared starting text. Select a highlighted passage to see the alternatives, then work through the passages that need a decision.',
+      layout:'Compare how a vision model and Kraken divide the same page. Switch sources to inspect regions, line counts, and reading order.',
+    }[config.kind];
+    header.append(el('p', 'lead', lead), disclosure('About this experiment · methods and definitions', original, 'methodology'));
+    if (config.kind === 'consensus') {
+      const exports = el('div', 'collection-links');
+      exports.append(link('Download review spreadsheet ↓', 'checkin.csv'), link('Full consensus data ↓', 'consensus.json'));
+      header.append(exports);
+    }
+  }
+
+  function prepareReport(page) {
+    const imageCol = page.children[0], reading = page.children[1];
+    imageCol.classList.add('source-image'); reading.classList.add('reading-column');
+    const tabs = $('.tabs', reading);
+    if (tabs) {
+      const buttons = $$('button', tabs);
+      const picker = el('label', 'reader-picker', 'Reader'); const select = el('select');
+      select.setAttribute('aria-label', `Reader for ${sourceName(page.id)[0]}`);
+      buttons.forEach(b => { const o = el('option', '', b.textContent); o.value = b.dataset.target; select.append(o); });
+      picker.append(select); tabs.before(picker); tabs.hidden = true;
+      select.addEventListener('change', () => buttons.find(b => b.dataset.target === select.value)?.click());
+      // Select by this page's measured normalised error, never a mixed-corpus mean.
+      const scores = buttons.map(b => {
+        const pane = document.getElementById(b.dataset.target);
+        const stat = $$('.stat', pane).find(s => $('b', s)?.textContent === 'cer_norm');
+        return {button:b, score:stat ? Number(stat.textContent.replace('cer_norm', '').trim()) : Infinity};
+      });
+      const best = scores.reduce((a, b) => b.score < a.score ? b : a, scores[0]);
+      if (best && Number.isFinite(best.score)) {
+        select.value = best.button.dataset.target; best.button.click();
+        picker.after(el('p', 'reader-note', 'Starts with the lowest measured normalised character error on this page.'));
+      }
+    }
+    $$('.pane', reading).forEach(pane => {
+      const rawDetails = $$(':scope > details', pane).find(d => $('summary', d)?.textContent === 'Output as written');
+      if (rawDetails) {
+        const raw = $('pre', rawDetails), diff = $(':scope > pre', pane);
+        const explanation = diff?.previousElementSibling;
+        const evidence = disclosure('Compare with reference text · highlighted differences');
+        if (diff) { diff.before(raw); if (explanation) evidence.append(explanation); evidence.append(diff); }
+        rawDetails.replaceWith(evidence);
+      }
+      const path = $$(':scope > p', pane).find(p => p.textContent.startsWith('output:'));
+      if (path) { const details = disclosure('Source files and prompt fingerprint', [], 'provenance'); path.before(details); details.append(path); }
+      const names = {cer:'Character error', cer_norm:'Normalised error', wer:'Word error', wer_norm:'Normalised word error', lines:'Lines', '$':'Cost · USD', s:'Seconds'};
+      $$('.stat b', pane).forEach(b => { if (names[b.textContent]) b.textContent = names[b.textContent]; });
+      // Retain backend notes (including incomplete line crops) as visible evidence.
+    });
+  }
+
+  function prepareConsensus(page) {
+    const imageCol = page.children[0], reading = page.children[1];
+    imageCol.classList.add('source-image'); reading.classList.add('reading-column');
+    const matrix = $('.matrix', imageCol);
+    if (matrix) {
+      const caption = matrix.nextElementSibling;
+      const d = disclosure('Reader agreement · full matrix and reliability', caption ? [matrix, caption] : [matrix], 'full-evidence');
+      page.append(d);
+    }
+    const stats = $(':scope > p.mono', imageCol);
+    if (stats) {
+      const metrics = el('div', 'consensus-metrics');
+      for (const [label, pattern, percent] of [
+        ['Reader agreement', /agreement ([\d.]+)/, true],
+        ['Reference error · norm', /medoid CER norm ([\d.]+)/, false],
+        ['Passages to review', /(\d+) on the check-in list/, false],
+      ]) {
+        const value = stats.textContent.match(pattern)?.[1]; if (value == null) continue;
+        const metric = el('div'); metric.append(el('span', '', label), el('strong', '', percent ? `${(Number(value)*100).toFixed(1)}%` : value)); metrics.append(metric);
+      }
+      stats.className = 'consensus-stats';
+      reading.prepend(metrics, disclosure('Starting reader, family gap, and complete scores', [stats]));
+    }
+    const text = $('.text', reading);
+    if (text) {
+      const heading = text.previousElementSibling;
+      if (heading?.tagName === 'H3') heading.textContent = 'A starting text to review';
+      const highlights = el('label', 'highlight-picker', 'Highlight '), select = el('select');
+      [['review','Passages needing review'],['all','All disagreements'],['none','Read without highlights']].forEach(([value, label]) => { const o = el('option', '', label); o.value = value; select.append(o); });
+      select.setAttribute('aria-label', 'Highlight disagreements'); highlights.append(select);
+      text.classList.add('highlight-review');
+      select.onchange = () => { text.classList.remove('highlight-review', 'highlight-all', 'highlight-none'); text.classList.add(`highlight-${select.value}`); };
+      text.before(highlights, el('p', 'annotation-help', 'Select a marked passage to inspect the alternatives. Agreement measures how similar the readings are; it does not establish correctness.'));
+      const detail = el('div', 'annotation-detail'); detail.hidden = true;
+      detail.setAttribute('role', 'status'); detail.setAttribute('aria-live', 'polite');
+      const close = el('button', '', '×'); close.setAttribute('aria-label', 'Close alternatives');
+      const contents = el('div'); detail.append(close, contents); text.after(detail);
+      close.onclick = () => { detail.hidden = true; $('mark.selected', text)?.classList.remove('selected'); };
+      $$('mark', text).forEach(mark => {
+        mark.tabIndex = 0; mark.setAttribute('role', 'button');
+        mark.setAttribute('aria-label', `Alternatives for ${mark.textContent || 'an insertion'}`);
+        const show = () => {
+          $$('mark.selected', text).forEach(m => m.classList.remove('selected'));
+          mark.classList.add('selected'); contents.textContent = mark.title.split(' / ').join('\n\n'); detail.hidden = false;
+        };
+        mark.onclick = show;
+        mark.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(); } if (e.key === 'Escape') close.click(); };
+      });
+    }
+    const checks = $(':scope > table', reading);
+    if (checks) {
+      const heading = checks.previousElementSibling;
+      const review = el('div', 'review-list');
+      $$('tr', checks).slice(1).forEach(row => {
+        const c = [...row.cells]; if (c.length < 5) return;
+        const d = disclosure(''); const s = $('summary', d);
+        s.append(el('span', 'review-number', `#${c[0].textContent}`), el('span', 'review-base', c[1].textContent || '(insertion)'), el('span', 'review-weight', `${c[3].textContent} readers · weight ${c[2].textContent}`));
+        const alternatives = el('div'); alternatives.append(...c[4].childNodes); d.append(alternatives); review.append(d);
+      });
+      const group = disclosure(`Passages to review · ${review.children.length}`, [el('p', 'muted', heading?.textContent || ''), review]);
+      if (heading?.tagName === 'H3') heading.remove(); checks.replaceWith(group);
+    }
+  }
+
+  function readingWorkspace() {
+    makeHeader();
+    let pages;
+    if (config.kind === 'layout') {
+      const section = $('body > section');
+      const headings = $$(':scope > h2', section);
+      pages = headings.map(h => {
+        const article = el('article', 'layout-source'); article.id = h.firstChild.textContent.trim();
+        h.before(article); article.append(h);
+        while (article.nextSibling && !(article.nextSibling.nodeType === 1 && article.nextSibling.tagName === 'H2')) article.append(article.nextSibling);
+        const table = $(':scope > table', article);
+        if (table) { const d = disclosure('Region inventory · types, hands, lines, and notes'); table.before(d); d.append(table); }
+        const tools = el('div', 'layout-tools'); const label = el('label'); const check = el('input');
+        check.type = 'checkbox'; check.checked = true; label.append(check, document.createTextNode(' Show segmentation boxes')); tools.append(label);
+        const figures = $('.page', article); figures.before(tools);
+        check.onchange = () => $$('svg', article).forEach(svg => svg.hidden = !check.checked);
+        return article;
+      });
+    } else {
+      pages = $$('body > section > .page');
+      pages.forEach(p => config.kind === 'consensus' ? prepareConsensus(p) : prepareReport(p));
+    }
+    if (!pages.length) return;
+    const shell = el('div', 'review-shell'), nav = el('aside', 'source-nav'), main = el('main', 'review-content');
+    main.id = 'review-main'; main.tabIndex = -1;
+    nav.setAttribute('aria-label', 'Source navigator');
+    nav.append(el('div', 'eyebrow', `${pages.length} source pages`));
+    const search = el('input'); search.type = 'search'; search.placeholder = 'Find a source…'; search.setAttribute('aria-label', 'Find a source'); nav.append(search);
+    const navigation = el('nav'); navigation.setAttribute('aria-label', 'Choose a source'); nav.append(navigation);
+    const bar = el('div', 'source-bar'), sourceTitle = el('div');
+    sourceTitle.append(el('div', 'eyebrow', 'Source'), el('h2'), el('span', 'source-kind'));
+    const pager = el('div', 'source-pager'); const prev = el('button', '', '←'), next = el('button', '', '→'), counter = el('span', 'source-counter');
+    prev.setAttribute('aria-label', 'Previous source'); next.setAttribute('aria-label', 'Next source'); pager.append(prev, counter, next); bar.append(sourceTitle, pager); main.append(bar);
+    const navItems = [];
+    for (const [synthetic, groupTitle] of [[false, 'Historical sources'], [true, 'Synthetic samples']]) {
+      const members = pages.filter(p => /^synth-/.test(p.id) === synthetic); if (!members.length) continue;
+      const group = el('div'); group.append(el('div', 'source-group', groupTitle)); navigation.append(group);
+      members.forEach(page => {
+        const [name, subtitle] = sourceName(page.id); const a = link(name, `#${page.id}`); a.append(el('small', '', subtitle));
+        a.title = page.id; a.dataset.source = page.id; group.append(a); navItems.push(a);
+      });
+    }
+    const empty = el('p', 'muted', 'No matching sources.'); empty.hidden = true; navigation.append(empty);
+    search.oninput = () => {
+      const q = search.value.toLowerCase(); navItems.forEach(a => { a.hidden = !(a.textContent + a.dataset.source).toLowerCase().includes(q); });
+      $$(':scope > div', navigation).forEach(g => { g.hidden = !$$('a', g).some(a => !a.hidden); });
+      empty.hidden = navItems.some(a => !a.hidden);
+    };
+    nav.append(el('p', 'nav-foot', 'Historical sources and synthetic samples stay separate. Every reading retains its source and method.'));
+    const sections = $$('body > section');
+    sections.forEach(section => {
+      if (pages.some(p => section.contains(p))) {
+        const redundant = $(':scope > h2', section);
+        if (redundant?.textContent === 'Every page, every backend') redundant.remove();
+        main.append(section);
+      } else {
+        const d = disclosure('All readers · scores, costs, and run details', [...section.childNodes], 'run-evidence');
+        const mixed = pages.some(p => /^synth-/.test(p.id)) && pages.some(p => !/^synth-/.test(p.id));
+        if (mixed) $('summary', d).after(el('p', 'muted', 'This original summary averages historical and synthetic pages together. Use the individual source scores to judge performance on real material.'));
+        main.append(d); section.remove();
+      }
+    });
+    shell.append(nav, main); document.body.append(shell);
+    pages.forEach(page => {
+      const originalHeading = config.kind === 'layout' ? $(':scope > h2', page) : $(':scope > div:first-child > h2, :scope > div:first-child > h3', page);
+      if (originalHeading) {
+        if (config.kind === 'layout') { originalHeading.className = 'mono muted'; originalHeading.style.fontSize = '12px'; }
+        else { const d = disclosure('Source identifier', [el('p', 'mono', page.id)], 'provenance'); originalHeading.replaceWith(d); }
+      }
+      const image = $('.source-image', page);
+      if (image) { image.prepend(el('div', 'image-label', 'Original document')); image.append(el('p', 'image-hint', 'Open the image for a closer look ↗')); }
+    });
+    let active = 0;
+    const activate = id => {
+      const found = pages.findIndex(p => p.id === id); active = found < 0 ? 0 : found;
+      const page = pages[active]; pages.forEach(p => { p.hidden = p !== page; });
+      navItems.forEach(a => { if (a.dataset.source === page.id) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+      const [name, sub] = sourceName(page.id); $('h2', sourceTitle).textContent = name; $('.source-kind', sourceTitle).textContent = sub;
+      counter.textContent = `${active + 1} / ${pages.length}`; prev.disabled = active === 0; next.disabled = active === pages.length - 1;
+    };
+    function choose(id) { history.replaceState(null, '', `#${encodeURIComponent(id)}`); activate(id); }
+    navItems.forEach(a => a.onclick = e => { e.preventDefault(); choose(a.dataset.source); if (innerWidth < 801) bar.scrollIntoView({block:'start'}); });
+    prev.onclick = () => choose(pages[active - 1].id); next.onclick = () => choose(pages[active + 1].id);
+    const fromHash = () => { let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) {} activate(id); };
+    window.addEventListener('hashchange', fromHash); fromHash();
+  }
+
+  function home() {
+    const main = $('body > main'); main.id = 'review-main';
+    const h1 = $('h1', main), sub = $('.sub', main), legend = $('.legend', main);
+    const hero = el('header', 'collection-hero'), words = el('div');
+    words.append(el('div', 'eyebrow', 'A research collection / November 2026'), h1, sub);
+    const actions = el('div', 'collection-links'); actions.append(link('Explore transcription ↓', '#transcription'), link('Explore maps ↓', '#maps')); words.append(actions);
+    const figure = el('figure', 'hero-image'); const img = el('img'); img.src = '01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/real-grimm-khm-1812-i-p093.jpg'; img.alt = 'A page of Grimm’s fairy tales, printed in Fraktur in 1812';
+    figure.append(img, el('figcaption', '', 'GRIMM · 1812 · A SOURCE IN THIS COLLECTION')); hero.append(words, figure); main.prepend(hero);
+    const headers = $$(':scope > h2', main);
+    const descriptions = [
+      'Compare nine readers on printed sources, then inspect the passages where their readings diverge.',
+      'Follow the same comparison through letters and an album, from a clear hand to difficult photographs.',
+      'See how readers divide a page into regions and lines before they transcribe it.',
+      'Follow 24 historical place names from a ledger to a map, with the reason for every match.',
+      'Inspect the historical map search and the evidence behind the decision to leave the overlay off.',
+      'Trace a map point all the way back to the page and line where its name appeared.',
+      'Explore place-name histories around Breslau and the changes recorded across 1945.',
+    ];
+    let grid, count = 0;
+    headers.forEach(h => {
+      const section = el('section'); h.before(section); section.append(h);
+      while (section.nextSibling && !(section.nextSibling.nodeType === 1 && section.nextSibling.tagName === 'H2')) section.append(section.nextSibling);
+      const flow = $('.flow', section), output = flow && $('.out', flow);
+      const isCase = /^(Transcription|Maps) ·/.test(h.textContent);
+      if (isCase) {
+        const isText = h.textContent.startsWith('Transcription');
+        if (count === 0 || count === 3) {
+          const intro = el('div', 'collection-intro'); intro.id = isText ? 'transcription' : 'maps';
+          intro.append(el('div', 'eyebrow', isText ? '01 / Read the sources' : '02 / Locate the places'), el('h2', '', isText ? 'Transcription & review' : 'Maps & place histories'));
+          section.before(intro); grid = el('div', 'collection-grid'); section.before(grid);
+        }
+        section.className = 'case-card'; grid.append(section);
+        h.textContent = h.textContent.split(' · ').slice(1).join(' · ');
+        section.prepend(el('div', 'eyebrow', `Experiment ${String(count + 1).padStart(2, '0')}`));
+        h.after(el('p', 'case-desc', descriptions[count]));
+        const actions = el('div', 'case-actions');
+        if (output) $$('a', output).forEach(a => { const copy = a.cloneNode(true); if (copy.textContent === 'Explorer') copy.textContent = 'Compare readers ↗'; if (copy.textContent === 'Consensus') copy.textContent = 'Review disagreements ↗'; if (copy.textContent === 'Map') copy.textContent = 'Explore map ↗'; actions.append(copy); });
+        const result = $(':scope > p.num', section); if (result) result.classList.add('case-result');
+        section.append(actions);
+        if (flow) { const d = disclosure('How this experiment works', [flow]); section.append(d); }
+        count++;
+      } else {
+        section.className = 'collection-notes';
+        if (h.textContent === 'The shape of the work') {
+          const d = disclosure('The complete workflow · from page to map', [...section.childNodes]); if (legend) d.append(legend); section.append(d);
+        }
+        if (h.textContent === 'Where the evidence is') { const table = $('table', section); if (table) section.append(disclosure('Find the files behind a result', [table])); }
+      }
+    });
+  }
+
+  function maps() {
+    const main = $('body > main'); main.id = 'review-main';
+    const controls = $('.controls');
+    const advanced = disclosure('Map options'); const options = el('div'); advanced.append(options);
+    ['allmaps', 'overlayOpacity', 'theme'].forEach(id => { const input = document.getElementById(id); if (input) options.append(input.closest('label')); });
+    const legend = $('.legend', controls); if (legend) options.append(legend);
+    controls.append(advanced);
+    $('#yearMin').setAttribute('aria-label', 'Start year'); $('#yearMax').setAttribute('aria-label', 'End year');
+    const aside = $('aside', main), unresolved = $('#unresolvedList');
+    if (unresolved) {
+      const explanation = unresolved.previousElementSibling, heading = explanation?.previousElementSibling;
+      const d = disclosure(`Unresolved names · ${unresolved.children.length}`);
+      if (heading?.tagName === 'H2') heading.remove();
+      if (explanation) d.append(explanation); d.append(unresolved); aside.append(d);
+    }
+    const detail = $('#detail');
+    if (detail) {
+      const groupEvidence = () => {
+        if ($('.cand', detail) && !$('.candidate-disclosure', detail)) {
+          $$(':scope > h3', detail).filter(h => h.textContent.startsWith('Gazetteer candidates')).forEach(h => {
+            const d = disclosure(h.textContent, [], 'candidate-disclosure'); h.before(d); h.remove();
+            while (d.nextElementSibling && d.nextElementSibling.tagName !== 'H3') d.append(d.nextElementSibling);
+          });
+        }
+        $$('table', detail).forEach(wrapTable);
+      };
+      new MutationObserver(groupEvidence).observe(detail, {childList:true});
+    }
+    // Existing MapLibre listeners remain attached to the original controls.
+    advanced.addEventListener('toggle', () => window.dispatchEvent(new Event('resize')));
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  if (config.kind === 'home') home();
+  else if (config.kind === 'map') maps();
+  else readingWorkspace();
+  $$('table').forEach(wrapTable);
+})();
+</script>
+<!-- mueser-review:end -->
+</body></html>

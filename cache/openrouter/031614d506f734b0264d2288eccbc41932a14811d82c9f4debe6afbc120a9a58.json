@@ -1,0 +1,201 @@
+{
+ "namespace": "openrouter",
+ "key": "031614d506f734b0264d2288eccbc41932a14811d82c9f4debe6afbc120a9a58",
+ "fetched_at": "2026-11-05T14:20:28Z",
+ "request": {
+  "model": "google/gemini-3.1-pro-preview",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/synth-02.png"
+ },
+ "raw": {
+  "id": "gen-1793888411-Z5ahEMY41Miq5ET4HOj9",
+  "object": "chat.completion",
+  "created": 1793888411,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\n      \"text\": \"Brief aus Stettin, den 21. August 1786\"\n    },\n    {\n      \"text\": \"Verehrtester Herr Rath!\"\n    },\n    {\n      \"text\": \"Ew. Wohlgeborne Schreiben vom 2ten dieses habe ich in Danzig richtig erhalten. Die Krüge aus\"\n    },\n    {\n      \"text\": \"Bunzlau sind wohl verpackt und gehen mit dem Schiffer Hinrichs nach Berlin ab, wo sie Ende des\"\n    },\n    {\n      \"text\": \"Monats eintreffen sollen.\"\n    },\n    {\n      \"text\": \"Was die Karte von Schlesien betrifft, so hat der Buchhändler Korn in Breßlau keine mehr\"\n    },\n    {\n      \"text\": \"vorräthig, ich habe aber in Leipzig bey Breitkopf ein Exemplar gesehen, das er für vier Thaler\"\n    },\n    {\n      \"text\": \"abläßt.\"\n    },\n    {\n      \"text\": \"Mit vollkommener Hochachtung verharre ich\"\n    },\n    {\n      \"text\": \"Ew. Wohlgeborne ergebenster Diener\"\n    },\n    {\n      \"text\": \"J. G. Lehmann.\"\n    }\n  ],\n  \"script\": \"kurrent\",\n  \"notes\": \"Very neat and legible handwriting.\"\n}",
+     "refusal": null,
+     "reasoning": "**Reading German Script**\n\nI'm carefully deciphering the Kurrent script, meticulously transcribing each line. I've just completed the first line, noting it's a letter from Stettin dated August 21st, 1786, and have begun with the salutation, \"Werhehrtester Herr Rath!\".\n\n**Reviewing Kurrent Transcription**\n\nI've refined my reading of the second line, correcting \"Werhehrtester\" to the accurate \"Verehrtester Herr Rath!\". I'm also re-evaluating \"Wohlgeborne\" versus \"Wohlgebornes\" and confirming \"Danzig.\"\n\n**Confirming Kurrent Readings**\n\nI've successfully transcribed several lines, confirming words like \"Bunzlau,\" \"Schlesien,\" \"Breßlau,\" and \"Leipzig.\" The closing salutation and signature are also now clear.\n\n**Continuing German Translation**\n\nI've continued diligently through the Kurrent text, confirming spellings for \"Bunzlau,\" \"Breßlau,\" and \"Leipzig.\" I've also noted \"vorräthig\" and begun considering the JSON structure for the transcribed lines.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Reading German Script**\n\nI'm carefully deciphering the Kurrent script, meticulously transcribing each line. I've just completed the first line, noting it's a letter from Stettin dated August 21st, 1786, and have begun with the salutation, \"Werhehrtester Herr Rath!\".\n\n**Reviewing Kurrent Transcription**\n\nI've refined my reading of the second line, correcting \"Werhehrtester\" to the accurate \"Verehrtester Herr Rath!\". I'm also re-evaluating \"Wohlgeborne\" versus \"Wohlgebornes\" and confirming \"Danzig.\"\n\n**Confirming Kurrent Readings**\n\nI've successfully transcribed several lines, confirming words like \"Bunzlau,\" \"Schlesien,\" \"Breßlau,\" and \"Leipzig.\" The closing salutation and signature are also now clear.\n\n**Continuing German Translation**\n\nI've continued diligently through the Kurrent text, confirming spellings for \"Bunzlau,\" \"Breßlau,\" and \"Leipzig.\" I've also noted \"vorräthig\" and begun considering the JSON structure for the transcribed lines.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1762,
+   "total_tokens": 3473,
+   "cost": 0.024566,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.024566,
+    "upstream_inference_prompt_cost": 0.003422,
+    "upstream_inference_completions_cost": 0.021144
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1436,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\n      \"text\": \"Brief aus Stettin, den 21. August 1786\"\n    },\n    {\n      \"text\": \"Verehrtester Herr Rath!\"\n    },\n    {\n      \"text\": \"Ew. Wohlgeborne Schreiben vom 2ten dieses habe ich in Danzig richtig erhalten. Die Krüge aus\"\n    },\n    {\n      \"text\": \"Bunzlau sind wohl verpackt und gehen mit dem Schiffer Hinrichs nach Berlin ab, wo sie Ende des\"\n    },\n    {\n      \"text\": \"Monats eintreffen sollen.\"\n    },\n    {\n      \"text\": \"Was die Karte von Schlesien betrifft, so hat der Buchhändler Korn in Breßlau keine mehr\"\n    },\n    {\n      \"text\": \"vorräthig, ich habe aber in Leipzig bey Breitkopf ein Exemplar gesehen, das er für vier Thaler\"\n    },\n    {\n      \"text\": \"abläßt.\"\n    },\n    {\n      \"text\": \"Mit vollkommener Hochachtung verharre ich\"\n    },\n    {\n      \"text\": \"Ew. Wohlgeborne ergebenster Diener\"\n    },\n    {\n      \"text\": \"J. G. Lehmann.\"\n    }\n  ],\n  \"script\": \"kurrent\",\n  \"notes\": \"Very neat and legible handwriting.\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Brief aus Stettin, den 21. August 1786"
+    },
+    {
+     "text": "Verehrtester Herr Rath!"
+    },
+    {
+     "text": "Ew. Wohlgeborne Schreiben vom 2ten dieses habe ich in Danzig richtig erhalten. Die Krüge aus"
+    },
+    {
+     "text": "Bunzlau sind wohl verpackt und gehen mit dem Schiffer Hinrichs nach Berlin ab, wo sie Ende des"
+    },
+    {
+     "text": "Monats eintreffen sollen."
+    },
+    {
+     "text": "Was die Karte von Schlesien betrifft, so hat der Buchhändler Korn in Breßlau keine mehr"
+    },
+    {
+     "text": "vorräthig, ich habe aber in Leipzig bey Breitkopf ein Exemplar gesehen, das er für vier Thaler"
+    },
+    {
+     "text": "abläßt."
+    },
+    {
+     "text": "Mit vollkommener Hochachtung verharre ich"
+    },
+    {
+     "text": "Ew. Wohlgeborne ergebenster Diener"
+    },
+    {
+     "text": "J. G. Lehmann."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Very neat and legible handwriting."
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1762,
+   "total_tokens": 3473,
+   "cost": 0.024566,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.024566,
+    "upstream_inference_prompt_cost": 0.003422,
+    "upstream_inference_completions_cost": 0.021144
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1436,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.024566,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "seconds": 16.8
+ },
+ "meta": {}
+}

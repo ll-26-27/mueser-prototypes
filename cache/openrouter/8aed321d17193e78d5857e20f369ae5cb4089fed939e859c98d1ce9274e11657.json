@@ -1,0 +1,234 @@
+{
+ "namespace": "openrouter",
+ "key": "8aed321d17193e78d5857e20f369ae5cb4089fed939e859c98d1ce9274e11657",
+ "fetched_at": "2026-11-05T14:05:49Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/real-kaskel-to-schnorr-1864.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887532-ufVTnBIUMoZVWABL9n5y",
+  "object": "chat.completion",
+  "created": 1793887532,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\": [{\"text\": \"84\"}, {\"text\": \"Hochgeehrter Freund!\"}, {\"text\": \"So herrlich und unvergleichlich als\"}, {\"text\": \"gestern im unsterblichen Werke\"}, {\"text\": \"Meyerbeer's, habe ich Ihren so\"}, {\"text\": \"hochtrefflichen Sohn nie gehört,\"}, {\"text\": \"obwohl er stets der erste Tenor\"}, {\"text\": \"der Gegenwart ist. Meine\"}, {\"text\": \"Freude wurde verdoppelt, als\"}, {\"text\": \"ich seinen so hochverehrten, und\"}, {\"text\": \"ebenfalls unvergleichlichen Vater\"}, {\"text\": \"unter den Zuhörern erblickte\"}, {\"text\": \"und mir sagte was dieser da\"}, {\"text\": \"empfinden müßte!\"}, {\"text\": \"Aber meinem verewigten\"}, {\"text\": \"großen Freunde war, ach! das\"}, {\"text\": \"Glück nicht beschieden, seinen\"}, {\"text\": \"Raoul so zu hören!\"}, {\"text\": \"Gott erhalte Sie!\"}, {\"text\": \"Ihr treu ergebener\"}, {\"text\": \"am 30t Juny Carl Kaskel\"}, {\"text\": \"1864\"}], \"script\": \"kurrent\", \"notes\": \"Two-page spread transcribed sequentially (left, then right). Latin script used for 'Meyerbeer's', 'Raoul', and signature 'Carl Kaskel'.\"}",
+     "refusal": null,
+     "reasoning": "**Starting Transcription**\n\nI'm beginning the transcription of the German handwritten letter. The first page's header appears to be \"84,\" and I'm now deciphering the initial lines of the text.\n\n**Clarifying Reading Order**\n\nI'm now adjusting my interpretation. The letter's structure requires me to prioritize the left page's content before proceeding to the right, impacting how I sequence the information about Meyerbeer and his son's performance.\n\n**Deciphering Date and Signature**\n\nI'm focusing on the letter's date and signature. It appears to read \"am 30t Juny 1864,\" and the signature is \"Carl Kaskel.\" I'm still confirming if the date and signature should be on separate lines.\n\n**Continuing Deciphering Text**\n\nI'm now processing the remainder of the German text, line by line. I've just read \"empfinden müßte!\" and am moving to \"Aber meinem verewigten großen Freunde.\" I'm also noting the placement of the date and signature.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Starting Transcription**\n\nI'm beginning the transcription of the German handwritten letter. The first page's header appears to be \"84,\" and I'm now deciphering the initial lines of the text.\n\n**Clarifying Reading Order**\n\nI'm now adjusting my interpretation. The letter's structure requires me to prioritize the left page's content before proceeding to the right, impacting how I sequence the information about Meyerbeer and his son's performance.\n\n**Deciphering Date and Signature**\n\nI'm focusing on the letter's date and signature. It appears to read \"am 30t Juny 1864,\" and the signature is \"Carl Kaskel.\" I'm still confirming if the date and signature should be on separate lines.\n\n**Continuing Deciphering Text**\n\nI'm now processing the remainder of the German text, line by line. I've just read \"empfinden müßte!\" and am moving to \"Aber meinem verewigten großen Freunde.\" I'm also noting the placement of the date and signature.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1692,
+   "completion_tokens": 1786,
+   "total_tokens": 3478,
+   "cost": 0.0079665,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0079665,
+    "upstream_inference_prompt_cost": 0.001269,
+    "upstream_inference_completions_cost": 0.0066975
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1475,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\": [{\"text\": \"84\"}, {\"text\": \"Hochgeehrter Freund!\"}, {\"text\": \"So herrlich und unvergleichlich als\"}, {\"text\": \"gestern im unsterblichen Werke\"}, {\"text\": \"Meyerbeer's, habe ich Ihren so\"}, {\"text\": \"hochtrefflichen Sohn nie gehört,\"}, {\"text\": \"obwohl er stets der erste Tenor\"}, {\"text\": \"der Gegenwart ist. Meine\"}, {\"text\": \"Freude wurde verdoppelt, als\"}, {\"text\": \"ich seinen so hochverehrten, und\"}, {\"text\": \"ebenfalls unvergleichlichen Vater\"}, {\"text\": \"unter den Zuhörern erblickte\"}, {\"text\": \"und mir sagte was dieser da\"}, {\"text\": \"empfinden müßte!\"}, {\"text\": \"Aber meinem verewigten\"}, {\"text\": \"großen Freunde war, ach! das\"}, {\"text\": \"Glück nicht beschieden, seinen\"}, {\"text\": \"Raoul so zu hören!\"}, {\"text\": \"Gott erhalte Sie!\"}, {\"text\": \"Ihr treu ergebener\"}, {\"text\": \"am 30t Juny Carl Kaskel\"}, {\"text\": \"1864\"}], \"script\": \"kurrent\", \"notes\": \"Two-page spread transcribed sequentially (left, then right). Latin script used for 'Meyerbeer's', 'Raoul', and signature 'Carl Kaskel'.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "84"
+    },
+    {
+     "text": "Hochgeehrter Freund!"
+    },
+    {
+     "text": "So herrlich und unvergleichlich als"
+    },
+    {
+     "text": "gestern im unsterblichen Werke"
+    },
+    {
+     "text": "Meyerbeer's, habe ich Ihren so"
+    },
+    {
+     "text": "hochtrefflichen Sohn nie gehört,"
+    },
+    {
+     "text": "obwohl er stets der erste Tenor"
+    },
+    {
+     "text": "der Gegenwart ist. Meine"
+    },
+    {
+     "text": "Freude wurde verdoppelt, als"
+    },
+    {
+     "text": "ich seinen so hochverehrten, und"
+    },
+    {
+     "text": "ebenfalls unvergleichlichen Vater"
+    },
+    {
+     "text": "unter den Zuhörern erblickte"
+    },
+    {
+     "text": "und mir sagte was dieser da"
+    },
+    {
+     "text": "empfinden müßte!"
+    },
+    {
+     "text": "Aber meinem verewigten"
+    },
+    {
+     "text": "großen Freunde war, ach! das"
+    },
+    {
+     "text": "Glück nicht beschieden, seinen"
+    },
+    {
+     "text": "Raoul so zu hören!"
+    },
+    {
+     "text": "Gott erhalte Sie!"
+    },
+    {
+     "text": "Ihr treu ergebener"
+    },
+    {
+     "text": "am 30t Juny Carl Kaskel"
+    },
+    {
+     "text": "1864"
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Two-page spread transcribed sequentially (left, then right). Latin script used for 'Meyerbeer's', 'Raoul', and signature 'Carl Kaskel'."
+  },
+  "usage": {
+   "prompt_tokens": 1692,
+   "completion_tokens": 1786,
+   "total_tokens": 3478,
+   "cost": 0.0079665,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0079665,
+    "upstream_inference_prompt_cost": 0.001269,
+    "upstream_inference_completions_cost": 0.0066975
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1475,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0079665,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 17.21
+ },
+ "meta": {}
+}

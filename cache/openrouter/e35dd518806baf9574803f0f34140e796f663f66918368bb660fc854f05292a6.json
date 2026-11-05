@@ -1,0 +1,198 @@
+{
+ "namespace": "openrouter",
+ "key": "e35dd518806baf9574803f0f34140e796f663f66918368bb660fc854f05292a6",
+ "fetched_at": "2026-11-05T14:20:06Z",
+ "request": {
+  "model": "google/gemini-3.1-pro-preview",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/real-schnitzler-to-beer-hofmann-1896.jpg"
+ },
+ "raw": {
+  "id": "gen-1793888400-BSHGHnqEk8EBC5UZ6h1N",
+  "object": "chat.completion",
+  "created": 1793888400,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\": [{\"text\": \"lieber Richard, hätt ich nicht gewußt, daß\"}, {\"text\": \"die genaue Adreſſe unſerer auszuſchreiben\"}, {\"text\": \"iſt, ſo hätt ich ihr ja nicht geſchrieben. Aber\"}, {\"text\": \"s war s mir nicht gewohnt, daß Sie ſich\"}, {\"text\": \"einbilden, der Brief mit der Poſt ganz frei\"}, {\"text\": \"zulaſſen. Wo wär ich heute, wenn mich\"}, {\"text\": \"irgend was unglückliches immer dahin gebracht\"}, {\"text\": \"hätte. Jmmerhin gefällt mir Ihre Jdee, ſchön\"}, {\"text\": \"fremde Sachen gut zu überlaſſen, auszu-\"}, {\"text\": \"nehmen. Vielleicht wird es einen Weg\"}, {\"text\": \"für Sie bedeuten, der Sie zu Jhrem Selbſt\"}, {\"text\": \"führt.\"}], \"script\": \"kurrent\", \"notes\": \"Handwritten letter in Kurrent script. Some words are difficult to read due to the handwriting style.\"}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a18ygdqjondPPx/AlJR9e4v7cE+VFsZ5OGPr/u+79l2TlTIOXJztxQ4MRiPClyavbod0jGXErFnRRvUtHQNmBO2mIz4vIy2GKM8PruNmD8zpBoqSpc8tyA==",
+       "format": "google-gemini-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1704,
+   "completion_tokens": 240,
+   "total_tokens": 1944,
+   "cost": 0.006288,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.006288,
+    "upstream_inference_prompt_cost": 0.003408,
+    "upstream_inference_completions_cost": 0.00288
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\": [{\"text\": \"lieber Richard, hätt ich nicht gewußt, daß\"}, {\"text\": \"die genaue Adreſſe unſerer auszuſchreiben\"}, {\"text\": \"iſt, ſo hätt ich ihr ja nicht geſchrieben. Aber\"}, {\"text\": \"s war s mir nicht gewohnt, daß Sie ſich\"}, {\"text\": \"einbilden, der Brief mit der Poſt ganz frei\"}, {\"text\": \"zulaſſen. Wo wär ich heute, wenn mich\"}, {\"text\": \"irgend was unglückliches immer dahin gebracht\"}, {\"text\": \"hätte. Jmmerhin gefällt mir Ihre Jdee, ſchön\"}, {\"text\": \"fremde Sachen gut zu überlaſſen, auszu-\"}, {\"text\": \"nehmen. Vielleicht wird es einen Weg\"}, {\"text\": \"für Sie bedeuten, der Sie zu Jhrem Selbſt\"}, {\"text\": \"führt.\"}], \"script\": \"kurrent\", \"notes\": \"Handwritten letter in Kurrent script. Some words are difficult to read due to the handwriting style.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "lieber Richard, hätt ich nicht gewußt, daß"
+    },
+    {
+     "text": "die genaue Adreſſe unſerer auszuſchreiben"
+    },
+    {
+     "text": "iſt, ſo hätt ich ihr ja nicht geſchrieben. Aber"
+    },
+    {
+     "text": "s war s mir nicht gewohnt, daß Sie ſich"
+    },
+    {
+     "text": "einbilden, der Brief mit der Poſt ganz frei"
+    },
+    {
+     "text": "zulaſſen. Wo wär ich heute, wenn mich"
+    },
+    {
+     "text": "irgend was unglückliches immer dahin gebracht"
+    },
+    {
+     "text": "hätte. Jmmerhin gefällt mir Ihre Jdee, ſchön"
+    },
+    {
+     "text": "fremde Sachen gut zu überlaſſen, auszu-"
+    },
+    {
+     "text": "nehmen. Vielleicht wird es einen Weg"
+    },
+    {
+     "text": "für Sie bedeuten, der Sie zu Jhrem Selbſt"
+    },
+    {
+     "text": "führt."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Handwritten letter in Kurrent script. Some words are difficult to read due to the handwriting style."
+  },
+  "usage": {
+   "prompt_tokens": 1704,
+   "completion_tokens": 240,
+   "total_tokens": 1944,
+   "cost": 0.006288,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.006288,
+    "upstream_inference_prompt_cost": 0.003408,
+    "upstream_inference_completions_cost": 0.00288
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.006288,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "seconds": 6.85
+ },
+ "meta": {}
+}

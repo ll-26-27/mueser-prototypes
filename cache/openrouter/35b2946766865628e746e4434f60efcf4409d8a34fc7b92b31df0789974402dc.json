@@ -1,0 +1,199 @@
+{
+ "namespace": "openrouter",
+ "key": "35b2946766865628e746e4434f60efcf4409d8a34fc7b92b31df0789974402dc",
+ "fetched_at": "2026-11-05T14:22:49Z",
+ "request": {
+  "model": "anthropic/claude-sonnet-5.5",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/real-schnitzler-to-beer-hofmann-1896.jpg"
+ },
+ "raw": {
+  "id": "gen-1793888557-DnBwQV87hTRoSiMUwmu7",
+  "object": "chat.completion",
+  "created": 1793888557,
+  "model": "anthropic/claude-sonnet-5.5",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": null,
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\":[{\"text\":\"[?Lieber] [?Richard], [?hätte] ich [?mich] [...], daß\"},{\"text\":\"die [...] [?Briefe] [...] [...] [...]\"},{\"text\":\"ist, so hätte ich ihn ja nicht [?geschrieben]. Aber\"},{\"text\":\"[...] [...] [...] [...], daß Sie [...]\"},{\"text\":\"[...] [?wichtig] [...] [...] und [...] [...] [?zu]\"},{\"text\":\"zulassen. [...] [...], [...] [...]\"},{\"text\":\"[...] [...] [...] [...] [...] [...] [...]\"},{\"text\":\"hätte. [?Jedenfalls] [?gefällt] mir [?Ihre] [?Idee], [...]\"},{\"text\":\"[...] [...] gut [...] [...], und\"},{\"text\":\"[...] [?Vielleicht] [...] [...] [...]\"},{\"text\":\"[...] [...] [...], aber [...] [...] [...]\"},{\"text\":\"[...].\"}],\"script\":\"kurrent\",\"notes\":\"Fluid, highly slanted Kurrent hand; most words are only partly legible and the line-by-line reading is tentative, so the [...] and [?] marks must be checked against the original. Faint bleed-through of writing from the reverse side is visible. The word above line 5 is an interlinear insertion, possibly 'wichtig', placed above the word after 'nichtlich'.\"}",
+     "refusal": null,
+     "reasoning": "This handwritten Kurrent script is tough to decipher precisely. I'm trying to piece together the opening lines, something like a letter addressed to \"Lieber Richard\" with an uncertain phrase about having notified or realized something, though the exact wording remains unclear and I'll need to work through it carefully with appropriate uncertainty markers.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "This handwritten Kurrent script is tough to decipher precisely. I'm trying to piece together the opening lines, something like a letter addressed to \"Lieber Richard\" with an uncertain phrase about having notified or realized something, though the exact wording remains unclear and I'll need to work through it carefully with appropriate uncertainty markers.\n\n",
+       "format": "anthropic-claude-v1",
+       "index": 0,
+       "signature": "CAQSsAsKEggTEAIYAjgBQgh0aGlua2luZxIM9Wz5RP+BxVukitmDGgxvqXlBs6JJFhMSGSUiMMAzNxNRNO5iw2pEQd3QzAmEuv+KDYhWM8tcOU54P6biBbvrafsrd1M/nQuTS0unxSrLCtKf8V/iHPtTbcT9N34aGeo/vocdR8QmXnmdlvp6A8l1vOwDSbrv8+p3WRNxnDXop29GQ/B5NqRkNFH0N3DZrorQQWVIt1ZiMh/D/10o2Gve/Z3EBQAKyxFVfByFhVjG3Au3OcYoJYR3qhBnuIpc0UmYO19AdB34w9PZo4cA2SrqZBeOlghyw/uI581NC7KHFJbSl1tVxHLnyZn2idRbQ65rQBKKjLb26ag8hBYgQdGqKt3IdfWwGDOt/Xa2P+YCFDB+h3Er94RjS4c3gpj745UyhupCG0IeNJlG4Syzp+MFUg+ymRm9dS7JqRGmMUjbvrVKP7xf03sBgxsnn9bqMibpVdaksZkee8uzfWeQkdQEV7YV8VpSb87Kj35QweVZuOVKlUkQv5O/yyG/7pGu7svTDTw3W/fA0Mj6Q9VDeJe5FpqjbQhS5m7sD/FJxZ8AN8J6Gp9fpl7ZlKP1+3hPl5m0uARwSkB/RUN07InlU5SyWdYHPFW21sXUAl+tbBNGN33knPZ3I52CXI0lWUf/xoZLZeDalRTOOIqMrjxMfpXUDDSID07tpYXY7wZUVMsDfEY6sotXad6HH20Spd7MrZ5SU9f9WxWuFQIGIBuJ39gtZ8NsVTdjpMEjOnVbYPtZOi4VJ0R883atKNVnZAyNoVN29S/mh6Vvq175pLBKidnUXLFxUY+ydAoq/RgFLbr6OtMxyKCN1g2o3+1auSVwzh+qb+xYlr29tDFC1k5BTWWu/hzAxCR8cgjHNLK5XP0IZ+ofKmKf1p5rdjtnd+6fmEESyL1cahy+LzRf0IKGbQCWE6ITjBDSl97jQBYyYzVCy1SOIQeX86XI1hfv+abBwrPN4fZN6ZgqZTjS0hGufdabQGU7swDGM65sy1+UKk1AXL8K1sdNVVnJjNp/b88tn/Ua8rSVAHy//cHPuxhKUf1HKXz2MgLCxegJvfXIyA5bwybqhCTrjBtcrDPCjFz2Mx5fXZ1HXnJbnLMptL8sQFh1LN0uM2uQf9cg7tb8qDTNut/n0g5JP3dEQ2jcbU5NmJoGEqh2EWNdFpfj5eZXW8PSDDvXg8Fua5ZLqwl0mgrEF+Fg8+nkOWE0iQ3PfqZx185cyCAd7qSLPn7rjDzmBmUses3nFmTGsAQd3gDinhWQcNjVaZ/hEpBQaLUtCJMo3R8Bb5bS8I/2pqvsSf6HoKgbBrnaV9x6Vw50SFL0LbmDnN1qKDMrqyvSoY+Oib9vX7RH58i5dOSZN5rJHGmjoglehWiR/is6ptIyaz3tZGc7lPdSaHS9XTW0ZpPx9iUXwwSDqmFyaBbnaQbC73x1KRmF+XSqDdIcIdPGX8RPm7A3qOUKLKRaQmGE4kLuXW+2l9VjMp/1plyziSM0mnQheehUNCf23RsrHeNDvwZOeFwyuSskB0Ut6C0W/HWIxOcs9lpYb4dFzzwz9GHe5ImBMJDQKEvqFHIj4/A9+F4TilXFb22iCwoU45cMYzmd0xze+oQsH/ruJ2djmZMVVUo7yvjucUqJSjuMuE5WOP3yLuo0o3D4TldoaElUmSiO3MkAo7DokGXp6oqWpy2FDu9mxbo7vLfa6d98x/j0kbFolM7AGz0wESN00JvLpMxeFKnkscDNFjPLejB0EcjqciLcjtszUbDKrMWPdAJXUeNrpFWSQkCfbARjZYozXrZ12V/o/8UMwoQwxI8CGjpmgi5zcn7Bh4LgwLnmz8S0dC4lUrLQ5DuvxzEqjKciLNWhqonJcYp7IRNcVCWot4E88RG8dPGECZZ6jgqX8UY7v3Wcslsf6nKrOuCyOavcEW1IGAE=.eyJlbmRwb2ludF9zbHVnIjoiYW50aHJvcGljL2NsYXVkZS1zb25uZXQtNS41LTIwMjYwOTI4fGdvb2dsZS12ZXJ0ZXgvZ2xvYmFsIn0"
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 5767,
+   "completion_tokens": 976,
+   "total_tokens": 6743,
+   "cost": 0.021294,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.021294,
+    "upstream_inference_prompt_cost": 0.011534,
+    "upstream_inference_completions_cost": 0.00976
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 483,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\":[{\"text\":\"[?Lieber] [?Richard], [?hätte] ich [?mich] [...], daß\"},{\"text\":\"die [...] [?Briefe] [...] [...] [...]\"},{\"text\":\"ist, so hätte ich ihn ja nicht [?geschrieben]. Aber\"},{\"text\":\"[...] [...] [...] [...], daß Sie [...]\"},{\"text\":\"[...] [?wichtig] [...] [...] und [...] [...] [?zu]\"},{\"text\":\"zulassen. [...] [...], [...] [...]\"},{\"text\":\"[...] [...] [...] [...] [...] [...] [...]\"},{\"text\":\"hätte. [?Jedenfalls] [?gefällt] mir [?Ihre] [?Idee], [...]\"},{\"text\":\"[...] [...] gut [...] [...], und\"},{\"text\":\"[...] [?Vielleicht] [...] [...] [...]\"},{\"text\":\"[...] [...] [...], aber [...] [...] [...]\"},{\"text\":\"[...].\"}],\"script\":\"kurrent\",\"notes\":\"Fluid, highly slanted Kurrent hand; most words are only partly legible and the line-by-line reading is tentative, so the [...] and [?] marks must be checked against the original. Faint bleed-through of writing from the reverse side is visible. The word above line 5 is an interlinear insertion, possibly 'wichtig', placed above the word after 'nichtlich'.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "[?Lieber] [?Richard], [?hätte] ich [?mich] [...], daß"
+    },
+    {
+     "text": "die [...] [?Briefe] [...] [...] [...]"
+    },
+    {
+     "text": "ist, so hätte ich ihn ja nicht [?geschrieben]. Aber"
+    },
+    {
+     "text": "[...] [...] [...] [...], daß Sie [...]"
+    },
+    {
+     "text": "[...] [?wichtig] [...] [...] und [...] [...] [?zu]"
+    },
+    {
+     "text": "zulassen. [...] [...], [...] [...]"
+    },
+    {
+     "text": "[...] [...] [...] [...] [...] [...] [...]"
+    },
+    {
+     "text": "hätte. [?Jedenfalls] [?gefällt] mir [?Ihre] [?Idee], [...]"
+    },
+    {
+     "text": "[...] [...] gut [...] [...], und"
+    },
+    {
+     "text": "[...] [?Vielleicht] [...] [...] [...]"
+    },
+    {
+     "text": "[...] [...] [...], aber [...] [...] [...]"
+    },
+    {
+     "text": "[...]."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Fluid, highly slanted Kurrent hand; most words are only partly legible and the line-by-line reading is tentative, so the [...] and [?] marks must be checked against the original. Faint bleed-through of writing from the reverse side is visible. The word above line 5 is an interlinear insertion, possibly 'wichtig', placed above the word after 'nichtlich'."
+  },
+  "usage": {
+   "prompt_tokens": 5767,
+   "completion_tokens": 976,
+   "total_tokens": 6743,
+   "cost": 0.021294,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.021294,
+    "upstream_inference_prompt_cost": 0.011534,
+    "upstream_inference_completions_cost": 0.00976
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 483,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.021294,
+  "model": "anthropic/claude-sonnet-5.5",
+  "provider": "Google",
+  "seconds": 11.74
+ },
+ "meta": {}
+}

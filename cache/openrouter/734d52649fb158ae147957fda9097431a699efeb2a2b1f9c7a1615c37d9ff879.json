@@ -1,0 +1,370 @@
+{
+ "namespace": "openrouter",
+ "key": "734d52649fb158ae147957fda9097431a699efeb2a2b1f9c7a1615c37d9ff879",
+ "fetched_at": "2026-11-05T14:09:06Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are analysing the layout of a page from a historical German document for a scholar. Do not transcribe the page. Map it.\n\nReturn JSON matching the schema. Coordinates are fractions of the image width and height (0.0 to 1.0): bbox = [x, y, w, h] with x,y the top-left corner. Be as precise as you can; a box should enclose the ink of what it describes.\n\n1. `regions`: every block of content, with `kind` one of: main_text (body text), heading (title, section head, running header), column (one column of a multi-column page; give each column its own region), page_number, catchword (the word at the foot anticipating the next page), signature_mark (printer's sheet mark), marginalia (notes in a margin, in the same or another hand), interlinear (writing between the lines), correction (strike-through, insertion, overwriting), stamp_or_seal, date_line, salutation, signature (a person's signature), address, table, figure, ornament, other.\n2. For each region, `lines`: every line of text inside it, top to bottom, each with its own bbox. Count carefully: a scholar will check your line count against the page. Do not merge lines. Do not invent lines where there is only ornament.\n3. `hand`: for each region, \"print\", \"handwriting\" or \"mixed\"; and `script`: fraktur, antiqua, kurrent, suetterlin, latin_cursive, mixed, unknown.\n4. `later_hand`: true if the region appears to be written by a different person or at a later time than the main text (different ink, different letterforms, a librarian's number, a reader's note). Say why in `note`.\n5. `reading_order`: the region ids in the order a reader would follow (columns left to right, then down; marginalia after the line they belong to is fine).\n6. `page_notes`: anything a human should know: damage, show-through, skew, cropped edges, a second page visible, uncertainty about columns.\n\nPrecision over completeness in the boxes; completeness over precision in the counts. If you cannot tell two kinds apart, choose `other` and explain in `note`."
+   },
+   {
+    "role": "user",
+    "content": "Map the layout of this page. Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "layout",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "regions",
+      "reading_order",
+      "page_notes"
+     ],
+     "properties": {
+      "regions": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "id",
+         "kind",
+         "bbox",
+         "hand",
+         "script",
+         "later_hand",
+         "note",
+         "lines"
+        ],
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "kind": {
+          "type": "string",
+          "enum": [
+           "main_text",
+           "heading",
+           "column",
+           "page_number",
+           "catchword",
+           "signature_mark",
+           "marginalia",
+           "interlinear",
+           "correction",
+           "stamp_or_seal",
+           "date_line",
+           "salutation",
+           "signature",
+           "address",
+           "table",
+           "figure",
+           "ornament",
+           "other"
+          ]
+         },
+         "bbox": {
+          "type": "array",
+          "items": {
+           "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "hand": {
+          "type": "string",
+          "enum": [
+           "print",
+           "handwriting",
+           "mixed"
+          ]
+         },
+         "script": {
+          "type": "string",
+          "enum": [
+           "fraktur",
+           "antiqua",
+           "kurrent",
+           "suetterlin",
+           "latin_cursive",
+           "mixed",
+           "unknown"
+          ]
+         },
+         "later_hand": {
+          "type": "boolean"
+         },
+         "note": {
+          "type": "string"
+         },
+         "lines": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "additionalProperties": false,
+           "required": [
+            "bbox"
+           ],
+           "properties": {
+            "bbox": {
+             "type": "array",
+             "items": {
+              "type": "number"
+             },
+             "minItems": 4,
+             "maxItems": 4
+            }
+           }
+          }
+         }
+        }
+       }
+      },
+      "reading_order": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "page_notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/03-layout-and-hybrid/inputs/pages/real-poesiealbum-hedwig-1901-p02.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887735-3UH8GI0E3PSpyT7Q0Kq2",
+  "object": "chat.completion",
+  "created": 1793887735,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"regions\": [\n    {\n      \"id\": \"reg01\",\n      \"kind\": \"figure\",\n      \"bbox\": [0.106, 0.097, 0.858, 0.781],\n      \"hand\": \"print\",\n      \"script\": \"unknown\",\n      \"later_hand\": false,\n      \"note\": \"Chromolithograph illustration of various berries and branches\",\n      \"lines\": []\n    },\n    {\n      \"id\": \"reg02\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.443, 0.454, 0.52, 0.388],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"Album verse in German Kurrent script\",\n      \"lines\": [\n        {\n          \"bbox\": [0.472, 0.454, 0.49, 0.092]\n        },\n        {\n          \"bbox\": [0.448, 0.518, 0.493, 0.076]\n        },\n        {\n          \"bbox\": [0.445, 0.568, 0.505, 0.085]\n        },\n        {\n          \"bbox\": [0.45, 0.612, 0.511, 0.081]\n        },\n        {\n          \"bbox\": [0.485, 0.648, 0.474, 0.079]\n        },\n        {\n          \"bbox\": [0.463, 0.686, 0.493, 0.078]\n        },\n        {\n          \"bbox\": [0.466, 0.725, 0.38, 0.117]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg03\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.548, 0.784, 0.395, 0.15],\n      \"hand\": \"handwriting\",\n      \"script\": \"latin_cursive\",\n      \"later_hand\": false,\n      \"note\": \"Signature and place name written in Latin cursive script\",\n      \"lines\": [\n        {\n          \"bbox\": [0.551, 0.784, 0.389, 0.141]\n        },\n        {\n          \"bbox\": [0.551, 0.865, 0.28, 0.065]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"reg01\",\n    \"reg02\",\n    \"reg03\"\n  ],\n  \"page_notes\": \"Album page (Stammbuch/Poesiealbum) featuring a printed botanical chromolithograph overlayed by handwritten text. The bottom-left corner of the sheet is torn/missing, revealing the blank leaf underneath. Bound album gutter visible at left.\"\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Image Elements**\n\nI'm currently focused on dissecting the visual components of the page. My initial pass has identified the main illustration, a chromolithograph featuring a rich array of berries and fruits, as a primary \"figure/ornament\" region.\n\n**Analyzing Handwritten Script**\n\nI'm currently scrutinizing the Kurrent script poem. My latest update involves refining the bounding boxes for each line of the handwritten text, ensuring greater accuracy in its positional data.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Image Elements**\n\nI'm currently focused on dissecting the visual components of the page. My initial pass has identified the main illustration, a chromolithograph featuring a rich array of berries and fruits, as a primary \"figure/ornament\" region.\n\n**Analyzing Handwritten Script**\n\nI'm currently scrutinizing the Kurrent script poem. My latest update involves refining the bounding boxes for each line of the handwritten text, ensuring greater accuracy in its positional data.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1+zc1ToouaFbWTR18pNLeOZR7kkASZ6gMroCZmOpWTybKy3FE0Rs7O1rKTvsoRFcvjRXg2VfGjb9tsHvoduIVA3kgKEBSGfcAyQK2vomwgM66bN/a1bjeoK3T/8CNCuyaGwOytCDkn5eKPwaEvXXPlbjYml3LfFeFiMNVamTTxpc3EtnOIcFBTxeRrLOnGxhsAs4ROIuFW838fVm5uVtDrdbaS9DXJYmsry9B0t0HZnT4bHqYWzgorSeX7LmofNaX4K62Abyb5yvpQnp7p7Mp9HnWql7Q9xx2y7CsvwJjDtBnNLw0AHA8eghd+lbNmZF5bEHe0Gn+mjn3QNuAkp3DqzpD+fC0vm7qs3uGMN2NPkIrWMV6It8/Cxayu4TYCfDAH7MZ6rSF9C0uWIQZxNiAsqbX5r0Je5GiRgy0PrbjNExny09ZvuSOe7J6OmWFufknE4Aw3gweEUXzmjtf5umTzPddaPqidYCs4Xd/GlcbGAUyd0NXkVM5Q5dXit47eiw71ThcCvwp/1WBMUPeBn0Fn+vvfOktr0CLP9g9Ucn9miBAz1mVeEgIChW6fDlU/NY8R3ZazUpJbnQustRGhvpaxAWQjsOCxL7ZyFqb3VO+FMB29K5VclPgOXh1kIpRNgvdppYDwOwqFMsFzcfhO/TS7sDt0ZhZpKfX1q6HSPwp1V+vNleG5Fb3LXVOOGutMxw/CsdulnHoAnWRBL99D/kQgmOjQOPZ8wv6u1KUWFfdY3LdR2zPm5AVkVfpg8nqs1SKj9krCD1+mUobPDh8IRiUag/okT1Y354/dRuSjtdHysLkdecKxeQ1RLLdc45Oz3FJxZ8JL1I2UJFAc6J5XVgs/K0T/UYMP1k0ZPpD216jhIS5rmm4meubUYRK8hEF0GTzQwcMCXxQlvpr0s92j/MBC9eTCvpThO3IcolSWMTqP7pZsHNPjpS6WGSUzwbeQqjuKUCp7eSpvk2FXgUN7pi2Z5ELsagJYoZXL2Nhbc+3amYXJSJpF9YhQNpPv9bHv0tO4dnN6EOOFMoRArLSarN3gvpSj4thFNli8ROXGY9b5Yg2Q2mN0JEKYD1qkd2UIWSXavaPryvrh6p1kEhcUbjxXEdwmjZHnxMfT4rTawkWQmQVICzx52PlwCvbopaNp0ikeG77jNze+uXZdpti/fp/dKTV49wvHKrDtB5wEbOoq7qxp/lfWueCIGIX5fBHI66haW5hxG3ok2qCGaXzYZpa//CKYuZ1HOBa7lqVt7F8Mz9hnPycD31DyiEanVslQKQ94C6Ta3JUfYQ6adMOHoynWKGJObgdjtZyUjpeIMVYIonbnFfdSwDRqHhV4flbYaqDqZbktw7f1ZLygectSVg56xe8hOJ60BFdtNMOOESVE+wAiaHNYKBPHlxo7DZrsL1Z0Dv1EIkN+6OhjbGiS1W6UcegCeJcUDDWVVW3x/x2M4Pv9zgemEaE5WjHFuwOD2zUuLfE/gr1rO71mxbqRRr5NRhz5jTOGRxEtXg8f006KtOWCKE1/W9xyB3jK0aDD8pQHj0X7FuS7yGhQiiTRikNDUC/tbZslZjCEgY88f5v0htSR693Lc7uUQlAf8xfmq99nIvAOvSRoLfZXyk60mpg3la0dZUa8HFv8LOJSXN+c1k1HlMPM9jmBLDdDSSDXb00DCaOW65ZTLkB3lTef3GEJZqyAHS5YzE9Af61O635lPRw7/d8wXcvXTh+xSdxpvgXFaL7ClC+R3OSycfgnqyXCx0g8rK5vFlpJWW7XV0X1UL1128idFnmW0ADdZZvvlyCWDlYdoYDYIxrrajmiO29PhNZLgcpRRBiQpSDHyeKMoRYSATTGBwXy4nwjsGa2jqMpGichgACgMZ1+fsQS1Z33R32vQ7mW/24md+Dv4g0nSOtwmIuvQ/rD0pfcf5ngpfVAWNDiPCMa2JQ+CXtaNFuKO8uvTkQznHerOJebxhlUA3tEE/mBYyEyRfzcBTXync+76LAh7V6easeNeRc2fXKjSDGATkrnEsuVMoOZjFLWmyoiz4lq6at0MCqD+draKjLhoF4LB4BqVaqGihOPXhro+fmk9XhJHIYzbgOdcDXNUAFj4nf9E7A2OOvfCe0PJu/OFHTVIYiLGDk3xfAgneM/QO3uEaiz8fWf/pyzWzT1wpMKJ/HcNnxZtp24mCRlFABrrwenbvJAAxDjyYLrdH3xHxeIB0fsmHEM7Q1KF+M1lnUIXiTHgLxat5hSI6MtLKL0wK96QEPCT0c4kzN8EG88ZmTH8l579Y5O43MZzDHQwyV9moxJMv3POYSq3lSWF27N/4u8EcgzvVkEYjetKTfLdVcCS4R+8uCTaulvO28ctC+K7GKrksCn632ckbgm+cWJV1bPLDurkWNZ+3FnhJHZwVyvtESc2Ql6mTLwwigl6qEjwSQkIP0sJx3cyUUeRSoMU+tkbBOLrX3JyhD4BpkGf4a2bbL+CX0jkLgbcBisDxEfwOR+oUkYPP+vSX2oYO43YaIfBry1iqgOHW9pu+3PHAMSZ8XcGwyWcz4rfKr9YKGnCOc88fIgdI7gkYpvB5w7cQ8+aMTjRAMq/Q0kPR3HWsScs69tWpWzt4QyEJf2mucOT65d+brmyw7uFwcbUCo/fom9q2F2MNG4FO2PZF1ew80CREcel29haSSq05QzeGrF2M5nCrd4Ux/QVf4DiCZ3O9VA+V7qrQFjkrD++jB1cxtRa7qO2LISj086V8IEWws9guMtdV1TcMC23H6owMT4VZZzKnmcOIUK4oyEyXpRucSC7FFWQbCj9ADoSQk9dH2jifq5UB0vCg6ZU9X4LpLyiduIED6AaIhamyB6yYDf7zBwX3Daj7p389ynj7idSvgtNnkXuaujLki5Vzh29c4ecYOTXGybUoJ3q3DYWbbBA6eKuZti57DdBynmqS1j96i9wf+fl0sigOmbKvjTyU3GsPLx1Jqr+wPiKo22/gG3KrZsn/v/js+G+mzvBsYcartPTG4OUS2xxMmolDypMNjoWw/xK7j6WJP0D0gJqOcnKjzOKYrcxRpO3YuxBX9VlUyjM6aY7hjPeZ2Q3T0bJaaF6aA9JVTB28YAO1W1FhNfF/cWPCzwHvrBTUzwwKmNG4++WGrrYFDXlAQ8/d8iOSvENpuiYJl61SiVj6eh1RIMB/s8pNiT18x0u23kD1ue2n2LgW9IVIJ82NovjMevOQs7J7tjK5bIp6mcX7Oy+c7w+ZMRVYU3WBjYU7Hj0RObrXcquTUtEJwx08618PlJfp98vTwf6AZ7k7MhnrXrzzLjDc9DabG0nYEqrk+W6Gp1yHH73OwNpV1+tsHhdHwkAeBhzPcSYhkk3CPIVljtjRe7yevgL+oio3hFGoYWNIAcY4c8o5CXPg3e6GWSBmbQgiyhz7za6OE2swRm9sXf7u4wG5ilJWWkY/GHAvBF56ItqxUvntMxONQbo5+dZn8nFuKsdyWtT6B6DnT0jenoGh0sQ+KIjdVJDW99qjDyHP9haMdhIeWtas2KdxOsua8GQx87tNRxZH+8ygtQJZJg5rFdLIfF4ZtxS6IzHxGGNs++t1aeHDbBfMxJf12+lnjCOB+0sh62xm7LDlZmZ/MJqxrgeG+ZftbSFU6twHmKui9RzyVdEpaTp3Br9UYBKPYjU7rCvqzhlSsCF6iQsV2twU5Uw0txx3lrA+oOC0EkgbD5YKd4Xka0M+FHuFuxKEMu57N6qL8y+h0doR6d7wD2pBnmWOwFUQTQl1KK6IhWYSD8ieTbvMlv3rFh+9cbLlOlVMP7dMvHuDrPsemC9uKajbmAp8Pd8WoaUwb/YDH56uYhRPF2TkTTJ7KBUz62qnAwj2I7iXiGcO6vdt2KdeyqtZwVlYdjB9c8keCD4LEpEfam7ucHEFXWVOYekKVn6Nrl+FlbCfwoxEnuBcrEqE7xUKtcAtOCRSiHZh6AiyxKMpvNIyZ6QqRDl2OUHHiGpAexemMeccUdNuBplUYpYHImLayjdlNLAoVit9D31mPTF+YiE8d4pyrY0OdXLQ8Pdn0RZ1sKtJRM/FqYNcf53VFGOtT5PMFxnFzMVPkbC6D+7QMY=",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2164,
+   "completion_tokens": 1803,
+   "total_tokens": 3967,
+   "cost": 0.00838425,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00838425,
+    "upstream_inference_prompt_cost": 0.001623,
+    "upstream_inference_completions_cost": 0.00676125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1032,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"regions\": [\n    {\n      \"id\": \"reg01\",\n      \"kind\": \"figure\",\n      \"bbox\": [0.106, 0.097, 0.858, 0.781],\n      \"hand\": \"print\",\n      \"script\": \"unknown\",\n      \"later_hand\": false,\n      \"note\": \"Chromolithograph illustration of various berries and branches\",\n      \"lines\": []\n    },\n    {\n      \"id\": \"reg02\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.443, 0.454, 0.52, 0.388],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"Album verse in German Kurrent script\",\n      \"lines\": [\n        {\n          \"bbox\": [0.472, 0.454, 0.49, 0.092]\n        },\n        {\n          \"bbox\": [0.448, 0.518, 0.493, 0.076]\n        },\n        {\n          \"bbox\": [0.445, 0.568, 0.505, 0.085]\n        },\n        {\n          \"bbox\": [0.45, 0.612, 0.511, 0.081]\n        },\n        {\n          \"bbox\": [0.485, 0.648, 0.474, 0.079]\n        },\n        {\n          \"bbox\": [0.463, 0.686, 0.493, 0.078]\n        },\n        {\n          \"bbox\": [0.466, 0.725, 0.38, 0.117]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg03\",\n      \"kind\": \"signature\",\n      \"bbox\": [0.548, 0.784, 0.395, 0.15],\n      \"hand\": \"handwriting\",\n      \"script\": \"latin_cursive\",\n      \"later_hand\": false,\n      \"note\": \"Signature and place name written in Latin cursive script\",\n      \"lines\": [\n        {\n          \"bbox\": [0.551, 0.784, 0.389, 0.141]\n        },\n        {\n          \"bbox\": [0.551, 0.865, 0.28, 0.065]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"reg01\",\n    \"reg02\",\n    \"reg03\"\n  ],\n  \"page_notes\": \"Album page (Stammbuch/Poesiealbum) featuring a printed botanical chromolithograph overlayed by handwritten text. The bottom-left corner of the sheet is torn/missing, revealing the blank leaf underneath. Bound album gutter visible at left.\"\n}",
+  "parsed": {
+   "regions": [
+    {
+     "id": "reg01",
+     "kind": "figure",
+     "bbox": [
+      0.106,
+      0.097,
+      0.858,
+      0.781
+     ],
+     "hand": "print",
+     "script": "unknown",
+     "later_hand": false,
+     "note": "Chromolithograph illustration of various berries and branches",
+     "lines": []
+    },
+    {
+     "id": "reg02",
+     "kind": "main_text",
+     "bbox": [
+      0.443,
+      0.454,
+      0.52,
+      0.388
+     ],
+     "hand": "handwriting",
+     "script": "kurrent",
+     "later_hand": false,
+     "note": "Album verse in German Kurrent script",
+     "lines": [
+      {
+       "bbox": [
+        0.472,
+        0.454,
+        0.49,
+        0.092
+       ]
+      },
+      {
+       "bbox": [
+        0.448,
+        0.518,
+        0.493,
+        0.076
+       ]
+      },
+      {
+       "bbox": [
+        0.445,
+        0.568,
+        0.505,
+        0.085
+       ]
+      },
+      {
+       "bbox": [
+        0.45,
+        0.612,
+        0.511,
+        0.081
+       ]
+      },
+      {
+       "bbox": [
+        0.485,
+        0.648,
+        0.474,
+        0.079
+       ]
+      },
+      {
+       "bbox": [
+        0.463,
+        0.686,
+        0.493,
+        0.078
+       ]
+      },
+      {
+       "bbox": [
+        0.466,
+        0.725,
+        0.38,
+        0.117
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg03",
+     "kind": "signature",
+     "bbox": [
+      0.548,
+      0.784,
+      0.395,
+      0.15
+     ],
+     "hand": "handwriting",
+     "script": "latin_cursive",
+     "later_hand": false,
+     "note": "Signature and place name written in Latin cursive script",
+     "lines": [
+      {
+       "bbox": [
+        0.551,
+        0.784,
+        0.389,
+        0.141
+       ]
+      },
+      {
+       "bbox": [
+        0.551,
+        0.865,
+        0.28,
+        0.065
+       ]
+      }
+     ]
+    }
+   ],
+   "reading_order": [
+    "reg01",
+    "reg02",
+    "reg03"
+   ],
+   "page_notes": "Album page (Stammbuch/Poesiealbum) featuring a printed botanical chromolithograph overlayed by handwritten text. The bottom-left corner of the sheet is torn/missing, revealing the blank leaf underneath. Bound album gutter visible at left."
+  },
+  "usage": {
+   "prompt_tokens": 2164,
+   "completion_tokens": 1803,
+   "total_tokens": 3967,
+   "cost": 0.00838425,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00838425,
+    "upstream_inference_prompt_cost": 0.001623,
+    "upstream_inference_completions_cost": 0.00676125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1032,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00838425,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 10.66
+ },
+ "meta": {}
+}

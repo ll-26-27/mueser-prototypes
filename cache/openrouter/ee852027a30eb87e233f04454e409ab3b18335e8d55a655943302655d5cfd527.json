@@ -1,0 +1,187 @@
+{
+ "namespace": "openrouter",
+ "key": "ee852027a30eb87e233f04454e409ab3b18335e8d55a655943302655d5cfd527",
+ "fetched_at": "2026-11-05T14:21:25Z",
+ "request": {
+  "model": "qwen/qwen3-vl-235b-a22b-instruct",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/synth-01.png"
+ },
+ "raw": {
+  "id": "gen-1793888474-8mNk0IZ3uoNQr0k026TG",
+  "object": "chat.completion",
+  "created": 1793888474,
+  "model": "qwen/qwen3-vl-235b-a22b-instruct",
+  "provider": "Parasail",
+  "system_fingerprint": null,
+  "service_tier": null,
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "stop",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\n      \"text\": \"Lwif aͤß Köniͤgßberg, den 29. Juliuͤß 1786\"\n    },\n    {\n      \"text\": \"Liebſte Schweſter!\"\n    },\n    {\n      \"text\": \"Geſtern ſind wir glüͤcklich in Köniͤgßberg angekommen, nachdem ſich der Weg von Elbing\"\n    },\n    {\n      \"text\": \"uͤber die Uſſring zwoͤlf volle Tage geſtoͤßet hat. Der Sand iſt tief und die Pferde waren\"\n    },\n    {\n      \"text\": \"müde. Wir woͤhnen bey dem Kaufmann Falbergß am Pregel, deſſen Frau Sie grüßen\"\n    },\n    {\n      \"text\": \"läßt.\"\n    },\n    {\n      \"text\": \"Heute Vormittag ſahen wir den Profeſſor Kant beſucht. Er iſt klein und freundlich und\"\n    },\n    {\n      \"text\": \"ſpricht von allem, nur nicht von ſeinen Bücher. Morgen ſahren wir nach Memel, und von\"\n    },\n    {\n      \"text\": \"da, ſo Gott will, über Tilsit zurück.\"\n    },\n    {\n      \"text\": \"Schreibt mir nach Danzig, poſta reſtante. Ich bin und bleibe Euer treuer Bruder\"\n    },\n    {\n      \"text\": \"Friedrich.\"\n    }\n  ],\n  \"script\": \"kurrent\",\n  \"notes\": \"Handwritten in Kurrent script. Some letters are ligatured or faint. Date and salutation are centered. No visible damage or bleed-through.\"\n}",
+     "refusal": null,
+     "reasoning": null
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 3916,
+   "completion_tokens": 408,
+   "total_tokens": 4324,
+   "cost": 0.00154828,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 448,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00154828,
+    "upstream_inference_prompt_cost": 0.00077308,
+    "upstream_inference_completions_cost": 0.0007752
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\n      \"text\": \"Lwif aͤß Köniͤgßberg, den 29. Juliuͤß 1786\"\n    },\n    {\n      \"text\": \"Liebſte Schweſter!\"\n    },\n    {\n      \"text\": \"Geſtern ſind wir glüͤcklich in Köniͤgßberg angekommen, nachdem ſich der Weg von Elbing\"\n    },\n    {\n      \"text\": \"uͤber die Uſſring zwoͤlf volle Tage geſtoͤßet hat. Der Sand iſt tief und die Pferde waren\"\n    },\n    {\n      \"text\": \"müde. Wir woͤhnen bey dem Kaufmann Falbergß am Pregel, deſſen Frau Sie grüßen\"\n    },\n    {\n      \"text\": \"läßt.\"\n    },\n    {\n      \"text\": \"Heute Vormittag ſahen wir den Profeſſor Kant beſucht. Er iſt klein und freundlich und\"\n    },\n    {\n      \"text\": \"ſpricht von allem, nur nicht von ſeinen Bücher. Morgen ſahren wir nach Memel, und von\"\n    },\n    {\n      \"text\": \"da, ſo Gott will, über Tilsit zurück.\"\n    },\n    {\n      \"text\": \"Schreibt mir nach Danzig, poſta reſtante. Ich bin und bleibe Euer treuer Bruder\"\n    },\n    {\n      \"text\": \"Friedrich.\"\n    }\n  ],\n  \"script\": \"kurrent\",\n  \"notes\": \"Handwritten in Kurrent script. Some letters are ligatured or faint. Date and salutation are centered. No visible damage or bleed-through.\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Lwif aͤß Köniͤgßberg, den 29. Juliuͤß 1786"
+    },
+    {
+     "text": "Liebſte Schweſter!"
+    },
+    {
+     "text": "Geſtern ſind wir glüͤcklich in Köniͤgßberg angekommen, nachdem ſich der Weg von Elbing"
+    },
+    {
+     "text": "uͤber die Uſſring zwoͤlf volle Tage geſtoͤßet hat. Der Sand iſt tief und die Pferde waren"
+    },
+    {
+     "text": "müde. Wir woͤhnen bey dem Kaufmann Falbergß am Pregel, deſſen Frau Sie grüßen"
+    },
+    {
+     "text": "läßt."
+    },
+    {
+     "text": "Heute Vormittag ſahen wir den Profeſſor Kant beſucht. Er iſt klein und freundlich und"
+    },
+    {
+     "text": "ſpricht von allem, nur nicht von ſeinen Bücher. Morgen ſahren wir nach Memel, und von"
+    },
+    {
+     "text": "da, ſo Gott will, über Tilsit zurück."
+    },
+    {
+     "text": "Schreibt mir nach Danzig, poſta reſtante. Ich bin und bleibe Euer treuer Bruder"
+    },
+    {
+     "text": "Friedrich."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Handwritten in Kurrent script. Some letters are ligatured or faint. Date and salutation are centered. No visible damage or bleed-through."
+  },
+  "usage": {
+   "prompt_tokens": 3916,
+   "completion_tokens": 408,
+   "total_tokens": 4324,
+   "cost": 0.00154828,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 448,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00154828,
+    "upstream_inference_prompt_cost": 0.00077308,
+    "upstream_inference_completions_cost": 0.0007752
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00154828,
+  "model": "qwen/qwen3-vl-235b-a22b-instruct",
+  "provider": "Parasail",
+  "seconds": 11.27
+ },
+ "meta": {}
+}

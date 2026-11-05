@@ -1,0 +1,195 @@
+{
+ "namespace": "openrouter",
+ "key": "cb6aa2b0ef4bd7428401b468ad71b5acbb565061b491081a36c060f97cd8e454",
+ "fetched_at": "2026-11-05T14:22:08Z",
+ "request": {
+  "model": "anthropic/claude-haiku-5.5",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/synth-01.png"
+ },
+ "raw": {
+  "id": "gen-1793888520-NubJjBaKPZFfGUU43t9B",
+  "object": "chat.completion",
+  "created": 1793888520,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": null,
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\":[{\"text\":\"[?Leipf] aus Königsberg, den 29. Juli 1786\"},{\"text\":\"Liebste Schwester!\"},{\"text\":\"Gestern sind wir glücklich in Königsberg angekommen, nachdem uns der Weg von Elbing\"},{\"text\":\"[?über] die Nehrung zwey volle Tage aufgehalten hat. Das Land ist flach und die [?Pferde] waren\"},{\"text\":\"müde. Wir wohnen bey dem Kaufmann [?Schlegel] am Pregel, dessen Frau Sie sehr grüßen\"},{\"text\":\"läßt.\"},{\"text\":\"Heute Vormittag haben wir den Professor [?Kant] besucht. Er ist blind und freundlich und\"},{\"text\":\"spricht von allem, was nicht von seinen Büchern. Morgen fahren wir nach [?Memel], und von\"},{\"text\":\"da, so Gott will, [?über Tilsit] zurück.\"},{\"text\":\"Schreibe mir nach Danzig, [?poste restante]. Ich bin und bleibe Dein treuer [?Bruder]\"},{\"text\":\"[?Heinrich].\"}],\"script\":\"kurrent\",\"notes\":\"Copperplate-style Kurrent with very thin strokes; many words are uncertain and marked [?]. Reading is tentative and should be checked against the image; no line-end hyphenation or catchwords visible. Single hand, no damage noted.\"}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "signature": "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.eyJlbmRwb2ludF9zbHVnIjoiYW50aHJvcGljL2NsYXVkZS1oYWlrdS01LjUtMjAyNjEwMDd8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "anthropic-claude-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 5604,
+   "completion_tokens": 1794,
+   "total_tokens": 7398,
+   "cost": 0.0014574,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0014574,
+    "upstream_inference_prompt_cost": 0.0005604,
+    "upstream_inference_completions_cost": 0.000897
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1294,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\":[{\"text\":\"[?Leipf] aus Königsberg, den 29. Juli 1786\"},{\"text\":\"Liebste Schwester!\"},{\"text\":\"Gestern sind wir glücklich in Königsberg angekommen, nachdem uns der Weg von Elbing\"},{\"text\":\"[?über] die Nehrung zwey volle Tage aufgehalten hat. Das Land ist flach und die [?Pferde] waren\"},{\"text\":\"müde. Wir wohnen bey dem Kaufmann [?Schlegel] am Pregel, dessen Frau Sie sehr grüßen\"},{\"text\":\"läßt.\"},{\"text\":\"Heute Vormittag haben wir den Professor [?Kant] besucht. Er ist blind und freundlich und\"},{\"text\":\"spricht von allem, was nicht von seinen Büchern. Morgen fahren wir nach [?Memel], und von\"},{\"text\":\"da, so Gott will, [?über Tilsit] zurück.\"},{\"text\":\"Schreibe mir nach Danzig, [?poste restante]. Ich bin und bleibe Dein treuer [?Bruder]\"},{\"text\":\"[?Heinrich].\"}],\"script\":\"kurrent\",\"notes\":\"Copperplate-style Kurrent with very thin strokes; many words are uncertain and marked [?]. Reading is tentative and should be checked against the image; no line-end hyphenation or catchwords visible. Single hand, no damage noted.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "[?Leipf] aus Königsberg, den 29. Juli 1786"
+    },
+    {
+     "text": "Liebste Schwester!"
+    },
+    {
+     "text": "Gestern sind wir glücklich in Königsberg angekommen, nachdem uns der Weg von Elbing"
+    },
+    {
+     "text": "[?über] die Nehrung zwey volle Tage aufgehalten hat. Das Land ist flach und die [?Pferde] waren"
+    },
+    {
+     "text": "müde. Wir wohnen bey dem Kaufmann [?Schlegel] am Pregel, dessen Frau Sie sehr grüßen"
+    },
+    {
+     "text": "läßt."
+    },
+    {
+     "text": "Heute Vormittag haben wir den Professor [?Kant] besucht. Er ist blind und freundlich und"
+    },
+    {
+     "text": "spricht von allem, was nicht von seinen Büchern. Morgen fahren wir nach [?Memel], und von"
+    },
+    {
+     "text": "da, so Gott will, [?über Tilsit] zurück."
+    },
+    {
+     "text": "Schreibe mir nach Danzig, [?poste restante]. Ich bin und bleibe Dein treuer [?Bruder]"
+    },
+    {
+     "text": "[?Heinrich]."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Copperplate-style Kurrent with very thin strokes; many words are uncertain and marked [?]. Reading is tentative and should be checked against the image; no line-end hyphenation or catchwords visible. Single hand, no damage noted."
+  },
+  "usage": {
+   "prompt_tokens": 5604,
+   "completion_tokens": 1794,
+   "total_tokens": 7398,
+   "cost": 0.0014574,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0014574,
+    "upstream_inference_prompt_cost": 0.0005604,
+    "upstream_inference_completions_cost": 0.000897
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1294,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0014574,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Google",
+  "seconds": 8.94
+ },
+ "meta": {}
+}

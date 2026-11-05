@@ -1,0 +1,225 @@
+{
+ "namespace": "openrouter",
+ "key": "4cf688a7b91ebc730fac9eb0729cac4a20e86b9993224dd42e87e2c3b0cb8649",
+ "fetched_at": "2026-11-05T14:11:39Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/real-schiller-musenalmanach-1796-p093.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887883-a2tCKvBAuLpq8pRevfLA",
+  "object": "chat.completion",
+  "created": 1793887883,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\": [{\"text\": \"( 93 )\"}, {\"text\": \"Ein frisches Duftgesäusel wallet\"}, {\"text\": \"Im Haine bei der Sterne Licht,\"}, {\"text\": \"Und Philomelens Nachtlied hallet;\"}, {\"text\": \"Die Hirtin ach! vernimmt es nicht.\"}, {\"text\": \"Man sieht erzürnt die Elfen wallen,\"}, {\"text\": \"Dafs Lust der Keuschheit Blume bricht,\"}, {\"text\": \"Man hört im Haine Klagen hallen;\"}, {\"text\": \"Die Hirtin ach! vernimmt sie nicht.\"}, {\"text\": \"Doch endlich ward im Mondesschimmer\"}, {\"text\": \"Sie an des Schäfers Arm gesehn:\"}, {\"text\": \"Es tönt der Elfen Grabgewimmer,\"}, {\"text\": \"Wo sie berauscht im Thale gehn.\"}, {\"text\": \"Ihr Purpurgürtel weht im Winde,\"}, {\"text\": \"Ihr Auge schwimmt im feuchten Glanz;\"}, {\"text\": \"Sie seufzt, » o! süfser Hirt, wo finde\"}, {\"text\": \"Ich nun der Unschuld Lilienkranz? «\"}, {\"text\": \"Bei Kronen, welche Leichen schmücken,\"}, {\"text\": \"So wimmert es im Nebelthal;\"}], \"script\": \"antiqua\", \"notes\": \"Antiqua typeface using 'fs' representation for 'ß' (Dafs, süfser); some show-through from the reverse page.\"}",
+     "refusal": null,
+     "reasoning": "**Analyzing Script Features**\n\nI'm currently zeroing in on the script's characteristics, specifically distinguishing between Roman and Antiqua fonts. My attention is drawn to subtle details like the \"round s\" and overall font style, examining variations within the text to accurately identify its nature.\n\n**Identifying Letterforms**\n\nI'm now closely examining specific instances of the letter 's' within the text. My focus is on differentiating between the standard 's' and the long 's' ('ſ'), noting variations in roundness and the presence of crossbars, especially in combinations like 'fs' which might represent 'ß'.\n\n**Confirming Font Style**\n\nI've confirmed the font is indeed Antiqua. The consistent use of the standard round 's' throughout the text supports this. I'm now investigating the \"fs\" ligatures in words like \"Dafs\" and \"süfser\" as a historical Antiqua convention for representing 'ß'.\n\n**Investigating Character Combinations**\n\nI'm now examining specific character pairings within the text. My focus is on the \"fs\" ligature and its implications for representing the \"ß\" sound, particularly in words like \"süfser\" and \"Dafs,\" which appear consistent with historical Antiqua orthography.\n\n**Revising Punctuation Analysis**\n\nI'm re-examining the quotation marks on lines 17-18, specifically the guillemets and their spacing around \"o!\" and \"?\". I'm also meticulously reviewing all punctuation marks, noting the use of colons, semicolons, periods, and commas to ensure accurate interpretation.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Script Features**\n\nI'm currently zeroing in on the script's characteristics, specifically distinguishing between Roman and Antiqua fonts. My attention is drawn to subtle details like the \"round s\" and overall font style, examining variations within the text to accurately identify its nature.\n\n**Identifying Letterforms**\n\nI'm now closely examining specific instances of the letter 's' within the text. My focus is on differentiating between the standard 's' and the long 's' ('ſ'), noting variations in roundness and the presence of crossbars, especially in combinations like 'fs' which might represent 'ß'.\n\n**Confirming Font Style**\n\nI've confirmed the font is indeed Antiqua. The consistent use of the standard round 's' throughout the text supports this. I'm now investigating the \"fs\" ligatures in words like \"Dafs\" and \"süfser\" as a historical Antiqua convention for representing 'ß'.\n\n**Investigating Character Combinations**\n\nI'm now examining specific character pairings within the text. My focus is on the \"fs\" ligature and its implications for representing the \"ß\" sound, particularly in words like \"süfser\" and \"Dafs,\" which appear consistent with historical Antiqua orthography.\n\n**Revising Punctuation Analysis**\n\nI'm re-examining the quotation marks on lines 17-18, specifically the guillemets and their spacing around \"o!\" and \"?\". I'm also meticulously reviewing all punctuation marks, noting the use of colons, semicolons, periods, and commas to ensure accurate interpretation.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1685,
+   "completion_tokens": 1980,
+   "total_tokens": 3665,
+   "cost": 0.00868875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00868875,
+    "upstream_inference_prompt_cost": 0.00126375,
+    "upstream_inference_completions_cost": 0.007425
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1648,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\": [{\"text\": \"( 93 )\"}, {\"text\": \"Ein frisches Duftgesäusel wallet\"}, {\"text\": \"Im Haine bei der Sterne Licht,\"}, {\"text\": \"Und Philomelens Nachtlied hallet;\"}, {\"text\": \"Die Hirtin ach! vernimmt es nicht.\"}, {\"text\": \"Man sieht erzürnt die Elfen wallen,\"}, {\"text\": \"Dafs Lust der Keuschheit Blume bricht,\"}, {\"text\": \"Man hört im Haine Klagen hallen;\"}, {\"text\": \"Die Hirtin ach! vernimmt sie nicht.\"}, {\"text\": \"Doch endlich ward im Mondesschimmer\"}, {\"text\": \"Sie an des Schäfers Arm gesehn:\"}, {\"text\": \"Es tönt der Elfen Grabgewimmer,\"}, {\"text\": \"Wo sie berauscht im Thale gehn.\"}, {\"text\": \"Ihr Purpurgürtel weht im Winde,\"}, {\"text\": \"Ihr Auge schwimmt im feuchten Glanz;\"}, {\"text\": \"Sie seufzt, » o! süfser Hirt, wo finde\"}, {\"text\": \"Ich nun der Unschuld Lilienkranz? «\"}, {\"text\": \"Bei Kronen, welche Leichen schmücken,\"}, {\"text\": \"So wimmert es im Nebelthal;\"}], \"script\": \"antiqua\", \"notes\": \"Antiqua typeface using 'fs' representation for 'ß' (Dafs, süfser); some show-through from the reverse page.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "( 93 )"
+    },
+    {
+     "text": "Ein frisches Duftgesäusel wallet"
+    },
+    {
+     "text": "Im Haine bei der Sterne Licht,"
+    },
+    {
+     "text": "Und Philomelens Nachtlied hallet;"
+    },
+    {
+     "text": "Die Hirtin ach! vernimmt es nicht."
+    },
+    {
+     "text": "Man sieht erzürnt die Elfen wallen,"
+    },
+    {
+     "text": "Dafs Lust der Keuschheit Blume bricht,"
+    },
+    {
+     "text": "Man hört im Haine Klagen hallen;"
+    },
+    {
+     "text": "Die Hirtin ach! vernimmt sie nicht."
+    },
+    {
+     "text": "Doch endlich ward im Mondesschimmer"
+    },
+    {
+     "text": "Sie an des Schäfers Arm gesehn:"
+    },
+    {
+     "text": "Es tönt der Elfen Grabgewimmer,"
+    },
+    {
+     "text": "Wo sie berauscht im Thale gehn."
+    },
+    {
+     "text": "Ihr Purpurgürtel weht im Winde,"
+    },
+    {
+     "text": "Ihr Auge schwimmt im feuchten Glanz;"
+    },
+    {
+     "text": "Sie seufzt, » o! süfser Hirt, wo finde"
+    },
+    {
+     "text": "Ich nun der Unschuld Lilienkranz? «"
+    },
+    {
+     "text": "Bei Kronen, welche Leichen schmücken,"
+    },
+    {
+     "text": "So wimmert es im Nebelthal;"
+    }
+   ],
+   "script": "antiqua",
+   "notes": "Antiqua typeface using 'fs' representation for 'ß' (Dafs, süfser); some show-through from the reverse page."
+  },
+  "usage": {
+   "prompt_tokens": 1685,
+   "completion_tokens": 1980,
+   "total_tokens": 3665,
+   "cost": 0.00868875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00868875,
+    "upstream_inference_prompt_cost": 0.00126375,
+    "upstream_inference_completions_cost": 0.007425
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1648,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00868875,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 16.98
+ },
+ "meta": {}
+}

@@ -1,0 +1,189 @@
+{
+ "namespace": "openrouter",
+ "key": "543e888bd578a56f8046cbec1819a05571bf7678337506665350705a1db20040",
+ "fetched_at": "2026-11-05T14:19:59Z",
+ "request": {
+  "model": "google/gemini-3.1-pro-preview",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/real-poesiealbum-hedwig-1901-p02.jpg"
+ },
+ "raw": {
+  "id": "gen-1793888395-GQ1kjmMWqV8vznYWd3dt",
+  "object": "chat.completion",
+  "created": 1793888395,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\n      \"text\": \"Wer Pein hat, sieht Schmerz\"\n    },\n    {\n      \"text\": \"sein letztes Ende kommen\"\n    },\n    {\n      \"text\": \"die Hoffnung, die ihn tröste\"\n    },\n    {\n      \"text\": \"soll, ist ihm gewiß benommen\"\n    },\n    {\n      \"text\": \"der liebe Gott, nur dieser\"\n    },\n    {\n      \"text\": \"hilft, und auf dem Tode\"\n    },\n    {\n      \"text\": \"folgt das Gericht\"\n    },\n    {\n      \"text\": \"Gerd H. Peters\"\n    },\n    {\n      \"text\": \"Suurhusen\"\n    }\n  ],\n  \"script\": \"kurrent\",\n  \"notes\": \"Poesiealbum entry with floral illustration. Handwriting is Kurrent.\"\n}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1/ALFGPxxFYjca/x0aMiiCvf04najU+3qG23Nv5s5oaRhHf47A51fexuCetU11CnXHBEbYQLNmY/SqRxm48fKqTZHg/+jyFMtGsJbanRDivmyMvKQeKBQ==",
+       "format": "google-gemini-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1699,
+   "completion_tokens": 215,
+   "total_tokens": 1914,
+   "cost": 0.005978,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005978,
+    "upstream_inference_prompt_cost": 0.003398,
+    "upstream_inference_completions_cost": 0.00258
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\n      \"text\": \"Wer Pein hat, sieht Schmerz\"\n    },\n    {\n      \"text\": \"sein letztes Ende kommen\"\n    },\n    {\n      \"text\": \"die Hoffnung, die ihn tröste\"\n    },\n    {\n      \"text\": \"soll, ist ihm gewiß benommen\"\n    },\n    {\n      \"text\": \"der liebe Gott, nur dieser\"\n    },\n    {\n      \"text\": \"hilft, und auf dem Tode\"\n    },\n    {\n      \"text\": \"folgt das Gericht\"\n    },\n    {\n      \"text\": \"Gerd H. Peters\"\n    },\n    {\n      \"text\": \"Suurhusen\"\n    }\n  ],\n  \"script\": \"kurrent\",\n  \"notes\": \"Poesiealbum entry with floral illustration. Handwriting is Kurrent.\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Wer Pein hat, sieht Schmerz"
+    },
+    {
+     "text": "sein letztes Ende kommen"
+    },
+    {
+     "text": "die Hoffnung, die ihn tröste"
+    },
+    {
+     "text": "soll, ist ihm gewiß benommen"
+    },
+    {
+     "text": "der liebe Gott, nur dieser"
+    },
+    {
+     "text": "hilft, und auf dem Tode"
+    },
+    {
+     "text": "folgt das Gericht"
+    },
+    {
+     "text": "Gerd H. Peters"
+    },
+    {
+     "text": "Suurhusen"
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Poesiealbum entry with floral illustration. Handwriting is Kurrent."
+  },
+  "usage": {
+   "prompt_tokens": 1699,
+   "completion_tokens": 215,
+   "total_tokens": 1914,
+   "cost": 0.005978,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005978,
+    "upstream_inference_prompt_cost": 0.003398,
+    "upstream_inference_completions_cost": 0.00258
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.005978,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "seconds": 4.69
+ },
+ "meta": {}
+}

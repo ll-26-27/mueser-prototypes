@@ -1,0 +1,210 @@
+{
+ "namespace": "openrouter",
+ "key": "c6ffa13c00a0eac527f8d2fd25097af6433eb6381ce11123b12c13994ad45523",
+ "fetched_at": "2026-11-05T14:12:52Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/synth-04.png"
+ },
+ "raw": {
+  "id": "gen-1793887958-DiM1RMWxtdS51DVGwhOb",
+  "object": "chat.completion",
+  "created": 1793887958,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\"text\": \"Von Berlin nach Danzig.\"},\n    {\"text\": \"Den 9ten Julius reiſeten wir von Berlin ab nach Frankfurth an der Oder. Die\"},\n    {\"text\": \"Univerſität iſt klein, aber die Meſſe bringt viele Polen und Juden in die Stadt.\"},\n    {\"text\": \"Den 11ten fuhren wir über Landsberg an der Warthe. Die Gegend iſt hier flach\"},\n    {\"text\": \"und ſumpfig; der König hat die Brüche austrocknen und Coloniſten anſetzen laſſen.\"},\n    {\"text\": \"Den 14ten kamen wir nach Poſen, der Hauptſtadt von Großpolen. Die Stadt\"},\n    {\"text\": \"gehört ſeit dem Jahre 1793 nicht mehr zu Polen, ſchrieb ein ſpäterer Leſer an den\"},\n    {\"text\": \"Rand. Wir ſahen den Dom und das Rathhaus, welches von Italiänern gebauet\"},\n    {\"text\": \"ſeyn ſoll.\"},\n    {\"text\": \"Den 18ten erreichten wir Thorn an der Weichſel. Hier iſt Copernicus geboren; man\"},\n    {\"text\": \"zeigte uns ſein Haus. Die Pfefferkuchen von Thorn ſind in ganz Preußen bekannt.\"},\n    {\"text\": \"Den 22ten kamen wir nach Danzig. Die Stadt iſt reich und ſtolz, und die\"},\n    {\"text\": \"Kaufleute reden Engliſch und Holländiſch. Vom Thurme der Marien=Kirche ſieht\"},\n    {\"text\": \"man die See.\"}\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"\"\n}",
+     "refusal": null,
+     "reasoning": "**Extracting German Text**\n\nI'm currently focused on accurately transcribing the Fraktur script from the provided image. My progress involves carefully deciphering each character to ensure a faithful representation of the original German text, beginning with the header \"Von Berlin nach Danzig.\"\n\n**Deciphering Historical Text**\n\nI'm now working on transcribing the next section, noting details like the spelling of \"Frankfurth\" with a 'th'. I'm also paying close attention to the description of the university and its visitors.\n\n**Interpreting Fraktur Details**\n\nI'm now focusing on the finer points of the Fraktur script. I've noted the spelling of \"Frankfurth\" and am carefully examining the potential hyphenation in \"Marien=Kirche,\" considering how to best preserve these details.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Extracting German Text**\n\nI'm currently focused on accurately transcribing the Fraktur script from the provided image. My progress involves carefully deciphering each character to ensure a faithful representation of the original German text, beginning with the header \"Von Berlin nach Danzig.\"\n\n**Deciphering Historical Text**\n\nI'm now working on transcribing the next section, noting details like the spelling of \"Frankfurth\" with a 'th'. I'm also paying close attention to the description of the university and its visitors.\n\n**Interpreting Fraktur Details**\n\nI'm now focusing on the finer points of the Fraktur script. I've noted the spelling of \"Frankfurth\" and am carefully examining the potential hyphenation in \"Marien=Kirche,\" considering how to best preserve these details.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1247,
+   "total_tokens": 2958,
+   "cost": 0.0059595,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0059595,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.00467625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 850,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\"text\": \"Von Berlin nach Danzig.\"},\n    {\"text\": \"Den 9ten Julius reiſeten wir von Berlin ab nach Frankfurth an der Oder. Die\"},\n    {\"text\": \"Univerſität iſt klein, aber die Meſſe bringt viele Polen und Juden in die Stadt.\"},\n    {\"text\": \"Den 11ten fuhren wir über Landsberg an der Warthe. Die Gegend iſt hier flach\"},\n    {\"text\": \"und ſumpfig; der König hat die Brüche austrocknen und Coloniſten anſetzen laſſen.\"},\n    {\"text\": \"Den 14ten kamen wir nach Poſen, der Hauptſtadt von Großpolen. Die Stadt\"},\n    {\"text\": \"gehört ſeit dem Jahre 1793 nicht mehr zu Polen, ſchrieb ein ſpäterer Leſer an den\"},\n    {\"text\": \"Rand. Wir ſahen den Dom und das Rathhaus, welches von Italiänern gebauet\"},\n    {\"text\": \"ſeyn ſoll.\"},\n    {\"text\": \"Den 18ten erreichten wir Thorn an der Weichſel. Hier iſt Copernicus geboren; man\"},\n    {\"text\": \"zeigte uns ſein Haus. Die Pfefferkuchen von Thorn ſind in ganz Preußen bekannt.\"},\n    {\"text\": \"Den 22ten kamen wir nach Danzig. Die Stadt iſt reich und ſtolz, und die\"},\n    {\"text\": \"Kaufleute reden Engliſch und Holländiſch. Vom Thurme der Marien=Kirche ſieht\"},\n    {\"text\": \"man die See.\"}\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Von Berlin nach Danzig."
+    },
+    {
+     "text": "Den 9ten Julius reiſeten wir von Berlin ab nach Frankfurth an der Oder. Die"
+    },
+    {
+     "text": "Univerſität iſt klein, aber die Meſſe bringt viele Polen und Juden in die Stadt."
+    },
+    {
+     "text": "Den 11ten fuhren wir über Landsberg an der Warthe. Die Gegend iſt hier flach"
+    },
+    {
+     "text": "und ſumpfig; der König hat die Brüche austrocknen und Coloniſten anſetzen laſſen."
+    },
+    {
+     "text": "Den 14ten kamen wir nach Poſen, der Hauptſtadt von Großpolen. Die Stadt"
+    },
+    {
+     "text": "gehört ſeit dem Jahre 1793 nicht mehr zu Polen, ſchrieb ein ſpäterer Leſer an den"
+    },
+    {
+     "text": "Rand. Wir ſahen den Dom und das Rathhaus, welches von Italiänern gebauet"
+    },
+    {
+     "text": "ſeyn ſoll."
+    },
+    {
+     "text": "Den 18ten erreichten wir Thorn an der Weichſel. Hier iſt Copernicus geboren; man"
+    },
+    {
+     "text": "zeigte uns ſein Haus. Die Pfefferkuchen von Thorn ſind in ganz Preußen bekannt."
+    },
+    {
+     "text": "Den 22ten kamen wir nach Danzig. Die Stadt iſt reich und ſtolz, und die"
+    },
+    {
+     "text": "Kaufleute reden Engliſch und Holländiſch. Vom Thurme der Marien=Kirche ſieht"
+    },
+    {
+     "text": "man die See."
+    }
+   ],
+   "script": "fraktur",
+   "notes": ""
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1247,
+   "total_tokens": 2958,
+   "cost": 0.0059595,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0059595,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.00467625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 850,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0059595,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 14.83
+ },
+ "meta": {}
+}

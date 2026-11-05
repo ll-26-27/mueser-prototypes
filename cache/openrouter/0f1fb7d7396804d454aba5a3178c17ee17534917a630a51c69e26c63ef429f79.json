@@ -1,0 +1,255 @@
+{
+ "namespace": "openrouter",
+ "key": "0f1fb7d7396804d454aba5a3178c17ee17534917a630a51c69e26c63ef429f79",
+ "fetched_at": "2026-11-05T14:11:22Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/real-grimm-khm-1812-i-p093.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887847-W2tK5OuJcTJHrBIoCzWI",
+  "object": "chat.completion",
+  "created": 1793887847,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\": [{\"text\": \"— 93 —\"}, {\"text\": \"die Tauben wieder herein und thaten freund-\"}, {\"text\": \"lich: „Aschenputtel, sollen wir dir dte Wicken\"}, {\"text\": \"lesen?“ „Ja, —\"}, {\"text\": \"die schlechten ins Kröpfchen,\"}, {\"text\": \"die guten ins Töpfchen.“\"}, {\"text\": \"Pick, pick! pick, pick! gings so geschwind, als\"}, {\"text\": \"wären zwölf Hände da. Und als sie fertig wa-\"}, {\"text\": \"ren, sagten die Tauben: „Aschenputtel, willst\"}, {\"text\": \"du auch auf den Ball gehen und tanzen.“ —\"}, {\"text\": \"„O du mein Gott, sagte es, wie kann ich in\"}, {\"text\": \"meinen schmutzigen Kleidern hingehen?“ —\"}, {\"text\": \"„Geh zu dem Bäumlein auf deiner Mutter\"}, {\"text\": \"Grab, schüttele daran und wünsche dir schöne\"}, {\"text\": \"Kleider, komm aber vor Mitternacht wieder.“\"}, {\"text\": \"— da ging Aschenputtel hinaus, schüttelte das\"}, {\"text\": \"Bäumlein und sprach:\"}, {\"text\": \"„Bäumlein rüttel und schüttel dich,\"}, {\"text\": \"wirf schöne Kleider herab für mich!“\"}, {\"text\": \"Kaum hatte es das ausgesagt, da lag ein präch-\"}, {\"text\": \"tig silbern Kleid vor ihm, Perlen, seidene\"}, {\"text\": \"Strümpfe mit silbernen Zwickeln und silberne\"}, {\"text\": \"Pantoffel und was sonst dazu gehörte. Aschen-\"}, {\"text\": \"puttel trug alles nach Haus, und als es sich\"}, {\"text\": \"gewaschen und angezogen hatte, da war es so\"}, {\"text\": \"schön wie eine Rose, die der Thau gewaschen\"}, {\"text\": \"hat. Und wie es vor die Hausthüre kam, so\"}, {\"text\": \"stand da ein Wagen mit sechs federgeschmück-\"}, {\"text\": \"ten Rappen und Bediente dabei in Blau und\"}], \"script\": \"fraktur\", \"notes\": \"Line 3 contains the original misprint 'dte' instead of 'die'. Heavy bleed-through from the reverse page.\"}",
+     "refusal": null,
+     "reasoning": "**Analyzing the Input**\n\nI'm currently focused on transcribing the image's text, specifically line-by-line. The script is Fraktur, the language German. My aim is to accurately represent the provided segment in JSON format, following the rules. I've just read the line: \"- 93 - die Tauben wieder herein und thaten freund-\".\n\n\n**Transcribing the German**\n\nI've moved on from the first line and am parsing the text further. \"lesen?“ „Ja, —\" has been captured, along with the subsequent lines: \"die schlechten ins Kröpfchen,\\ndie guten ins Töpfchen.“\\nPick, pick! pick, pick! gings so geschwind, als\\nwären zwölf Hände da. And als sie fertig wa-\". I aim to follow the instructions and format everything in JSON.\n\n\n**Verifying the Text**\n\nI'm now cross-referencing the lines. The page number is consistently \"- 93 -\". I'm analyzing \"die Tauben wieder herein und thaten freund-\" and focusing on the hyphen. I'm also carefully assessing \"die Wicken,\" paying close attention to character identification, particularly the potential misinterpretation of letters due to the Fraktur font. My focus is accurate transcription.\n\n\n**Examining the 't'**\n\nI'm now fixated on \"dte Wicken.\" I've re-examined the Fraktur characters, focusing on the ascender in \"dte\" versus \"die.\" Initially, I considered a typo, or an un-dotted 'i', or a possible 'l', but now, I am convinced it is a 't'. I'm comparing the 'i' in \"die\" to the problematic character, and can see the dot. The spur is definitive. I will maintain the original spelling, as instructed.\n\n\n**Confirming the 't'**\n\nI'm revisiting the problematic letter, and focusing on character height relative to \"Aschenputtel\" and Fraktur conventions. I see the crossbar is definitive, confirming it as a 't' in \"dte\". I am moving on to other challenges, focusing on indentation patterns. The text following \"lesen?\" has indents. I must remember those patterns. I'm now processing the line structure with an eye toward JSON formatting rules.\n\n\n**Formatting the Text**\n\nI'm now structuring the additional lines, concentrating on accurately representing the paragraph breaks and maintaining the dialogue structure. I'm taking special care with line breaks and quotation marks. I am meticulously accounting for the indentation patterns. My current task focuses on \"— da ging Aschenputtel hinaus,\" and the subsequent lines, ensuring correct JSON implementation of the Fraktur text.\n\n\n**Verifying the Fraktur**\n\nI've just confirmed the transcription \"dte\" against the original 1812 Kinder- und Hausmärchen, verifying the historical typo. I am now proceeding with the line-by-line transcription. I am checking the hyphen usage, and the line breaks, paying attention to the Fraktur characteristics. I have analyzed \"freund-\" and \"wa-\" versus \"ren.\" I am working my way through the text, verifying each character.\n\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing the Input**\n\nI'm currently focused on transcribing the image's text, specifically line-by-line. The script is Fraktur, the language German. My aim is to accurately represent the provided segment in JSON format, following the rules. I've just read the line: \"- 93 - die Tauben wieder herein und thaten freund-\".\n\n\n**Transcribing the German**\n\nI've moved on from the first line and am parsing the text further. \"lesen?“ „Ja, —\" has been captured, along with the subsequent lines: \"die schlechten ins Kröpfchen,\\ndie guten ins Töpfchen.“\\nPick, pick! pick, pick! gings so geschwind, als\\nwären zwölf Hände da. And als sie fertig wa-\". I aim to follow the instructions and format everything in JSON.\n\n\n**Verifying the Text**\n\nI'm now cross-referencing the lines. The page number is consistently \"- 93 -\". I'm analyzing \"die Tauben wieder herein und thaten freund-\" and focusing on the hyphen. I'm also carefully assessing \"die Wicken,\" paying close attention to character identification, particularly the potential misinterpretation of letters due to the Fraktur font. My focus is accurate transcription.\n\n\n**Examining the 't'**\n\nI'm now fixated on \"dte Wicken.\" I've re-examined the Fraktur characters, focusing on the ascender in \"dte\" versus \"die.\" Initially, I considered a typo, or an un-dotted 'i', or a possible 'l', but now, I am convinced it is a 't'. I'm comparing the 'i' in \"die\" to the problematic character, and can see the dot. The spur is definitive. I will maintain the original spelling, as instructed.\n\n\n**Confirming the 't'**\n\nI'm revisiting the problematic letter, and focusing on character height relative to \"Aschenputtel\" and Fraktur conventions. I see the crossbar is definitive, confirming it as a 't' in \"dte\". I am moving on to other challenges, focusing on indentation patterns. The text following \"lesen?\" has indents. I must remember those patterns. I'm now processing the line structure with an eye toward JSON formatting rules.\n\n\n**Formatting the Text**\n\nI'm now structuring the additional lines, concentrating on accurately representing the paragraph breaks and maintaining the dialogue structure. I'm taking special care with line breaks and quotation marks. I am meticulously accounting for the indentation patterns. My current task focuses on \"— da ging Aschenputtel hinaus,\" and the subsequent lines, ensuring correct JSON implementation of the Fraktur text.\n\n\n**Verifying the Fraktur**\n\nI've just confirmed the transcription \"dte\" against the original 1812 Kinder- und Hausmärchen, verifying the historical typo. I am now proceeding with the line-by-line transcription. I am checking the hyphen usage, and the line breaks, paying attention to the Fraktur characteristics. I have analyzed \"freund-\" and \"wa-\" versus \"ren.\" I am working my way through the text, verifying each character.\n\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1528,
+   "completion_tokens": 2944,
+   "total_tokens": 4472,
+   "cost": 0.012186,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.012186,
+    "upstream_inference_prompt_cost": 0.001146,
+    "upstream_inference_completions_cost": 0.01104
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2433,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\": [{\"text\": \"— 93 —\"}, {\"text\": \"die Tauben wieder herein und thaten freund-\"}, {\"text\": \"lich: „Aschenputtel, sollen wir dir dte Wicken\"}, {\"text\": \"lesen?“ „Ja, —\"}, {\"text\": \"die schlechten ins Kröpfchen,\"}, {\"text\": \"die guten ins Töpfchen.“\"}, {\"text\": \"Pick, pick! pick, pick! gings so geschwind, als\"}, {\"text\": \"wären zwölf Hände da. Und als sie fertig wa-\"}, {\"text\": \"ren, sagten die Tauben: „Aschenputtel, willst\"}, {\"text\": \"du auch auf den Ball gehen und tanzen.“ —\"}, {\"text\": \"„O du mein Gott, sagte es, wie kann ich in\"}, {\"text\": \"meinen schmutzigen Kleidern hingehen?“ —\"}, {\"text\": \"„Geh zu dem Bäumlein auf deiner Mutter\"}, {\"text\": \"Grab, schüttele daran und wünsche dir schöne\"}, {\"text\": \"Kleider, komm aber vor Mitternacht wieder.“\"}, {\"text\": \"— da ging Aschenputtel hinaus, schüttelte das\"}, {\"text\": \"Bäumlein und sprach:\"}, {\"text\": \"„Bäumlein rüttel und schüttel dich,\"}, {\"text\": \"wirf schöne Kleider herab für mich!“\"}, {\"text\": \"Kaum hatte es das ausgesagt, da lag ein präch-\"}, {\"text\": \"tig silbern Kleid vor ihm, Perlen, seidene\"}, {\"text\": \"Strümpfe mit silbernen Zwickeln und silberne\"}, {\"text\": \"Pantoffel und was sonst dazu gehörte. Aschen-\"}, {\"text\": \"puttel trug alles nach Haus, und als es sich\"}, {\"text\": \"gewaschen und angezogen hatte, da war es so\"}, {\"text\": \"schön wie eine Rose, die der Thau gewaschen\"}, {\"text\": \"hat. Und wie es vor die Hausthüre kam, so\"}, {\"text\": \"stand da ein Wagen mit sechs federgeschmück-\"}, {\"text\": \"ten Rappen und Bediente dabei in Blau und\"}], \"script\": \"fraktur\", \"notes\": \"Line 3 contains the original misprint 'dte' instead of 'die'. Heavy bleed-through from the reverse page.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "— 93 —"
+    },
+    {
+     "text": "die Tauben wieder herein und thaten freund-"
+    },
+    {
+     "text": "lich: „Aschenputtel, sollen wir dir dte Wicken"
+    },
+    {
+     "text": "lesen?“ „Ja, —"
+    },
+    {
+     "text": "die schlechten ins Kröpfchen,"
+    },
+    {
+     "text": "die guten ins Töpfchen.“"
+    },
+    {
+     "text": "Pick, pick! pick, pick! gings so geschwind, als"
+    },
+    {
+     "text": "wären zwölf Hände da. Und als sie fertig wa-"
+    },
+    {
+     "text": "ren, sagten die Tauben: „Aschenputtel, willst"
+    },
+    {
+     "text": "du auch auf den Ball gehen und tanzen.“ —"
+    },
+    {
+     "text": "„O du mein Gott, sagte es, wie kann ich in"
+    },
+    {
+     "text": "meinen schmutzigen Kleidern hingehen?“ —"
+    },
+    {
+     "text": "„Geh zu dem Bäumlein auf deiner Mutter"
+    },
+    {
+     "text": "Grab, schüttele daran und wünsche dir schöne"
+    },
+    {
+     "text": "Kleider, komm aber vor Mitternacht wieder.“"
+    },
+    {
+     "text": "— da ging Aschenputtel hinaus, schüttelte das"
+    },
+    {
+     "text": "Bäumlein und sprach:"
+    },
+    {
+     "text": "„Bäumlein rüttel und schüttel dich,"
+    },
+    {
+     "text": "wirf schöne Kleider herab für mich!“"
+    },
+    {
+     "text": "Kaum hatte es das ausgesagt, da lag ein präch-"
+    },
+    {
+     "text": "tig silbern Kleid vor ihm, Perlen, seidene"
+    },
+    {
+     "text": "Strümpfe mit silbernen Zwickeln und silberne"
+    },
+    {
+     "text": "Pantoffel und was sonst dazu gehörte. Aschen-"
+    },
+    {
+     "text": "puttel trug alles nach Haus, und als es sich"
+    },
+    {
+     "text": "gewaschen und angezogen hatte, da war es so"
+    },
+    {
+     "text": "schön wie eine Rose, die der Thau gewaschen"
+    },
+    {
+     "text": "hat. Und wie es vor die Hausthüre kam, so"
+    },
+    {
+     "text": "stand da ein Wagen mit sechs federgeschmück-"
+    },
+    {
+     "text": "ten Rappen und Bediente dabei in Blau und"
+    }
+   ],
+   "script": "fraktur",
+   "notes": "Line 3 contains the original misprint 'dte' instead of 'die'. Heavy bleed-through from the reverse page."
+  },
+  "usage": {
+   "prompt_tokens": 1528,
+   "completion_tokens": 2944,
+   "total_tokens": 4472,
+   "cost": 0.012186,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.012186,
+    "upstream_inference_prompt_cost": 0.001146,
+    "upstream_inference_completions_cost": 0.01104
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2433,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.012186,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "seconds": 35.06
+ },
+ "meta": {}
+}

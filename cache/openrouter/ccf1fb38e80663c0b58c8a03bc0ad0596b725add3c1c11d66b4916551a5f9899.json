@@ -1,0 +1,202 @@
+{
+ "namespace": "openrouter",
+ "key": "ccf1fb38e80663c0b58c8a03bc0ad0596b725add3c1c11d66b4916551a5f9899",
+ "fetched_at": "2026-11-05T14:16:43Z",
+ "request": {
+  "model": "qwen/qwen3-vl-235b-a22b-instruct",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/synth-01.png"
+ },
+ "raw": {
+  "id": "gen-1793888182-yhkZU7eVwSkplHbcHJlf",
+  "object": "chat.completion",
+  "created": 1793888182,
+  "model": "qwen/qwen3-vl-235b-a22b-instruct",
+  "provider": "Parasail",
+  "system_fingerprint": null,
+  "service_tier": null,
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "stop",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\n      \"text\": \"Reise-Tagebuch von Breslau nach Königsberg, im Sommer 1786.\"\n    },\n    {\n      \"text\": \"Den 12. Junius 1786 reiseten wir des Morgens um fünf Uhr von Breslau ab. Der\"\n    },\n    {\n      \"text\": \"Herr von Jedliz hatte uns Briefe an die Magisträte der Städte mitgegeben, durch\"\n    },\n    {\n      \"text\": \"welche wir kommen würden, und sein Bedienter begleitete uns bis vor das\"\n    },\n    {\n      \"text\": \"Oder-Thor. Der Weg gieng über Neumarkt, wo wir die Pferde wechselten, nach\"\n    },\n    {\n      \"text\": \"Liegniz, einer wohlgebauten Stadt an der Ratzbach, die wir gegen Abend\"\n    },\n    {\n      \"text\": \"erreichten. Man zeigte uns das Schloß und die Ritter-Akademie, welche der\"\n    },\n    {\n      \"text\": \"König im Jahre 1708 gestiftet hat.\"\n    },\n    {\n      \"text\": \"Den 14ten fuhren wir über Haynau nach Bunzlau. Die Töpfer-Waaren dieser\"\n    },\n    {\n      \"text\": \"Stadt sind in ganz Schlesien berühmt, und wir kauften einige Krüge für unsere\"\n    },\n    {\n      \"text\": \"Freunde in Berlin. Die Gegend ist fruchtbar, und die Dörfer sind besser gebauet\"\n    },\n    {\n      \"text\": \"als in der Mark.\"\n    },\n    {\n      \"text\": \"Den 15ten kamen wir nach Görliz, wo wir zween Tage blieben. Der Rathsherr\"\n    },\n    {\n      \"text\": \"Anton führte uns auf die Landeskrone, von welcher man das Riesengebirge sieht.\"\n    },\n    {\n      \"text\": \"In der Peterskirche sahen wir die Bibliothek, welche über zehntausend Bände\"\n    },\n    {\n      \"text\": \"enthalten soll.\"\n    }\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Printed page, single column, no visible damage or bleed-through. All text legible.\"\n}",
+     "refusal": null,
+     "reasoning": null
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 3916,
+   "completion_tokens": 535,
+   "total_tokens": 4451,
+   "cost": 0.00183886,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00183886,
+    "upstream_inference_prompt_cost": 0.00082236,
+    "upstream_inference_completions_cost": 0.0010165
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\n      \"text\": \"Reise-Tagebuch von Breslau nach Königsberg, im Sommer 1786.\"\n    },\n    {\n      \"text\": \"Den 12. Junius 1786 reiseten wir des Morgens um fünf Uhr von Breslau ab. Der\"\n    },\n    {\n      \"text\": \"Herr von Jedliz hatte uns Briefe an die Magisträte der Städte mitgegeben, durch\"\n    },\n    {\n      \"text\": \"welche wir kommen würden, und sein Bedienter begleitete uns bis vor das\"\n    },\n    {\n      \"text\": \"Oder-Thor. Der Weg gieng über Neumarkt, wo wir die Pferde wechselten, nach\"\n    },\n    {\n      \"text\": \"Liegniz, einer wohlgebauten Stadt an der Ratzbach, die wir gegen Abend\"\n    },\n    {\n      \"text\": \"erreichten. Man zeigte uns das Schloß und die Ritter-Akademie, welche der\"\n    },\n    {\n      \"text\": \"König im Jahre 1708 gestiftet hat.\"\n    },\n    {\n      \"text\": \"Den 14ten fuhren wir über Haynau nach Bunzlau. Die Töpfer-Waaren dieser\"\n    },\n    {\n      \"text\": \"Stadt sind in ganz Schlesien berühmt, und wir kauften einige Krüge für unsere\"\n    },\n    {\n      \"text\": \"Freunde in Berlin. Die Gegend ist fruchtbar, und die Dörfer sind besser gebauet\"\n    },\n    {\n      \"text\": \"als in der Mark.\"\n    },\n    {\n      \"text\": \"Den 15ten kamen wir nach Görliz, wo wir zween Tage blieben. Der Rathsherr\"\n    },\n    {\n      \"text\": \"Anton führte uns auf die Landeskrone, von welcher man das Riesengebirge sieht.\"\n    },\n    {\n      \"text\": \"In der Peterskirche sahen wir die Bibliothek, welche über zehntausend Bände\"\n    },\n    {\n      \"text\": \"enthalten soll.\"\n    }\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Printed page, single column, no visible damage or bleed-through. All text legible.\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Reise-Tagebuch von Breslau nach Königsberg, im Sommer 1786."
+    },
+    {
+     "text": "Den 12. Junius 1786 reiseten wir des Morgens um fünf Uhr von Breslau ab. Der"
+    },
+    {
+     "text": "Herr von Jedliz hatte uns Briefe an die Magisträte der Städte mitgegeben, durch"
+    },
+    {
+     "text": "welche wir kommen würden, und sein Bedienter begleitete uns bis vor das"
+    },
+    {
+     "text": "Oder-Thor. Der Weg gieng über Neumarkt, wo wir die Pferde wechselten, nach"
+    },
+    {
+     "text": "Liegniz, einer wohlgebauten Stadt an der Ratzbach, die wir gegen Abend"
+    },
+    {
+     "text": "erreichten. Man zeigte uns das Schloß und die Ritter-Akademie, welche der"
+    },
+    {
+     "text": "König im Jahre 1708 gestiftet hat."
+    },
+    {
+     "text": "Den 14ten fuhren wir über Haynau nach Bunzlau. Die Töpfer-Waaren dieser"
+    },
+    {
+     "text": "Stadt sind in ganz Schlesien berühmt, und wir kauften einige Krüge für unsere"
+    },
+    {
+     "text": "Freunde in Berlin. Die Gegend ist fruchtbar, und die Dörfer sind besser gebauet"
+    },
+    {
+     "text": "als in der Mark."
+    },
+    {
+     "text": "Den 15ten kamen wir nach Görliz, wo wir zween Tage blieben. Der Rathsherr"
+    },
+    {
+     "text": "Anton führte uns auf die Landeskrone, von welcher man das Riesengebirge sieht."
+    },
+    {
+     "text": "In der Peterskirche sahen wir die Bibliothek, welche über zehntausend Bände"
+    },
+    {
+     "text": "enthalten soll."
+    }
+   ],
+   "script": "fraktur",
+   "notes": "Printed page, single column, no visible damage or bleed-through. All text legible."
+  },
+  "usage": {
+   "prompt_tokens": 3916,
+   "completion_tokens": 535,
+   "total_tokens": 4451,
+   "cost": 0.00183886,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00183886,
+    "upstream_inference_prompt_cost": 0.00082236,
+    "upstream_inference_completions_cost": 0.0010165
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00183886,
+  "model": "qwen/qwen3-vl-235b-a22b-instruct",
+  "provider": "Parasail",
+  "seconds": 21.87
+ },
+ "meta": {}
+}

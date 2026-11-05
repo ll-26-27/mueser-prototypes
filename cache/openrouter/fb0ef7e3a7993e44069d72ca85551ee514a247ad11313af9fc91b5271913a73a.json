@@ -1,0 +1,195 @@
+{
+ "namespace": "openrouter",
+ "key": "fb0ef7e3a7993e44069d72ca85551ee514a247ad11313af9fc91b5271913a73a",
+ "fetched_at": "2026-11-05T14:22:17Z",
+ "request": {
+  "model": "anthropic/claude-haiku-5.5",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/synth-02.png"
+ },
+ "raw": {
+  "id": "gen-1793888529-se2a7HdEtQ3dD0Zm1Qbw",
+  "object": "chat.completion",
+  "created": 1793888529,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Anthropic",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\":[{\"text\":\"[?Brief aus Ballin, den 21. August 1786]\"},{\"text\":\"[?Wohlgeehrter] Herr Ralf!\"},{\"text\":\"Ew. Wohlgeboren Schreiben vom 2ten dieses habe ich in Danzig richtig erhalten. [?Die] Sachen aus Leipzig\"},{\"text\":\"[?sind] wohl verpackt und gehen mit dem Schiffer [?Heinrich] nach Berlin ab, wo sie [?in] Ende des\"},{\"text\":\"Monats eintreffen sollen.\"},{\"text\":\"Was die Karten von Holstein betrifft, so soll Ihr Buchhändler [...] in Leipzig [?eine] Partie\"},{\"text\":\"vorrätig; ist aber in Leipzig bey Hrn. [...] nicht gefunden, daß es nur für eine Halbe\"},{\"text\":\"allzu [?].\"},{\"text\":\"Mit vollkommener Hochachtung [?verharre] ich\"},{\"text\":\"Ew. Wohlgeboren ergebenster Diener\"},{\"text\":\"J. G. Lehmann.\"}],\"script\":\"kurrent\",\"notes\":\"Handwritten 18th-century Kurrent/copperplate with faint ink and paper speckle; many words uncertain, marked with [?]. Header and salutation readings are tentative. Check the line 5-7 readings against the image closely.\"}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "signature": "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.eyJlbmRwb2ludF9zbHVnIjoiYW50aHJvcGljL2NsYXVkZS1oYWlrdS01LjUtMjAyNjEwMDd8YW50aHJvcGljIn0",
+       "format": "anthropic-claude-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 5604,
+   "completion_tokens": 1216,
+   "total_tokens": 6820,
+   "cost": 0.0011684,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0011684,
+    "upstream_inference_prompt_cost": 0.0005604,
+    "upstream_inference_completions_cost": 0.000608
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 726,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\":[{\"text\":\"[?Brief aus Ballin, den 21. August 1786]\"},{\"text\":\"[?Wohlgeehrter] Herr Ralf!\"},{\"text\":\"Ew. Wohlgeboren Schreiben vom 2ten dieses habe ich in Danzig richtig erhalten. [?Die] Sachen aus Leipzig\"},{\"text\":\"[?sind] wohl verpackt und gehen mit dem Schiffer [?Heinrich] nach Berlin ab, wo sie [?in] Ende des\"},{\"text\":\"Monats eintreffen sollen.\"},{\"text\":\"Was die Karten von Holstein betrifft, so soll Ihr Buchhändler [...] in Leipzig [?eine] Partie\"},{\"text\":\"vorrätig; ist aber in Leipzig bey Hrn. [...] nicht gefunden, daß es nur für eine Halbe\"},{\"text\":\"allzu [?].\"},{\"text\":\"Mit vollkommener Hochachtung [?verharre] ich\"},{\"text\":\"Ew. Wohlgeboren ergebenster Diener\"},{\"text\":\"J. G. Lehmann.\"}],\"script\":\"kurrent\",\"notes\":\"Handwritten 18th-century Kurrent/copperplate with faint ink and paper speckle; many words uncertain, marked with [?]. Header and salutation readings are tentative. Check the line 5-7 readings against the image closely.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "[?Brief aus Ballin, den 21. August 1786]"
+    },
+    {
+     "text": "[?Wohlgeehrter] Herr Ralf!"
+    },
+    {
+     "text": "Ew. Wohlgeboren Schreiben vom 2ten dieses habe ich in Danzig richtig erhalten. [?Die] Sachen aus Leipzig"
+    },
+    {
+     "text": "[?sind] wohl verpackt und gehen mit dem Schiffer [?Heinrich] nach Berlin ab, wo sie [?in] Ende des"
+    },
+    {
+     "text": "Monats eintreffen sollen."
+    },
+    {
+     "text": "Was die Karten von Holstein betrifft, so soll Ihr Buchhändler [...] in Leipzig [?eine] Partie"
+    },
+    {
+     "text": "vorrätig; ist aber in Leipzig bey Hrn. [...] nicht gefunden, daß es nur für eine Halbe"
+    },
+    {
+     "text": "allzu [?]."
+    },
+    {
+     "text": "Mit vollkommener Hochachtung [?verharre] ich"
+    },
+    {
+     "text": "Ew. Wohlgeboren ergebenster Diener"
+    },
+    {
+     "text": "J. G. Lehmann."
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Handwritten 18th-century Kurrent/copperplate with faint ink and paper speckle; many words uncertain, marked with [?]. Header and salutation readings are tentative. Check the line 5-7 readings against the image closely."
+  },
+  "usage": {
+   "prompt_tokens": 5604,
+   "completion_tokens": 1216,
+   "total_tokens": 6820,
+   "cost": 0.0011684,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0011684,
+    "upstream_inference_prompt_cost": 0.0005604,
+    "upstream_inference_completions_cost": 0.000608
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 726,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0011684,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Anthropic",
+  "seconds": 8.37
+ },
+ "meta": {}
+}

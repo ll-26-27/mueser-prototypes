@@ -1,16 +1,17 @@
 # Kurrent handwriting: summary
 
-**Purpose.** Establish the open-source baseline for German handwriting
-before the paid and hosted backends are added, on pages with known text.
+**Purpose.** Measure every available reader on German handwriting, on pages
+with known text, before Ben's own pages are corrected.
 
-**Workflow.** Render three synthetic Kurrent pages (exact ground truth) and
-fetch three real pages with Commons transcriptions; run Kraken's open German
-handwriting model and Tesseract as a control; build the explorer.
+**Workflow.** Three synthetic Kurrent pages (exact ground truth) and three
+real pages with Commons transcriptions; Kraken, Tesseract as a control, and
+five vision-language models; explorer and consensus.
 
-**Findings.** Kraken reads a clean 1864 secretary hand at one wrong
-character in five and a 1901 album photograph at four in five. The
-Kurrent-specific Kraken model from 2026 does not load in the current Kraken.
-No vision-language or Transkribus reading exists yet; those are the
-comparisons that will decide the tool.
+**Findings.** Gemini 3.8 Flash and 3.1 Pro read a clean 1864 hand at CER
+0.06 where Kraken has 0.21; on a fast 1896 hand Gemini 3.1 Pro is at 0.18
+and the rest at 0.43 or worse; a photographed 1901 album defeats everyone.
+One empty reply from Gemini 3.8 Flash is recorded as an error. The whole
+run cost $0.24.
 
-**Limits.** Three real pages, community transcriptions, no Transkribus.
+**Limits.** Three real pages, community transcriptions, no Transkribus or
+eScriptorium reading yet, no model trained on Ben's hand.

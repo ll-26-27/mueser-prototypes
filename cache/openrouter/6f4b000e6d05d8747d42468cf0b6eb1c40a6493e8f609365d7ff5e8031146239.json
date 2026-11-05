@@ -1,0 +1,434 @@
+{
+ "namespace": "openrouter",
+ "key": "6f4b000e6d05d8747d42468cf0b6eb1c40a6493e8f609365d7ff5e8031146239",
+ "fetched_at": "2026-11-05T14:09:26Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are analysing the layout of a page from a historical German document for a scholar. Do not transcribe the page. Map it.\n\nReturn JSON matching the schema. Coordinates are fractions of the image width and height (0.0 to 1.0): bbox = [x, y, w, h] with x,y the top-left corner. Be as precise as you can; a box should enclose the ink of what it describes.\n\n1. `regions`: every block of content, with `kind` one of: main_text (body text), heading (title, section head, running header), column (one column of a multi-column page; give each column its own region), page_number, catchword (the word at the foot anticipating the next page), signature_mark (printer's sheet mark), marginalia (notes in a margin, in the same or another hand), interlinear (writing between the lines), correction (strike-through, insertion, overwriting), stamp_or_seal, date_line, salutation, signature (a person's signature), address, table, figure, ornament, other.\n2. For each region, `lines`: every line of text inside it, top to bottom, each with its own bbox. Count carefully: a scholar will check your line count against the page. Do not merge lines. Do not invent lines where there is only ornament.\n3. `hand`: for each region, \"print\", \"handwriting\" or \"mixed\"; and `script`: fraktur, antiqua, kurrent, suetterlin, latin_cursive, mixed, unknown.\n4. `later_hand`: true if the region appears to be written by a different person or at a later time than the main text (different ink, different letterforms, a librarian's number, a reader's note). Say why in `note`.\n5. `reading_order`: the region ids in the order a reader would follow (columns left to right, then down; marginalia after the line they belong to is fine).\n6. `page_notes`: anything a human should know: damage, show-through, skew, cropped edges, a second page visible, uncertainty about columns.\n\nPrecision over completeness in the boxes; completeness over precision in the counts. If you cannot tell two kinds apart, choose `other` and explain in `note`."
+   },
+   {
+    "role": "user",
+    "content": "Map the layout of this page. Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "layout",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "regions",
+      "reading_order",
+      "page_notes"
+     ],
+     "properties": {
+      "regions": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "id",
+         "kind",
+         "bbox",
+         "hand",
+         "script",
+         "later_hand",
+         "note",
+         "lines"
+        ],
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "kind": {
+          "type": "string",
+          "enum": [
+           "main_text",
+           "heading",
+           "column",
+           "page_number",
+           "catchword",
+           "signature_mark",
+           "marginalia",
+           "interlinear",
+           "correction",
+           "stamp_or_seal",
+           "date_line",
+           "salutation",
+           "signature",
+           "address",
+           "table",
+           "figure",
+           "ornament",
+           "other"
+          ]
+         },
+         "bbox": {
+          "type": "array",
+          "items": {
+           "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "hand": {
+          "type": "string",
+          "enum": [
+           "print",
+           "handwriting",
+           "mixed"
+          ]
+         },
+         "script": {
+          "type": "string",
+          "enum": [
+           "fraktur",
+           "antiqua",
+           "kurrent",
+           "suetterlin",
+           "latin_cursive",
+           "mixed",
+           "unknown"
+          ]
+         },
+         "later_hand": {
+          "type": "boolean"
+         },
+         "note": {
+          "type": "string"
+         },
+         "lines": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "additionalProperties": false,
+           "required": [
+            "bbox"
+           ],
+           "properties": {
+            "bbox": {
+             "type": "array",
+             "items": {
+              "type": "number"
+             },
+             "minItems": 4,
+             "maxItems": 4
+            }
+           }
+          }
+         }
+        }
+       }
+      },
+      "reading_order": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "page_notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/03-layout-and-hybrid/inputs/pages/real-schiller-musenalmanach-1796-p093.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887746-xuKLUSGHqAWHDkCYfoAz",
+  "object": "chat.completion",
+  "created": 1793887746,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"regions\": [{\"id\": \"reg_page_number\", \"kind\": \"page_number\", \"bbox\": [0.378, 0.095, 0.134, 0.028], \"hand\": \"print\", \"script\": \"antiqua\", \"later_hand\": false, \"note\": \"\", \"lines\": [{\"bbox\": [0.378, 0.095, 0.134, 0.028]}]}, {\"id\": \"reg_main_text\", \"kind\": \"main_text\", \"bbox\": [0.155, 0.141, 0.603, 0.636], \"hand\": \"print\", \"script\": \"antiqua\", \"later_hand\": false, \"note\": \"\", \"lines\": [{\"bbox\": [0.194, 0.141, 0.426, 0.025]}, {\"bbox\": [0.157, 0.173, 0.414, 0.024]}, {\"bbox\": [0.158, 0.203, 0.457, 0.025]}, {\"bbox\": [0.159, 0.237, 0.468, 0.024]}, {\"bbox\": [0.16, 0.267, 0.472, 0.026]}, {\"bbox\": [0.16, 0.298, 0.528, 0.025]}, {\"bbox\": [0.163, 0.332, 0.468, 0.025]}, {\"bbox\": [0.165, 0.364, 0.478, 0.026]}, {\"bbox\": [0.209, 0.427, 0.521, 0.024]}, {\"bbox\": [0.169, 0.461, 0.443, 0.025]}, {\"bbox\": [0.17, 0.494, 0.448, 0.026]}, {\"bbox\": [0.174, 0.528, 0.446, 0.025]}, {\"bbox\": [0.176, 0.559, 0.444, 0.025]}, {\"bbox\": [0.179, 0.589, 0.524, 0.026]}, {\"bbox\": [0.18, 0.622, 0.518, 0.026]}, {\"bbox\": [0.182, 0.653, 0.485, 0.027]}, {\"bbox\": [0.23, 0.718, 0.526, 0.025]}, {\"bbox\": [0.186, 0.751, 0.392, 0.025]}]}], \"reading_order\": [\"reg_page_number\", \"reg_main_text\"], \"page_notes\": \"German poem printed in Antiqua typeface. Show-through from the verso page is clearly visible throughout the paper. Inner binding margin visible on the left.\"}",
+     "refusal": null,
+     "reasoning": "**Detecting Page Layout**\n\nI'm currently working on identifying the structural elements of a German page. My focus has been on pinpointing the page number, which appears in the upper-center region, and beginning to parse the first stanza of verse.\n\n**Parsing Stanza Content**\n\nI'm focusing on classifying the verse stanzas as `main_text`. My current approach considers if the entire poem fits into a single `main_text` region, or if separate regions are needed for distinct stanzas, particularly if there are significant visual gaps between them.\n\n**Classifying Page Elements**\n\nI've refined my approach to how stanzas are regionized. After reviewing the script, it's clear the typeface is Antiqua, not Fraktur. I'm proceeding with treating all 18 lines as a single `main_text` region for consistency, as this is standard in poetry collections and avoids fragmentation. The page number has been successfully identified.\n\n**Analyzing Line Structure**\n\nI'm continuing to parse the poem's lines, now focusing on line 9 onwards. My analysis is identifying the spatial positioning and content of these subsequent lines, contributing to the overall stanza interpretation.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Detecting Page Layout**\n\nI'm currently working on identifying the structural elements of a German page. My focus has been on pinpointing the page number, which appears in the upper-center region, and beginning to parse the first stanza of verse.\n\n**Parsing Stanza Content**\n\nI'm focusing on classifying the verse stanzas as `main_text`. My current approach considers if the entire poem fits into a single `main_text` region, or if separate regions are needed for distinct stanzas, particularly if there are significant visual gaps between them.\n\n**Classifying Page Elements**\n\nI've refined my approach to how stanzas are regionized. After reviewing the script, it's clear the typeface is Antiqua, not Fraktur. I'm proceeding with treating all 18 lines as a single `main_text` region for consistency, as this is standard in poetry collections and avoids fragmentation. The page number has been successfully identified.\n\n**Analyzing Line Structure**\n\nI'm continuing to parse the poem's lines, now focusing on line 9 onwards. My analysis is identifying the spatial positioning and content of these subsequent lines, contributing to the overall stanza interpretation.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2150,
+   "completion_tokens": 2503,
+   "total_tokens": 4653,
+   "cost": 0.01099875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01099875,
+    "upstream_inference_prompt_cost": 0.0016125,
+    "upstream_inference_completions_cost": 0.00938625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1703,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"regions\": [{\"id\": \"reg_page_number\", \"kind\": \"page_number\", \"bbox\": [0.378, 0.095, 0.134, 0.028], \"hand\": \"print\", \"script\": \"antiqua\", \"later_hand\": false, \"note\": \"\", \"lines\": [{\"bbox\": [0.378, 0.095, 0.134, 0.028]}]}, {\"id\": \"reg_main_text\", \"kind\": \"main_text\", \"bbox\": [0.155, 0.141, 0.603, 0.636], \"hand\": \"print\", \"script\": \"antiqua\", \"later_hand\": false, \"note\": \"\", \"lines\": [{\"bbox\": [0.194, 0.141, 0.426, 0.025]}, {\"bbox\": [0.157, 0.173, 0.414, 0.024]}, {\"bbox\": [0.158, 0.203, 0.457, 0.025]}, {\"bbox\": [0.159, 0.237, 0.468, 0.024]}, {\"bbox\": [0.16, 0.267, 0.472, 0.026]}, {\"bbox\": [0.16, 0.298, 0.528, 0.025]}, {\"bbox\": [0.163, 0.332, 0.468, 0.025]}, {\"bbox\": [0.165, 0.364, 0.478, 0.026]}, {\"bbox\": [0.209, 0.427, 0.521, 0.024]}, {\"bbox\": [0.169, 0.461, 0.443, 0.025]}, {\"bbox\": [0.17, 0.494, 0.448, 0.026]}, {\"bbox\": [0.174, 0.528, 0.446, 0.025]}, {\"bbox\": [0.176, 0.559, 0.444, 0.025]}, {\"bbox\": [0.179, 0.589, 0.524, 0.026]}, {\"bbox\": [0.18, 0.622, 0.518, 0.026]}, {\"bbox\": [0.182, 0.653, 0.485, 0.027]}, {\"bbox\": [0.23, 0.718, 0.526, 0.025]}, {\"bbox\": [0.186, 0.751, 0.392, 0.025]}]}], \"reading_order\": [\"reg_page_number\", \"reg_main_text\"], \"page_notes\": \"German poem printed in Antiqua typeface. Show-through from the verso page is clearly visible throughout the paper. Inner binding margin visible on the left.\"}",
+  "parsed": {
+   "regions": [
+    {
+     "id": "reg_page_number",
+     "kind": "page_number",
+     "bbox": [
+      0.378,
+      0.095,
+      0.134,
+      0.028
+     ],
+     "hand": "print",
+     "script": "antiqua",
+     "later_hand": false,
+     "note": "",
+     "lines": [
+      {
+       "bbox": [
+        0.378,
+        0.095,
+        0.134,
+        0.028
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_main_text",
+     "kind": "main_text",
+     "bbox": [
+      0.155,
+      0.141,
+      0.603,
+      0.636
+     ],
+     "hand": "print",
+     "script": "antiqua",
+     "later_hand": false,
+     "note": "",
+     "lines": [
+      {
+       "bbox": [
+        0.194,
+        0.141,
+        0.426,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.157,
+        0.173,
+        0.414,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.158,
+        0.203,
+        0.457,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.159,
+        0.237,
+        0.468,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.16,
+        0.267,
+        0.472,
+        0.026
+       ]
+      },
+      {
+       "bbox": [
+        0.16,
+        0.298,
+        0.528,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.163,
+        0.332,
+        0.468,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.165,
+        0.364,
+        0.478,
+        0.026
+       ]
+      },
+      {
+       "bbox": [
+        0.209,
+        0.427,
+        0.521,
+        0.024
+       ]
+      },
+      {
+       "bbox": [
+        0.169,
+        0.461,
+        0.443,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.17,
+        0.494,
+        0.448,
+        0.026
+       ]
+      },
+      {
+       "bbox": [
+        0.174,
+        0.528,
+        0.446,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.176,
+        0.559,
+        0.444,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.179,
+        0.589,
+        0.524,
+        0.026
+       ]
+      },
+      {
+       "bbox": [
+        0.18,
+        0.622,
+        0.518,
+        0.026
+       ]
+      },
+      {
+       "bbox": [
+        0.182,
+        0.653,
+        0.485,
+        0.027
+       ]
+      },
+      {
+       "bbox": [
+        0.23,
+        0.718,
+        0.526,
+        0.025
+       ]
+      },
+      {
+       "bbox": [
+        0.186,
+        0.751,
+        0.392,
+        0.025
+       ]
+      }
+     ]
+    }
+   ],
+   "reading_order": [
+    "reg_page_number",
+    "reg_main_text"
+   ],
+   "page_notes": "German poem printed in Antiqua typeface. Show-through from the verso page is clearly visible throughout the paper. Inner binding margin visible on the left."
+  },
+  "usage": {
+   "prompt_tokens": 2150,
+   "completion_tokens": 2503,
+   "total_tokens": 4653,
+   "cost": 0.01099875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01099875,
+    "upstream_inference_prompt_cost": 0.0016125,
+    "upstream_inference_completions_cost": 0.00938625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1703,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.01099875,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 20.57
+ },
+ "meta": {}
+}

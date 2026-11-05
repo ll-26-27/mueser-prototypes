@@ -1,0 +1,207 @@
+{
+ "namespace": "openrouter",
+ "key": "a041281549bfc6f718b51cd5d7da578ec82a1d94aa51fe0ffd757a3f57f69bdd",
+ "fetched_at": "2026-11-05T14:14:50Z",
+ "request": {
+  "model": "google/gemini-3.1-pro-preview",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/synth-03.png"
+ },
+ "raw": {
+  "id": "gen-1793888069-pd6RStT2CMRxcnS5iIqW",
+  "object": "chat.completion",
+  "created": 1793888069,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\n      \"text\": \"Von Leipzig nach Berlin.\"\n    },\n    {\n      \"text\": \"Den 26ten waren wir in Halle, und beſahen das Waiſenhaus des ſeligen Francke,\"\n    },\n    {\n      \"text\": \"welches eine kleine Stadt für ſich iſt. Der Profeſſor Forſter zeigte uns die\"\n    },\n    {\n      \"text\": \"Naturalien-Sammlung.\"\n    },\n    {\n      \"text\": \"Den 28ten erreichten wir Magdeburg. Die Feſtungs-Werke ſind ſehr ſtark, und man\"\n    },\n    {\n      \"text\": \"läßt keinen Fremden ohne Begleitung auf die Wälle. Der Dom iſt das größte\"\n    },\n    {\n      \"text\": \"Gebäude, welches wir auf dieſer Reiſe geſehen haben.\"\n    },\n    {\n      \"text\": \"Den 1. Julius fuhren wir durch Brandenburg, eine alte Stadt mit zwey Dom-Kirchen,\"\n    },\n    {\n      \"text\": \"und kamen den 2ten Abends in Berlin an. Wir wohnten bey dem Kaufmann Itzig in\"\n    },\n    {\n      \"text\": \"der Burgſtraße. Die Stadt iſt groß und regelmäßig gebauet, aber die Straßen ſind\"\n    },\n    {\n      \"text\": \"ſandig.\"\n    },\n    {\n      \"text\": \"Hier blieben wir eine Woche. Den 5ten ſahen wir die Parade vor dem Schloſſe, und\"\n    },\n    {\n      \"text\": \"den 7ten fuhren wir nach Potsdam und Sans-Souci.\"\n    }\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Clean printed text, no damage.\"\n}",
+     "refusal": null,
+     "reasoning": "**Processing Original Text**\n\nI'm currently deciphering the intricacies of this historical German document. My focus is on a precise, diplomatic transcription, preserving every nuance of the original's spelling, punctuation, and even those distinctive long 's' characters. I'm also diligently noting all abbreviations as they appear.\n\n**Documenting Fraktur Text**\n\nI'm diligently documenting the Fraktur text. The heading \"Von Leipzig nach Berlin\" and its subsequent paragraphs detailing visits to Halle, Magdeburg, and Brandenburg are being meticulously transcribed, noting specific details like the Francke orphanage, Professor Forster's collection, and Magdeburg's fortifications.\n\n**Detailing City Streets**\n\nI'm refining my transcription of the text concerning city descriptions. My current focus is on documenting the details of sandy streets in what appears to be a large, regularly built city, as well as the subsequent paragraph about a week-long stay and visits to Potsdam and Sans-Souci.\n\n**Verifying Text Details**\n\nI'm performing a final verification of the transcribed text, meticulously checking every character for accuracy. This includes confirming the spelling, correct usage of the long 's' (ſ), and ensuring all abbreviations are noted as they appear. I'm also double-checking the line numbers against the original document.\n\n**Reviewing Specific Entries**\n\nI'm scrutinizing \"Itzig\" and \"Sans-Souci,\" confirming their spellings and capitalization. My current focus is on the word \"Schloſſe,\" specifically examining its double 's' (ſ) for accuracy against the original text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Processing Original Text**\n\nI'm currently deciphering the intricacies of this historical German document. My focus is on a precise, diplomatic transcription, preserving every nuance of the original's spelling, punctuation, and even those distinctive long 's' characters. I'm also diligently noting all abbreviations as they appear.\n\n**Documenting Fraktur Text**\n\nI'm diligently documenting the Fraktur text. The heading \"Von Leipzig nach Berlin\" and its subsequent paragraphs detailing visits to Halle, Magdeburg, and Brandenburg are being meticulously transcribed, noting specific details like the Francke orphanage, Professor Forster's collection, and Magdeburg's fortifications.\n\n**Detailing City Streets**\n\nI'm refining my transcription of the text concerning city descriptions. My current focus is on documenting the details of sandy streets in what appears to be a large, regularly built city, as well as the subsequent paragraph about a week-long stay and visits to Potsdam and Sans-Souci.\n\n**Verifying Text Details**\n\nI'm performing a final verification of the transcribed text, meticulously checking every character for accuracy. This includes confirming the spelling, correct usage of the long 's' (ſ), and ensuring all abbreviations are noted as they appear. I'm also double-checking the line numbers against the original document.\n\n**Reviewing Specific Entries**\n\nI'm scrutinizing \"Itzig\" and \"Sans-Souci,\" confirming their spellings and capitalization. My current focus is on the word \"Schloſſe,\" specifically examining its double 's' (ſ) for accuracy against the original text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 2240,
+   "total_tokens": 3951,
+   "cost": 0.030302,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.030302,
+    "upstream_inference_prompt_cost": 0.003422,
+    "upstream_inference_completions_cost": 0.02688
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1814,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\n      \"text\": \"Von Leipzig nach Berlin.\"\n    },\n    {\n      \"text\": \"Den 26ten waren wir in Halle, und beſahen das Waiſenhaus des ſeligen Francke,\"\n    },\n    {\n      \"text\": \"welches eine kleine Stadt für ſich iſt. Der Profeſſor Forſter zeigte uns die\"\n    },\n    {\n      \"text\": \"Naturalien-Sammlung.\"\n    },\n    {\n      \"text\": \"Den 28ten erreichten wir Magdeburg. Die Feſtungs-Werke ſind ſehr ſtark, und man\"\n    },\n    {\n      \"text\": \"läßt keinen Fremden ohne Begleitung auf die Wälle. Der Dom iſt das größte\"\n    },\n    {\n      \"text\": \"Gebäude, welches wir auf dieſer Reiſe geſehen haben.\"\n    },\n    {\n      \"text\": \"Den 1. Julius fuhren wir durch Brandenburg, eine alte Stadt mit zwey Dom-Kirchen,\"\n    },\n    {\n      \"text\": \"und kamen den 2ten Abends in Berlin an. Wir wohnten bey dem Kaufmann Itzig in\"\n    },\n    {\n      \"text\": \"der Burgſtraße. Die Stadt iſt groß und regelmäßig gebauet, aber die Straßen ſind\"\n    },\n    {\n      \"text\": \"ſandig.\"\n    },\n    {\n      \"text\": \"Hier blieben wir eine Woche. Den 5ten ſahen wir die Parade vor dem Schloſſe, und\"\n    },\n    {\n      \"text\": \"den 7ten fuhren wir nach Potsdam und Sans-Souci.\"\n    }\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"Clean printed text, no damage.\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Von Leipzig nach Berlin."
+    },
+    {
+     "text": "Den 26ten waren wir in Halle, und beſahen das Waiſenhaus des ſeligen Francke,"
+    },
+    {
+     "text": "welches eine kleine Stadt für ſich iſt. Der Profeſſor Forſter zeigte uns die"
+    },
+    {
+     "text": "Naturalien-Sammlung."
+    },
+    {
+     "text": "Den 28ten erreichten wir Magdeburg. Die Feſtungs-Werke ſind ſehr ſtark, und man"
+    },
+    {
+     "text": "läßt keinen Fremden ohne Begleitung auf die Wälle. Der Dom iſt das größte"
+    },
+    {
+     "text": "Gebäude, welches wir auf dieſer Reiſe geſehen haben."
+    },
+    {
+     "text": "Den 1. Julius fuhren wir durch Brandenburg, eine alte Stadt mit zwey Dom-Kirchen,"
+    },
+    {
+     "text": "und kamen den 2ten Abends in Berlin an. Wir wohnten bey dem Kaufmann Itzig in"
+    },
+    {
+     "text": "der Burgſtraße. Die Stadt iſt groß und regelmäßig gebauet, aber die Straßen ſind"
+    },
+    {
+     "text": "ſandig."
+    },
+    {
+     "text": "Hier blieben wir eine Woche. Den 5ten ſahen wir die Parade vor dem Schloſſe, und"
+    },
+    {
+     "text": "den 7ten fuhren wir nach Potsdam und Sans-Souci."
+    }
+   ],
+   "script": "fraktur",
+   "notes": "Clean printed text, no damage."
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 2240,
+   "total_tokens": 3951,
+   "cost": 0.030302,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.030302,
+    "upstream_inference_prompt_cost": 0.003422,
+    "upstream_inference_completions_cost": 0.02688
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1814,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.030302,
+  "model": "google/gemini-3.1-pro-preview",
+  "provider": "Google",
+  "seconds": 21.43
+ },
+ "meta": {}
+}

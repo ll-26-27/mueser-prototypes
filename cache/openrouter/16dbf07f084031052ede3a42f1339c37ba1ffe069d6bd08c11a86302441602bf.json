@@ -1,0 +1,186 @@
+{
+ "namespace": "openrouter",
+ "key": "16dbf07f084031052ede3a42f1339c37ba1ffe069d6bd08c11a86302441602bf",
+ "fetched_at": "2026-11-05T14:21:52Z",
+ "request": {
+  "model": "anthropic/claude-haiku-5.5",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/real-poesiealbum-hedwig-1901-p02.jpg"
+ },
+ "raw": {
+  "id": "gen-1793888505-98dCtfBsMs8ookL6NN7D",
+  "object": "chat.completion",
+  "created": 1793888505,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Azure",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\":[{\"text\":\"[?Wer Gutes] thut, [...] [?schon] [...]\"},{\"text\":\"[...] [?entfernt] [?Gutes] [?kommen]\"},{\"text\":\"[?die] Hoffnung, [...] [?Herz] [?stärkt]\"},{\"text\":\"[?Gut], [?ist] [...] [?Gut] [?bleibt]\"},{\"text\":\"[?Gott] [...] [?und] [?Herr] [?Lohn]\"},{\"text\":\"[?nicht], [?und] [?auf] [?dem] [?Lord] [...] [?folgt] [?der] [?Gewinn]\"},{\"text\":\"Gerd H. Peters\"},{\"text\":\"[?Lüneburg]\"}],\"script\":\"kurrent\",\"notes\":\"Cursive album verse in ink on a printed chromolithograph page with berry sprigs; the handwriting is hard to read and the readings above are provisional, so every bracketed word needs checking against the original. The signature 'Gerd H. Peters' and the place name at the bottom are also uncertain. Line 1 may contain a flourish or abbreviation; no running headers or page numbers are visible.\"}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "signature": "CAQS+wwKEAgTGAI4AUIIdGhpbmtpbmcSDAhaSgHlLhZM/UO5JBoMG1etRUiRlMDCM8W7IjBOt9oCe40rFx3gltxQ+G5tNOKCo9EpHvQUWUmsgkb/waNJA1zSgVut7Wafq8yieZAqmAyuq9gRMgi5nYFzDMUkI0yQLjLI1L7Lltv9toDnO/PcC5aRlYl8TCCwMtYgOMT6wCItulizoJ+8VZnpKouZrsRmooXLkZrHiubS84/iGfqLQxG5qGBAig3j4LxkBSn8Xz0/lCWD/G0Gb2ZZERQYQHdlJUGoWUtiboPK4X3Yd6hErfczcTUWj1vjzhs0H4jHWfaToR20C8ZymQwI1gbXdFRPG3z0Lbq9fTbaZseAmhPo/2KzmE3RPh1c98z9EFN3xT2ozTljpoxvLnw+YR5ketTofjOa+WDG85UymfLch8xL5Ejt2pBOxqU+N2gap6w5QupcpHnyb18y68BDTkSa//dYoUvAccBQ0xyw4z9+Urw9oOrpYD57zGXnUUx22pVoN/IY/JGMZuD+nSxbX1WjMeCoKqp+JIWps1SE8RNwEC10H6eVCL6trg/kZzYBHSXcca/3a50MaSqsRdsdWK/U9ppZIq9qn/THk0ZBU2KQe49Auvx+H7PkntnE5lu5TJvvZe7L3Q72EQUcxD1Y+EHKboo6CROn6pyU5GpDfwycVPpFTNe0c/ScX7Diu4O9t08AGS5yjtHdOB7z3sJwq4WhPSlgF2Q6/qtMMV98q1xJwt6NMVDXezhp5r09S+7bXA+q6fcK77hracp1TTNq9INeuWbnhuUN3TudsUp02hVTYtIM3YRIiiYAvhQE1lRKWf5/pKu27gsKFJP9x6rsgefZcYzjplkgFFwdzi67nUmIwl4ZsvtfanNN2DA/kd6oNdfJK9EOcaTPV5NnB9FMgcJ3kwLLupczC/5CwuKTKCQOTPutZLJfRd9S11J7YIGmXQL1gWdxkZUlIuFbf93eNwuPYYwsPq3VYZMSSF8ck9vofPvcP+/tUQ4JL/IjdB4uGdzcHKyoQEfZUQ281+mMoMob85eB004Gj9TNYeWswRVfbkiGxc64qb9T9fZQ3nL7epiJ6YjzEkzGunY5phVlV5bdtXQmV799ios9/zXPV7bh5XzYioawBjLc7S0SYwzS+M4W9cB9YaeukfCx2ejSj0612ysI6//1LqJyI+XWzpHe989K04qYrJVD4MnFINGhx20NumfY3bJoEUq3Kuewccuz1tDUxQYMTg1wJvVYmZROZCuLb9epPeQ+KDZyRNb58UfU7c4I8UxLw3psGVaYYOCjq9AynFLUQLQfnYQkIYlHZ/wiXWhtVCibSNamMX7LXZ7hw/a/VSR6uR9COUEm/gcZhruSWxL9GBjzkU1PlfgdhSnlpq1/ldS2gDn7Td2I5GNSd6TYJJ7NShuMgfNafdUpQ/mkqmYzh/1G56q0ZZ5oavzGF6RGn4GOh8kiMdYdRV40F2kda9tTFy+yX0NZSSDtvZp9btAo4BvHHj/agH/KTCG54bXWhv7ZJScGGI05p00fmPfwKCeoe3Qcq0R0MYdF75qPa5fi4a3iubaPV+ODD4Nv5hDrKQATFNSVUrHk/3Lim+pWxIq3LOXMPeL/3gY9ST5VYlF9qX0KNPMNivlzsUXO4ePbbQRf1J67t//9NezWNdsVzyUVxpoAdQOUIsW2S21TMt6sGPGMQDp8Xv+p9U6yqSwfD65kvSnuSwjL30Y9LtW5Lyp9M5/XOY+7fTNfaKUOSLOwDUY9V3Rn1QKovdrDi8RdA+8XCTUt0lnx5s5fLepA0FnxIrUo0x8t/jNjSo2HtQfa7Da8AlU1aU2pGi+hi0rYBEDeNFFUVMi/XND5b6AfxH10JBb/TUUGdmqEPsLgXR8+xqxUAglPhFKwa3xq75YDaMv7yqfiYg+N/rY7t3kykwa9SiQ6rQOEilZc1+U0hU3IV9FOF5dEf0rz4Xnp5xDmm1Olo6oC5wKep6VJGw+YedkF69Emirn9tQIJzKfI9UNP6LBr406BWKZmTMXeiI85vuR5mQE5RR8GeODJHEM3PDGk4+hZYkNtycZeRjzPS6VsZj458s1Z2tjb2CB278qA6kOeVO/buRvMza1D5pjwxCtB2DAf4xT2c6zeC5PQiPdDE5RG0nRFjd9Cy5BGQwnIKfw+Hbs0PcYJaZEHTGKWT5ztDJkY3Z6AbCPAny3oBF/tAvueMgQYAQ==.eyJlbmRwb2ludF9zbHVnIjoiYW50aHJvcGljL2NsYXVkZS1oYWlrdS01LjUtMjAyNjEwMDd8YXp1cmUvZ2xvYmFsIn0",
+       "format": "anthropic-claude-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 5726,
+   "completion_tokens": 924,
+   "total_tokens": 6650,
+   "cost": 0.0010346,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0010346,
+    "upstream_inference_prompt_cost": 0.0005726,
+    "upstream_inference_completions_cost": 0.000462
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 526,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\":[{\"text\":\"[?Wer Gutes] thut, [...] [?schon] [...]\"},{\"text\":\"[...] [?entfernt] [?Gutes] [?kommen]\"},{\"text\":\"[?die] Hoffnung, [...] [?Herz] [?stärkt]\"},{\"text\":\"[?Gut], [?ist] [...] [?Gut] [?bleibt]\"},{\"text\":\"[?Gott] [...] [?und] [?Herr] [?Lohn]\"},{\"text\":\"[?nicht], [?und] [?auf] [?dem] [?Lord] [...] [?folgt] [?der] [?Gewinn]\"},{\"text\":\"Gerd H. Peters\"},{\"text\":\"[?Lüneburg]\"}],\"script\":\"kurrent\",\"notes\":\"Cursive album verse in ink on a printed chromolithograph page with berry sprigs; the handwriting is hard to read and the readings above are provisional, so every bracketed word needs checking against the original. The signature 'Gerd H. Peters' and the place name at the bottom are also uncertain. Line 1 may contain a flourish or abbreviation; no running headers or page numbers are visible.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "[?Wer Gutes] thut, [...] [?schon] [...]"
+    },
+    {
+     "text": "[...] [?entfernt] [?Gutes] [?kommen]"
+    },
+    {
+     "text": "[?die] Hoffnung, [...] [?Herz] [?stärkt]"
+    },
+    {
+     "text": "[?Gut], [?ist] [...] [?Gut] [?bleibt]"
+    },
+    {
+     "text": "[?Gott] [...] [?und] [?Herr] [?Lohn]"
+    },
+    {
+     "text": "[?nicht], [?und] [?auf] [?dem] [?Lord] [...] [?folgt] [?der] [?Gewinn]"
+    },
+    {
+     "text": "Gerd H. Peters"
+    },
+    {
+     "text": "[?Lüneburg]"
+    }
+   ],
+   "script": "kurrent",
+   "notes": "Cursive album verse in ink on a printed chromolithograph page with berry sprigs; the handwriting is hard to read and the readings above are provisional, so every bracketed word needs checking against the original. The signature 'Gerd H. Peters' and the place name at the bottom are also uncertain. Line 1 may contain a flourish or abbreviation; no running headers or page numbers are visible."
+  },
+  "usage": {
+   "prompt_tokens": 5726,
+   "completion_tokens": 924,
+   "total_tokens": 6650,
+   "cost": 0.0010346,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0010346,
+    "upstream_inference_prompt_cost": 0.0005726,
+    "upstream_inference_completions_cost": 0.000462
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 526,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0010346,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Azure",
+  "seconds": 6.69
+ },
+ "meta": {}
+}

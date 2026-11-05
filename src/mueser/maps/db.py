@@ -34,6 +34,7 @@ def connect(path: Path) -> duckdb.DuckDBPyConnection:
     con = duckdb.connect(str(path))
     try:
         con.execute("INSTALL spatial; LOAD spatial;")
+        con.execute("SET geometry_always_xy = true")   # DuckDB 2.x: treat points as (lon, lat)
     except Exception as e:  # noqa: BLE001
         print(f"note: DuckDB spatial extension not loaded ({e}); lat/lon columns still work")
     for stmt in DDL.strip().split(";"):

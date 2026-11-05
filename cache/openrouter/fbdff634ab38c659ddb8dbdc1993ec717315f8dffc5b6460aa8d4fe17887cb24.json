@@ -1,0 +1,386 @@
+{
+ "namespace": "openrouter",
+ "key": "fbdff634ab38c659ddb8dbdc1993ec717315f8dffc5b6460aa8d4fe17887cb24",
+ "fetched_at": "2026-11-05T14:10:29Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are analysing the layout of a page from a historical German document for a scholar. Do not transcribe the page. Map it.\n\nReturn JSON matching the schema. Coordinates are fractions of the image width and height (0.0 to 1.0): bbox = [x, y, w, h] with x,y the top-left corner. Be as precise as you can; a box should enclose the ink of what it describes.\n\n1. `regions`: every block of content, with `kind` one of: main_text (body text), heading (title, section head, running header), column (one column of a multi-column page; give each column its own region), page_number, catchword (the word at the foot anticipating the next page), signature_mark (printer's sheet mark), marginalia (notes in a margin, in the same or another hand), interlinear (writing between the lines), correction (strike-through, insertion, overwriting), stamp_or_seal, date_line, salutation, signature (a person's signature), address, table, figure, ornament, other.\n2. For each region, `lines`: every line of text inside it, top to bottom, each with its own bbox. Count carefully: a scholar will check your line count against the page. Do not merge lines. Do not invent lines where there is only ornament.\n3. `hand`: for each region, \"print\", \"handwriting\" or \"mixed\"; and `script`: fraktur, antiqua, kurrent, suetterlin, latin_cursive, mixed, unknown.\n4. `later_hand`: true if the region appears to be written by a different person or at a later time than the main text (different ink, different letterforms, a librarian's number, a reader's note). Say why in `note`.\n5. `reading_order`: the region ids in the order a reader would follow (columns left to right, then down; marginalia after the line they belong to is fine).\n6. `page_notes`: anything a human should know: damage, show-through, skew, cropped edges, a second page visible, uncertainty about columns.\n\nPrecision over completeness in the boxes; completeness over precision in the counts. If you cannot tell two kinds apart, choose `other` and explain in `note`."
+   },
+   {
+    "role": "user",
+    "content": "Map the layout of this page. Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "layout",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "regions",
+      "reading_order",
+      "page_notes"
+     ],
+     "properties": {
+      "regions": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "id",
+         "kind",
+         "bbox",
+         "hand",
+         "script",
+         "later_hand",
+         "note",
+         "lines"
+        ],
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "kind": {
+          "type": "string",
+          "enum": [
+           "main_text",
+           "heading",
+           "column",
+           "page_number",
+           "catchword",
+           "signature_mark",
+           "marginalia",
+           "interlinear",
+           "correction",
+           "stamp_or_seal",
+           "date_line",
+           "salutation",
+           "signature",
+           "address",
+           "table",
+           "figure",
+           "ornament",
+           "other"
+          ]
+         },
+         "bbox": {
+          "type": "array",
+          "items": {
+           "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "hand": {
+          "type": "string",
+          "enum": [
+           "print",
+           "handwriting",
+           "mixed"
+          ]
+         },
+         "script": {
+          "type": "string",
+          "enum": [
+           "fraktur",
+           "antiqua",
+           "kurrent",
+           "suetterlin",
+           "latin_cursive",
+           "mixed",
+           "unknown"
+          ]
+         },
+         "later_hand": {
+          "type": "boolean"
+         },
+         "note": {
+          "type": "string"
+         },
+         "lines": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "additionalProperties": false,
+           "required": [
+            "bbox"
+           ],
+           "properties": {
+            "bbox": {
+             "type": "array",
+             "items": {
+              "type": "number"
+             },
+             "minItems": 4,
+             "maxItems": 4
+            }
+           }
+          }
+         }
+        }
+       }
+      },
+      "reading_order": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "page_notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/03-layout-and-hybrid/inputs/pages/real-schnitzler-to-beer-hofmann-1896.jpg"
+ },
+ "raw": {
+  "id": "gen-1793887767-NwSiBLcYjWJXlmFK5Syx",
+  "object": "chat.completion",
+  "created": 1793887767,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"regions\": [\n    {\n      \"id\": \"reg_1\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.081, 0.063, 0.827, 0.842],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"Letter body in German Kurrent script. The opening salutation ('Lieber Richard') is written inline at the start of line 1.\",\n      \"lines\": [\n        {\n          \"bbox\": [0.126, 0.063, 0.781, 0.09]\n        },\n        {\n          \"bbox\": [0.098, 0.141, 0.803, 0.082]\n        },\n        {\n          \"bbox\": [0.088, 0.207, 0.814, 0.08]\n        },\n        {\n          \"bbox\": [0.094, 0.287, 0.814, 0.076]\n        },\n        {\n          \"bbox\": [0.081, 0.342, 0.771, 0.086]\n        },\n        {\n          \"bbox\": [0.09, 0.419, 0.811, 0.087]\n        },\n        {\n          \"bbox\": [0.088, 0.501, 0.818, 0.076]\n        },\n        {\n          \"bbox\": [0.084, 0.565, 0.796, 0.073]\n        },\n        {\n          \"bbox\": [0.081, 0.628, 0.825, 0.087]\n        },\n        {\n          \"bbox\": [0.094, 0.692, 0.798, 0.072]\n        },\n        {\n          \"bbox\": [0.085, 0.757, 0.813, 0.08]\n        },\n        {\n          \"bbox\": [0.086, 0.84, 0.14, 0.065]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_2\",\n      \"kind\": \"correction\",\n      \"bbox\": [0.282, 0.338, 0.158, 0.043],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"Interlinear insertion above struck-through word in line 5.\",\n      \"lines\": [\n        {\n          \"bbox\": [0.282, 0.338, 0.158, 0.043]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"reg_1\",\n    \"reg_2\"\n  ],\n  \"page_notes\": \"Single-column letter page on unlined paper. Show-through from text on the reverse side is faintly visible, particularly in the left margin.\"\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing German Script**\n\nI'm currently focused on deciphering the Kurrent handwriting within this historical German letter. My immediate task is to process the first line, \"Lieber Richard, h,\" and prepare for the subsequent analysis of the remaining content.\n\n**Deciphering German Kurrent**\n\nI'm continuing my work on this German letter, currently grappling with the nuances of the Kurrent script. My focus has shifted to discerning whether \"Lieber Richard\" functions as a salutation or is integrated into the main text, as it's presented inline without a clear separation.\n\n**Evaluating Line Formatting**\n\nI'm deciding how to best represent the formatting of the initial salutation and any interlinear corrections. I'm considering treating the entire letter body as `main_text` and noting the integrated salutation, or potentially splitting it. I'm also examining line five for any crossed-out or inserted text, like \"am meisten,\" to accurately capture its content.\n\n**Refining Strike-through Interpretation**\n\nI'm re-evaluating the marking on \"einläßt.\" It appears to be a horizontal strike-through, not an underline. I'm also clarifying whether \"am meisten\" above \"der Streit\" constitutes a separate correction region or is integrated into line five.\n\n**Clarifying Interlinear Insertions**\n\nI'm re-examining line five and the interlinear insertion \"am meisten.\" I'm determining whether to classify it as a distinct interlinear correction or integrate it within the main text's processing, considering its position between existing lines.\n\n**Integrating Corrections**\n\nI'm now focused on precisely categorizing interlinear additions and strike-throughs. I'm deciding whether to treat these as distinct regions or integrate them within the main text, considering how `correction` and `interlinear` types can be ordered logically alongside existing text blocks.\n\n**Structuring Line Content**\n\nI'm now deciding how to best structure line five, specifically how to represent the strike-through of \"einkleidet\" and the interlinear insertion \"am Meisten.\" My current consideration is whether to treat \"am Meisten\" as a distinct interlinear correction region or integrate it as part of the main text, possibly increasing the total line count.\n\n**Considering Line Structures**\n\nI'm now re-evaluating how to represent interlinear text like \"am Meisten.\" I'm weighing whether to treat it as a distinct correction region or, more simply, embed it as its own line within the main text block, aligning with the principle of not inventing lines but carefully counting them.\n\n**Classifying Text Regions**\n\nI'm working on defining the best region types for interlinear text and strike-throughs. My current thought is to assign `kind: \"interlinear\"` to the text \"am meisten\" and allow it to be a distinct region, rather than integrating it directly into the `main_text` flow.\n\n**Differentiating Text Regions**\n\nI'm refining the classification of interlinear text. My current thinking favors designating \"am meisten\" as a distinct `interlinear` region, separate from `main_text`, to accurately capture its spatial and functional properties within the document's layout.\n\n**Classifying Region Hierarchy**\n\nI'm determining the optimal way to represent interlinear text and strike-throughs. My latest thought is to use distinct `interlinear` regions, positioned alongside `main_text` regions, rather than embedding them. This approach aligns with common OCR annotation standards and avoids disrupting paragraph flow.\n\n**Categorizing Interlinear Text**\n\nI'm currently considering how to best represent interlinear additions like \"am meisten.\" My preference is to classify it as a distinct `interlinear` region, rather than merging it into the `main_text`, to maintain accurate spatial and functional context.\n\n**Resolving Correction Representation**\n\nI'm finalizing how to represent corrections, specifically insertions and strike-throughs. My current decision is to use distinct `interlinear` regions for insertions like \"am meisten\" and to associate strike-throughs with the `main_text` region they modify, ensuring clarity and accurate layout representation.\n\n**Defining Text Region Types**\n\nI'm considering how to represent interlinear text and strike-throughs. My current thought is to use distinct `interlinear` regions for insertions and associate strike-throughs with the `main_text` region they modify, ensuring clarity and accurate layout representation.\n\n**Refining Region Classification**\n\nI'm solidifying the classification of interlinear text and strike-throughs. My current direction is to treat \"am meisten\" as a distinct `interlinear` region, separate from `main_text`, while associating strike-throughs with their modified `main_text` regions to ensure accurate layout and context.\n\n**Classifying Text Corrections**\n\nI'm focusing on accurately representing scribal corrections and interlinear additions within the document's structure. My current approach is to designate the primary text as a `main_text` region and any interlinear insertions, like \"am Meisten,\" as separate `interlinear` or `correction` regions, preserving their distinct spatial and functional roles.\n\n**Delineating Correction Regions**\n\nI'm now focused on clarifying the structure for corrections. My conclusion is to employ distinct `interlinear` regions for insertions like \"am Meisten,\" while attributing strike-throughs to the `main_text` regions they affect, ensuring robust representation of the document's layout and meaning.\n\n**Defining Text Region Types**\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing German Script**\n\nI'm currently focused on deciphering the Kurrent handwriting within this historical German letter. My immediate task is to process the first line, \"Lieber Richard, h,\" and prepare for the subsequent analysis of the remaining content.\n\n**Deciphering German Kurrent**\n\nI'm continuing my work on this German letter, currently grappling with the nuances of the Kurrent script. My focus has shifted to discerning whether \"Lieber Richard\" functions as a salutation or is integrated into the main text, as it's presented inline without a clear separation.\n\n**Evaluating Line Formatting**\n\nI'm deciding how to best represent the formatting of the initial salutation and any interlinear corrections. I'm considering treating the entire letter body as `main_text` and noting the integrated salutation, or potentially splitting it. I'm also examining line five for any crossed-out or inserted text, like \"am meisten,\" to accurately capture its content.\n\n**Refining Strike-through Interpretation**\n\nI'm re-evaluating the marking on \"einläßt.\" It appears to be a horizontal strike-through, not an underline. I'm also clarifying whether \"am meisten\" above \"der Streit\" constitutes a separate correction region or is integrated into line five.\n\n**Clarifying Interlinear Insertions**\n\nI'm re-examining line five and the interlinear insertion \"am meisten.\" I'm determining whether to classify it as a distinct interlinear correction or integrate it within the main text's processing, considering its position between existing lines.\n\n**Integrating Corrections**\n\nI'm now focused on precisely categorizing interlinear additions and strike-throughs. I'm deciding whether to treat these as distinct regions or integrate them within the main text, considering how `correction` and `interlinear` types can be ordered logically alongside existing text blocks.\n\n**Structuring Line Content**\n\nI'm now deciding how to best structure line five, specifically how to represent the strike-through of \"einkleidet\" and the interlinear insertion \"am Meisten.\" My current consideration is whether to treat \"am Meisten\" as a distinct interlinear correction region or integrate it as part of the main text, possibly increasing the total line count.\n\n**Considering Line Structures**\n\nI'm now re-evaluating how to represent interlinear text like \"am Meisten.\" I'm weighing whether to treat it as a distinct correction region or, more simply, embed it as its own line within the main text block, aligning with the principle of not inventing lines but carefully counting them.\n\n**Classifying Text Regions**\n\nI'm working on defining the best region types for interlinear text and strike-throughs. My current thought is to assign `kind: \"interlinear\"` to the text \"am meisten\" and allow it to be a distinct region, rather than integrating it directly into the `main_text` flow.\n\n**Differentiating Text Regions**\n\nI'm refining the classification of interlinear text. My current thinking favors designating \"am meisten\" as a distinct `interlinear` region, separate from `main_text`, to accurately capture its spatial and functional properties within the document's layout.\n\n**Classifying Region Hierarchy**\n\nI'm determining the optimal way to represent interlinear text and strike-throughs. My latest thought is to use distinct `interlinear` regions, positioned alongside `main_text` regions, rather than embedding them. This approach aligns with common OCR annotation standards and avoids disrupting paragraph flow.\n\n**Categorizing Interlinear Text**\n\nI'm currently considering how to best represent interlinear additions like \"am meisten.\" My preference is to classify it as a distinct `interlinear` region, rather than merging it into the `main_text`, to maintain accurate spatial and functional context.\n\n**Resolving Correction Representation**\n\nI'm finalizing how to represent corrections, specifically insertions and strike-throughs. My current decision is to use distinct `interlinear` regions for insertions like \"am meisten\" and to associate strike-throughs with the `main_text` region they modify, ensuring clarity and accurate layout representation.\n\n**Defining Text Region Types**\n\nI'm considering how to represent interlinear text and strike-throughs. My current thought is to use distinct `interlinear` regions for insertions and associate strike-throughs with the `main_text` region they modify, ensuring clarity and accurate layout representation.\n\n**Refining Region Classification**\n\nI'm solidifying the classification of interlinear text and strike-throughs. My current direction is to treat \"am meisten\" as a distinct `interlinear` region, separate from `main_text`, while associating strike-throughs with their modified `main_text` regions to ensure accurate layout and context.\n\n**Classifying Text Corrections**\n\nI'm focusing on accurately representing scribal corrections and interlinear additions within the document's structure. My current approach is to designate the primary text as a `main_text` region and any interlinear insertions, like \"am Meisten,\" as separate `interlinear` or `correction` regions, preserving their distinct spatial and functional roles.\n\n**Delineating Correction Regions**\n\nI'm now focused on clarifying the structure for corrections. My conclusion is to employ distinct `interlinear` regions for insertions like \"am Meisten,\" while attributing strike-throughs to the `main_text` regions they affect, ensuring robust representation of the document's layout and meaning.\n\n**Defining Text Region Types**\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2169,
+   "completion_tokens": 7063,
+   "total_tokens": 9232,
+   "cost": 0.028113,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.028113,
+    "upstream_inference_prompt_cost": 0.00162675,
+    "upstream_inference_completions_cost": 0.02648625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 6247,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"regions\": [\n    {\n      \"id\": \"reg_1\",\n      \"kind\": \"main_text\",\n      \"bbox\": [0.081, 0.063, 0.827, 0.842],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"Letter body in German Kurrent script. The opening salutation ('Lieber Richard') is written inline at the start of line 1.\",\n      \"lines\": [\n        {\n          \"bbox\": [0.126, 0.063, 0.781, 0.09]\n        },\n        {\n          \"bbox\": [0.098, 0.141, 0.803, 0.082]\n        },\n        {\n          \"bbox\": [0.088, 0.207, 0.814, 0.08]\n        },\n        {\n          \"bbox\": [0.094, 0.287, 0.814, 0.076]\n        },\n        {\n          \"bbox\": [0.081, 0.342, 0.771, 0.086]\n        },\n        {\n          \"bbox\": [0.09, 0.419, 0.811, 0.087]\n        },\n        {\n          \"bbox\": [0.088, 0.501, 0.818, 0.076]\n        },\n        {\n          \"bbox\": [0.084, 0.565, 0.796, 0.073]\n        },\n        {\n          \"bbox\": [0.081, 0.628, 0.825, 0.087]\n        },\n        {\n          \"bbox\": [0.094, 0.692, 0.798, 0.072]\n        },\n        {\n          \"bbox\": [0.085, 0.757, 0.813, 0.08]\n        },\n        {\n          \"bbox\": [0.086, 0.84, 0.14, 0.065]\n        }\n      ]\n    },\n    {\n      \"id\": \"reg_2\",\n      \"kind\": \"correction\",\n      \"bbox\": [0.282, 0.338, 0.158, 0.043],\n      \"hand\": \"handwriting\",\n      \"script\": \"kurrent\",\n      \"later_hand\": false,\n      \"note\": \"Interlinear insertion above struck-through word in line 5.\",\n      \"lines\": [\n        {\n          \"bbox\": [0.282, 0.338, 0.158, 0.043]\n        }\n      ]\n    }\n  ],\n  \"reading_order\": [\n    \"reg_1\",\n    \"reg_2\"\n  ],\n  \"page_notes\": \"Single-column letter page on unlined paper. Show-through from text on the reverse side is faintly visible, particularly in the left margin.\"\n}",
+  "parsed": {
+   "regions": [
+    {
+     "id": "reg_1",
+     "kind": "main_text",
+     "bbox": [
+      0.081,
+      0.063,
+      0.827,
+      0.842
+     ],
+     "hand": "handwriting",
+     "script": "kurrent",
+     "later_hand": false,
+     "note": "Letter body in German Kurrent script. The opening salutation ('Lieber Richard') is written inline at the start of line 1.",
+     "lines": [
+      {
+       "bbox": [
+        0.126,
+        0.063,
+        0.781,
+        0.09
+       ]
+      },
+      {
+       "bbox": [
+        0.098,
+        0.141,
+        0.803,
+        0.082
+       ]
+      },
+      {
+       "bbox": [
+        0.088,
+        0.207,
+        0.814,
+        0.08
+       ]
+      },
+      {
+       "bbox": [
+        0.094,
+        0.287,
+        0.814,
+        0.076
+       ]
+      },
+      {
+       "bbox": [
+        0.081,
+        0.342,
+        0.771,
+        0.086
+       ]
+      },
+      {
+       "bbox": [
+        0.09,
+        0.419,
+        0.811,
+        0.087
+       ]
+      },
+      {
+       "bbox": [
+        0.088,
+        0.501,
+        0.818,
+        0.076
+       ]
+      },
+      {
+       "bbox": [
+        0.084,
+        0.565,
+        0.796,
+        0.073
+       ]
+      },
+      {
+       "bbox": [
+        0.081,
+        0.628,
+        0.825,
+        0.087
+       ]
+      },
+      {
+       "bbox": [
+        0.094,
+        0.692,
+        0.798,
+        0.072
+       ]
+      },
+      {
+       "bbox": [
+        0.085,
+        0.757,
+        0.813,
+        0.08
+       ]
+      },
+      {
+       "bbox": [
+        0.086,
+        0.84,
+        0.14,
+        0.065
+       ]
+      }
+     ]
+    },
+    {
+     "id": "reg_2",
+     "kind": "correction",
+     "bbox": [
+      0.282,
+      0.338,
+      0.158,
+      0.043
+     ],
+     "hand": "handwriting",
+     "script": "kurrent",
+     "later_hand": false,
+     "note": "Interlinear insertion above struck-through word in line 5.",
+     "lines": [
+      {
+       "bbox": [
+        0.282,
+        0.338,
+        0.158,
+        0.043
+       ]
+      }
+     ]
+    }
+   ],
+   "reading_order": [
+    "reg_1",
+    "reg_2"
+   ],
+   "page_notes": "Single-column letter page on unlined paper. Show-through from text on the reverse side is faintly visible, particularly in the left margin."
+  },
+  "usage": {
+   "prompt_tokens": 2169,
+   "completion_tokens": 7063,
+   "total_tokens": 9232,
+   "cost": 0.028113,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.028113,
+    "upstream_inference_prompt_cost": 0.00162675,
+    "upstream_inference_completions_cost": 0.02648625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 6247,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.028113,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 63.16
+ },
+ "meta": {}
+}

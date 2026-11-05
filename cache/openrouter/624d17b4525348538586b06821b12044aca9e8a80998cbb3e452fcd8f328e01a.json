@@ -1,0 +1,195 @@
+{
+ "namespace": "openrouter",
+ "key": "624d17b4525348538586b06821b12044aca9e8a80998cbb3e452fcd8f328e01a",
+ "fetched_at": "2026-11-05T14:21:59Z",
+ "request": {
+  "model": "anthropic/claude-haiku-5.5",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this handwritten page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/02-kurrent-handwriting/inputs/pages/real-schnitzler-to-beer-hofmann-1896.jpg"
+ },
+ "raw": {
+  "id": "gen-1793888512-xLj8G7PRireTOQYhyiGc",
+  "object": "chat.completion",
+  "created": 1793888512,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Azure",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"lines\":[{\"text\":\"Liebe Richard, [?fürst] ich weiß genau, daß\"},{\"text\":\"die [?gesuchten] Briefe [?...] ausgesprochen\"},{\"text\":\"ist, so fällt es [?mir] ja nicht [?...]. Aber\"},{\"text\":\"es scheint [?...] mir ausgemacht, daß Sie [?...]\"},{\"text\":\"[?wüssten] [?...] nicht [?...] zu lassen. [?Wir] [?war] es [?...] wenn uns\"},{\"text\":\"[?irgend] eine [?...] [?...] [?...] [?...] fehlt.\"},{\"text\":\"[?...] [?...] gefallen [?...] Jahre, [?...]\"},{\"text\":\"[?Freund] [?...] gut zu [?...] [?...] [?...]\"},{\"text\":\"[?...] Hilfe [?...] Mal [?...]\"},{\"text\":\"für [?...] [?...], aber die [?...] [?Hilfe]\"},{\"text\":\"[?fast].\"}],\"script\":\"suetterlin\",\"notes\":\"Cursive handwriting, low confidence on most words; many gaps and uncertain readings marked. Line breaks follow the page. Faint bleed-through from the reverse side is visible in the background and was not transcribed. Human check needed.\"}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "signature": "CAQS4A8KEAgTGAI4AUIIdGhpbmtpbmcSDOqKXDVyzgeaEXGb0hoMetsC0nECJFHGhvPdIjCb9cpF+0PfL5emitQa4D95eGsxLF4/yhdBJAxjJV3bXXpdTvi1TZY2DB1hgBXBBB8q/Q6BJqrmOGffX6SP8HcFA9Jw9pm4xSWA4TSI7i7jZdNi1gpFIDINHQmzSb8p38i2bAgVjWa3Y6le0ZcPHNz2ngaFiVv9x+bDxtkij4W93Jf3qQGK1TjymREFJ3TVW6INWhDrNWnF2hRpByPDUr7N9fGqZYkLXWtj/hFBYbpLLnGjrKOKRYbaluLe3dWeCB//hLEWL+MiL7yGZ4GKN+o9kyjgUUF1rEre1QF5/JmFPdceyOrZOBi2uisZfSOuZb3bN7eX80vwJ1rVSvAVlQo36Gbmrw3RLCqg1eglRul16S2ZaYAfOBsUhrgjb1X1qpHsStdpsDeVuwpf0nRlg195luOWi694DMo0nGcAmtPxgofJyIvW+H1Yr5jpI2WKNzNbLLmOsI3iqWolNiLIyT4a3lwGf3FBWk1U6qVgc9UeUTRCzXKyaOmcjbFvjk4enA7s3teme037Xd5TyXt4bfV8MAI98NgsPaMe1SCPX5gJtblQfgNO6jcl9SngnxMvg9YSHzLc0qI1d+OlFpLYMNHuS073FlRwXDE4zbaeYaNe42Q8YQzkKZIBHvKeZtdXi57+qHcS3f4XT0hNFJJwOE59Eg4CyqBnQDWQARDJ58+GLkpxo3/aT8wUAd2vEwUildgoZ0ZMZwsJGRLBvSSzF81UN/SyyCaE4qW5Y2Zzpu/LhoYytzCDEHNLCYbMMjlYh4/x226vgLBd8sy9C6+Ay34lwUMoMzFf++hiGd31mPthlflCEi9VzeFKzmCm/ONOApFMLt+26adKGwetqi+6j/CuyZl+fRNQpcH2vAQlGwerEBIJA0rdK09rqajkRlZsmn1K3QsPaWst8gP/jmc+7ujqY0BPIvkTZm+HVlpVgDb8RWdmLXDC9VXGfhrc7GDjjIBEBKUoDzXB52/QB9t38c3rG5BUmpu13hAenCRWyH9Yo09YJ14mEj1Lg9Ep/0ZzCems2MpzmO7bSa8b8PpPaWef/2SEeK2VcY152dRlX5wxF26cp2gn1poVBBTFHsA+tRcMnbcYqbR3KyDBYryXmRyQeRkOxhiLK6MNJFk88Z1dnyDJIWwv8kzstadjl1FPrzl4NvUec90gLlZ66kgjRsYdU4Bu70mfx9AE2INhTncwK8+Th5qzPTid9c4eUhHgmp4UeJ290UThg6kwNp5KrzrDg6iMh9CiUh3z2BgDvpATmb/o8FWMdKEB1j7UJNC66j54w0ilY/JIfXa+5TMkmMjlwr38kSNvPAYNPO2Nu5PMpQwwcmvUYuogXHp825gOs8ZLrg2ZNpb/h7kF8k6u4oXWmqvgN/A30aKw/qT92l/uf+UfHXxnnVZjC81yTSj24X/rKMH/HaA5byddGGzVIAjkzy80+ZArMSsxOy1oH3tVj1ouOHJ3SpIalFpZ9Kt6KxXhc3Et+Yj6ibpBy92lAjbdcNAJXuwPMJ/TCM+Sjve9Ue9XbA1RKmuqHwP9Gz8j7bbe2E3HAF/5r5+EUCVEML//lRqLuAGJCmbyEJ0YTzenllBINTYJbxQHNuRYmquQwbCb5E733196/u9wO8kpCs7nzY1LPU1cn994+K+c+w9SF9roqElFXlRNdD2mrInC7UJNP5dRv/gaRKTP6dE78FOgzl/Z/PJDE5ecjP3n9zTTobdcrNSMOU112J4dueoehbDLffhb+IDqHLlukLdJYwQQjFhPEba5eVoJpFEyBR7aJei+m8oXtRQrswPxIJ0NT+Z/cjqDWg2TtiB6wM8HDkl/rHKV6FGF5gzFd5l1l0dCxLzgYBDiDBg3fIsWXIeqGO5ZZ+z7KrcGuwX1BaHzad0ml8lSAqC3tQfexJEv2JGCdk25vVZgh07LeWIwnhS4WV7OlgXvPTO83s/qlgAyfuGZOIjf1/oFSaqWQKDBaQEK3h/LeiUzXiXlvvuELuNAHXndPDFnDhxZRwDbndggL2komjwhb7mdLtw535NRlbx8NbslENQSnNxYshfQGDnHZA2r16LrHLcnT6aFvkv6aXzyROBiQ8u31tcCG08m4Rqzh4otFQgq7OccvbdoFUKFJDgiRbY4ruGEgQDGfri6SZIzTqWvqYlrZLDw+1AJxfJxWtGvZ2Fzr7HuxnSUL2TXyDOIkyRsrBOlvY0XIrLlELNYzL3rsk0BSpJi4ose1ioTDXxXW8Hy5WI/wNYNEYPzMTeh1noRSK+GjQs/eIp8eQuIBcxe8lIF7n9nUqRNqmKe611B8pBkCjwqa7Z5kdvdnIU7JHjZjYhrWfmPcRYimNyWCnWcNqWy4ENpRuRKf9u2OcKJNbPgSxCUsnFeQxJaBJUThDmVPzF8ERGCwXD9Dc/ASltZLdD9Jd02aHlU87fNoMSHTv3lB9MLvbnEPw5pEhVefPJaDo7ts+LR6/RJcgXdkcc8mrYLhmPIW6Dpb3gOF/jGNQVsaFECy+lCSObETD/0W2RAeKUnPhbGHihmDM1qKWnpNXhQUnZMWphpUrv78H7NC10Z0R1Z37j94tgLV9/ZzCv9tlydB+QvWLCYgQn7USx0q+biDUtm2asgAoUMynHqgZt5Lr/UEn9+tQ2PjtgYAQ==.eyJlbmRwb2ludF9zbHVnIjoiYW50aHJvcGljL2NsYXVkZS1oYWlrdS01LjUtMjAyNjEwMDd8YXp1cmUvZ2xvYmFsIn0",
+       "format": "anthropic-claude-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 5767,
+   "completion_tokens": 1122,
+   "total_tokens": 6889,
+   "cost": 0.0011377,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0011377,
+    "upstream_inference_prompt_cost": 0.0005767,
+    "upstream_inference_completions_cost": 0.000561
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 674,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"lines\":[{\"text\":\"Liebe Richard, [?fürst] ich weiß genau, daß\"},{\"text\":\"die [?gesuchten] Briefe [?...] ausgesprochen\"},{\"text\":\"ist, so fällt es [?mir] ja nicht [?...]. Aber\"},{\"text\":\"es scheint [?...] mir ausgemacht, daß Sie [?...]\"},{\"text\":\"[?wüssten] [?...] nicht [?...] zu lassen. [?Wir] [?war] es [?...] wenn uns\"},{\"text\":\"[?irgend] eine [?...] [?...] [?...] [?...] fehlt.\"},{\"text\":\"[?...] [?...] gefallen [?...] Jahre, [?...]\"},{\"text\":\"[?Freund] [?...] gut zu [?...] [?...] [?...]\"},{\"text\":\"[?...] Hilfe [?...] Mal [?...]\"},{\"text\":\"für [?...] [?...], aber die [?...] [?Hilfe]\"},{\"text\":\"[?fast].\"}],\"script\":\"suetterlin\",\"notes\":\"Cursive handwriting, low confidence on most words; many gaps and uncertain readings marked. Line breaks follow the page. Faint bleed-through from the reverse side is visible in the background and was not transcribed. Human check needed.\"}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Liebe Richard, [?fürst] ich weiß genau, daß"
+    },
+    {
+     "text": "die [?gesuchten] Briefe [?...] ausgesprochen"
+    },
+    {
+     "text": "ist, so fällt es [?mir] ja nicht [?...]. Aber"
+    },
+    {
+     "text": "es scheint [?...] mir ausgemacht, daß Sie [?...]"
+    },
+    {
+     "text": "[?wüssten] [?...] nicht [?...] zu lassen. [?Wir] [?war] es [?...] wenn uns"
+    },
+    {
+     "text": "[?irgend] eine [?...] [?...] [?...] [?...] fehlt."
+    },
+    {
+     "text": "[?...] [?...] gefallen [?...] Jahre, [?...]"
+    },
+    {
+     "text": "[?Freund] [?...] gut zu [?...] [?...] [?...]"
+    },
+    {
+     "text": "[?...] Hilfe [?...] Mal [?...]"
+    },
+    {
+     "text": "für [?...] [?...], aber die [?...] [?Hilfe]"
+    },
+    {
+     "text": "[?fast]."
+    }
+   ],
+   "script": "suetterlin",
+   "notes": "Cursive handwriting, low confidence on most words; many gaps and uncertain readings marked. Line breaks follow the page. Faint bleed-through from the reverse side is visible in the background and was not transcribed. Human check needed."
+  },
+  "usage": {
+   "prompt_tokens": 5767,
+   "completion_tokens": 1122,
+   "total_tokens": 6889,
+   "cost": 0.0011377,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0011377,
+    "upstream_inference_prompt_cost": 0.0005767,
+    "upstream_inference_completions_cost": 0.000561
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 674,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0011377,
+  "model": "anthropic/claude-haiku-5.5",
+  "provider": "Azure",
+  "seconds": 7.79
+ },
+ "meta": {}
+}

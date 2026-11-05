@@ -1,0 +1,207 @@
+{
+ "namespace": "openrouter",
+ "key": "2bdd771e5577f93c03982d9b7edae45834960ead13611d39c02b9015effb9345",
+ "fetched_at": "2026-11-05T14:13:14Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are transcribing a page of a historical German source for a scholar. Transcribe exactly what is on the page, diplomatically. You are a camera with letters, not an editor.\n\nRules:\n\n1. Keep the original spelling, capitalisation and punctuation. Do not modernise (e.g. keep \"Thür\", \"seyn\", \"Gebäu\"). Do not translate.\n2. Keep ſ (long s) where the page has it; keep ß, ä, ö, ü; keep superscript-e umlauts as the base letter plus \"e\" superscript marker: aͤ, oͤ, uͤ.\n3. Keep abbreviations as written (e.g. \"u.\" not \"und\", \"Hr.\" not \"Herr\"). Keep hyphenation at line ends as the page has it (\"Ver-\" / \"zeichnis\").\n4. One output line per line of text on the page, in reading order (top to bottom, left column before right column). Do not join lines. Do not drop running headers, page numbers, catchwords or signatures; include them as their own lines.\n5. If a word or letters cannot be read, write [...]. If a reading is uncertain, wrap the word as [?word]. Never invent plausible text to fill a gap and never \"correct\" a reading toward a word you expect.\n6. For handwriting (Kurrent / Sütterlin): the letter shapes differ from Latin script (e.g. Kurrent \"e\" looks like \"n\", \"h\" has a loop below the line, \"s\" has long and round forms). Read the forms, not the expected word. If you recognise the document from elsewhere, still transcribe only what is visible.\n7. Return JSON only, matching the schema: {\"lines\": [{\"text\": \"...\"}], \"script\": \"fraktur|antiqua|kurrent|suetterlin|mixed|unknown\", \"notes\": \"...\"}. \"notes\" is for anything a human should check (damage, bleed-through, columns, a hand change). Keep it short."
+   },
+   {
+    "role": "user",
+    "content": "Transcribe this printed page (language: de). Return JSON only."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "transcription",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "lines",
+      "script",
+      "notes"
+     ],
+     "properties": {
+      "lines": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "text"
+        ],
+        "properties": {
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "script": {
+       "type": "string",
+       "enum": [
+        "fraktur",
+        "antiqua",
+        "kurrent",
+        "suetterlin",
+        "mixed",
+        "unknown"
+       ]
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": "01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/synth-05.png"
+ },
+ "raw": {
+  "id": "gen-1793887973-94L0hW313QOtja2ptzBx",
+  "object": "chat.completion",
+  "created": 1793887973,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"lines\": [\n    {\n      \"text\": \"Von Danzig nach Königsberg und Memel.\"\n    },\n    {\n      \"text\": \"Den 25ten fuhren wir über die Nehrung nach Elbing, und den 28ten erreichten wir Königsberg\"\n    },\n    {\n      \"text\": \"in Preußen. Hier beſuchten wir den Profeſſor Kant, der uns ſehr höflich aufnahm, aber von\"\n    },\n    {\n      \"text\": \"ſeiner Philoſophie nicht reden wollte. Die Stadt beſteht eigentlich aus drey Städten, Altſtadt,\"\n    },\n    {\n      \"text\": \"Löbenicht und Kneiphof.\"\n    },\n    {\n      \"text\": \"Den 30ten fuhren wir durch Neuſtadt, ein kleines Städtchen, deſſen Namen man in Deutſchland\"\n    },\n    {\n      \"text\": \"wohl hundertmal findet, nach Labiau.\"\n    },\n    {\n      \"text\": \"Den 2. Auguſt kamen wir nach Memel, der letzten Stadt des Königreichs. Der Hafen war voll\"\n    },\n    {\n      \"text\": \"von Schiffen aus Holland und England, welche Holz und Flachs laden.\"\n    },\n    {\n      \"text\": \"Den 5ten waren wir in Tilſit an der Memel, und kehrten von da über Inſterburg nach\"\n    },\n    {\n      \"text\": \"Königsberg zurück.\"\n    },\n    {\n      \"text\": \"Den 20ten Auguſt erreichten wir auf dem Rückwege Stettin, und den 23ten Colberg, wo dieſes\"\n    },\n    {\n      \"text\": \"Tagebuch ſchließt.\"\n    }\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"\"\n}",
+     "refusal": null,
+     "reasoning": "**Capturing Diplomatic Text**\n\nI'm working on accurately transcribing the provided German Fraktur text, focusing on translating phrases like \"Von Danzig nach Königsberg und Memel\" and \"den 25ten fuhren wir über die Nehrung nach Elbing\" for a diplomatic context.\n\n**Decoding Fraktur Script**\n\nI'm refining my transcription of the Fraktur text, specifically tackling words like \"beſuchten\" and \"Profeſſor,\" and identifying geographical references such as \"Altstadt, Löbenicht und Kneiphof\" and \"Labiau\" to ensure full historical accuracy.\n\n**Interpreting Fraktur Characters**\n\nI'm meticulously analyzing the Fraktur script, focusing on variations of the long 's' (ſ) versus the standard round 's', particularly in words like \"besuchten,\" \"Philosophie,\" and \"kleines,\" to ensure accurate transcription for our historical records.\n\n**Validating Fraktur Transcriptions**\n\nI'm meticulously reviewing the long 's' usage in phrases like \"Königsberg\" and \"beſuchten,\" cross-referencing with historical orthography rules for \"deſſen\" and \"Deutſchland.\" I've also noted the terminal 's' in \"uns\" and \"des\" versus the medial long 's' in \"Auguſt.\"\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Capturing Diplomatic Text**\n\nI'm working on accurately transcribing the provided German Fraktur text, focusing on translating phrases like \"Von Danzig nach Königsberg und Memel\" and \"den 25ten fuhren wir über die Nehrung nach Elbing\" for a diplomatic context.\n\n**Decoding Fraktur Script**\n\nI'm refining my transcription of the Fraktur text, specifically tackling words like \"beſuchten\" and \"Profeſſor,\" and identifying geographical references such as \"Altstadt, Löbenicht und Kneiphof\" and \"Labiau\" to ensure full historical accuracy.\n\n**Interpreting Fraktur Characters**\n\nI'm meticulously analyzing the Fraktur script, focusing on variations of the long 's' (ſ) versus the standard round 's', particularly in words like \"besuchten,\" \"Philosophie,\" and \"kleines,\" to ensure accurate transcription for our historical records.\n\n**Validating Fraktur Transcriptions**\n\nI'm meticulously reviewing the long 's' usage in phrases like \"Königsberg\" and \"beſuchten,\" cross-referencing with historical orthography rules for \"deſſen\" and \"Deutſchland.\" I've also noted the terminal 's' in \"uns\" and \"des\" versus the medial long 's' in \"Auguſt.\"\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1747,
+   "total_tokens": 3458,
+   "cost": 0.0078345,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0078345,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.00655125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1308,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"lines\": [\n    {\n      \"text\": \"Von Danzig nach Königsberg und Memel.\"\n    },\n    {\n      \"text\": \"Den 25ten fuhren wir über die Nehrung nach Elbing, und den 28ten erreichten wir Königsberg\"\n    },\n    {\n      \"text\": \"in Preußen. Hier beſuchten wir den Profeſſor Kant, der uns ſehr höflich aufnahm, aber von\"\n    },\n    {\n      \"text\": \"ſeiner Philoſophie nicht reden wollte. Die Stadt beſteht eigentlich aus drey Städten, Altſtadt,\"\n    },\n    {\n      \"text\": \"Löbenicht und Kneiphof.\"\n    },\n    {\n      \"text\": \"Den 30ten fuhren wir durch Neuſtadt, ein kleines Städtchen, deſſen Namen man in Deutſchland\"\n    },\n    {\n      \"text\": \"wohl hundertmal findet, nach Labiau.\"\n    },\n    {\n      \"text\": \"Den 2. Auguſt kamen wir nach Memel, der letzten Stadt des Königreichs. Der Hafen war voll\"\n    },\n    {\n      \"text\": \"von Schiffen aus Holland und England, welche Holz und Flachs laden.\"\n    },\n    {\n      \"text\": \"Den 5ten waren wir in Tilſit an der Memel, und kehrten von da über Inſterburg nach\"\n    },\n    {\n      \"text\": \"Königsberg zurück.\"\n    },\n    {\n      \"text\": \"Den 20ten Auguſt erreichten wir auf dem Rückwege Stettin, und den 23ten Colberg, wo dieſes\"\n    },\n    {\n      \"text\": \"Tagebuch ſchließt.\"\n    }\n  ],\n  \"script\": \"fraktur\",\n  \"notes\": \"\"\n}",
+  "parsed": {
+   "lines": [
+    {
+     "text": "Von Danzig nach Königsberg und Memel."
+    },
+    {
+     "text": "Den 25ten fuhren wir über die Nehrung nach Elbing, und den 28ten erreichten wir Königsberg"
+    },
+    {
+     "text": "in Preußen. Hier beſuchten wir den Profeſſor Kant, der uns ſehr höflich aufnahm, aber von"
+    },
+    {
+     "text": "ſeiner Philoſophie nicht reden wollte. Die Stadt beſteht eigentlich aus drey Städten, Altſtadt,"
+    },
+    {
+     "text": "Löbenicht und Kneiphof."
+    },
+    {
+     "text": "Den 30ten fuhren wir durch Neuſtadt, ein kleines Städtchen, deſſen Namen man in Deutſchland"
+    },
+    {
+     "text": "wohl hundertmal findet, nach Labiau."
+    },
+    {
+     "text": "Den 2. Auguſt kamen wir nach Memel, der letzten Stadt des Königreichs. Der Hafen war voll"
+    },
+    {
+     "text": "von Schiffen aus Holland und England, welche Holz und Flachs laden."
+    },
+    {
+     "text": "Den 5ten waren wir in Tilſit an der Memel, und kehrten von da über Inſterburg nach"
+    },
+    {
+     "text": "Königsberg zurück."
+    },
+    {
+     "text": "Den 20ten Auguſt erreichten wir auf dem Rückwege Stettin, und den 23ten Colberg, wo dieſes"
+    },
+    {
+     "text": "Tagebuch ſchließt."
+    }
+   ],
+   "script": "fraktur",
+   "notes": ""
+  },
+  "usage": {
+   "prompt_tokens": 1711,
+   "completion_tokens": 1747,
+   "total_tokens": 3458,
+   "cost": 0.0078345,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0078345,
+    "upstream_inference_prompt_cost": 0.00128325,
+    "upstream_inference_completions_cost": 0.00655125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1308,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0078345,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 21.67
+ },
+ "meta": {}
+}

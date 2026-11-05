@@ -10,13 +10,15 @@ from .base import Backend, Line, PageResult, Skipped  # noqa: F401
 
 
 def registry() -> dict[str, type]:
-    from . import churro, kraken, mistral_ocr, openrouter, tesseract, transkribus
+    from . import churro, escriptorium, hybrid, kraken, mistral_ocr, openrouter, tesseract, transkribus
 
     return {
         "tesseract": tesseract.TesseractBackend,
         "kraken": kraken.KrakenBackend,
         "openrouter": openrouter.OpenRouterVLMBackend,
         "mistral": mistral_ocr.MistralOCRBackend,
+        "hybrid": hybrid.HybridBackend,
+        "escriptorium": escriptorium.EScriptoriumBackend,
         "transkribus": transkribus.TranskribusBackend,
         "churro": churro.ChurroBackend,
     }
