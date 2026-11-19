@@ -1,0 +1,215 @@
+{
+ "namespace": "openrouter",
+ "key": "193863a9172d2a40a662a2ecb4060d3eca27cb9f90da1e8868486275c4b6f980",
+ "fetched_at": "2026-11-10T19:51:21Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given the transcription of one page of a historical German document, one line per entry, each line prefixed with its id (l1, l2, …). The transcription is diplomatic: old spelling, ſ (long s), abbreviations and line-end hyphens are as the page has them. Translate it into English, sentence by sentence.\n\n- One segment per sentence of the source. A sentence may run over several lines; a segment then names its first and last line id. A segment must never skip a line that lies between its first and last line.\n- Translate in order, and cover every line that holds text. A line that is only a page number, a catchword or an ornament still gets a segment, translated as it stands (a number stays a number).\n- Keep the source's gaps and doubts: where the German has [...] write [...] in the English; where it has [?word] translate the word and keep the marker, as [?word].\n- Do not resolve abbreviations, fill gaps, correct the German, or modernise names. Translate what is there.\n- Where a line-end hyphen splits a word across two lines, translate the whole word once.\n- \"first_words\" and \"last_words\" are the first three and the last three words of the source sentence, copied verbatim from the transcription (with ſ, if the transcription has it).\n- \"note\" is for a genuine difficulty with the German (an ambiguous word, a damaged passage); otherwise leave it empty. \"notes\" at the top level is for anything about the page as a whole; otherwise empty.\n- Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "Page real-schiller-musenalmanach-1796-p093. Lines:\n\nl1: Ein frisches Duftgesäusel wallet\nl2: Im Haine bei der Sterne Licht,\nl3: Und Philomelens Nachtlied hallet;\nl4: Die Hirtin ach! vernimmt es nicht.\nl5: Man sieht erzürnt die Elfen wallen,\nl6: Daſs Lust der Keuschheit Blume bricht,\nl7: Man hört im Haine Klagen hallen;\nl8: Die Hirtin ach! vernimmt sie nicht.\nl9: Doch endlich ward im Mondesschimmer\nl10: Sie an des Schäfers Arm gesehn:\nl11: Es tönt der Elfen Grabgewimmer,\nl12: Wo sie berauscht im Thale gehn.\nl13: Ihr Purpurgürtel weht im Winde,\nl14: Ihr Auge schwimmt im feuchten Glanz;\nl15: Sie seufzt, » o! süſser Hirt, wo finde\nl16: Ich nun der Unschuld Lilienkranz? «\nl17: Bei Kronen, welche Leichen schmücken,\nl18: So wimmert es im Nebelthal;"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "translation",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "segments",
+      "notes"
+     ],
+     "properties": {
+      "segments": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "line_start",
+         "line_end",
+         "first_words",
+         "last_words",
+         "translation",
+         "note"
+        ],
+        "properties": {
+         "line_start": {
+          "type": "string"
+         },
+         "line_end": {
+          "type": "string"
+         },
+         "first_words": {
+          "type": "string"
+         },
+         "last_words": {
+          "type": "string"
+         },
+         "translation": {
+          "type": "string"
+         },
+         "note": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1794340264-wLO1lWG5XNnSvdgOEeVx",
+  "object": "chat.completion",
+  "created": 1794340264,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"segments\": [\n    {\n      \"line_start\": \"l1\",\n      \"line_end\": \"l4\",\n      \"first_words\": \"Ein frisches Duftgesäusel\",\n      \"last_words\": \"vernimmt es nicht.\",\n      \"translation\": \"A fresh, fragrant breeze billows in the grove by the starlight, and Philomel's night-song echoes; the shepherdess, alas! perceives it not.\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l5\",\n      \"line_end\": \"l8\",\n      \"first_words\": \"Man sieht erzürnt\",\n      \"last_words\": \"vernimmt sie nicht.\",\n      \"translation\": \"Angered, the elves are seen wandering, that desire breaks the flower of chastity; laments are heard echoing in the grove; the shepherdess, alas! perceives them not.\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l9\",\n      \"line_end\": \"l12\",\n      \"first_words\": \"Doch endlich ward\",\n      \"last_words\": \"im Thale gehn.\",\n      \"translation\": \"Yet at last, in the shimmer of the moon, she was seen upon the shepherd's arm: the elves' funerary wailing sounds where they walk intoxicated in the valley.\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l13\",\n      \"line_end\": \"l16\",\n      \"first_words\": \"Ihr Purpurgürtel weht\",\n      \"last_words\": \"der Unschuld Lilienkranz? «\",\n      \"translation\": \"Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, 'O! sweet shepherd, where do I now find the lily-wreath of innocence?'\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l17\",\n      \"line_end\": \"l18\",\n      \"first_words\": \"Bei Kronen, welche\",\n      \"last_words\": \"es im Nebelthal;\",\n      \"translation\": \"'Among crowns that adorn corpses,' thus it whimpers in the misty valley;\",\n      \"note\": \"Sentence continues onto the next page.\"\n    }\n  ],\n  \"notes\": \"\"\n}",
+     "refusal": null,
+     "reasoning": "**Translating Schiller's Verse**\n\nI'm focusing on translating the opening lines of Schiller's poem. The initial thought is to capture the gentle breeze and the moonlight accurately while setting the stage for the nightingale's song. I'm working on finding the right English equivalents for \"Duftgesäusel\" and \"wallet.\"\n\n**Analyzing Poetic Structure**\n\nI'm currently analyzing the stanza's sentence structure, grappling with punctuation and clauses. My focus is on determining if lines 1-3 form a complete sentence or if they are joined to line 4, and how the interjection \"ach!\" impacts the flow.\n\n**Evaluating Clause Connections**\n\nI'm now meticulously examining how clauses link across lines, particularly in the third stanza. My current focus is on the punctuation between lines thirteen and fourteen, and how that comma might delineate two distinct, though related, clauses or a single extended sentence.\n\n**Examining Sentence Boundaries**\n\nI'm now scrutinizing the sentence structure across stanza breaks. Specifically, I'm questioning if the lines ending in semicolons truly mark the end of a sentence or if the thought simply carries over to the subsequent page, particularly in stanza five.\n\n**Investigating Sentence Endings**\n\nI'm scrutinizing the sentence structure across stanza breaks. Specifically, I'm questioning if the lines ending in semicolons truly mark the end of a sentence or if the thought simply carries over to the subsequent page, particularly in stanza five. My current analysis now delves into lines seventeen and eighteen, wondering if they form a complete thought or if they trail onto the next page.\n\n**Mapping Text Segments**\n\nI'm now refining how to segment the text for translation, ensuring each sentence chunk is accounted for. My current focus is on lines seventeen and eighteen, determining if they constitute a single segment, given the page break and punctuation.\n\n**Continuing Clause Analysis**\n\nI'm now continuing my detailed examination of clause connections, specifically focusing on the implications of the page break between lines seventeen and eighteen. I'm assessing whether the final semicolon truly signifies an independent clause or if the thought seamlessly flows into the next segment despite the physical separation of the text.\n\n**Segmenting Text Blocks**\n\nI'm now focused on precisely defining the boundaries of each textual segment for translation. My current attention is on lines 13-16, specifically how the word \"Purpurgürtel\" and the subsequent punctuation impact the segmentation.\n\n**Refining Text Segmentation**\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Translating Schiller's Verse**\n\nI'm focusing on translating the opening lines of Schiller's poem. The initial thought is to capture the gentle breeze and the moonlight accurately while setting the stage for the nightingale's song. I'm working on finding the right English equivalents for \"Duftgesäusel\" and \"wallet.\"\n\n**Analyzing Poetic Structure**\n\nI'm currently analyzing the stanza's sentence structure, grappling with punctuation and clauses. My focus is on determining if lines 1-3 form a complete sentence or if they are joined to line 4, and how the interjection \"ach!\" impacts the flow.\n\n**Evaluating Clause Connections**\n\nI'm now meticulously examining how clauses link across lines, particularly in the third stanza. My current focus is on the punctuation between lines thirteen and fourteen, and how that comma might delineate two distinct, though related, clauses or a single extended sentence.\n\n**Examining Sentence Boundaries**\n\nI'm now scrutinizing the sentence structure across stanza breaks. Specifically, I'm questioning if the lines ending in semicolons truly mark the end of a sentence or if the thought simply carries over to the subsequent page, particularly in stanza five.\n\n**Investigating Sentence Endings**\n\nI'm scrutinizing the sentence structure across stanza breaks. Specifically, I'm questioning if the lines ending in semicolons truly mark the end of a sentence or if the thought simply carries over to the subsequent page, particularly in stanza five. My current analysis now delves into lines seventeen and eighteen, wondering if they form a complete thought or if they trail onto the next page.\n\n**Mapping Text Segments**\n\nI'm now refining how to segment the text for translation, ensuring each sentence chunk is accounted for. My current focus is on lines seventeen and eighteen, determining if they constitute a single segment, given the page break and punctuation.\n\n**Continuing Clause Analysis**\n\nI'm now continuing my detailed examination of clause connections, specifically focusing on the implications of the page break between lines seventeen and eighteen. I'm assessing whether the final semicolon truly signifies an independent clause or if the thought seamlessly flows into the next segment despite the physical separation of the text.\n\n**Segmenting Text Blocks**\n\nI'm now focused on precisely defining the boundaries of each textual segment for translation. My current attention is on lines 13-16, specifically how the word \"Purpurgürtel\" and the subsequent punctuation impact the segmentation.\n\n**Refining Text Segmentation**\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 875,
+   "completion_tokens": 3573,
+   "total_tokens": 4448,
+   "cost": 0.014055,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.014055,
+    "upstream_inference_prompt_cost": 0.00065625,
+    "upstream_inference_completions_cost": 0.01339875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 3032,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"segments\": [\n    {\n      \"line_start\": \"l1\",\n      \"line_end\": \"l4\",\n      \"first_words\": \"Ein frisches Duftgesäusel\",\n      \"last_words\": \"vernimmt es nicht.\",\n      \"translation\": \"A fresh, fragrant breeze billows in the grove by the starlight, and Philomel's night-song echoes; the shepherdess, alas! perceives it not.\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l5\",\n      \"line_end\": \"l8\",\n      \"first_words\": \"Man sieht erzürnt\",\n      \"last_words\": \"vernimmt sie nicht.\",\n      \"translation\": \"Angered, the elves are seen wandering, that desire breaks the flower of chastity; laments are heard echoing in the grove; the shepherdess, alas! perceives them not.\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l9\",\n      \"line_end\": \"l12\",\n      \"first_words\": \"Doch endlich ward\",\n      \"last_words\": \"im Thale gehn.\",\n      \"translation\": \"Yet at last, in the shimmer of the moon, she was seen upon the shepherd's arm: the elves' funerary wailing sounds where they walk intoxicated in the valley.\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l13\",\n      \"line_end\": \"l16\",\n      \"first_words\": \"Ihr Purpurgürtel weht\",\n      \"last_words\": \"der Unschuld Lilienkranz? «\",\n      \"translation\": \"Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, 'O! sweet shepherd, where do I now find the lily-wreath of innocence?'\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l17\",\n      \"line_end\": \"l18\",\n      \"first_words\": \"Bei Kronen, welche\",\n      \"last_words\": \"es im Nebelthal;\",\n      \"translation\": \"'Among crowns that adorn corpses,' thus it whimpers in the misty valley;\",\n      \"note\": \"Sentence continues onto the next page.\"\n    }\n  ],\n  \"notes\": \"\"\n}",
+  "parsed": {
+   "segments": [
+    {
+     "line_start": "l1",
+     "line_end": "l4",
+     "first_words": "Ein frisches Duftgesäusel",
+     "last_words": "vernimmt es nicht.",
+     "translation": "A fresh, fragrant breeze billows in the grove by the starlight, and Philomel's night-song echoes; the shepherdess, alas! perceives it not.",
+     "note": ""
+    },
+    {
+     "line_start": "l5",
+     "line_end": "l8",
+     "first_words": "Man sieht erzürnt",
+     "last_words": "vernimmt sie nicht.",
+     "translation": "Angered, the elves are seen wandering, that desire breaks the flower of chastity; laments are heard echoing in the grove; the shepherdess, alas! perceives them not.",
+     "note": ""
+    },
+    {
+     "line_start": "l9",
+     "line_end": "l12",
+     "first_words": "Doch endlich ward",
+     "last_words": "im Thale gehn.",
+     "translation": "Yet at last, in the shimmer of the moon, she was seen upon the shepherd's arm: the elves' funerary wailing sounds where they walk intoxicated in the valley.",
+     "note": ""
+    },
+    {
+     "line_start": "l13",
+     "line_end": "l16",
+     "first_words": "Ihr Purpurgürtel weht",
+     "last_words": "der Unschuld Lilienkranz? «",
+     "translation": "Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, 'O! sweet shepherd, where do I now find the lily-wreath of innocence?'",
+     "note": ""
+    },
+    {
+     "line_start": "l17",
+     "line_end": "l18",
+     "first_words": "Bei Kronen, welche",
+     "last_words": "es im Nebelthal;",
+     "translation": "'Among crowns that adorn corpses,' thus it whimpers in the misty valley;",
+     "note": "Sentence continues onto the next page."
+    }
+   ],
+   "notes": ""
+  },
+  "usage": {
+   "prompt_tokens": 875,
+   "completion_tokens": 3573,
+   "total_tokens": 4448,
+   "cost": 0.014055,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.014055,
+    "upstream_inference_prompt_cost": 0.00065625,
+    "upstream_inference_completions_cost": 0.01339875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 3032,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.014055,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 17.95
+ },
+ "meta": {}
+}

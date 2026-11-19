@@ -1,0 +1,209 @@
+{
+ "namespace": "openrouter",
+ "key": "d924073cad023b1df888be26cb475931990c7c26168771cb00926c2e17e71074",
+ "fetched_at": "2026-11-10T19:51:04Z",
+ "request": {
+  "model": "anthropic/claude-sonnet-5.5",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given the transcription of one page of a historical German document, one line per entry, each line prefixed with its id (l1, l2, …). The transcription is diplomatic: old spelling, ſ (long s), abbreviations and line-end hyphens are as the page has them. Translate it into English, sentence by sentence.\n\n- One segment per sentence of the source. A sentence may run over several lines; a segment then names its first and last line id. A segment must never skip a line that lies between its first and last line.\n- Translate in order, and cover every line that holds text. A line that is only a page number, a catchword or an ornament still gets a segment, translated as it stands (a number stays a number).\n- Keep the source's gaps and doubts: where the German has [...] write [...] in the English; where it has [?word] translate the word and keep the marker, as [?word].\n- Do not resolve abbreviations, fill gaps, correct the German, or modernise names. Translate what is there.\n- Where a line-end hyphen splits a word across two lines, translate the whole word once.\n- \"first_words\" and \"last_words\" are the first three and the last three words of the source sentence, copied verbatim from the transcription (with ſ, if the transcription has it).\n- \"note\" is for a genuine difficulty with the German (an ambiguous word, a damaged passage); otherwise leave it empty. \"notes\" at the top level is for anything about the page as a whole; otherwise empty.\n- Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "Page real-kaskel-to-schnorr-1864. Lines:\n\nl1: 84\nl2: Hochgeehrter Freund!\nl3: So herrlich und unvergleichlich als\nl4: gestern im unsterblichen Werke\nl5: Meyerbeer's, habe ich Ihren so\nl6: hochtrefflichen Sohn nie gehört,\nl7: obwohl er stets der erste Tenor\nl8: der Gegenwart ist. Meine\nl9: Freude wurde verdoppelt, als\nl10: ich seinen so hochverehrten, und\nl11: ebenfalls unvergleichlichen Vater\nl12: unter den Zuhörern erblickte\nl13: und mir sagte was dieser da\nl14: empfinden müßte!\nl15: Aber meinem verewigten\nl16: großen Freunde war, ach! das\nl17: Glück nicht beschieden, seinen\nl18: Raoul so zu hören!\nl19: Gott erhalte Sie!\nl20: Ihr treu ergebener\nl21: am 30t Juny Carl Kaskel\nl22: 1864"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "translation",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "segments",
+      "notes"
+     ],
+     "properties": {
+      "segments": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "line_start",
+         "line_end",
+         "first_words",
+         "last_words",
+         "translation",
+         "note"
+        ],
+        "properties": {
+         "line_start": {
+          "type": "string"
+         },
+         "line_end": {
+          "type": "string"
+         },
+         "first_words": {
+          "type": "string"
+         },
+         "last_words": {
+          "type": "string"
+         },
+         "translation": {
+          "type": "string"
+         },
+         "note": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1794340258-wv97c6KzX1jGtDSpiBAH",
+  "object": "chat.completion",
+  "created": 1794340258,
+  "model": "anthropic/claude-sonnet-5.5",
+  "provider": "Anthropic",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"segments\":[{\"line_start\":\"l1\",\"line_end\":\"l1\",\"first_words\":\"84\",\"last_words\":\"84\",\"translation\":\"84\",\"note\":\"Page number.\"},{\"line_start\":\"l2\",\"line_end\":\"l2\",\"first_words\":\"Hochgeehrter Freund!\",\"last_words\":\"Hochgeehrter Freund!\",\"translation\":\"Highly esteemed friend!\",\"note\":\"\"},{\"line_start\":\"l3\",\"line_end\":\"l14\",\"first_words\":\"So herrlich und\",\"last_words\":\"empfinden müßte!\",\"translation\":\"Never have I heard your so most excellent son as gloriously and incomparably as yesterday in Meyerbeer's immortal work, although he is always the foremost tenor of the present day. My joy was doubled when I caught sight of his so highly honoured and likewise incomparable father among the listeners, and told myself what he must be feeling there!\",\"note\":\"The sentence-final 'müßte' is as transcribed; the sentence ends with an exclamation mark.\"},{\"line_start\":\"l15\",\"line_end\":\"l18\",\"first_words\":\"Aber meinem verewigten\",\"last_words\":\"so zu hören!\",\"translation\":\"But my departed great friend, alas, was not granted the good fortune of hearing his Raoul sung in this way!\",\"note\":\"'seinen Raoul' refers to the role of Raoul in Meyerbeer's work; 'meinem verewigten großen Freunde' presumably refers to Meyerbeer.\"},{\"line_start\":\"l19\",\"line_end\":\"l19\",\"first_words\":\"Gott erhalte Sie!\",\"last_words\":\"Gott erhalte Sie!\",\"translation\":\"God keep you!\",\"note\":\"\"},{\"line_start\":\"l20\",\"line_end\":\"l22\",\"first_words\":\"Ihr treu ergebener\",\"last_words\":\"Carl Kaskel 1864\",\"translation\":\"Your faithfully devoted, on the 30th of June, Carl Kaskel, 1864\",\"note\":\"Closing formula and dateline; the date at the left of the signature is read together with the year on l22.\"}],\"notes\":\"Letter from Carl Kaskel to Schnorr, dated 30 June 1864. The page begins with the page number 84.\"}",
+     "refusal": null,
+     "reasoning": null
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1271,
+   "completion_tokens": 703,
+   "total_tokens": 1974,
+   "cost": 0.009572,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.009572,
+    "upstream_inference_prompt_cost": 0.002542,
+    "upstream_inference_completions_cost": 0.00703
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"segments\":[{\"line_start\":\"l1\",\"line_end\":\"l1\",\"first_words\":\"84\",\"last_words\":\"84\",\"translation\":\"84\",\"note\":\"Page number.\"},{\"line_start\":\"l2\",\"line_end\":\"l2\",\"first_words\":\"Hochgeehrter Freund!\",\"last_words\":\"Hochgeehrter Freund!\",\"translation\":\"Highly esteemed friend!\",\"note\":\"\"},{\"line_start\":\"l3\",\"line_end\":\"l14\",\"first_words\":\"So herrlich und\",\"last_words\":\"empfinden müßte!\",\"translation\":\"Never have I heard your so most excellent son as gloriously and incomparably as yesterday in Meyerbeer's immortal work, although he is always the foremost tenor of the present day. My joy was doubled when I caught sight of his so highly honoured and likewise incomparable father among the listeners, and told myself what he must be feeling there!\",\"note\":\"The sentence-final 'müßte' is as transcribed; the sentence ends with an exclamation mark.\"},{\"line_start\":\"l15\",\"line_end\":\"l18\",\"first_words\":\"Aber meinem verewigten\",\"last_words\":\"so zu hören!\",\"translation\":\"But my departed great friend, alas, was not granted the good fortune of hearing his Raoul sung in this way!\",\"note\":\"'seinen Raoul' refers to the role of Raoul in Meyerbeer's work; 'meinem verewigten großen Freunde' presumably refers to Meyerbeer.\"},{\"line_start\":\"l19\",\"line_end\":\"l19\",\"first_words\":\"Gott erhalte Sie!\",\"last_words\":\"Gott erhalte Sie!\",\"translation\":\"God keep you!\",\"note\":\"\"},{\"line_start\":\"l20\",\"line_end\":\"l22\",\"first_words\":\"Ihr treu ergebener\",\"last_words\":\"Carl Kaskel 1864\",\"translation\":\"Your faithfully devoted, on the 30th of June, Carl Kaskel, 1864\",\"note\":\"Closing formula and dateline; the date at the left of the signature is read together with the year on l22.\"}],\"notes\":\"Letter from Carl Kaskel to Schnorr, dated 30 June 1864. The page begins with the page number 84.\"}",
+  "parsed": {
+   "segments": [
+    {
+     "line_start": "l1",
+     "line_end": "l1",
+     "first_words": "84",
+     "last_words": "84",
+     "translation": "84",
+     "note": "Page number."
+    },
+    {
+     "line_start": "l2",
+     "line_end": "l2",
+     "first_words": "Hochgeehrter Freund!",
+     "last_words": "Hochgeehrter Freund!",
+     "translation": "Highly esteemed friend!",
+     "note": ""
+    },
+    {
+     "line_start": "l3",
+     "line_end": "l14",
+     "first_words": "So herrlich und",
+     "last_words": "empfinden müßte!",
+     "translation": "Never have I heard your so most excellent son as gloriously and incomparably as yesterday in Meyerbeer's immortal work, although he is always the foremost tenor of the present day. My joy was doubled when I caught sight of his so highly honoured and likewise incomparable father among the listeners, and told myself what he must be feeling there!",
+     "note": "The sentence-final 'müßte' is as transcribed; the sentence ends with an exclamation mark."
+    },
+    {
+     "line_start": "l15",
+     "line_end": "l18",
+     "first_words": "Aber meinem verewigten",
+     "last_words": "so zu hören!",
+     "translation": "But my departed great friend, alas, was not granted the good fortune of hearing his Raoul sung in this way!",
+     "note": "'seinen Raoul' refers to the role of Raoul in Meyerbeer's work; 'meinem verewigten großen Freunde' presumably refers to Meyerbeer."
+    },
+    {
+     "line_start": "l19",
+     "line_end": "l19",
+     "first_words": "Gott erhalte Sie!",
+     "last_words": "Gott erhalte Sie!",
+     "translation": "God keep you!",
+     "note": ""
+    },
+    {
+     "line_start": "l20",
+     "line_end": "l22",
+     "first_words": "Ihr treu ergebener",
+     "last_words": "Carl Kaskel 1864",
+     "translation": "Your faithfully devoted, on the 30th of June, Carl Kaskel, 1864",
+     "note": "Closing formula and dateline; the date at the left of the signature is read together with the year on l22."
+    }
+   ],
+   "notes": "Letter from Carl Kaskel to Schnorr, dated 30 June 1864. The page begins with the page number 84."
+  },
+  "usage": {
+   "prompt_tokens": 1271,
+   "completion_tokens": 703,
+   "total_tokens": 1974,
+   "cost": 0.009572,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.009572,
+    "upstream_inference_prompt_cost": 0.002542,
+    "upstream_inference_completions_cost": 0.00703
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.009572,
+  "model": "anthropic/claude-sonnet-5.5",
+  "provider": "Anthropic",
+  "seconds": 5.82
+ },
+ "meta": {}
+}

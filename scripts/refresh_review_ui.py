@@ -16,7 +16,11 @@ def main() -> None:
         if "runs" in path.parts:
             continue
         doc = path.read_text(encoding="utf-8")
-        if 'class="matrix"' in doc:
+        if 'id="reading-data"' in doc:
+            kind = "reading"
+        elif 'id="timeline-data"' in doc:
+            kind = "timeline"
+        elif 'class="matrix"' in doc:
             kind = "consensus"
         elif 'id="map"' in doc and 'id="yearMin"' in doc:
             kind = "map"

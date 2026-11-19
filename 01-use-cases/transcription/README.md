@@ -1,11 +1,17 @@
 # Transcription
 
-Three worked examples on the same pages: a Fraktur **print** bake-off, a
-Kurrent **handwriting** bake-off, and a third that adds the two things a
-whole-page reading cannot give you, a **layout map** of the page and a
-**hybrid** reading that keeps every line's coordinates. All three end in
-the same place: an explorer that shows the image beside every reading, a
-consensus of the readers, and a check-in list for a person.
+The place to work is the **[reading room](04-reading-room/outputs/index.html)**
+([guide](04-reading-room/README.md)): a page beside its scan, the readers'
+settled text with their doubts marked, the translation in register, every
+selection lit on the image, and a log of what you decide, ask and cite.
+Start there.
+
+The three earlier cases are how that text was made, kept as the evidence
+behind it: a Fraktur **print** bake-off, a Kurrent **handwriting** bake-off,
+and a third that adds a **layout map** of the page and a **hybrid** reading
+that keeps every line's coordinates. Each ends in an explorer that shows the
+image beside every reading, a consensus of the readers, and a check-in list;
+the reading room takes that consensus and those coordinates as its inputs.
 
 ## The idea
 
@@ -38,6 +44,7 @@ corrected text feeds the next run as ground truth, and the maps half
 
 | Use case | Pages | Readers that ran | Headline | Open |
 |---|---|---|---|---|
+| [`04-reading-room/`](04-reading-room/) | 3 real pages from 03 | the medoid of 03's readers, anchored to the hybrid reading's boxes; Gemini 3.8 Flash and Claude Sonnet 5.5 as translators | every line of the Grimm and Schiller pages and 20 of 22 of the Kaskel letter anchored to a box; 21 translation blocks, one divergent; $0.10 | [reading room](04-reading-room/outputs/index.html) |
 | [`01-fraktur-print-bakeoff/`](01-fraktur-print-bakeoff/) | 5 synthetic + 3 real | 4 Tesseract models, Kraken, Gemini 3.8 Flash, Gemini 3.1 Pro, Qwen3-VL 235B, Claude Haiku 5.5 | Gemini 3.8 Flash: normalised CER 0.006 over 8 pages, 0.010–0.021 on the real ones; Kraken 0.018; best Tesseract 0.032. Whole run $0.23. | [explorer](01-fraktur-print-bakeoff/outputs/index.html) · [consensus](01-fraktur-print-bakeoff/outputs/consensus/index.html) |
 | [`02-kurrent-handwriting/`](02-kurrent-handwriting/) | 3 synthetic + 3 real | Kraken, Tesseract (control), Gemini 3.8 Flash, Gemini 3.1 Pro, Qwen3-VL 235B, Claude Haiku and Sonnet 5.5 | see its README for the run's numbers | [explorer](02-kurrent-handwriting/outputs/index.html) · [consensus](02-kurrent-handwriting/outputs/consensus/index.html) |
 | [`03-layout-and-hybrid/`](03-layout-and-hybrid/) | the 6 real pages | Gemini 3.8 Flash as a layout analyst; Kraken segmentation + Gemini / Haiku reading line crops | regions, lines, marginalia and later hands per page; a reading with coordinates | [layout overlay](03-layout-and-hybrid/outputs/layout.html) · [explorer](03-layout-and-hybrid/outputs/index.html) |
@@ -86,6 +93,19 @@ flowchart LR
     CR --> VL[vision model per crop\nline prompt → JSON text + uncertain]
     VL --> PX[lines with coordinates\n→ PAGE-XML complete]
     PX --> E[same evaluate / report / consensus as the bake-off]
+```
+
+### Reading room (04)
+
+```mermaid
+flowchart LR
+    C[consensus.json + medoid run JSON] -->|settle| S[build: diplomatic lines\nspans remapped to raw offsets]
+    H[hybrid reading with boxes] -->|anchor: line alignment| S
+    S -->|translate: two models, line ids per sentence| T[segments → blocks\ndivergent where far apart]
+    S & T -->|build| P[index.html: scan · text · translation\nin register]
+    P -->|serve| L[(log.jsonl\ndecisions · issues · questions · excerpts)]
+    L -->|apply| S2[new build: settled text]
+    S2 -->|build| P
 ```
 
 ## What the numbers mean

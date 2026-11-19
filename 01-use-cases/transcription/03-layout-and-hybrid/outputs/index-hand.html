@@ -753,7 +753,11 @@ document.querySelectorAll('.tabs').forEach(t => t.addEventListener('click', e =>
   t.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
   const page = t.parentElement; page.querySelectorAll('.pane').forEach(p => p.style.display = p.id === b.dataset.target ? 'block' : 'none');
 }));
-</script><!-- mueser-review:start -->
+</script>
+
+
+
+<!-- mueser-review:start -->
 <style>/* Shared reading room: source first, evidence one disclosure away. */
 body.review-ui {
   --bg:#f6f5f0; --panel:#fffefa; --ink:#25342f; --muted:#667169;
@@ -982,10 +986,12 @@ body.review-ui {
 
   document.body.classList.add('review-ui', `review-${config.kind}`);
   const top = el('nav', 'review-topbar'); top.setAttribute('aria-label', 'Project navigation');
-  const brand = link('German sources', config.home); brand.className = 'review-brand';
+  const brand = link('Four projects for Ben', config.home); brand.className = 'review-brand';
   const topLinks = el('div', 'top-links');
-  if (config.kind !== 'home') topLinks.append(link('All experiments', config.home));
+  if (config.kind !== 'home') topLinks.append(link('Home', config.home));
   if (config.kind === 'consensus') topLinks.append(link('Compare readers', '../index.html'));
+  if (config.kind === 'reading') topLinks.append(link('Consensus pages', '../../03-layout-and-hybrid/outputs/consensus-print/index.html'));
+  if (config.kind === 'timeline') topLinks.append(link('Reading room', '../../../transcription/04-reading-room/outputs/index.html'));
   if (config.consensus) topLinks.append(link('Review disagreements', config.consensus));
   if (config.kind === 'home') topLinks.append(el('span', 'eyebrow', 'Bok Center · Learning Lab'));
   top.append(brand, topLinks); document.body.prepend(top);
@@ -1206,47 +1212,68 @@ body.review-ui {
     const main = $('body > main'); main.id = 'review-main';
     const h1 = $('h1', main), sub = $('.sub', main), legend = $('.legend', main);
     const hero = el('header', 'collection-hero'), words = el('div');
-    words.append(el('div', 'eyebrow', 'A research collection / November 2026'), h1, sub);
-    const actions = el('div', 'collection-links'); actions.append(link('Explore transcription ↓', '#transcription'), link('Explore maps ↓', '#maps')); words.append(actions);
+    words.append(el('div', 'eyebrow', 'Four projects for Ben / November 2026'), h1, sub);
+    const actions = el('div', 'collection-links');
+    actions.append(link('Open the reading room ↗', '01-use-cases/transcription/04-reading-room/outputs/index.html'), link('The timeline, in progress ↗', '01-use-cases/timeline/README.md'), link('The four projects ↓', '#projects'), link('How the text was made ↓', '#transcription'), link('Maps ↓', '#maps'));
+    words.append(actions);
     const figure = el('figure', 'hero-image'); const img = el('img'); img.src = '01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/real-grimm-khm-1812-i-p093.jpg'; img.alt = 'A page of Grimm’s fairy tales, printed in Fraktur in 1812';
-    figure.append(img, el('figcaption', '', 'GRIMM · 1812 · A SOURCE IN THIS COLLECTION')); hero.append(words, figure); main.prepend(hero);
+    figure.append(img, el('figcaption', '', 'GRIMM · 1812 · A SOURCE IN THE READING ROOM')); hero.append(words, figure); main.prepend(hero);
     const headers = $$(':scope > h2', main);
-    const descriptions = [
-      'Compare nine readers on printed sources, then inspect the passages where their readings diverge.',
-      'Follow the same comparison through letters and an album, from a clear hand to difficult photographs.',
-      'See how readers divide a page into regions and lines before they transcribe it.',
-      'Follow 24 historical place names from a ledger to a map, with the reason for every match.',
-      'Inspect the historical map search and the evidence behind the decision to leave the overlay off.',
-      'Trace a map point all the way back to the page and line where its name appeared.',
-      'Explore place-name histories around Breslau and the changes recorded across 1945.',
-    ];
-    let grid, count = 0;
+    const groups = {
+      Projects: { id: 'projects', eyebrow: '01 / The four projects', title: 'Reading, timeline, style, notes' },
+      Transcription: { id: 'transcription', eyebrow: '02 / How the reading room’s text was made', title: 'Nine readers on a page, and where they disagree' },
+      Maps: { id: 'maps', eyebrow: '03 / Earlier: the places a page names', title: 'Maps & place histories' },
+    };
+    const descriptions = {
+      'Reading room': 'Read a page beside its scan with the translation in register; decide the doubtful passages and keep a log of questions and citations. Built.',
+      'Timeline': 'Thinkers, works, events and concepts on one band of years, every node cited and linked out; layers for how thinkers connect, how events connect, and where the two meet. Being built today.',
+      'Style: handouts': 'Infers the house style your handouts already share, applies it without touching a word, and refreshes one for a new term. Scoped.',
+      'Style: CV': 'Adds entries to your CV by cloning a neighbouring entry’s paragraph, so indents, tabs and page count stay yours. Scoped.',
+      'Style: footnotes': 'Checks a manuscript’s footnotes against its bibliography with nine named rules and lists every proposed change for you before anything is written. Scoped.',
+      'Notes apparatus': 'Gathers email, voice memos, files, PDF highlights and Zotero items into one local database, reviewed by project and theme. Scoped.',
+      'Fraktur print': 'Compare nine readers on printed sources, then inspect the passages where their readings diverge.',
+      'Kurrent handwriting': 'Follow the same comparison through letters and an album, from a clear hand to difficult photographs.',
+      'Layout and hybrid': 'See how readers divide a page into regions and lines before they transcribe it.',
+      'Places to map': 'Follow 24 historical place names from a ledger to a map, with the reason for every match.',
+      'Historical map overlay': 'Inspect the historical map search and the evidence behind the decision to leave the overlay off.',
+      'From page to map (the bridge)': 'Trace a map point all the way back to the page and line where its name appeared.',
+      'From map data, no text': 'Explore place-name histories around Breslau and the changes recorded across 1945.',
+    };
+    let grid = null, current = null, count = 0;
     headers.forEach(h => {
       const section = el('section'); h.before(section); section.append(h);
       while (section.nextSibling && !(section.nextSibling.nodeType === 1 && section.nextSibling.tagName === 'H2')) section.append(section.nextSibling);
       const flow = $('.flow', section), output = flow && $('.out', flow);
-      const isCase = /^(Transcription|Maps) ·/.test(h.textContent);
-      if (isCase) {
-        const isText = h.textContent.startsWith('Transcription');
-        if (count === 0 || count === 3) {
-          const intro = el('div', 'collection-intro'); intro.id = isText ? 'transcription' : 'maps';
-          intro.append(el('div', 'eyebrow', isText ? '01 / Read the sources' : '02 / Locate the places'), el('h2', '', isText ? 'Transcription & review' : 'Maps & place histories'));
-          section.before(intro); grid = el('div', 'collection-grid'); section.before(grid);
+      const m = /^(Projects|Transcription|Maps) · (.+)$/.exec(h.textContent);
+      if (m) {
+        const [, group, name] = m;
+        if (group !== current) {
+          current = group; const g = groups[group];
+          const intro = el('div', 'collection-intro'); intro.id = g.id;
+          intro.append(el('div', 'eyebrow', g.eyebrow), el('h2', '', g.title));
+          section.before(intro); grid = el('div', 'collection-grid'); section.before(grid); count = 0;
         }
         section.className = 'case-card'; grid.append(section);
-        h.textContent = h.textContent.split(' · ').slice(1).join(' · ');
-        section.prepend(el('div', 'eyebrow', `Experiment ${String(count + 1).padStart(2, '0')}`));
-        h.after(el('p', 'case-desc', descriptions[count]));
+        h.textContent = name;
+        const result = $(':scope > p.num', section);
+        const scoped = result && /^Scoped/.test(result.textContent);
+        section.prepend(el('div', 'eyebrow', group === 'Projects' ? (scoped ? `Project · scoped, brief ready` : `Project · built`) : `Experiment ${String(count + 1).padStart(2, '0')}`));
+        h.after(el('p', 'case-desc', descriptions[name] || ''));
         const actions = el('div', 'case-actions');
-        if (output) $$('a', output).forEach(a => { const copy = a.cloneNode(true); if (copy.textContent === 'Explorer') copy.textContent = 'Compare readers ↗'; if (copy.textContent === 'Consensus') copy.textContent = 'Review disagreements ↗'; if (copy.textContent === 'Map') copy.textContent = 'Explore map ↗'; actions.append(copy); });
-        const result = $(':scope > p.num', section); if (result) result.classList.add('case-result');
+        if (output) $$('a', output).forEach(a => { const copy = a.cloneNode(true);
+          const t = copy.textContent;
+          if (t === 'Explorer') copy.textContent = 'Compare readers ↗'; if (t === 'Consensus') copy.textContent = 'Review disagreements ↗'; if (t === 'Map') copy.textContent = 'Explore map ↗';
+          if (t === 'Reading room') copy.textContent = 'Open the reading room ↗'; if (t === 'Timeline') copy.textContent = 'Open the timeline ↗';
+          if (t === 'Guide') copy.textContent = 'Read the guide'; if (t === 'Brief') copy.textContent = 'The brief for an agent';
+          actions.append(copy); });
+        if (result) result.classList.add('case-result');
         section.append(actions);
-        if (flow) { const d = disclosure('How this experiment works', [flow]); section.append(d); }
+        if (flow) { const d = disclosure(group === 'Projects' ? 'How it works' : 'How this experiment works', [flow]); section.append(d); }
         count++;
       } else {
         section.className = 'collection-notes';
         if (h.textContent === 'The shape of the work') {
-          const d = disclosure('The complete workflow · from page to map', [...section.childNodes]); if (legend) d.append(legend); section.append(d);
+          const d = disclosure('The shape of the work · diverge, converge, decide', [...section.childNodes]); if (legend) d.append(legend); section.append(d);
         }
         if (h.textContent === 'Where the evidence is') { const table = $('table', section); if (table) section.append(disclosure('Find the files behind a result', [table])); }
       }
@@ -1286,6 +1313,7 @@ body.review-ui {
     window.dispatchEvent(new Event('resize'));
   }
 
+  if (config.kind === 'reading' || config.kind === 'timeline') return;   // these pages render themselves from embedded data; only the top bar is shared
   if (config.kind === 'home') home();
   else if (config.kind === 'map') maps();
   else readingWorkspace();

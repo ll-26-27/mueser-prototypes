@@ -1,0 +1,201 @@
+{
+ "namespace": "openrouter",
+ "key": "4b3cd583c7c675f07ccfe2d44c1f99eda9b6c4de2ecd8cf524efb7d040d89a56",
+ "fetched_at": "2026-11-10T19:51:28Z",
+ "request": {
+  "model": "anthropic/claude-sonnet-5.5",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given the transcription of one page of a historical German document, one line per entry, each line prefixed with its id (l1, l2, …). The transcription is diplomatic: old spelling, ſ (long s), abbreviations and line-end hyphens are as the page has them. Translate it into English, sentence by sentence.\n\n- One segment per sentence of the source. A sentence may run over several lines; a segment then names its first and last line id. A segment must never skip a line that lies between its first and last line.\n- Translate in order, and cover every line that holds text. A line that is only a page number, a catchword or an ornament still gets a segment, translated as it stands (a number stays a number).\n- Keep the source's gaps and doubts: where the German has [...] write [...] in the English; where it has [?word] translate the word and keep the marker, as [?word].\n- Do not resolve abbreviations, fill gaps, correct the German, or modernise names. Translate what is there.\n- Where a line-end hyphen splits a word across two lines, translate the whole word once.\n- \"first_words\" and \"last_words\" are the first three and the last three words of the source sentence, copied verbatim from the transcription (with ſ, if the transcription has it).\n- \"note\" is for a genuine difficulty with the German (an ambiguous word, a damaged passage); otherwise leave it empty. \"notes\" at the top level is for anything about the page as a whole; otherwise empty.\n- Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "Page real-schiller-musenalmanach-1796-p093. Lines:\n\nl1: Ein frisches Duftgesäusel wallet\nl2: Im Haine bei der Sterne Licht,\nl3: Und Philomelens Nachtlied hallet;\nl4: Die Hirtin ach! vernimmt es nicht.\nl5: Man sieht erzürnt die Elfen wallen,\nl6: Daſs Lust der Keuschheit Blume bricht,\nl7: Man hört im Haine Klagen hallen;\nl8: Die Hirtin ach! vernimmt sie nicht.\nl9: Doch endlich ward im Mondesschimmer\nl10: Sie an des Schäfers Arm gesehn:\nl11: Es tönt der Elfen Grabgewimmer,\nl12: Wo sie berauscht im Thale gehn.\nl13: Ihr Purpurgürtel weht im Winde,\nl14: Ihr Auge schwimmt im feuchten Glanz;\nl15: Sie seufzt, » o! süſser Hirt, wo finde\nl16: Ich nun der Unschuld Lilienkranz? «\nl17: Bei Kronen, welche Leichen schmücken,\nl18: So wimmert es im Nebelthal;"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "translation",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "segments",
+      "notes"
+     ],
+     "properties": {
+      "segments": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "line_start",
+         "line_end",
+         "first_words",
+         "last_words",
+         "translation",
+         "note"
+        ],
+        "properties": {
+         "line_start": {
+          "type": "string"
+         },
+         "line_end": {
+          "type": "string"
+         },
+         "first_words": {
+          "type": "string"
+         },
+         "last_words": {
+          "type": "string"
+         },
+         "translation": {
+          "type": "string"
+         },
+         "note": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1794340282-jfv7y4BlX4XSK2ex7AAS",
+  "object": "chat.completion",
+  "created": 1794340282,
+  "model": "anthropic/claude-sonnet-5.5",
+  "provider": "Azure",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "end_turn",
+    "message": {
+     "role": "assistant",
+     "content": "{\"segments\":[{\"line_start\":\"l1\",\"line_end\":\"l4\",\"first_words\":\"Ein frisches Duftgesäusel\",\"last_words\":\"vernimmt es nicht.\",\"translation\":\"A fresh fragrant rustling wafts in the grove by the light of the stars, and Philomel's night-song resounds; the shepherdess, alas! does not hear it.\",\"note\":\"\"},{\"line_start\":\"l5\",\"line_end\":\"l8\",\"first_words\":\"Man sieht erzürnt\",\"last_words\":\"vernimmt sie nicht.\",\"translation\":\"One sees the elves drift about in anger, because pleasure breaks the flower of chastity; one hears laments echo in the grove; the shepherdess, alas! does not hear them.\",\"note\":\"\"},{\"line_start\":\"l9\",\"line_end\":\"l12\",\"first_words\":\"Doch endlich ward\",\"last_words\":\"Thale gehn.\",\"translation\":\"But at last she was seen in the shimmer of the moon on the shepherd's arm: the elves' grave-whimpering sounds where, intoxicated, she walks in the valley.\",\"note\":\"The syntax of the final clause is slightly ambiguous: 'sie' (she) is singular but 'gehn' is plural; translated as it stands.\"},{\"line_start\":\"l13\",\"line_end\":\"l16\",\"first_words\":\"Ihr Purpurgürtel weht\",\"last_words\":\"Unschuld Lilienkranz? «\",\"translation\":\"Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, \\\"Oh! sweet shepherd, where shall I now find the lily-wreath of innocence?\\\"\",\"note\":\"\"},{\"line_start\":\"l17\",\"line_end\":\"l18\",\"first_words\":\"Bei Kronen, welche\",\"last_words\":\"im Nebelthal;\",\"translation\":\"By crowns that adorn corpses, so it whimpers in the misty valley;\",\"note\":\"The sentence continues beyond this page; it ends with a semicolon, so the translation is incomplete.\"}],\"notes\":\"Verse page from a Musenalmanach (1796). The final sentence continues on the next page.\"}",
+     "refusal": null,
+     "reasoning": null
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1326,
+   "completion_tokens": 685,
+   "total_tokens": 2011,
+   "cost": 0.009502,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.009502,
+    "upstream_inference_prompt_cost": 0.002652,
+    "upstream_inference_completions_cost": 0.00685
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"segments\":[{\"line_start\":\"l1\",\"line_end\":\"l4\",\"first_words\":\"Ein frisches Duftgesäusel\",\"last_words\":\"vernimmt es nicht.\",\"translation\":\"A fresh fragrant rustling wafts in the grove by the light of the stars, and Philomel's night-song resounds; the shepherdess, alas! does not hear it.\",\"note\":\"\"},{\"line_start\":\"l5\",\"line_end\":\"l8\",\"first_words\":\"Man sieht erzürnt\",\"last_words\":\"vernimmt sie nicht.\",\"translation\":\"One sees the elves drift about in anger, because pleasure breaks the flower of chastity; one hears laments echo in the grove; the shepherdess, alas! does not hear them.\",\"note\":\"\"},{\"line_start\":\"l9\",\"line_end\":\"l12\",\"first_words\":\"Doch endlich ward\",\"last_words\":\"Thale gehn.\",\"translation\":\"But at last she was seen in the shimmer of the moon on the shepherd's arm: the elves' grave-whimpering sounds where, intoxicated, she walks in the valley.\",\"note\":\"The syntax of the final clause is slightly ambiguous: 'sie' (she) is singular but 'gehn' is plural; translated as it stands.\"},{\"line_start\":\"l13\",\"line_end\":\"l16\",\"first_words\":\"Ihr Purpurgürtel weht\",\"last_words\":\"Unschuld Lilienkranz? «\",\"translation\":\"Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, \\\"Oh! sweet shepherd, where shall I now find the lily-wreath of innocence?\\\"\",\"note\":\"\"},{\"line_start\":\"l17\",\"line_end\":\"l18\",\"first_words\":\"Bei Kronen, welche\",\"last_words\":\"im Nebelthal;\",\"translation\":\"By crowns that adorn corpses, so it whimpers in the misty valley;\",\"note\":\"The sentence continues beyond this page; it ends with a semicolon, so the translation is incomplete.\"}],\"notes\":\"Verse page from a Musenalmanach (1796). The final sentence continues on the next page.\"}",
+  "parsed": {
+   "segments": [
+    {
+     "line_start": "l1",
+     "line_end": "l4",
+     "first_words": "Ein frisches Duftgesäusel",
+     "last_words": "vernimmt es nicht.",
+     "translation": "A fresh fragrant rustling wafts in the grove by the light of the stars, and Philomel's night-song resounds; the shepherdess, alas! does not hear it.",
+     "note": ""
+    },
+    {
+     "line_start": "l5",
+     "line_end": "l8",
+     "first_words": "Man sieht erzürnt",
+     "last_words": "vernimmt sie nicht.",
+     "translation": "One sees the elves drift about in anger, because pleasure breaks the flower of chastity; one hears laments echo in the grove; the shepherdess, alas! does not hear them.",
+     "note": ""
+    },
+    {
+     "line_start": "l9",
+     "line_end": "l12",
+     "first_words": "Doch endlich ward",
+     "last_words": "Thale gehn.",
+     "translation": "But at last she was seen in the shimmer of the moon on the shepherd's arm: the elves' grave-whimpering sounds where, intoxicated, she walks in the valley.",
+     "note": "The syntax of the final clause is slightly ambiguous: 'sie' (she) is singular but 'gehn' is plural; translated as it stands."
+    },
+    {
+     "line_start": "l13",
+     "line_end": "l16",
+     "first_words": "Ihr Purpurgürtel weht",
+     "last_words": "Unschuld Lilienkranz? «",
+     "translation": "Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, \"Oh! sweet shepherd, where shall I now find the lily-wreath of innocence?\"",
+     "note": ""
+    },
+    {
+     "line_start": "l17",
+     "line_end": "l18",
+     "first_words": "Bei Kronen, welche",
+     "last_words": "im Nebelthal;",
+     "translation": "By crowns that adorn corpses, so it whimpers in the misty valley;",
+     "note": "The sentence continues beyond this page; it ends with a semicolon, so the translation is incomplete."
+    }
+   ],
+   "notes": "Verse page from a Musenalmanach (1796). The final sentence continues on the next page."
+  },
+  "usage": {
+   "prompt_tokens": 1326,
+   "completion_tokens": 685,
+   "total_tokens": 2011,
+   "cost": 0.009502,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.009502,
+    "upstream_inference_prompt_cost": 0.002652,
+    "upstream_inference_completions_cost": 0.00685
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.009502,
+  "model": "anthropic/claude-sonnet-5.5",
+  "provider": "Azure",
+  "seconds": 6.45
+ },
+ "meta": {}
+}

@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading room</title>
+<style>/* Reading room. Tokens match the shared review interface; the page renders itself from embedded data. */
+:root {
+  --bg:#f6f5f0; --panel:#fffefa; --ink:#25342f; --muted:#667169; --line:#dcded5; --accent:#335f4c; --soft:#eaf0e7;
+  --warn:#956129; --warnbg:#f6ead6; --mark:#efe5cb; --markline:#c8b57d; --strong:#eed3a8; --strongline:#9e7130;
+  --sel:#2a78d6; --issue:#b3412f; --question:#2f5fb3; --ok:#2f7d4f;
+}
+/* The shared review stylesheet keeps every page light; a dark theme applies only when the document asks for it. */
+:root[data-theme="dark"] { --bg:#1b1f1c; --panel:#232a25; --ink:#edf1e9; --muted:#aab5aa; --line:#3a463e; --accent:#b2d7b8; --soft:#2f3f34;
+  --mark:#4a4330; --markline:#8a7a4a; --strong:#5c4a2a; --strongline:#b08a4a; --warnbg:#3d3222; }
+html, body { margin:0; background:var(--bg); color:var(--ink); }
+body { font:15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-font-smoothing:antialiased; }
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+a { color:var(--accent); }
+button, input, select, textarea { font:inherit; color:inherit; }
+button { cursor:pointer; }
+:focus-visible { outline:3px solid #b17937; outline-offset:3px; }
+code { font:12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; background:var(--soft); padding:1px 5px; border-radius:3px; }
+.eyebrow { font:600 10px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-transform:uppercase; letter-spacing:1.8px; color:var(--muted); }
+.muted { color:var(--muted); }
+.mono { font:12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap:anywhere; }
+
+.rr-head { padding:28px 40px 18px; border-bottom:1px solid var(--line); }
+.rr-head h1 { font:normal clamp(26px, 3vw, 40px)/1.12 Georgia, serif; letter-spacing:-.8px; margin:10px 0 12px; }
+.rr-head .lead { max-width:820px; color:var(--muted); margin:0; font-size:15px; }
+
+.rr-app { max-width:1800px; margin:0 auto; padding:18px 32px 60px; }
+.rr-bar { display:flex; flex-wrap:wrap; align-items:center; gap:14px 22px; padding:12px 0 16px; border-bottom:1px solid var(--line); }
+.rr-bar .grow { flex:1; }
+.rr-pager { display:flex; flex-direction:column; gap:8px; }
+.rr-pager-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.rr-pager-head .eyebrow { margin-right:6px; }
+.rr-pager-head button.ghost:disabled { opacity:.4; cursor:default; }
+.rr-pages { display:flex; flex-wrap:wrap; gap:6px; }
+.rr-pages small.n { display:inline-block; min-width:18px; margin-right:6px; font:600 10px/1.4 ui-monospace, monospace; color:var(--muted); }
+.rr-pages button[aria-current="true"] small.n { color:var(--accent); }
+.rr-pages button { border:1px solid var(--line); background:var(--panel); border-radius:4px; padding:7px 12px; font-size:13px; text-align:left; }
+.rr-pages button[aria-current="true"] { background:var(--soft); border-color:var(--accent); color:var(--accent); font-weight:600; }
+.rr-pages small { display:block; color:var(--muted); font-size:11px; font-weight:400; }
+.rr-mode { display:inline-flex; border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+.rr-mode button { border:0; background:var(--panel); padding:8px 14px; font-size:13px; border-right:1px solid var(--line); }
+.rr-mode button:last-child { border-right:0; }
+.rr-mode button[aria-pressed="true"] { background:var(--accent); color:white; }
+.rr-who { display:flex; align-items:center; gap:8px; font-size:12px; }
+.rr-who input { width:110px; padding:6px 8px; border:1px solid var(--line); border-radius:4px; background:var(--panel); font-size:13px; }
+.rr-conn { font-size:11px; padding:4px 9px; border-radius:10px; background:var(--soft); color:var(--accent); white-space:nowrap; }
+.rr-conn.off { background:var(--warnbg); color:var(--warn); }
+.rr-bar .ghost { border:1px solid var(--line); background:var(--panel); border-radius:4px; padding:7px 12px; font-size:12px; }
+
+.rr-notice { margin:14px 0 0; padding:10px 14px; border-left:3px solid var(--warn); background:var(--warnbg); font-size:13px; border-radius:0 4px 4px 0; }
+.rr-notice code { background:transparent; padding:0; }
+
+.rr-work { display:grid; grid-template-columns:minmax(0, .9fr) minmax(0, 1.1fr); gap:24px; margin-top:18px; align-items:start; }
+.rr-work.with-log { grid-template-columns:minmax(0, .85fr) minmax(0, 1.05fr) 300px; }
+.rr-image { position:sticky; top:14px; border:1px solid var(--line); background:#eeede5; border-radius:5px; padding:14px; }
+:root[data-theme="dark"] .rr-image, .rr-image.dark { background:#2a2f2b; }
+.rr-image .image-label { display:flex; justify-content:space-between; gap:10px; margin-bottom:10px; font-size:10px; text-transform:uppercase; letter-spacing:1.3px; color:var(--muted); }
+.fig { position:relative; }
+.fig img { display:block; width:100%; height:auto; box-shadow:0 2px 12px #26382d12; }
+.fig svg { position:absolute; inset:0; width:100%; height:100%; }
+.fig rect { fill:transparent; stroke:transparent; stroke-width:1.5; vector-effect:non-scaling-stroke; pointer-events:all; cursor:pointer; transition:fill .12s, stroke .12s; }
+.fig.show-boxes rect { stroke:rgba(51,95,76,.35); }
+.fig rect.hot { fill:rgba(42,120,214,.16); stroke:var(--sel); stroke-width:2; }
+.fig rect.sel { fill:rgba(200,16,46,.14); stroke:#c8102e; stroke-width:2; }
+.fig rect.flash { fill:rgba(224,170,40,.35); stroke:#b07a10; stroke-width:3; }
+.rr-image .tools { display:flex; gap:14px; align-items:center; margin-top:10px; font-size:12px; color:var(--muted); }
+.rr-image .anchors { font-size:11px; color:var(--muted); margin-top:6px; }
+
+.rr-text { background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:18px 22px 24px; min-width:0; }
+.rr-text .head { display:flex; flex-wrap:wrap; gap:10px 18px; align-items:baseline; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:8px; font-size:12px; color:var(--muted); }
+.rr-text .head b { color:var(--ink); font-weight:600; }
+.rows { display:grid; gap:0; }
+.row { display:grid; grid-template-columns:1fr; gap:0 22px; padding:4px 0; border-bottom:1px dotted var(--line); }
+.mode-both .row { grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); }
+.mode-transcription .col-tr { display:none; }
+.mode-translation .col-src { display:none; }
+.row:hover { background:color-mix(in srgb, var(--soft) 50%, transparent); }
+.col-src, .col-tr { min-width:0; }
+.ln { display:block; font:17px/1.75 Georgia, "Times New Roman", serif; white-space:pre-wrap; overflow-wrap:anywhere; padding:1px 8px 1px 12px; border-left:3px solid transparent; position:relative; }
+.ln.unanchored { border-left:3px dotted var(--markline); }
+.ln.hot { background:rgba(42,120,214,.10); }
+.lnwrap { position:relative; }
+.ln::before { content:attr(data-line); position:absolute; left:-30px; top:5px; width:26px; text-align:right; font:10px/1.4 ui-monospace, monospace; color:var(--muted); opacity:0; user-select:none; }
+.rows:hover .ln::before { opacity:.9; }
+.lnwrap .edit { position:absolute; right:2px; top:2px; border:0; background:transparent; color:var(--muted); font-size:12px; opacity:0; padding:2px 5px; }
+.lnwrap:hover .edit, .lnwrap .edit:focus { opacity:1; }
+.ln.decided-line { border-left-color:var(--ok); }
+.rr-text mark { background:var(--mark); border-bottom:1px solid var(--markline); color:inherit; cursor:pointer; padding:0; border-radius:2px; }
+.rr-text mark.strong { background:var(--strong); border-bottom-color:var(--strongline); }
+.rr-text mark.decided { background:transparent; border-bottom:2px solid var(--ok); }
+.rr-text mark.decided:empty::after { content:"⌀"; font-size:11px; color:var(--ok); padding:0 2px; }
+.rr-text mark.ins { padding:0 1px; border-bottom:2px dotted var(--strongline); }
+.rr-text .hide-weak mark:not(.strong):not(.decided) { background:transparent; border-color:transparent; }
+.rr-text .hide-marks mark:not(.decided) { background:transparent; border-color:transparent; }
+.seg { font:16px/1.75 Georgia, "Times New Roman", serif; padding:2px 10px; border-left:3px solid transparent; position:relative; }
+.seg.hot { background:rgba(42,120,214,.10); }
+.seg .tag { display:inline-block; font:10px/1.4 ui-monospace, monospace; color:var(--muted); background:var(--soft); padding:1px 6px; border-radius:3px; margin:0 6px 0 0; vertical-align:middle; }
+.seg .alt { display:block; margin-top:6px; padding-top:6px; border-top:1px dashed var(--line); }
+.seg.divergent { border-left-color:var(--strongline); }
+.seg.decided { border-left-color:var(--ok); }
+.seg .decide { display:inline-block; margin:6px 0 0; border:1px solid var(--line); background:var(--bg); border-radius:4px; padding:3px 9px; font:12px -apple-system, BlinkMacSystemFont, sans-serif; }
+.seg .dmark { background:var(--strong); border-bottom:1px solid var(--strongline); }
+.seg .note { display:block; font:12px/1.5 -apple-system, BlinkMacSystemFont, sans-serif; color:var(--muted); margin-top:4px; }
+.seg .stale { color:var(--warn); }
+.seg.empty { color:var(--muted); font-style:italic; font-size:13px; }
+.rr-text .filters { display:flex; flex-wrap:wrap; gap:14px; align-items:center; font-size:12px; margin:6px 0 10px; }
+.rr-text .filters select { background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:5px 8px; font-size:12px; }
+
+.rr-float { position:fixed; z-index:50; display:flex; gap:4px; padding:5px; background:var(--panel); border:1px solid var(--line); border-radius:6px; box-shadow:0 6px 24px #25342f24; }
+.rr-float button { border:0; background:transparent; padding:6px 10px; border-radius:4px; font-size:12px; }
+.rr-float button:hover { background:var(--soft); }
+.rr-float .sep { width:1px; background:var(--line); margin:4px 2px; }
+.rr-pop { position:fixed; z-index:60; width:min(460px, calc(100vw - 32px)); background:var(--panel); border:1px solid var(--accent); border-radius:6px; padding:14px 16px; box-shadow:0 10px 36px #25342f30; font-size:13px; }
+.rr-pop h3 { margin:0 0 8px; font-size:14px; }
+.rr-pop .q { font:15px/1.6 Georgia, serif; background:var(--soft); padding:6px 10px; border-radius:4px; margin-bottom:10px; white-space:pre-wrap; overflow-wrap:anywhere; }
+.rr-pop label.opt { display:flex; gap:10px; align-items:flex-start; padding:6px 4px; border-bottom:1px dotted var(--line); cursor:pointer; }
+.rr-pop label.opt .t { font:15px/1.5 Georgia, serif; white-space:pre-wrap; overflow-wrap:anywhere; }
+.rr-pop label.opt .r { font:11px ui-monospace, monospace; color:var(--muted); display:block; }
+.rr-pop textarea, .rr-pop input[type=text] { width:100%; border:1px solid var(--line); border-radius:4px; background:var(--bg); padding:7px 9px; font-size:13px; margin-top:4px; }
+.rr-pop textarea.src { font:15px/1.5 Georgia, serif; }
+.rr-pop .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+.rr-pop .actions button { border:1px solid var(--line); background:var(--bg); border-radius:4px; padding:7px 13px; font-size:12px; }
+.rr-pop .actions button.primary { background:var(--accent); border-color:var(--accent); color:white; }
+body .rr-pop pre { font:11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; background:var(--bg); border:1px solid var(--line); padding:8px 10px; margin:8px 0; border-radius:4px; white-space:pre-wrap; overflow-wrap:anywhere; max-height:260px; overflow:auto; }
+.rr-pop .hint { color:var(--muted); font-size:11px; margin-top:6px; }
+
+.rr-log { position:sticky; top:14px; max-height:calc(100vh - 28px); overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:14px; font-size:12px; }
+.rr-log h2 { font:normal 18px Georgia, serif; margin:0 0 10px; }
+.rr-log .filters { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+.rr-log .filters select { background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:4px 6px; font-size:11px; }
+.rr-log .item { padding:8px 0; border-top:1px solid var(--line); }
+.rr-log .item .meta { display:flex; gap:8px; align-items:baseline; color:var(--muted); font-size:11px; flex-wrap:wrap; }
+.rr-log .badge { display:inline-block; padding:1px 7px; border-radius:9px; font-size:10px; text-transform:uppercase; letter-spacing:.6px; color:white; background:var(--muted); }
+.rr-log .badge.issue { background:var(--issue); } .rr-log .badge.question { background:var(--question); } .rr-log .badge.decision { background:var(--ok); }
+.rr-log .badge.excerpt { background:#7a6a3a; } .rr-log .badge.comment { background:#5a6a7a; }
+.rr-log .quote { font:13px/1.5 Georgia, serif; margin:4px 0; color:var(--ink); white-space:pre-wrap; overflow-wrap:anywhere; }
+.rr-log .text { margin:3px 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+.rr-log .item.resolved .quote, .rr-log .item.resolved .text { opacity:.55; }
+.rr-log .acts { display:flex; gap:6px; margin-top:4px; }
+.rr-log .acts button { border:1px solid var(--line); background:var(--bg); border-radius:3px; padding:2px 8px; font-size:11px; }
+.rr-log .empty { color:var(--muted); padding:10px 0; }
+.rr-text .flash, .ln.flash, .seg.flash { animation:rrflash 1.6s ease-out; }
+@keyframes rrflash { 0% { background:rgba(224,170,40,.45); } 100% { background:transparent; } }
+.rr-toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:70; background:var(--ink); color:var(--bg); padding:9px 16px; border-radius:6px; font-size:13px; box-shadow:0 6px 20px #0004; }
+
+.rr-foot { margin-top:26px; font-size:12px; color:var(--muted); }
+.rr-foot details { border:1px solid var(--line); border-radius:5px; background:var(--panel); margin-top:10px; }
+.rr-foot summary { padding:10px 14px; cursor:pointer; font-weight:600; }
+.rr-foot details > div { padding:4px 14px 14px; }
+.rr-foot table { border-collapse:collapse; width:100%; font-size:12px; }
+.rr-foot td, .rr-foot th { padding:5px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+
+noscript ol { font:15px/1.6 Georgia, serif; }
+@media (max-width:1250px) { .rr-work.with-log { grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); } .rr-work.with-log .rr-log { grid-column:1 / -1; position:static; max-height:none; } }
+@media (max-width:900px) { .rr-work, .rr-work.with-log { grid-template-columns:1fr; } .rr-image { position:static; } .rr-app { padding:14px 16px 40px; } .rr-head { padding:20px 16px 14px; } .mode-both .row { grid-template-columns:1fr; } }
+@media print { .rr-bar, .rr-float, .rr-pop, .rr-log, .review-topbar, .skip-link { display:none !important; } .rr-work { display:block; } .rr-image { position:static; } }
+</style>
+</head>
+<body>
+<header class="rr-head">
+  <div class="eyebrow">Transcription / Reading room</div>
+  <h1>Reading room</h1>
+  <p class="lead">The scan on the left, the settled transcription and its translation on the right, line for line. Select a passage in either text to see where it sits on the page, copy it with its citation, or leave a question. Marked passages are where the readers disagreed; click one to decide. Everything you do here is kept in <code>outputs/reading/log.jsonl</code>.</p>
+</header>
+<main id="rr-app" class="rr-app" aria-live="polite"></main>
+<noscript>
+<h2>Kinder- und Haus-Märchen. Gesammelt durch die Brüder Grimm. Erster Band · real-grimm-khm-1812-i-p093</h2><ol>
+<li id="real-grimm-khm-1812-i-p093-l1" value="1">— 93 —</li>
+<li id="real-grimm-khm-1812-i-p093-l2" value="2">die Tauben wieder herein und thaten freund-</li>
+<li id="real-grimm-khm-1812-i-p093-l3" value="3">lich: „Aschenputtel, sollen wir dir dte Wicken</li>
+<li id="real-grimm-khm-1812-i-p093-l4" value="4">lesen?“ „Ja, —</li>
+<li id="real-grimm-khm-1812-i-p093-l5" value="5">die schlechten ins Kröpfchen,</li>
+<li id="real-grimm-khm-1812-i-p093-l6" value="6">die guten ins Töpfchen.“</li>
+<li id="real-grimm-khm-1812-i-p093-l7" value="7">Pick, pick! pick, pick! gings so geschwind, als</li>
+<li id="real-grimm-khm-1812-i-p093-l8" value="8">wären zwölf Hände da. Und als sie fertig wa-</li>
+<li id="real-grimm-khm-1812-i-p093-l9" value="9">ren, sagten die Tauben: „Aschenputtel, willst</li>
+<li id="real-grimm-khm-1812-i-p093-l10" value="10">du auch auf den Ball gehen und tanzen.“ —</li>
+<li id="real-grimm-khm-1812-i-p093-l11" value="11">„O du mein Gott, sagte es, wie kann ich in</li>
+<li id="real-grimm-khm-1812-i-p093-l12" value="12">meinen schmutzigen Kleidern hingehen?“ —</li>
+<li id="real-grimm-khm-1812-i-p093-l13" value="13">„Geh zu dem Bäumlein auf deiner Mutter</li>
+<li id="real-grimm-khm-1812-i-p093-l14" value="14">Grab, schüttele daran und wünsche dir schöne</li>
+<li id="real-grimm-khm-1812-i-p093-l15" value="15">Kleider, komm aber vor Mitternacht wieder.“</li>
+<li id="real-grimm-khm-1812-i-p093-l16" value="16">— da ging Aschenputtel hinaus, schüttelte das</li>
+<li id="real-grimm-khm-1812-i-p093-l17" value="17">Bäumlein und sprach:</li>
+<li id="real-grimm-khm-1812-i-p093-l18" value="18">„Bäumlein rüttel und schüttel dich,</li>
+<li id="real-grimm-khm-1812-i-p093-l19" value="19">wirf schöne Kleider herab für mich!“</li>
+<li id="real-grimm-khm-1812-i-p093-l20" value="20">Kaum hatte es das ausgesagt, da lag ein präch-</li>
+<li id="real-grimm-khm-1812-i-p093-l21" value="21">tig silbern Kleid vor ihm, Perlen, seidene</li>
+<li id="real-grimm-khm-1812-i-p093-l22" value="22">Strümpfe mit silbernen Zwickeln und silberne</li>
+<li id="real-grimm-khm-1812-i-p093-l23" value="23">Pantoffel und was sonst dazu gehörte. Aschen-</li>
+<li id="real-grimm-khm-1812-i-p093-l24" value="24">puttel trug alles nach Haus, und als es sich</li>
+<li id="real-grimm-khm-1812-i-p093-l25" value="25">gewaschen und angezogen hatte, da war es so</li>
+<li id="real-grimm-khm-1812-i-p093-l26" value="26">schön wie eine Rose, die der Thau gewaschen</li>
+<li id="real-grimm-khm-1812-i-p093-l27" value="27">hat. Und wie es vor die Hausthüre kam, so</li>
+<li id="real-grimm-khm-1812-i-p093-l28" value="28">stand da ein Wagen mit sechs federgeschmück-</li>
+<li id="real-grimm-khm-1812-i-p093-l29" value="29">ten Rappen und Bediente dabei in Blau und</li>
+</ol>
+<h3>Translation</h3><ol>
+<li>[l1 l2 l3 l4] — 93 — ... the doves [came] in again and acted kindly: “Cinderella, shall we pick the vetches for you?”</li>
+<li>[l4 l5 l6] “Yes, — the bad into the crop, the good into the pot.”</li>
+<li>[l7 l8] Peck, peck! peck, peck! it went as quickly as if twelve hands were there.</li>
+<li>[l8 l9 l10] And when they were finished, the doves said: “Cinderella, do you want to go to the ball too, and dance.”</li>
+<li>[l11 l12] “O my God,” she said, “how can I go in my dirty clothes?”</li>
+<li>[l13 l14 l15] “Go to the little tree on your mother’s grave, shake it, and wish for fine clothes, but come back before midnight.”</li>
+<li>[l16 l17 l18 l19] Then Cinderella went out, shook the little tree, and said: “Little tree, shake and rustle, throw down fine clothes for me!”</li>
+<li>[l20 l21 l22 l23] Scarcely had she finished saying this, when a magnificent silver dress lay before her, pearls, silk stockings with silver clocks, and silver slippers, and whatever else belonged to it.</li>
+<li>[l23 l24 l25 l26 l27] Cinderella carried everything home, and when she had washed and dressed herself, she was as beautiful as a rose that the dew has washed.</li>
+<li>[l27 l28 l29] And as she came before the front door, there stood a carriage with six feather-adorned black horses, and servants beside it in blue and</li>
+</ol>
+<h2>Letter to Julius Schnorr von Carolsfeld · real-kaskel-to-schnorr-1864</h2><ol>
+<li id="real-kaskel-to-schnorr-1864-l1" value="1">84</li>
+<li id="real-kaskel-to-schnorr-1864-l2" value="2">Hochgeehrter Freund!</li>
+<li id="real-kaskel-to-schnorr-1864-l3" value="3">So herrlich und unvergleichlich als</li>
+<li id="real-kaskel-to-schnorr-1864-l4" value="4">gestern im unsterblichen Werke</li>
+<li id="real-kaskel-to-schnorr-1864-l5" value="5">Meyerbeer&#x27;s, habe ich Ihren so</li>
+<li id="real-kaskel-to-schnorr-1864-l6" value="6">hochtrefflichen Sohn nie gehört,</li>
+<li id="real-kaskel-to-schnorr-1864-l7" value="7">obwohl er stets der erste Tenor</li>
+<li id="real-kaskel-to-schnorr-1864-l8" value="8">der Gegenwart ist. Meine</li>
+<li id="real-kaskel-to-schnorr-1864-l9" value="9">Freude wurde verdoppelt, als</li>
+<li id="real-kaskel-to-schnorr-1864-l10" value="10">ich seinen so hochverehrten, und</li>
+<li id="real-kaskel-to-schnorr-1864-l11" value="11">ebenfalls unvergleichlichen Vater</li>
+<li id="real-kaskel-to-schnorr-1864-l12" value="12">unter den Zuhörern erblickte</li>
+<li id="real-kaskel-to-schnorr-1864-l13" value="13">und mir sagte was dieser da</li>
+<li id="real-kaskel-to-schnorr-1864-l14" value="14">empfinden müßte!</li>
+<li id="real-kaskel-to-schnorr-1864-l15" value="15">Aber meinem verewigten</li>
+<li id="real-kaskel-to-schnorr-1864-l16" value="16">großen Freunde war, ach! das</li>
+<li id="real-kaskel-to-schnorr-1864-l17" value="17">Glück nicht beschieden, seinen</li>
+<li id="real-kaskel-to-schnorr-1864-l18" value="18">Raoul so zu hören!</li>
+<li id="real-kaskel-to-schnorr-1864-l19" value="19">Gott erhalte Sie!</li>
+<li id="real-kaskel-to-schnorr-1864-l20" value="20">Ihr treu ergebener</li>
+<li id="real-kaskel-to-schnorr-1864-l21" value="21">am 30t Juny Carl Kaskel</li>
+<li id="real-kaskel-to-schnorr-1864-l22" value="22">1864</li>
+</ol>
+<h3>Translation</h3><ol>
+<li>[l1] 84</li>
+<li>[l2] Highly esteemed friend!</li>
+<li>[l3 l4 l5 l6 l7 l8 l9 l10 l11 l12 l13 l14] Never have I heard your so highly excellent son so magnificent and incomparable as yesterday in Meyerbeer&#x27;s immortal work, although he is always the first tenor of the present day. My joy was doubled when I caught sight of his so highly revered and likewise incomparable father among the audience, and told myself what he must be feeling at that moment!</li>
+<li>[l15 l16 l17 l18] Yet to my late, great friend, alas, the good fortune was not granted to hear his Raoul thus!</li>
+<li>[l19] May God preserve you!</li>
+<li>[l20 l21 l22] Your faithfully devoted Carl Kaskel, on 30th June 1864</li>
+</ol>
+<h2>Musen-Almanach für das Jahr 1796 · real-schiller-musenalmanach-1796-p093</h2><ol>
+<li id="real-schiller-musenalmanach-1796-p093-l1" value="1">Ein frisches Duftgesäusel wallet</li>
+<li id="real-schiller-musenalmanach-1796-p093-l2" value="2">Im Haine bei der Sterne Licht,</li>
+<li id="real-schiller-musenalmanach-1796-p093-l3" value="3">Und Philomelens Nachtlied hallet;</li>
+<li id="real-schiller-musenalmanach-1796-p093-l4" value="4">Die Hirtin ach! vernimmt es nicht.</li>
+<li id="real-schiller-musenalmanach-1796-p093-l5" value="5">Man sieht erzürnt die Elfen wallen,</li>
+<li id="real-schiller-musenalmanach-1796-p093-l6" value="6">Daſs Lust der Keuschheit Blume bricht,</li>
+<li id="real-schiller-musenalmanach-1796-p093-l7" value="7">Man hört im Haine Klagen hallen;</li>
+<li id="real-schiller-musenalmanach-1796-p093-l8" value="8">Die Hirtin ach! vernimmt sie nicht.</li>
+<li id="real-schiller-musenalmanach-1796-p093-l9" value="9">Doch endlich ward im Mondesschimmer</li>
+<li id="real-schiller-musenalmanach-1796-p093-l10" value="10">Sie an des Schäfers Arm gesehn:</li>
+<li id="real-schiller-musenalmanach-1796-p093-l11" value="11">Es tönt der Elfen Grabgewimmer,</li>
+<li id="real-schiller-musenalmanach-1796-p093-l12" value="12">Wo sie berauscht im Thale gehn.</li>
+<li id="real-schiller-musenalmanach-1796-p093-l13" value="13">Ihr Purpurgürtel weht im Winde,</li>
+<li id="real-schiller-musenalmanach-1796-p093-l14" value="14">Ihr Auge schwimmt im feuchten Glanz;</li>
+<li id="real-schiller-musenalmanach-1796-p093-l15" value="15">Sie seufzt, » o! süſser Hirt, wo finde</li>
+<li id="real-schiller-musenalmanach-1796-p093-l16" value="16">Ich nun der Unschuld Lilienkranz? «</li>
+<li id="real-schiller-musenalmanach-1796-p093-l17" value="17">Bei Kronen, welche Leichen schmücken,</li>
+<li id="real-schiller-musenalmanach-1796-p093-l18" value="18">So wimmert es im Nebelthal;</li>
+</ol>
+<h3>Translation</h3><ol>
+<li>[l1 l2 l3 l4] A fresh, fragrant breeze billows in the grove by the starlight, and Philomel&#x27;s night-song echoes; the shepherdess, alas! perceives it not.</li>
+<li>[l5 l6 l7 l8] Angered, the elves are seen wandering, that desire breaks the flower of chastity; laments are heard echoing in the grove; the shepherdess, alas! perceives them not.</li>
+<li>[l9 l10 l11 l12] Yet at last, in the shimmer of the moon, she was seen upon the shepherd&#x27;s arm: the elves&#x27; funerary wailing sounds where they walk intoxicated in the valley.</li>
+<li>[l13 l14 l15 l16] Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, &#x27;O! sweet shepherd, where do I now find the lily-wreath of innocence?&#x27;</li>
+<li>[l17 l18] &#x27;Among crowns that adorn corpses,&#x27; thus it whimpers in the misty valley;</li>
+</ol>
+</noscript>
+<script type="application/json" id="reading-data">{"build_id": "b-20261110-01", "parent_build": null, "created": "2026-11-10T15:19:37-0500", "normalize_sha256": "821e09977554db02781764e6097bca44e80bf62c34a79cef9b3e98dcb5eafec9", "decisions_applied": [], "case": "01-use-cases/transcription/04-reading-room", "client": "reading-room@5186038", "paths": {"log": "01-use-cases/transcription/04-reading-room/outputs/reading/log.jsonl", "inbox": "01-use-cases/transcription/04-reading-room/outputs/reading/inbox/", "build": "01-use-cases/transcription/04-reading-room/outputs/reading/builds/b-20261110-01"}, "metadata": {"docs": {"real-grimm-khm-1812-i": {"type": "book", "title": "Kinder- und Haus-Märchen. Gesammelt durch die Brüder Grimm. Erster Band", "author": ["Jacob Grimm", "Wilhelm Grimm"], "date": "1812", "place": "Berlin", "publisher": "Realschulbuchhandlung", "archive": "Wikimedia Commons / de.wikisource.org", "shelfmark": null, "url": "https://de.wikisource.org/wiki/Seite:Kinder_und_Hausmärchen_(Grimm)_1812_I_093.jpg", "iiif_manifest": null, "licence": "public domain", "language": "de", "synthetic": false, "pages": {"real-grimm-khm-1812-i-p093": {"label": "p. 93", "iiif_canvas": null, "image_sha256": "9cea03a43d0423fec8318f00fbfdeee7d37d4789ff30033cd3981c48a05533bf"}}}, "real-schiller-musenalmanach-1796": {"type": "book", "title": "Musen-Almanach für das Jahr 1796", "author": ["Friedrich Schiller"], "date": "1796", "place": "Neustrelitz", "publisher": "Michaelis", "archive": "Wikimedia Commons / de.wikisource.org", "shelfmark": null, "url": "https://de.wikisource.org/wiki/Seite:Schiller_Musenalmanach_1796_093.jpg", "iiif_manifest": null, "licence": "public domain", "language": "de", "synthetic": false, "note": "Schiller is the editor of the almanac; the poem on this page is by one of its contributors.", "pages": {"real-schiller-musenalmanach-1796-p093": {"label": "p. 93", "iiif_canvas": null, "image_sha256": "a20c4eb5d629af3d0ff2726b5206e69193082277faff5a1a894fe1c9a33c957b"}}}, "real-kaskel-to-schnorr-1864": {"type": "personal_communication", "title": "Letter to Julius Schnorr von Carolsfeld", "author": ["Carl Kaskel"], "date": "1864", "place": null, "publisher": null, "archive": "Deutsche Fotothek, SLUB Dresden", "shelfmark": "Df hauptkatalog 0280537 & 0280538", "url": "https://commons.wikimedia.org/wiki/File:Fotothek_Df_hauptkatalog_0280537_%26_0280538.jpg", "iiif_manifest": null, "licence": "public domain", "language": "de", "synthetic": false, "pages": {"real-kaskel-to-schnorr-1864": {"label": "leaf 84", "iiif_canvas": null, "image_sha256": "9032245892d87eff927dcd1dea77c4824b341dc19fa32428d18990d16804af79"}}}}}, "pages": [{"doc_id": "real-grimm-khm-1812-i", "image": "../inputs/pages/real-grimm-khm-1812-i-p093.jpg", "width": 1168, "height": 1752, "consensus": {"run_id": "print-20261105", "min_weight": 0.25, "agreement": 0.9719, "readers": ["kraken:german_print.mlmodel", "openrouter:google/gemini-3.8-flash", "hybrid:google/gemini-3.8-flash", "hybrid:anthropic/claude-haiku-5.5"], "spans": 32, "check_in": 32, "base_text_matches_medoid": true, "medoid_cer_norm": 0.0098}, "diplomatic": {"reader": "openrouter:google/gemini-3.8-flash", "backend": "openrouter", "model": "google/gemini-3.8-flash", "run_id": "print-20261105", "path": "01-use-cases/transcription/04-reading-room/inputs/readings/medoid/real-grimm-khm-1812-i-p093.json", "prompt_sha256": "89b5666464a1f1088a1fcc3ed23b6d9cfe68427d166472041180a38229da08c6", "cost_usd": 0.012186}, "lines": [{"line_id": "l1", "diplomatic": "— 93 —", "settled": "— 93 —", "anchor": {"op": "match", "seg_idx": [0], "bbox": [396, 243, 36, 48], "confidence": 0.5}, "spans": [{"span_id": "0", "piece": 0, "of": 1, "start": 0, "end": 4, "base": "- 93", "alternatives": {"kraken:german_print.mlmodel": "", "hybrid:google/gemini-3.8-flash": "", "hybrid:anthropic/claude-haiku-5.5": ""}, "weight": 1.0, "status": "open", "decision_event": null}]}, {"line_id": "l2", "diplomatic": "die Tauben wieder herein und thaten freund-", "settled": "die Tauben wieder herein und thaten freund-", "anchor": {"op": "match", "seg_idx": [1], "bbox": [131, 285, 566, 65], "confidence": 1.0}, "spans": [{"span_id": "1", "piece": 0, "of": 2, "start": 36, "end": 43, "base": "freundlich:", "alternatives": {"kraken:german_print.mlmodel": "⸗ ", "hybrid:google/gemini-3.8-flash": " "}, "weight": 0.673, "status": "open", "decision_event": null}]}, {"line_id": "l3", "diplomatic": "lich: „Aschenputtel, sollen wir dir dte Wicken", "settled": "lich: „Aschenputtel, sollen wir dir dte Wicken", "anchor": {"op": "match", "seg_idx": [2], "bbox": [132, 322, 567, 63], "confidence": 0.957}, "spans": [{"span_id": "1", "piece": 1, "of": 2, "start": 0, "end": 5, "base": "freundlich:", "alternatives": {"kraken:german_print.mlmodel": "⸗ ", "hybrid:google/gemini-3.8-flash": " "}, "weight": 0.673, "status": "open", "decision_event": null}, {"span_id": "2", "piece": 0, "of": 1, "start": 6, "end": 20, "base": "\"Aschenputtel,", "alternatives": {"hybrid:google/gemini-3.8-flash": " "}, "weight": 0.337, "status": "open", "decision_event": null}, {"span_id": "3", "piece": 0, "of": 1, "start": 36, "end": 39, "base": "dte", "alternatives": {"kraken:german_print.mlmodel": "i", "hybrid:google/gemini-3.8-flash": "i", "hybrid:anthropic/claude-haiku-5.5": "i"}, "weight": 1.0, "status": "open", "decision_event": null}]}, {"line_id": "l4", "diplomatic": "lesen?“ „Ja, —", "settled": "lesen?“ „Ja, —", "anchor": {"op": "match", "seg_idx": [3], "bbox": [136, 359, 219, 67], "confidence": 1.0}, "spans": [{"span_id": "4", "piece": 0, "of": 1, "start": 0, "end": 7, "base": "lesen?\"", "alternatives": {"kraken:german_print.mlmodel": "2"}, "weight": 0.336, "status": "open", "decision_event": null}]}, {"line_id": "l5", "diplomatic": "die schlechten ins Kröpfchen,", "settled": "die schlechten ins Kröpfchen,", "anchor": {"op": "match", "seg_idx": [4], "bbox": [195, 401, 372, 58], "confidence": 1.0}, "spans": [{"span_id": "5", "piece": 0, "of": 1, "start": 4, "end": 14, "base": "schlechten", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "f"}, "weight": 0.327, "status": "open", "decision_event": null}, {"span_id": "6", "piece": 0, "of": 1, "start": 19, "end": 29, "base": "Kröpfchen,", "alternatives": {"kraken:german_print.mlmodel": "s"}, "weight": 0.336, "status": "open", "decision_event": null}]}, {"line_id": "l6", "diplomatic": "die guten ins Töpfchen.“", "settled": "die guten ins Töpfchen.“", "anchor": {"op": "match", "seg_idx": [5], "bbox": [229, 441, 298, 58], "confidence": 1.0}, "spans": [{"span_id": "7", "piece": 0, "of": 1, "start": 0, "end": 3, "base": "die", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "D"}, "weight": 0.327, "status": "open", "decision_event": null}]}, {"line_id": "l7", "diplomatic": "Pick, pick! pick, pick! gings so geschwind, als", "settled": "Pick, pick! pick, pick! gings so geschwind, als", "anchor": {"op": "match", "seg_idx": [6], "bbox": [132, 476, 565, 64], "confidence": 0.99}, "spans": [{"span_id": "8", "piece": 0, "of": 1, "start": 0, "end": 5, "base": "Pick,", "alternatives": {"hybrid:google/gemini-3.8-flash": " "}, "weight": 0.337, "status": "open", "decision_event": null}]}, {"line_id": "l8", "diplomatic": "wären zwölf Hände da. Und als sie fertig wa-", "settled": "wären zwölf Hände da. Und als sie fertig wa-", "anchor": {"op": "match", "seg_idx": [7], "bbox": [132, 513, 565, 62], "confidence": 1.0}, "spans": [{"span_id": "9", "piece": 0, "of": 1, "start": 6, "end": 11, "base": "zwölf", "alternatives": {"kraken:german_print.mlmodel": "ͤ"}, "weight": 0.336, "status": "open", "decision_event": null}, {"span_id": "10", "piece": 0, "of": 2, "start": 41, "end": 44, "base": "waren,", "alternatives": {"kraken:german_print.mlmodel": "⸗ "}, "weight": 0.336, "status": "open", "decision_event": null}]}, {"line_id": "l9", "diplomatic": "ren, sagten die Tauben: „Aschenputtel, willst", "settled": "ren, sagten die Tauben: „Aschenputtel, willst", "anchor": {"op": "match", "seg_idx": [8], "bbox": [131, 548, 568, 64], "confidence": 1.0}, "spans": [{"span_id": "10", "piece": 1, "of": 2, "start": 0, "end": 4, "base": "waren,", "alternatives": {"kraken:german_print.mlmodel": "⸗ "}, "weight": 0.336, "status": "open", "decision_event": null}, {"span_id": "11", "piece": 0, "of": 1, "start": 5, "end": 11, "base": "sagten", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "f"}, "weight": 0.327, "status": "open", "decision_event": null}, {"span_id": "12", "piece": 0, "of": 1, "start": 24, "end": 38, "base": "\"Aschenputtel,", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": ",,"}, "weight": 0.327, "status": "open", "decision_event": null}, {"span_id": "13", "piece": 0, "of": 1, "start": 39, "end": 45, "base": "willst", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": " du auch auf den Ball"}, "weight": 0.327, "status": "open", "decision_event": null}]}, {"line_id": "l10", "diplomatic": "du auch auf den Ball gehen und tanzen.“ —", "settled": "du auch auf den Ball gehen und tanzen.“ —", "anchor": {"op": "match", "seg_idx": [9], "bbox": [132, 583, 566, 59], "confidence": 0.976}, "spans": [{"span_id": "14", "piece": 0, "of": 1, "start": 27, "end": 30, "base": "und", "alternatives": {"hybrid:google/gemini-3.8-flash": "- "}, "weight": 0.337, "status": "open", "decision_event": null}, {"span_id": "15", "piece": 0, "of": 1, "start": 31, "end": 39, "base": "tanzen.\"", "alternatives": {"kraken:german_print.mlmodel": "k  W"}, "weight": 0.336, "status": "open", "decision_event": null}]}, {"line_id": "l11", "diplomatic": "„O du mein Gott, sagte es, wie kann ich in", "settled": "„O du mein Gott, sagte es, wie kann ich in", "anchor": {"op": "match", "seg_idx": [10], "bbox": [132, 618, 567, 60], "confidence": 1.0}, "spans": []}, {"line_id": "l12", "diplomatic": "meinen schmutzigen Kleidern hingehen?“ —", "settled": "meinen schmutzigen Kleidern hingehen?“ —", "anchor": {"op": "match", "seg_idx": [11], "bbox": [132, 654, 565, 59], "confidence": 0.95}, "spans": [{"span_id": "16", "piece": 0, "of": 1, "start": 7, "end": 18, "base": "schmutzigen", "alternatives": {"kraken:german_print.mlmodel": "ß", "hybrid:google/gemini-3.8-flash": ""}, "weight": 0.673, "status": "open", "decision_event": null}, {"span_id": "17", "piece": 0, "of": 1, "start": 28, "end": 38, "base": "hingehen?\"", "alternatives": {"kraken:german_print.mlmodel": "'1", "hybrid:google/gemini-3.8-flash": "''"}, "weight": 0.673, "status": "open", "decision_event": null}]}, {"line_id": "l13", "diplomatic": "„Geh zu dem Bäumlein auf deiner Mutter", "settled": "„Geh zu dem Bäumlein auf deiner Mutter", "anchor": {"op": "match", "seg_idx": [12], "bbox": [134, 688, 565, 58], "confidence": 1.0}, "spans": []}, {"line_id": "l14", "diplomatic": "Grab, schüttele daran und wünsche dir schöne", "settled": "Grab, schüttele daran und wünsche dir schöne", "anchor": {"op": "match", "seg_idx": [13], "bbox": [135, 724, 564, 58], "confidence": 1.0}, "spans": [{"span_id": "18", "piece": 0, "of": 1, "start": 6, "end": 15, "base": "schüttele", "alternatives": {"kraken:german_print.mlmodel": "u"}, "weight": 0.336, "status": "open", "decision_event": null}, {"span_id": "19", "piece": 0, "of": 1, "start": 38, "end": 44, "base": "schöne", "alternatives": {"kraken:german_print.mlmodel": "ͤ"}, "weight": 0.336, "status": "open", "decision_event": null}]}, {"line_id": "l15", "diplomatic": "Kleider, komm aber vor Mitternacht wieder.“", "settled": "Kleider, komm aber vor Mitternacht wieder.“", "anchor": {"op": "match", "seg_idx": [14], "bbox": [134, 760, 559, 51], "confidence": 1.0}, "spans": [{"span_id": "20", "piece": 0, "of": 2, "start": 35, "end": 43, "base": "wieder.\" -", "alternatives": {"kraken:german_print.mlmodel": ""}, "weight": 0.336, "status": "open", "decision_event": null}]}, {"line_id": "l16", "diplomatic": "— da ging Aschenputtel hinaus, schüttelte das", "settled": "— da ging Aschenputtel hinaus, schüttelte das", "anchor": {"op": "match", "seg_idx": [15], "bbox": [140, 792, 558, 59], "confidence": 1.0}, "spans": [{"span_id": "20", "piece": 1, "of": 2, "start": 0, "end": 1, "base": "wieder.\" -", "alternatives": {"kraken:german_print.mlmodel": ""}, "weight": 0.336, "status": "open", "decision_event": null}]}, {"line_id": "l17", "diplomatic": "Bäumlein und sprach:", "settled": "Bäumlein und sprach:", "anchor": {"op": "match", "seg_idx": [16], "bbox": [136, 825, 309, 58], "confidence": 0.976}, "spans": [{"span_id": "21", "piece": 0, "of": 1, "start": 13, "end": 20, "base": "sprach:", "alternatives": {"hybrid:google/gemini-3.8-flash": " ", "kraken:german_print.mlmodel": "t"}, "weight": 0.673, "status": "open", "decision_event": null}]}, {"line_id": "l18", "diplomatic": "„Bäumlein rüttel und schüttel dich,", "settled": "„Bäumlein rüttel und schüttel dich,", "anchor": {"op": "match", "seg_idx": [17], "bbox": [180, 860, 407, 64], "confidence": 1.0}, "spans": [{"span_id": "22", "piece": 0, "of": 1, "start": 0, "end": 9, "base": "\"Bäumlein", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": ",,"}, "weight": 0.327, "status": "open", "decision_event": null}]}, {"line_id": "l19", "diplomatic": "wirf schöne Kleider herab für mich!“", "settled": "wirf schöne Kleider herab für mich!“", "anchor": {"op": "match", "seg_idx": [18], "bbox": [181, 902, 435, 57], "confidence": 1.0}, "spans": []}, {"line_id": "l20", "diplomatic": "Kaum hatte es das ausgesagt, da lag ein präch-", "settled": "Kaum hatte es das ausgesagt, da lag ein präch-", "anchor": {"op": "match", "seg_idx": [19], "bbox": [136, 936, 561, 69], "confidence": 1.0}, "spans": [{"span_id": "23", "piece": 0, "of": 2, "start": 40, "end": 46, "base": "prächtig", "alternatives": {"kraken:german_print.mlmodel": "⸗ ", "hybrid:anthropic/claude-haiku-5.5": "t"}, "weight": 0.663, "status": "open", "decision_event": null}]}, {"line_id": "l21", "diplomatic": "tig silbern Kleid vor ihm, Perlen, seidene", "settled": "tig silbern Kleid vor ihm, Perlen, seidene", "anchor": {"op": "match", "seg_idx": [20], "bbox": [135, 979, 563, 58], "confidence": 1.0}, "spans": [{"span_id": "23", "piece": 1, "of": 2, "start": 0, "end": 3, "base": "prächtig", "alternatives": {"kraken:german_print.mlmodel": "⸗ ", "hybrid:anthropic/claude-haiku-5.5": "t"}, "weight": 0.663, "status": "open", "decision_event": null}, {"span_id": "24", "piece": 0, "of": 1, "start": 4, "end": 11, "base": "silbern", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "f"}, "weight": 0.327, "status": "open", "decision_event": null}, {"span_id": "25", "piece": 0, "of": 1, "start": 35, "end": 42, "base": "seidene", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": " Strümpfe mit silbern Sandalen an den Füßen"}, "weight": 0.327, "status": "open", "decision_event": null}]}, {"line_id": "l22", "diplomatic": "Strümpfe mit silbernen Zwickeln und silberne", "settled": "Strümpfe mit silbernen Zwickeln und silberne", "anchor": {"op": "match", "seg_idx": [21], "bbox": [135, 1012, 564, 64], "confidence": 1.0}, "spans": []}, {"line_id": "l23", "diplomatic": "Pantoffel und was sonst dazu gehörte. Aschen-", "settled": "Pantoffel und was sonst dazu gehörte. Aschen-", "anchor": {"op": "match", "seg_idx": [22], "bbox": [137, 1049, 561, 60], "confidence": 0.978}, "spans": [{"span_id": "26", "piece": 0, "of": 2, "start": 38, "end": 45, "base": "Aschenputtel", "alternatives": {"kraken:german_print.mlmodel": "⸗ ", "hybrid:google/gemini-3.8-flash": "s "}, "weight": 0.673, "status": "open", "decision_event": null}]}, {"line_id": "l24", "diplomatic": "puttel trug alles nach Haus, und als es sich", "settled": "puttel trug alles nach Haus, und als es sich", "anchor": {"op": "match", "seg_idx": [23], "bbox": [136, 1084, 562, 57], "confidence": 1.0}, "spans": [{"span_id": "26", "piece": 1, "of": 2, "start": 0, "end": 6, "base": "Aschenputtel", "alternatives": {"kraken:german_print.mlmodel": "⸗ ", "hybrid:google/gemini-3.8-flash": "s "}, "weight": 0.673, "status": "open", "decision_event": null}]}, {"line_id": "l25", "diplomatic": "gewaschen und angezogen hatte, da war es so", "settled": "gewaschen und angezogen hatte, da war es so", "anchor": {"op": "match", "seg_idx": [24], "bbox": [137, 1118, 559, 58], "confidence": 1.0}, "spans": []}, {"line_id": "l26", "diplomatic": "schön wie eine Rose, die der Thau gewaschen", "settled": "schön wie eine Rose, die der Thau gewaschen", "anchor": {"op": "match", "seg_idx": [25], "bbox": [137, 1153, 561, 54], "confidence": 1.0}, "spans": [{"span_id": "27", "piece": 0, "of": 1, "start": 34, "end": 43, "base": "gewaschen", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "erfrischt hat. schön wie eine Rose, die der Thau "}, "weight": 0.327, "status": "open", "decision_event": null}]}, {"line_id": "l27", "diplomatic": "hat. Und wie es vor die Hausthüre kam, so", "settled": "hat. Und wie es vor die Hausthüre kam, so", "anchor": {"op": "match", "seg_idx": [26], "bbox": [137, 1184, 560, 60], "confidence": 1.0}, "spans": [{"span_id": "28", "piece": 0, "of": 1, "start": 20, "end": 23, "base": "die", "alternatives": {"kraken:german_print.mlmodel": ":"}, "weight": 0.336, "status": "open", "decision_event": null}]}, {"line_id": "l28", "diplomatic": "stand da ein Wagen mit sechs federgeschmück-", "settled": "stand da ein Wagen mit sechs federgeschmück-", "anchor": {"op": "match", "seg_idx": [27], "bbox": [137, 1220, 563, 55], "confidence": 1.0}, "spans": [{"span_id": "29", "piece": 0, "of": 2, "start": 29, "end": 44, "base": "federgeschmückten", "alternatives": {"kraken:german_print.mlmodel": "⸗ ", "hybrid:anthropic/claude-haiku-5.5": " "}, "weight": 0.663, "status": "open", "decision_event": null}]}, {"line_id": "l29", "diplomatic": "ten Rappen und Bediente dabei in Blau und", "settled": "ten Rappen und Bediente dabei in Blau und", "anchor": {"op": "split", "seg_idx": [28, 29], "bbox": [137, 423, 561, 903], "confidence": 0.901}, "spans": [{"span_id": "29", "piece": 1, "of": 2, "start": 0, "end": 3, "base": "federgeschmückten", "alternatives": {"kraken:german_print.mlmodel": "⸗ ", "hybrid:anthropic/claude-haiku-5.5": " "}, "weight": 0.663, "status": "open", "decision_event": null}, {"span_id": "30", "piece": 0, "of": 1, "start": 15, "end": 23, "base": "Bediente", "alternatives": {"kraken:german_print.mlmodel": "s"}, "weight": 0.336, "status": "open", "decision_event": null}, {"span_id": "31", "piece": 0, "of": 1, "start": 38, "end": 41, "base": "und", "alternatives": {"kraken:german_print.mlmodel": " 7", "hybrid:google/gemini-3.8-flash": " [?[...]]"}, "weight": 0.673, "status": "open", "decision_event": null}]}], "anchors": {"matched": 28, "merged": 0, "split": 1, "unanchored": 0, "dropped_polygons": 0, "mean_confidence": 0.973, "max_dist": 0.55, "segmentation": {"reader": "hybrid:google/gemini-3.8-flash", "path": "01-use-cases/transcription/04-reading-room/inputs/readings/segmentation/real-grimm-khm-1812-i-p093.json", "polygons": 30}}, "page_id": "real-grimm-khm-1812-i-p093", "translation": {"run_id": "20261110-01", "build_id": "b-20261110-01", "models": ["google/gemini-3.8-flash", "anthropic/claude-sonnet-5.5"], "min_divergence": 0.35, "blocks": [{"block_id": "b01", "lines": ["l1", "l2", "l3", "l4"], "a": {"segments": ["s01", "s02"], "text": "— 93 — ... the doves [came] in again and acted kindly: “Cinderella, shall we pick the vetches for you?”"}, "b": {"segments": ["s01"], "text": "the doves came back in and said kindly: \"Aschenputtel, shall we pick out the vetches for you?\""}, "dist": 0.2386, "divergent": false}, {"block_id": "b02", "lines": ["l4", "l5", "l6"], "a": {"segments": ["s03"], "text": "“Yes, — the bad into the crop, the good into the pot.”"}, "b": {"segments": ["s02"], "text": "\"Yes, — the bad ones into the little crop, the good ones into the little pot.\""}, "dist": 0.1818, "divergent": false}, {"block_id": "b03", "lines": ["l7", "l8"], "a": {"segments": ["s04"], "text": "Peck, peck! peck, peck! it went as quickly as if twelve hands were there."}, "b": {"segments": ["s03"], "text": "Pick, pick! pick, pick! it went as fast as if twelve hands were there."}, "dist": 0.1329, "divergent": false}, {"block_id": "b04", "lines": ["l8", "l9", "l10"], "a": {"segments": ["s05"], "text": "And when they were finished, the doves said: “Cinderella, do you want to go to the ball too, and dance.”"}, "b": {"segments": ["s04"], "text": "And when they were finished, the doves said: \"Aschenputtel, do you also want to go to the ball and dance?\""}, "dist": 0.1333, "divergent": false}, {"block_id": "b05", "lines": ["l11", "l12"], "a": {"segments": ["s06"], "text": "“O my God,” she said, “how can I go in my dirty clothes?”"}, "b": {"segments": ["s05"], "text": "\"Oh my God, it said, how can I go there in my dirty clothes?\""}, "dist": 0.1186, "divergent": false}, {"block_id": "b06", "lines": ["l13", "l14", "l15"], "a": {"segments": ["s07"], "text": "“Go to the little tree on your mother’s grave, shake it, and wish for fine clothes, but come back before midnight.”"}, "b": {"segments": ["s06"], "text": "\"Go to the little tree on your mother's grave, shake it and wish yourself beautiful clothes, but come back before midnight.\""}, "dist": 0.0879, "divergent": false}, {"block_id": "b07", "lines": ["l16", "l17", "l18", "l19"], "a": {"segments": ["s08"], "text": "Then Cinderella went out, shook the little tree, and said: “Little tree, shake and rustle, throw down fine clothes for me!”"}, "b": {"segments": ["s07", "s08"], "text": "— then Aschenputtel went out, shook the little tree and said: \"Little tree, shake and shiver yourself, throw down beautiful clothes for me!\""}, "dist": 0.1711, "divergent": false}, {"block_id": "b08", "lines": ["l20", "l21", "l22", "l23"], "a": {"segments": ["s09"], "text": "Scarcely had she finished saying this, when a magnificent silver dress lay before her, pearls, silk stockings with silver clocks, and silver slippers, and whatever else belonged to it."}, "b": {"segments": ["s09"], "text": "Hardly had it said this when there lay before it a splendid silver dress, pearls, silk stockings with silver clocks, and silver slippers, and whatever else belonged with them."}, "dist": 0.2312, "divergent": false}, {"block_id": "b09", "lines": ["l23", "l24", "l25", "l26", "l27"], "a": {"segments": ["s10"], "text": "Cinderella carried everything home, and when she had washed and dressed herself, she was as beautiful as a rose that the dew has washed."}, "b": {"segments": ["s10"], "text": "Aschenputtel carried everything home, and when it had washed and dressed, it was as beautiful as a rose that the dew has washed."}, "dist": 0.1288, "divergent": false}, {"block_id": "b10", "lines": ["l27", "l28", "l29"], "a": {"segments": ["s11"], "text": "And as she came before the front door, there stood a carriage with six feather-adorned black horses, and servants beside it in blue and"}, "b": {"segments": ["s11"], "text": "And when it came to the front door, there stood a carriage with six black horses adorned with feathers, and attendants beside it in blue and"}, "dist": 0.2218, "divergent": false}], "segments": {"google/gemini-3.8-flash": [{"line_start": "l1", "line_end": "l1", "first_words": "— 93 —", "last_words": "— 93 —", "translation": "— 93 —", "note": "", "segment_id": "s01", "verified": true, "lines": ["l1"]}, {"line_start": "l2", "line_end": "l4", "first_words": "die Tauben wieder", "last_words": "dte Wicken lesen?“", "translation": "... the doves [came] in again and acted kindly: “Cinderella, shall we pick the vetches for you?”", "note": "Sentence continues from the preceding page. 'dte' is a misprint for 'die' in the original.", "segment_id": "s02", "verified": true, "lines": ["l2", "l3", "l4"]}, {"line_start": "l4", "line_end": "l6", "first_words": "„Ja, — die", "last_words": "ins Töpfchen.“", "translation": "“Yes, — the bad into the crop, the good into the pot.”", "note": "", "segment_id": "s03", "verified": true, "lines": ["l4", "l5", "l6"]}, {"line_start": "l7", "line_end": "l8", "first_words": "Pick, pick! pick,", "last_words": "zwölf Hände da.", "translation": "Peck, peck! peck, peck! it went as quickly as if twelve hands were there.", "note": "", "segment_id": "s04", "verified": true, "lines": ["l7", "l8"]}, {"line_start": "l8", "line_end": "l10", "first_words": "Und als sie", "last_words": "und tanzen.“ —", "translation": "And when they were finished, the doves said: “Cinderella, do you want to go to the ball too, and dance.”", "note": "", "segment_id": "s05", "verified": true, "lines": ["l8", "l9", "l10"]}, {"line_start": "l11", "line_end": "l12", "first_words": "„O du mein", "last_words": "Kleidern hingehen?“ —", "translation": "“O my God,” she said, “how can I go in my dirty clothes?”", "note": "", "segment_id": "s06", "verified": true, "lines": ["l11", "l12"]}, {"line_start": "l13", "line_end": "l15", "first_words": "„Geh zu dem", "last_words": "vor Mitternacht wieder.“", "translation": "“Go to the little tree on your mother’s grave, shake it, and wish for fine clothes, but come back before midnight.”", "note": "", "segment_id": "s07", "verified": true, "lines": ["l13", "l14", "l15"]}, {"line_start": "l16", "line_end": "l19", "first_words": "— da ging", "last_words": "herab für mich!“", "translation": "Then Cinderella went out, shook the little tree, and said: “Little tree, shake and rustle, throw down fine clothes for me!”", "note": "", "segment_id": "s08", "verified": true, "lines": ["l16", "l17", "l18", "l19"]}, {"line_start": "l20", "line_end": "l23", "first_words": "Kaum hatte es", "last_words": "sonst dazu gehörte.", "translation": "Scarcely had she finished saying this, when a magnificent silver dress lay before her, pearls, silk stockings with silver clocks, and silver slippers, and whatever else belonged to it.", "note": "", "segment_id": "s09", "verified": true, "lines": ["l20", "l21", "l22", "l23"]}, {"line_start": "l23", "line_end": "l27", "first_words": "Aschenputtel trug alles", "last_words": "Thau gewaschen hat.", "translation": "Cinderella carried everything home, and when she had washed and dressed herself, she was as beautiful as a rose that the dew has washed.", "note": "", "segment_id": "s10", "verified": true, "lines": ["l23", "l24", "l25", "l26", "l27"]}, {"line_start": "l27", "line_end": "l29", "first_words": "Und wie es", "last_words": "in Blau und", "translation": "And as she came before the front door, there stood a carriage with six feather-adorned black horses, and servants beside it in blue and", "note": "Sentence continues on the following page.", "segment_id": "s11", "verified": true, "lines": ["l27", "l28", "l29"]}], "anthropic/claude-sonnet-5.5": [{"line_start": "l2", "line_end": "l4", "first_words": "die Tauben wieder", "last_words": "dte Wicken lesen?“", "translation": "the doves came back in and said kindly: \"Aschenputtel, shall we pick out the vetches for you?\"", "note": "The sentence begins mid-sentence at the top of the page. The source has the typo \"dte\" for \"die\".", "segment_id": "s01", "verified": true, "lines": ["l2", "l3", "l4"]}, {"line_start": "l4", "line_end": "l6", "first_words": "„Ja, — die", "last_words": "guten ins Töpfchen.“", "translation": "\"Yes, — the bad ones into the little crop, the good ones into the little pot.\"", "note": "", "segment_id": "s02", "verified": true, "lines": ["l4", "l5", "l6"]}, {"line_start": "l7", "line_end": "l8", "first_words": "Pick, pick! pick,", "last_words": "zwölf Hände da.", "translation": "Pick, pick! pick, pick! it went as fast as if twelve hands were there.", "note": "", "segment_id": "s03", "verified": true, "lines": ["l7", "l8"]}, {"line_start": "l8", "line_end": "l10", "first_words": "Und als sie", "last_words": "gehen und tanzen.“", "translation": "And when they were finished, the doves said: \"Aschenputtel, do you also want to go to the ball and dance?\"", "note": "The source ends the question with a full stop inside the quotation mark; it is translated as a question.", "segment_id": "s04", "verified": true, "lines": ["l8", "l9", "l10"]}, {"line_start": "l11", "line_end": "l12", "first_words": "„O du mein", "last_words": "Kleidern hingehen?“", "translation": "\"Oh my God, it said, how can I go there in my dirty clothes?\"", "note": "", "segment_id": "s05", "verified": true, "lines": ["l11", "l12"]}, {"line_start": "l13", "line_end": "l15", "first_words": "„Geh zu dem", "last_words": "Mitternacht wieder.“", "translation": "\"Go to the little tree on your mother's grave, shake it and wish yourself beautiful clothes, but come back before midnight.\"", "note": "", "segment_id": "s06", "verified": true, "lines": ["l13", "l14", "l15"]}, {"line_start": "l16", "line_end": "l17", "first_words": "— da ging", "last_words": "Bäumlein und sprach:", "translation": "— then Aschenputtel went out, shook the little tree and said:", "note": "", "segment_id": "s07", "verified": true, "lines": ["l16", "l17"]}, {"line_start": "l18", "line_end": "l19", "first_words": "„Bäumlein rüttel und", "last_words": "herab für mich!“", "translation": "\"Little tree, shake and shiver yourself, throw down beautiful clothes for me!\"", "note": "", "segment_id": "s08", "verified": true, "lines": ["l18", "l19"]}, {"line_start": "l20", "line_end": "l23", "first_words": "Kaum hatte es", "last_words": "dazu gehörte.", "translation": "Hardly had it said this when there lay before it a splendid silver dress, pearls, silk stockings with silver clocks, and silver slippers, and whatever else belonged with them.", "note": "\"Zwickeln\" refers to the ornamental clocks (gussets) on stockings.", "segment_id": "s09", "verified": true, "lines": ["l20", "l21", "l22", "l23"]}, {"line_start": "l23", "line_end": "l27", "first_words": "Aschen- puttel trug", "last_words": "Thau gewaschen hat.", "translation": "Aschenputtel carried everything home, and when it had washed and dressed, it was as beautiful as a rose that the dew has washed.", "note": "", "segment_id": "s10", "verified": true, "lines": ["l23", "l24", "l25", "l26", "l27"]}, {"line_start": "l27", "line_end": "l29", "first_words": "Und wie es", "last_words": "in Blau und", "translation": "And when it came to the front door, there stood a carriage with six black horses adorned with feathers, and attendants beside it in blue and", "note": "The sentence is incomplete and continues on the next page.", "segment_id": "s11", "verified": true, "lines": ["l27", "l28", "l29"]}]}, "uncovered": {"google/gemini-3.8-flash": [], "anthropic/claude-sonnet-5.5": ["l1"]}, "notes": {"google/gemini-3.8-flash": "", "anthropic/claude-sonnet-5.5": "Page 93 of the Grimm Kinder- und Hausmärchen (1812), the Aschenputtel tale. The page number is given as \"— 93 —\" in l1; it is treated here as the page header and has no segment of its own."}, "stale": false, "resolved": []}}, {"doc_id": "real-kaskel-to-schnorr-1864", "image": "../inputs/pages/real-kaskel-to-schnorr-1864.jpg", "width": 2030, "height": 1600, "consensus": {"run_id": "hand-20261105", "min_weight": 0.25, "agreement": 0.8705, "readers": ["kraken:german_handwriting.mlmodel", "openrouter:google/gemini-3.8-flash", "openrouter:google/gemini-3.1-pro-preview", "hybrid:google/gemini-3.8-flash", "hybrid:anthropic/claude-haiku-5.5"], "spans": 51, "check_in": 36, "base_text_matches_medoid": true, "medoid_cer_norm": 0.0599}, "diplomatic": {"reader": "openrouter:google/gemini-3.8-flash", "backend": "openrouter", "model": "google/gemini-3.8-flash", "run_id": "hand-20261105", "path": "01-use-cases/transcription/04-reading-room/inputs/readings/medoid/real-kaskel-to-schnorr-1864.json", "prompt_sha256": "89b5666464a1f1088a1fcc3ed23b6d9cfe68427d166472041180a38229da08c6", "cost_usd": 0.0079665}, "lines": [{"line_id": "l1", "diplomatic": "84", "settled": "84", "anchor": {"op": "merge", "seg_idx": [1], "bbox": [130, 285, 708, 110], "confidence": 0.93}, "spans": [{"span_id": "0", "piece": 0, "of": 2, "start": 0, "end": 2, "base": "84 Hochgeehrter", "alternatives": {"hybrid:google/gemini-3.8-flash": "[?O]", "kraken:german_handwriting.mlmodel": "s sti", "hybrid:anthropic/claude-haiku-5.5": "F l nd s an"}, "weight": 0.731, "status": "open", "decision_event": null}]}, {"line_id": "l2", "diplomatic": "Hochgeehrter Freund!", "settled": "Hochgeehrter Freund!", "anchor": {"op": "merge", "seg_idx": [1], "bbox": [130, 285, 708, 110], "confidence": 0.93}, "spans": [{"span_id": "0", "piece": 1, "of": 2, "start": 0, "end": 12, "base": "84 Hochgeehrter", "alternatives": {"hybrid:google/gemini-3.8-flash": "[?O]", "kraken:german_handwriting.mlmodel": "s sti", "hybrid:anthropic/claude-haiku-5.5": "F l nd s an"}, "weight": 0.731, "status": "open", "decision_event": null}, {"span_id": "1", "piece": 0, "of": 1, "start": 13, "end": 20, "base": "Freund!", "alternatives": {"kraken:german_handwriting.mlmodel": "n.", "hybrid:anthropic/claude-haiku-5.5": "a"}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l3", "diplomatic": "So herrlich und unvergleichlich als", "settled": "So herrlich und unvergleichlich als", "anchor": {"op": "match", "seg_idx": [2], "bbox": [83, 550, 887, 70], "confidence": 1.0}, "spans": [{"span_id": "2", "piece": 0, "of": 1, "start": 3, "end": 11, "base": "herrlich", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "[?faw ]"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "3", "piece": 0, "of": 1, "start": 16, "end": 31, "base": "unvergleichlich", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "[? m ]", "kraken:german_handwriting.mlmodel": ","}, "weight": 0.467, "status": "open", "decision_event": null}, {"span_id": "4", "piece": 0, "of": 1, "start": 32, "end": 35, "base": "als", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "[? ß]"}, "weight": 0.217, "status": "open", "decision_event": null}]}, {"line_id": "l4", "diplomatic": "gestern im unsterblichen Werke", "settled": "gestern im unsterblichen Werke", "anchor": {"op": "match", "seg_idx": [3], "bbox": [94, 626, 883, 90], "confidence": 0.8}, "spans": [{"span_id": "5", "piece": 0, "of": 1, "start": 0, "end": 7, "base": "gestern", "alternatives": {"hybrid:google/gemini-3.8-flash": "roß"}, "weight": 0.263, "status": "open", "decision_event": null}, {"span_id": "6", "piece": 0, "of": 1, "start": 8, "end": 10, "base": "im", "alternatives": {"hybrid:google/gemini-3.8-flash": "und", "hybrid:anthropic/claude-haiku-5.5": "und"}, "weight": 0.481, "status": "open", "decision_event": null}, {"span_id": "7", "piece": 0, "of": 1, "start": 11, "end": 24, "base": "unsterblichen", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "eb"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "8", "piece": 0, "of": 1, "start": 25, "end": 30, "base": "Werke", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "[?Eh s ]", "kraken:german_handwriting.mlmodel": "."}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l5", "diplomatic": "Meyerbeer's, habe ich Ihren so", "settled": "Meyerbeer's, habe ich Ihren so", "anchor": {"op": "match", "seg_idx": [4], "bbox": [67, 724, 873, 76], "confidence": 0.9}, "spans": [{"span_id": "9", "piece": 0, "of": 1, "start": 0, "end": 12, "base": "Meyerbeer's,", "alternatives": {"kraken:german_handwriting.mlmodel": "r", "hybrid:anthropic/claude-haiku-5.5": ""}, "weight": 0.467, "status": "open", "decision_event": null}, {"span_id": "10", "piece": 0, "of": 1, "start": 13, "end": 17, "base": "habe", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "f r"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "11", "piece": 0, "of": 1, "start": 18, "end": 21, "base": "ich", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "f"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "12", "piece": 0, "of": 1, "start": 22, "end": 27, "base": "Ihren", "alternatives": {"kraken:german_handwriting.mlmodel": "A", "hybrid:google/gemini-3.8-flash": "sco", "hybrid:anthropic/claude-haiku-5.5": "Gfau"}, "weight": 0.731, "status": "open", "decision_event": null}, {"span_id": "13", "piece": 0, "of": 1, "start": 28, "end": 30, "base": "so", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "f", "kraken:german_handwriting.mlmodel": "."}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l6", "diplomatic": "hochtrefflichen Sohn nie gehört,", "settled": "hochtrefflichen Sohn nie gehört,", "anchor": {"op": "match", "seg_idx": [5], "bbox": [89, 834, 852, 84], "confidence": 0.921}, "spans": [{"span_id": "14", "piece": 0, "of": 1, "start": 0, "end": 15, "base": "hochtrefflichen", "alternatives": {"hybrid:google/gemini-3.8-flash": "fr", "hybrid:anthropic/claude-haiku-5.5": "p t", "kraken:german_handwriting.mlmodel": "öec"}, "weight": 0.731, "status": "open", "decision_event": null}, {"span_id": "15", "piece": 0, "of": 1, "start": 16, "end": 20, "base": "Sohn", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "P ste"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "16", "piece": 0, "of": 1, "start": 21, "end": 24, "base": "nie", "alternatives": {"kraken:german_handwriting.mlmodel": "u d", "hybrid:anthropic/claude-haiku-5.5": "si d"}, "weight": 0.467, "status": "open", "decision_event": null}, {"span_id": "17", "piece": 0, "of": 1, "start": 25, "end": 32, "base": "gehört,", "alternatives": {"kraken:german_handwriting.mlmodel": "", "hybrid:anthropic/claude-haiku-5.5": "st"}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l7", "diplomatic": "obwohl er stets der erste Tenor", "settled": "obwohl er stets der erste Tenor", "anchor": {"op": "match", "seg_idx": [6], "bbox": [101, 939, 875, 89], "confidence": 1.0}, "spans": [{"span_id": "18", "piece": 0, "of": 1, "start": 0, "end": 9, "base": "obwohl er", "alternatives": {"kraken:german_handwriting.mlmodel": "", "hybrid:anthropic/claude-haiku-5.5": "si"}, "weight": 0.467, "status": "open", "decision_event": null}, {"span_id": "19", "piece": 0, "of": 1, "start": 10, "end": 15, "base": "stets", "alternatives": {"kraken:german_handwriting.mlmodel": "da"}, "weight": 0.25, "status": "open", "decision_event": null}, {"span_id": "20", "piece": 0, "of": 1, "start": 16, "end": 19, "base": "der", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "[? ]"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "21", "piece": 0, "of": 1, "start": 20, "end": 25, "base": "erste", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "[...]"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "22", "piece": 0, "of": 1, "start": 26, "end": 31, "base": "Tenor", "alternatives": {"kraken:german_handwriting.mlmodel": "l", "hybrid:anthropic/claude-haiku-5.5": "[?Ruhm]"}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l8", "diplomatic": "der Gegenwart ist. Meine", "settled": "der Gegenwart ist. Meine", "anchor": {"op": "match", "seg_idx": [7], "bbox": [83, 1034, 886, 76], "confidence": 0.98}, "spans": [{"span_id": "23", "piece": 0, "of": 1, "start": 14, "end": 18, "base": "ist.", "alternatives": {"kraken:german_handwriting.mlmodel": "Hh", "hybrid:anthropic/claude-haiku-5.5": "[?2 ]", "hybrid:google/gemini-3.8-flash": ","}, "weight": 0.731, "status": "open", "decision_event": null}, {"span_id": "24", "piece": 0, "of": 1, "start": 19, "end": 24, "base": "Meine", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "a z"}, "weight": 0.217, "status": "open", "decision_event": null}]}, {"line_id": "l9", "diplomatic": "Freude wurde verdoppelt, als", "settled": "Freude wurde verdoppelt, als", "anchor": {"op": "match", "seg_idx": [8], "bbox": [88, 1133, 878, 72], "confidence": 1.0}, "spans": [{"span_id": "25", "piece": 0, "of": 1, "start": 0, "end": 6, "base": "Freude", "alternatives": {"kraken:german_handwriting.mlmodel": "in"}, "weight": 0.25, "status": "open", "decision_event": null}, {"span_id": "26", "piece": 0, "of": 1, "start": 7, "end": 12, "base": "wurde", "alternatives": {"kraken:german_handwriting.mlmodel": "ü"}, "weight": 0.25, "status": "open", "decision_event": null}, {"span_id": "27", "piece": 0, "of": 1, "start": 13, "end": 24, "base": "verdoppelt,", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "wied h", "kraken:german_handwriting.mlmodel": "o gg"}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l10", "diplomatic": "ich seinen so hochverehrten, und", "settled": "ich seinen so hochverehrten, und", "anchor": {"op": "match", "seg_idx": [9], "bbox": [86, 1215, 888, 91], "confidence": 1.0}, "spans": [{"span_id": "28", "piece": 0, "of": 1, "start": 0, "end": 3, "base": "ich", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "st"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "29", "piece": 0, "of": 1, "start": 14, "end": 28, "base": "hochverehrten,", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "v rg s tz", "kraken:german_handwriting.mlmodel": "r"}, "weight": 0.467, "status": "open", "decision_event": null}, {"span_id": "30", "piece": 0, "of": 1, "start": 29, "end": 32, "base": "und", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "n r"}, "weight": 0.217, "status": "open", "decision_event": null}]}, {"line_id": "l11", "diplomatic": "ebenfalls unvergleichlichen Vater", "settled": "ebenfalls unvergleichlichen Vater", "anchor": {"op": "match", "seg_idx": [10], "bbox": [93, 1310, 875, 124], "confidence": 0.985}, "spans": [{"span_id": "31", "piece": 0, "of": 1, "start": 28, "end": 33, "base": "Vater", "alternatives": {"kraken:german_handwriting.mlmodel": "N", "hybrid:anthropic/claude-haiku-5.5": "R z", "hybrid:google/gemini-3.8-flash": "s"}, "weight": 0.731, "status": "open", "decision_event": null}]}, {"line_id": "l12", "diplomatic": "unter den Zuhörern erblickte", "settled": "unter den Zuhörern erblickte", "anchor": {"op": "match", "seg_idx": [11], "bbox": [1148, 333, 842, 79], "confidence": 0.982}, "spans": [{"span_id": "32", "piece": 0, "of": 1, "start": 10, "end": 18, "base": "Zuhörern", "alternatives": {"kraken:german_handwriting.mlmodel": "z"}, "weight": 0.25, "status": "open", "decision_event": null}, {"span_id": "33", "piece": 0, "of": 1, "start": 19, "end": 28, "base": "erblickte", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "vo", "kraken:german_handwriting.mlmodel": "h", "hybrid:google/gemini-3.8-flash": ""}, "weight": 0.731, "status": "open", "decision_event": null}]}, {"line_id": "l13", "diplomatic": "und mir sagte was dieser da", "settled": "und mir sagte was dieser da", "anchor": {"op": "match", "seg_idx": [12], "bbox": [1161, 420, 830, 88], "confidence": 1.0}, "spans": [{"span_id": "34", "piece": 0, "of": 1, "start": 14, "end": 17, "base": "was", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "mab Dirsch id"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "35", "piece": 0, "of": 2, "start": 18, "end": 27, "base": "dieser da empfinden", "alternatives": {"kraken:german_handwriting.mlmodel": "D ing", "hybrid:anthropic/claude-haiku-5.5": "zufr"}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l14", "diplomatic": "empfinden müßte!", "settled": "empfinden müßte!", "anchor": {"op": "match", "seg_idx": [13], "bbox": [1157, 522, 622, 75], "confidence": 1.0}, "spans": [{"span_id": "35", "piece": 1, "of": 2, "start": 0, "end": 9, "base": "dieser da empfinden", "alternatives": {"kraken:german_handwriting.mlmodel": "D ing", "hybrid:anthropic/claude-haiku-5.5": "zufr"}, "weight": 0.467, "status": "open", "decision_event": null}, {"span_id": "36", "piece": 0, "of": 1, "start": 10, "end": 16, "base": "müßte!", "alternatives": {"kraken:german_handwriting.mlmodel": ":", "hybrid:anthropic/claude-haiku-5.5": "n"}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l15", "diplomatic": "Aber meinem verewigten", "settled": "Aber meinem verewigten", "anchor": {"op": "match", "seg_idx": [14], "bbox": [1156, 607, 810, 86], "confidence": 0.826}, "spans": [{"span_id": "37", "piece": 0, "of": 1, "start": 5, "end": 11, "base": "meinem", "alternatives": {"hybrid:google/gemini-3.8-flash": "w nd", "kraken:german_handwriting.mlmodel": "und"}, "weight": 0.513, "status": "open", "decision_event": null}, {"span_id": "38", "piece": 0, "of": 1, "start": 12, "end": 22, "base": "verewigten", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "[?wi m ]", "kraken:german_handwriting.mlmodel": "r .", "hybrid:google/gemini-3.8-flash": "in"}, "weight": 0.731, "status": "open", "decision_event": null}]}, {"line_id": "l16", "diplomatic": "großen Freunde war, ach! das", "settled": "großen Freunde war, ach! das", "anchor": {"op": "match", "seg_idx": [15], "bbox": [1168, 692, 820, 103], "confidence": 1.0}, "spans": [{"span_id": "39", "piece": 0, "of": 1, "start": 7, "end": 14, "base": "Freunde", "alternatives": {"kraken:german_handwriting.mlmodel": "St"}, "weight": 0.25, "status": "open", "decision_event": null}, {"span_id": "40", "piece": 0, "of": 1, "start": 15, "end": 19, "base": "war,", "alternatives": {"kraken:german_handwriting.mlmodel": "o"}, "weight": 0.25, "status": "open", "decision_event": null}, {"span_id": "41", "piece": 0, "of": 1, "start": 20, "end": 24, "base": "ach!", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "uf", "kraken:german_handwriting.mlmodel": ":"}, "weight": 0.467, "status": "open", "decision_event": null}, {"span_id": "42", "piece": 0, "of": 1, "start": 25, "end": 28, "base": "das", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "[? ß]"}, "weight": 0.217, "status": "open", "decision_event": null}]}, {"line_id": "l17", "diplomatic": "Glück nicht beschieden, seinen", "settled": "Glück nicht beschieden, seinen", "anchor": {"op": "match", "seg_idx": [16], "bbox": [1146, 791, 840, 119], "confidence": 1.0}, "spans": [{"span_id": "43", "piece": 0, "of": 1, "start": 12, "end": 23, "base": "beschieden,", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "för r )", "kraken:german_handwriting.mlmodel": "r"}, "weight": 0.467, "status": "open", "decision_event": null}, {"span_id": "44", "piece": 0, "of": 1, "start": 24, "end": 30, "base": "seinen", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "S mo"}, "weight": 0.217, "status": "open", "decision_event": null}]}, {"line_id": "l18", "diplomatic": "Raoul so zu hören!", "settled": "Raoul so zu hören!", "anchor": {"op": "split", "seg_idx": [17, 18], "bbox": [1144, 891, 662, 123], "confidence": 0.914}, "spans": [{"span_id": "45", "piece": 0, "of": 1, "start": 0, "end": 11, "base": "Raoul so zu", "alternatives": {"kraken:german_handwriting.mlmodel": "K n", "hybrid:google/gemini-3.8-flash": "'", "hybrid:anthropic/claude-haiku-5.5": ""}, "weight": 0.731, "status": "open", "decision_event": null}, {"span_id": "46", "piece": 0, "of": 1, "start": 12, "end": 18, "base": "hören!", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "sow", "kraken:german_handwriting.mlmodel": ":"}, "weight": 0.467, "status": "open", "decision_event": null}]}, {"line_id": "l19", "diplomatic": "Gott erhalte Sie!", "settled": "Gott erhalte Sie!", "anchor": {"op": "merge", "seg_idx": [19], "bbox": [1341, 1040, 579, 85], "confidence": 0.641}, "spans": [{"span_id": "47", "piece": 0, "of": 1, "start": 0, "end": 4, "base": "Gott", "alternatives": {"kraken:german_handwriting.mlmodel": "H r"}, "weight": 0.25, "status": "open", "decision_event": null}, {"span_id": "48", "piece": 0, "of": 1, "start": 5, "end": 12, "base": "erhalte", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "b fo n"}, "weight": 0.217, "status": "open", "decision_event": null}, {"span_id": "49", "piece": 0, "of": 3, "start": 13, "end": 17, "base": "Sie! Ihr treu ergebener am 30t Juny Carl", "alternatives": {"kraken:german_handwriting.mlmodel": "v r.am 30 uny. 1864.n", "hybrid:anthropic/claude-haiku-5.5": "en1864 Herrn Augsburg c", "hybrid:google/gemini-3.8-flash": "en 1864. [?Straubinger]"}, "weight": 0.731, "status": "open", "decision_event": null}]}, {"line_id": "l20", "diplomatic": "Ihr treu ergebener", "settled": "Ihr treu ergebener", "anchor": {"op": "merge", "seg_idx": [19], "bbox": [1341, 1040, 579, 85], "confidence": 0.641}, "spans": [{"span_id": "49", "piece": 1, "of": 3, "start": 0, "end": 18, "base": "Sie! Ihr treu ergebener am 30t Juny Carl", "alternatives": {"kraken:german_handwriting.mlmodel": "v r.am 30 uny. 1864.n", "hybrid:anthropic/claude-haiku-5.5": "en1864 Herrn Augsburg c", "hybrid:google/gemini-3.8-flash": "en 1864. [?Straubinger]"}, "weight": 0.731, "status": "open", "decision_event": null}]}, {"line_id": "l21", "diplomatic": "am 30t Juny Carl Kaskel", "settled": "am 30t Juny Carl Kaskel", "anchor": {"op": "match", "seg_idx": [20], "bbox": [1070, 1214, 371, 107], "confidence": 0.611}, "spans": [{"span_id": "49", "piece": 2, "of": 3, "start": 0, "end": 16, "base": "Sie! Ihr treu ergebener am 30t Juny Carl", "alternatives": {"kraken:german_handwriting.mlmodel": "v r.am 30 uny. 1864.n", "hybrid:anthropic/claude-haiku-5.5": "en1864 Herrn Augsburg c", "hybrid:google/gemini-3.8-flash": "en 1864. [?Straubinger]"}, "weight": 0.731, "status": "open", "decision_event": null}, {"span_id": "50", "piece": 0, "of": 2, "start": 17, "end": 23, "base": "Kaskel 1864", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "R s", "kraken:german_handwriting.mlmodel": "dt e", "hybrid:google/gemini-3.8-flash": ""}, "weight": 0.731, "status": "open", "decision_event": null}]}, {"line_id": "l22", "diplomatic": "1864", "settled": "1864", "anchor": {"op": "match", "seg_idx": [21], "bbox": [1180, 1296, 180, 77], "confidence": 0.889}, "spans": [{"span_id": "50", "piece": 1, "of": 2, "start": 0, "end": 4, "base": "Kaskel 1864", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "R s", "kraken:german_handwriting.mlmodel": "dt e", "hybrid:google/gemini-3.8-flash": ""}, "weight": 0.731, "status": "open", "decision_event": null}]}], "anchors": {"matched": 17, "merged": 4, "split": 1, "unanchored": 0, "dropped_polygons": 3, "mean_confidence": 0.907, "max_dist": 0.55, "segmentation": {"reader": "hybrid:google/gemini-3.8-flash", "path": "01-use-cases/transcription/04-reading-room/inputs/readings/segmentation/real-kaskel-to-schnorr-1864.json", "polygons": 24}}, "page_id": "real-kaskel-to-schnorr-1864", "translation": {"run_id": "20261110-01", "build_id": "b-20261110-01", "models": ["google/gemini-3.8-flash", "anthropic/claude-sonnet-5.5"], "min_divergence": 0.35, "blocks": [{"block_id": "b01", "lines": ["l1"], "a": {"segments": ["s01"], "text": "84"}, "b": {"segments": ["s01"], "text": "84"}, "dist": 0.0, "divergent": false}, {"block_id": "b02", "lines": ["l2"], "a": {"segments": ["s02"], "text": "Highly esteemed friend!"}, "b": {"segments": ["s02"], "text": "Highly esteemed friend!"}, "dist": 0.0, "divergent": false}, {"block_id": "b03", "lines": ["l3", "l4", "l5", "l6", "l7", "l8", "l9", "l10", "l11", "l12", "l13", "l14"], "a": {"segments": ["s03", "s04"], "text": "Never have I heard your so highly excellent son so magnificent and incomparable as yesterday in Meyerbeer's immortal work, although he is always the first tenor of the present day. My joy was doubled when I caught sight of his so highly revered and likewise incomparable father among the audience, and told myself what he must be feeling at that moment!"}, "b": {"segments": ["s03"], "text": "Never have I heard your so most excellent son as gloriously and incomparably as yesterday in Meyerbeer's immortal work, although he is always the foremost tenor of the present day. My joy was doubled when I caught sight of his so highly honoured and likewise incomparable father among the listeners, and told myself what he must be feeling there!"}, "dist": 0.0987, "divergent": false}, {"block_id": "b04", "lines": ["l15", "l16", "l17", "l18"], "a": {"segments": ["s05"], "text": "Yet to my late, great friend, alas, the good fortune was not granted to hear his Raoul thus!"}, "b": {"segments": ["s04"], "text": "But my departed great friend, alas, was not granted the good fortune of hearing his Raoul sung in this way!"}, "dist": 0.3266, "divergent": false}, {"block_id": "b05", "lines": ["l19"], "a": {"segments": ["s06"], "text": "May God preserve you!"}, "b": {"segments": ["s05"], "text": "God keep you!"}, "dist": 0.4118, "divergent": true, "diff": [{"start": 0, "end": 7, "base": "May God", "alt": ""}, {"start": 8, "end": 16, "base": "preserve", "alt": "kee"}]}, {"block_id": "b06", "lines": ["l20", "l21", "l22"], "a": {"segments": ["s07"], "text": "Your faithfully devoted Carl Kaskel, on 30th June 1864"}, "b": {"segments": ["s06"], "text": "Your faithfully devoted, on the 30th of June, Carl Kaskel, 1864"}, "dist": 0.2991, "divergent": false}], "segments": {"google/gemini-3.8-flash": [{"line_start": "l1", "line_end": "l1", "first_words": "84", "last_words": "84", "translation": "84", "note": "", "segment_id": "s01", "verified": true, "lines": ["l1"]}, {"line_start": "l2", "line_end": "l2", "first_words": "Hochgeehrter Freund!", "last_words": "Hochgeehrter Freund!", "translation": "Highly esteemed friend!", "note": "", "segment_id": "s02", "verified": true, "lines": ["l2"]}, {"line_start": "l3", "line_end": "l8", "first_words": "So herrlich und", "last_words": "der Gegenwart ist.", "translation": "Never have I heard your so highly excellent son so magnificent and incomparable as yesterday in Meyerbeer's immortal work, although he is always the first tenor of the present day.", "note": "", "segment_id": "s03", "verified": true, "lines": ["l3", "l4", "l5", "l6", "l7", "l8"]}, {"line_start": "l8", "line_end": "l14", "first_words": "Meine Freude wurde", "last_words": "da empfinden müßte!", "translation": "My joy was doubled when I caught sight of his so highly revered and likewise incomparable father among the audience, and told myself what he must be feeling at that moment!", "note": "", "segment_id": "s04", "verified": true, "lines": ["l8", "l9", "l10", "l11", "l12", "l13", "l14"]}, {"line_start": "l15", "line_end": "l18", "first_words": "Aber meinem verewigten", "last_words": "so zu hören!", "translation": "Yet to my late, great friend, alas, the good fortune was not granted to hear his Raoul thus!", "note": "", "segment_id": "s05", "verified": true, "lines": ["l15", "l16", "l17", "l18"]}, {"line_start": "l19", "line_end": "l19", "first_words": "Gott erhalte Sie!", "last_words": "Gott erhalte Sie!", "translation": "May God preserve you!", "note": "", "segment_id": "s06", "verified": true, "lines": ["l19"]}, {"line_start": "l20", "line_end": "l22", "first_words": "Ihr treu ergebener", "last_words": "Carl Kaskel 1864", "translation": "Your faithfully devoted Carl Kaskel, on 30th June 1864", "note": "", "segment_id": "s07", "verified": true, "lines": ["l20", "l21", "l22"]}], "anthropic/claude-sonnet-5.5": [{"line_start": "l1", "line_end": "l1", "first_words": "84", "last_words": "84", "translation": "84", "note": "Page number.", "segment_id": "s01", "verified": true, "lines": ["l1"]}, {"line_start": "l2", "line_end": "l2", "first_words": "Hochgeehrter Freund!", "last_words": "Hochgeehrter Freund!", "translation": "Highly esteemed friend!", "note": "", "segment_id": "s02", "verified": true, "lines": ["l2"]}, {"line_start": "l3", "line_end": "l14", "first_words": "So herrlich und", "last_words": "empfinden müßte!", "translation": "Never have I heard your so most excellent son as gloriously and incomparably as yesterday in Meyerbeer's immortal work, although he is always the foremost tenor of the present day. My joy was doubled when I caught sight of his so highly honoured and likewise incomparable father among the listeners, and told myself what he must be feeling there!", "note": "The sentence-final 'müßte' is as transcribed; the sentence ends with an exclamation mark.", "segment_id": "s03", "verified": true, "lines": ["l3", "l4", "l5", "l6", "l7", "l8", "l9", "l10", "l11", "l12", "l13", "l14"]}, {"line_start": "l15", "line_end": "l18", "first_words": "Aber meinem verewigten", "last_words": "so zu hören!", "translation": "But my departed great friend, alas, was not granted the good fortune of hearing his Raoul sung in this way!", "note": "'seinen Raoul' refers to the role of Raoul in Meyerbeer's work; 'meinem verewigten großen Freunde' presumably refers to Meyerbeer.", "segment_id": "s04", "verified": true, "lines": ["l15", "l16", "l17", "l18"]}, {"line_start": "l19", "line_end": "l19", "first_words": "Gott erhalte Sie!", "last_words": "Gott erhalte Sie!", "translation": "God keep you!", "note": "", "segment_id": "s05", "verified": true, "lines": ["l19"]}, {"line_start": "l20", "line_end": "l22", "first_words": "Ihr treu ergebener", "last_words": "Carl Kaskel 1864", "translation": "Your faithfully devoted, on the 30th of June, Carl Kaskel, 1864", "note": "Closing formula and dateline; the date at the left of the signature is read together with the year on l22.", "segment_id": "s06", "verified": true, "lines": ["l20", "l21", "l22"]}]}, "uncovered": {"google/gemini-3.8-flash": [], "anthropic/claude-sonnet-5.5": []}, "notes": {"google/gemini-3.8-flash": "", "anthropic/claude-sonnet-5.5": "Letter from Carl Kaskel to Schnorr, dated 30 June 1864. The page begins with the page number 84."}, "stale": false, "resolved": []}}, {"doc_id": "real-schiller-musenalmanach-1796", "image": "../inputs/pages/real-schiller-musenalmanach-1796-p093.jpg", "width": 1191, "height": 1872, "consensus": {"run_id": "print-20261105", "min_weight": 0.25, "agreement": 0.993, "readers": ["kraken:german_print.mlmodel", "openrouter:google/gemini-3.8-flash", "hybrid:google/gemini-3.8-flash", "hybrid:anthropic/claude-haiku-5.5"], "spans": 8, "check_in": 8, "base_text_matches_medoid": true, "medoid_cer_norm": 0.0098}, "diplomatic": {"reader": "hybrid:google/gemini-3.8-flash", "backend": "hybrid", "model": "google/gemini-3.8-flash", "run_id": "print-20261105", "path": "01-use-cases/transcription/04-reading-room/inputs/readings/medoid/real-schiller-musenalmanach-1796-p093.json", "prompt_sha256": "a56ccc3a40b1abc68fa3ca06b669df4022a75d9c43b2226a316ae940570613c5", "cost_usd": 0.049644}, "lines": [{"line_id": "l1", "diplomatic": "Ein frisches Duftgesäusel wallet", "settled": "Ein frisches Duftgesäusel wallet", "anchor": {"op": "match", "seg_idx": [0], "bbox": [219, 246, 529, 76], "confidence": 1.0}, "spans": [{"span_id": "0", "piece": 0, "of": 1, "start": 0, "end": 3, "base": "Ein", "alternatives": {"openrouter:google/gemini-3.8-flash": "( 93 ) "}, "weight": 0.333, "status": "open", "decision_event": null}, {"span_id": "1", "piece": 0, "of": 1, "start": 26, "end": 32, "base": "wallet", "alternatives": {"kraken:german_print.mlmodel": "i"}, "weight": 0.333, "status": "open", "decision_event": null}]}, {"line_id": "l2", "diplomatic": "Im Haine bei der Sterne Licht,", "settled": "Im Haine bei der Sterne Licht,", "anchor": {"op": "match", "seg_idx": [1], "bbox": [176, 306, 518, 73], "confidence": 1.0}, "spans": []}, {"line_id": "l3", "diplomatic": "Und Philomelens Nachtlied hallet;", "settled": "Und Philomelens Nachtlied hallet;", "anchor": {"op": "match", "seg_idx": [2], "bbox": [176, 364, 563, 69], "confidence": 1.0}, "spans": []}, {"line_id": "l4", "diplomatic": "Die Hirtin ach! vernimmt es nicht.", "settled": "Die Hirtin ach! vernimmt es nicht.", "anchor": {"op": "match", "seg_idx": [3], "bbox": [177, 424, 581, 80], "confidence": 1.0}, "spans": [{"span_id": "2", "piece": 0, "of": 1, "start": 11, "end": 15, "base": "ach!", "alternatives": {"kraken:german_print.mlmodel": "l"}, "weight": 0.333, "status": "open", "decision_event": null}]}, {"line_id": "l5", "diplomatic": "Man sieht erzürnt die Elfen wallen,", "settled": "Man sieht erzürnt die Elfen wallen,", "anchor": {"op": "match", "seg_idx": [4], "bbox": [179, 486, 586, 76], "confidence": 1.0}, "spans": []}, {"line_id": "l6", "diplomatic": "Daſs Lust der Keuschheit Blume bricht,", "settled": "Daſs Lust der Keuschheit Blume bricht,", "anchor": {"op": "match", "seg_idx": [5], "bbox": [180, 544, 650, 81], "confidence": 1.0}, "spans": [{"span_id": "3", "piece": 0, "of": 1, "start": 0, "end": 4, "base": "Dass", "alternatives": {"openrouter:google/gemini-3.8-flash": "f", "hybrid:anthropic/claude-haiku-5.5": "f"}, "weight": 0.667, "status": "open", "decision_event": null}]}, {"line_id": "l7", "diplomatic": "Man hört im Haine Klagen hallen;", "settled": "Man hört im Haine Klagen hallen;", "anchor": {"op": "match", "seg_idx": [6], "bbox": [184, 607, 576, 79], "confidence": 1.0}, "spans": []}, {"line_id": "l8", "diplomatic": "Die Hirtin ach! vernimmt sie nicht.", "settled": "Die Hirtin ach! vernimmt sie nicht.", "anchor": {"op": "match", "seg_idx": [7], "bbox": [184, 665, 595, 84], "confidence": 1.0}, "spans": []}, {"line_id": "l9", "diplomatic": "Doch endlich ward im Mondesschimmer", "settled": "Doch endlich ward im Mondesschimmer", "anchor": {"op": "match", "seg_idx": [8], "bbox": [239, 791, 633, 74], "confidence": 1.0}, "spans": []}, {"line_id": "l10", "diplomatic": "Sie an des Schäfers Arm gesehn:", "settled": "Sie an des Schäfers Arm gesehn:", "anchor": {"op": "match", "seg_idx": [9], "bbox": [192, 850, 551, 75], "confidence": 1.0}, "spans": []}, {"line_id": "l11", "diplomatic": "Es tönt der Elfen Grabgewimmer,", "settled": "Es tönt der Elfen Grabgewimmer,", "anchor": {"op": "match", "seg_idx": [10], "bbox": [194, 912, 554, 70], "confidence": 1.0}, "spans": []}, {"line_id": "l12", "diplomatic": "Wo sie berauscht im Thale gehn.", "settled": "Wo sie berauscht im Thale gehn.", "anchor": {"op": "match", "seg_idx": [11], "bbox": [202, 970, 550, 71], "confidence": 1.0}, "spans": []}, {"line_id": "l13", "diplomatic": "Ihr Purpurgürtel weht im Winde,", "settled": "Ihr Purpurgürtel weht im Winde,", "anchor": {"op": "match", "seg_idx": [12], "bbox": [198, 1031, 552, 74], "confidence": 1.0}, "spans": [{"span_id": "4", "piece": 0, "of": 1, "start": 4, "end": 16, "base": "Purpurgürtel", "alternatives": {"kraken:german_print.mlmodel": "a"}, "weight": 0.333, "status": "open", "decision_event": null}]}, {"line_id": "l14", "diplomatic": "Ihr Auge schwimmt im feuchten Glanz;", "settled": "Ihr Auge schwimmt im feuchten Glanz;", "anchor": {"op": "match", "seg_idx": [13], "bbox": [199, 1091, 648, 77], "confidence": 1.0}, "spans": []}, {"line_id": "l15", "diplomatic": "Sie seufzt, » o! süſser Hirt, wo finde", "settled": "Sie seufzt, » o! süſser Hirt, wo finde", "anchor": {"op": "match", "seg_idx": [14], "bbox": [205, 1151, 636, 77], "confidence": 1.0}, "spans": [{"span_id": "5", "piece": 0, "of": 1, "start": 0, "end": 3, "base": "Sie", "alternatives": {"kraken:german_print.mlmodel": "s"}, "weight": 0.333, "status": "open", "decision_event": null}, {"span_id": "6", "piece": 0, "of": 1, "start": 12, "end": 16, "base": "» o!", "alternatives": {"hybrid:anthropic/claude-haiku-5.5": "\"", "kraken:german_print.mlmodel": ""}, "weight": 0.667, "status": "open", "decision_event": null}, {"span_id": "7", "piece": 0, "of": 1, "start": 17, "end": 23, "base": "süsser", "alternatives": {"openrouter:google/gemini-3.8-flash": "f", "hybrid:anthropic/claude-haiku-5.5": "f"}, "weight": 0.667, "status": "open", "decision_event": null}]}, {"line_id": "l16", "diplomatic": "Ich nun der Unschuld Lilienkranz? «", "settled": "Ich nun der Unschuld Lilienkranz? «", "anchor": {"op": "match", "seg_idx": [15], "bbox": [206, 1208, 594, 81], "confidence": 1.0}, "spans": []}, {"line_id": "l17", "diplomatic": "Bei Kronen, welche Leichen schmücken,", "settled": "Bei Kronen, welche Leichen schmücken,", "anchor": {"op": "match", "seg_idx": [16], "bbox": [261, 1332, 640, 76], "confidence": 1.0}, "spans": []}, {"line_id": "l18", "diplomatic": "So wimmert es im Nebelthal;", "settled": "So wimmert es im Nebelthal;", "anchor": {"op": "match", "seg_idx": [17], "bbox": [214, 1394, 481, 80], "confidence": 1.0}, "spans": []}], "anchors": {"matched": 18, "merged": 0, "split": 0, "unanchored": 0, "dropped_polygons": 0, "mean_confidence": 1.0, "max_dist": 0.55, "segmentation": {"reader": "hybrid:google/gemini-3.8-flash", "path": "01-use-cases/transcription/04-reading-room/inputs/readings/segmentation/real-schiller-musenalmanach-1796-p093.json", "polygons": 18}}, "page_id": "real-schiller-musenalmanach-1796-p093", "translation": {"run_id": "20261110-01", "build_id": "b-20261110-01", "models": ["google/gemini-3.8-flash", "anthropic/claude-sonnet-5.5"], "min_divergence": 0.35, "blocks": [{"block_id": "b01", "lines": ["l1", "l2", "l3", "l4"], "a": {"segments": ["s01"], "text": "A fresh, fragrant breeze billows in the grove by the starlight, and Philomel's night-song echoes; the shepherdess, alas! perceives it not."}, "b": {"segments": ["s01"], "text": "A fresh fragrant rustling wafts in the grove by the light of the stars, and Philomel's night-song resounds; the shepherdess, alas! does not hear it."}, "dist": 0.2308, "divergent": false}, {"block_id": "b02", "lines": ["l5", "l6", "l7", "l8"], "a": {"segments": ["s02"], "text": "Angered, the elves are seen wandering, that desire breaks the flower of chastity; laments are heard echoing in the grove; the shepherdess, alas! perceives them not."}, "b": {"segments": ["s02"], "text": "One sees the elves drift about in anger, because pleasure breaks the flower of chastity; one hears laments echo in the grove; the shepherdess, alas! does not hear them."}, "dist": 0.3313, "divergent": false}, {"block_id": "b03", "lines": ["l9", "l10", "l11", "l12"], "a": {"segments": ["s03"], "text": "Yet at last, in the shimmer of the moon, she was seen upon the shepherd's arm: the elves' funerary wailing sounds where they walk intoxicated in the valley."}, "b": {"segments": ["s03"], "text": "But at last she was seen in the shimmer of the moon on the shepherd's arm: the elves' grave-whimpering sounds where, intoxicated, she walks in the valley."}, "dist": 0.2516, "divergent": false}, {"block_id": "b04", "lines": ["l13", "l14", "l15", "l16"], "a": {"segments": ["s04"], "text": "Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, 'O! sweet shepherd, where do I now find the lily-wreath of innocence?'"}, "b": {"segments": ["s04"], "text": "Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, \"Oh! sweet shepherd, where shall I now find the lily-wreath of innocence?\""}, "dist": 0.0385, "divergent": false}, {"block_id": "b05", "lines": ["l17", "l18"], "a": {"segments": ["s05"], "text": "'Among crowns that adorn corpses,' thus it whimpers in the misty valley;"}, "b": {"segments": ["s05"], "text": "By crowns that adorn corpses, so it whimpers in the misty valley;"}, "dist": 0.0949, "divergent": false}], "segments": {"google/gemini-3.8-flash": [{"line_start": "l1", "line_end": "l4", "first_words": "Ein frisches Duftgesäusel", "last_words": "vernimmt es nicht.", "translation": "A fresh, fragrant breeze billows in the grove by the starlight, and Philomel's night-song echoes; the shepherdess, alas! perceives it not.", "note": "", "segment_id": "s01", "verified": true, "lines": ["l1", "l2", "l3", "l4"]}, {"line_start": "l5", "line_end": "l8", "first_words": "Man sieht erzürnt", "last_words": "vernimmt sie nicht.", "translation": "Angered, the elves are seen wandering, that desire breaks the flower of chastity; laments are heard echoing in the grove; the shepherdess, alas! perceives them not.", "note": "", "segment_id": "s02", "verified": true, "lines": ["l5", "l6", "l7", "l8"]}, {"line_start": "l9", "line_end": "l12", "first_words": "Doch endlich ward", "last_words": "im Thale gehn.", "translation": "Yet at last, in the shimmer of the moon, she was seen upon the shepherd's arm: the elves' funerary wailing sounds where they walk intoxicated in the valley.", "note": "", "segment_id": "s03", "verified": true, "lines": ["l9", "l10", "l11", "l12"]}, {"line_start": "l13", "line_end": "l16", "first_words": "Ihr Purpurgürtel weht", "last_words": "der Unschuld Lilienkranz? «", "translation": "Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, 'O! sweet shepherd, where do I now find the lily-wreath of innocence?'", "note": "", "segment_id": "s04", "verified": true, "lines": ["l13", "l14", "l15", "l16"]}, {"line_start": "l17", "line_end": "l18", "first_words": "Bei Kronen, welche", "last_words": "es im Nebelthal;", "translation": "'Among crowns that adorn corpses,' thus it whimpers in the misty valley;", "note": "Sentence continues onto the next page.", "segment_id": "s05", "verified": true, "lines": ["l17", "l18"]}], "anthropic/claude-sonnet-5.5": [{"line_start": "l1", "line_end": "l4", "first_words": "Ein frisches Duftgesäusel", "last_words": "vernimmt es nicht.", "translation": "A fresh fragrant rustling wafts in the grove by the light of the stars, and Philomel's night-song resounds; the shepherdess, alas! does not hear it.", "note": "", "segment_id": "s01", "verified": true, "lines": ["l1", "l2", "l3", "l4"]}, {"line_start": "l5", "line_end": "l8", "first_words": "Man sieht erzürnt", "last_words": "vernimmt sie nicht.", "translation": "One sees the elves drift about in anger, because pleasure breaks the flower of chastity; one hears laments echo in the grove; the shepherdess, alas! does not hear them.", "note": "", "segment_id": "s02", "verified": true, "lines": ["l5", "l6", "l7", "l8"]}, {"line_start": "l9", "line_end": "l12", "first_words": "Doch endlich ward", "last_words": "Thale gehn.", "translation": "But at last she was seen in the shimmer of the moon on the shepherd's arm: the elves' grave-whimpering sounds where, intoxicated, she walks in the valley.", "note": "The syntax of the final clause is slightly ambiguous: 'sie' (she) is singular but 'gehn' is plural; translated as it stands.", "segment_id": "s03", "verified": true, "lines": ["l9", "l10", "l11", "l12"]}, {"line_start": "l13", "line_end": "l16", "first_words": "Ihr Purpurgürtel weht", "last_words": "Unschuld Lilienkranz? «", "translation": "Her purple girdle flutters in the wind, her eye swims in moist radiance; she sighs, \"Oh! sweet shepherd, where shall I now find the lily-wreath of innocence?\"", "note": "", "segment_id": "s04", "verified": true, "lines": ["l13", "l14", "l15", "l16"]}, {"line_start": "l17", "line_end": "l18", "first_words": "Bei Kronen, welche", "last_words": "im Nebelthal;", "translation": "By crowns that adorn corpses, so it whimpers in the misty valley;", "note": "The sentence continues beyond this page; it ends with a semicolon, so the translation is incomplete.", "segment_id": "s05", "verified": true, "lines": ["l17", "l18"]}]}, "uncovered": {"google/gemini-3.8-flash": [], "anthropic/claude-sonnet-5.5": []}, "notes": {"google/gemini-3.8-flash": "", "anthropic/claude-sonnet-5.5": "Verse page from a Musenalmanach (1796). The final sentence continues on the next page."}, "stale": false, "resolved": []}}], "log": []}</script>
+<script>/* The reading room renders itself from the JSON blob in #reading-data. Nothing here changes the build; every
+   action becomes an event in localStorage and, when served, in outputs/reading/log.jsonl via POST /api/log. */
+(() => {
+  'use strict';
+  const DATA = JSON.parse(document.getElementById('reading-data').textContent);
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const uniq = a => [...new Set(a)];
+  const short = m => (m || '').split(':').pop().split('/').pop();
+  const KEY = 'mueser.reading.' + (DATA.case || 'case');
+  const PREF = KEY + '.prefs';
+  const app = $('#rr-app');
+
+  // ---------- time, ids ----------
+  const pad = n => String(n).padStart(2, '0');
+  const stamp = () => {
+    const d = new Date(), off = -d.getTimezoneOffset(), sign = off >= 0 ? '+' : '-', a = Math.abs(off);
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}${sign}${pad(Math.floor(a / 60))}${pad(a % 60)}`;
+  };
+  const uuid = () => (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join(''));
+
+  // ---------- store ----------
+  const store = {
+    local: [], synced: new Set(), connected: false, serverBuild: null,
+    load() {
+      try { const s = JSON.parse(localStorage.getItem(KEY) || '{}'); this.local = s.events || []; this.synced = new Set(s.synced || []); } catch (_) { this.local = []; this.synced = new Set(); }
+    },
+    persist() { try { localStorage.setItem(KEY, JSON.stringify({ events: this.local, synced: [...this.synced] })); } catch (_) { /* private window or blocked storage: the page still works */ } },
+    all() {
+      const seen = new Set(), out = [];
+      for (const e of [...(DATA.log || []), ...this.local]) { if (!seen.has(e.id)) { seen.add(e.id); out.push(e); } }
+      return out.sort((a, b) => (a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : 0));
+    },
+    async ping() {
+      if (!/^https?:$/.test(location.protocol)) return;
+      try {
+        const r = await fetch('/api/ping', { cache: 'no-store' });
+        if (!r.ok) return;
+        const j = await r.json(); this.connected = true; this.serverBuild = j.build_id || null;
+        if (j.who && !prefs.who) { prefs.who = j.who; savePrefs(); }
+        // push anything written while the server was away
+        for (const e of this.local) if (!this.synced.has(e.id)) await this.post(e);
+      } catch (_) { this.connected = false; }
+    },
+    async post(e) {
+      try {
+        const r = await fetch('/api/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(e) });
+        if (r.ok) { this.synced.add(e.id); this.persist(); return true; }
+        const t = await r.text(); toast('Not saved: ' + t.slice(0, 160)); return false;
+      } catch (_) { this.connected = false; renderBar(); return false; }
+    },
+    async add(e) {
+      this.local.push(e); this.persist();
+      if (this.connected) await this.post(e);
+      renderWork(); renderBar();
+    },
+    exportAll() {
+      const lines = this.local.map(e => JSON.stringify(e)).join('\n') + (this.local.length ? '\n' : '');
+      const blob = new Blob([lines], { type: 'application/x-ndjson' });
+      const a = el('a'); a.href = URL.createObjectURL(blob);
+      a.download = `${(prefs.who || 'reader').replace(/[^\w-]+/g, '_')}-${stamp().replace(/[:+]/g, '').replace('T', '-')}.jsonl`;
+      document.body.append(a); a.click(); a.remove();
+      toast(`Exported ${this.local.length} event${this.local.length === 1 ? '' : 's'}. Drop the file into ${DATA.paths.inbox} and run: python -m mueser.reading ingest --case ${DATA.case}`);
+    },
+  };
+  let prefs = { who: '', mode: null, marks: 'review', page: null, log: { scope: 'page', type: 'all', status: 'open' }, showLog: true };
+  try { prefs = { ...prefs, ...JSON.parse(localStorage.getItem(PREF) || '{}') }; } catch (_) { /* defaults */ }
+  const savePrefs = () => { try { localStorage.setItem(PREF, JSON.stringify(prefs)); } catch (_) { /* fine */ } };
+
+  const mk = (type, anchor, body, ref) => ({ id: 'evt_' + uuid(), ts: stamp(), who: prefs.who || '', client: DATA.client, build_id: DATA.build_id, type, anchor: anchor || null, body: body || {}, ref: ref || null });
+  const decisions = () => { const m = {}; for (const e of store.all()) if (e.type === 'decision' && e.body && e.body.target) m[e.body.target] = e; return m; };
+  const statuses = () => { const s = {}; for (const e of store.all()) if (['issue', 'question', 'comment'].includes(e.type)) s[e.id] = 'open'; for (const e of store.all()) if (e.type === 'status' && e.body && e.body.target in s) s[e.body.target] = e.body.status || 'open'; return s; };
+
+  // ---------- state ----------
+  const pages = DATA.pages;
+  let pageIdx = Math.max(0, pages.findIndex(p => p.page_id === (decodeURIComponent(location.hash.slice(1)) || prefs.page)));
+  const page = () => pages[pageIdx];
+  const hasTranslation = pg => !!(pg.translation && pg.translation.blocks && pg.translation.blocks.length);
+  const mode = () => prefs.mode || (hasTranslation(page()) ? 'both' : 'transcription');
+  const docOf = pg => ((DATA.metadata || {}).docs || {})[pg.doc_id] || { title: pg.doc_id, pages: {} };
+  const pageLabel = pg => ((docOf(pg).pages || {})[pg.page_id] || {}).label || pg.page_id;
+
+  // ---------- helpers for text and citations ----------
+  const splitName = n => { n = n.trim(); if (n.includes(',')) { const [f, g] = n.split(',', 2); return { family: f.trim(), given: g.trim() }; } const p = n.split(/\s+/); return p.length === 1 ? { family: p[0] } : { family: p[p.length - 1], given: p.slice(0, -1).join(' ') }; };
+  const authorsShort = doc => { const f = (doc.author || []).map(a => splitName(a).family); if (!f.length) return doc.archive || ''; if (f.length === 1) return f[0]; if (f.length === 2) return `${f[0]} and ${f[1]}`; return `${f[0]} et al.`; };
+  const lineLabel = ids => { const n = ids.map(x => +x.slice(1)).filter(Number.isFinite).sort((a, b) => a - b); if (!n.length) return ''; return n.length === 1 ? `l. ${n[0]}` : `ll. ${n[0]}–${n[n.length - 1]}`; };
+  function citeFor(pg, lineIds, layer, quote, block) {
+    const doc = docOf(pg), label = pageLabel(pg), lines = lineLabel(lineIds), dec = decisions();
+    const where = [label, lines].filter(Boolean).join(', ');
+    const imprint = [doc.place, doc.date].filter(Boolean).join(', ');
+    let head = authorsShort(doc) ? `${authorsShort(doc)}, ${doc.title || pg.doc_id}` : (doc.title || pg.doc_id);
+    if (imprint) head += ` (${imprint})`;
+    const arch = [doc.archive, doc.shelfmark].filter(Boolean).join(', ');
+    let plain = `${head}, ${where}.`;
+    if (arch && ['manuscript', 'personal_communication', 'letter'].includes(doc.type)) plain = `${head}, ${where}. ${arch}.`;
+    if (doc.synthetic) plain += ' Synthetic page: invented text rendered for testing, not a historical source.';
+    if (layer === 'translation') plain += ' English translation.';
+    const nDec = lineIds.reduce((n, lid) => { const l = pg.lines.find(x => x.line_id === lid); if (!l) return n; if (dec[`line:${pg.page_id}:${lid}`]) n++; for (const sp of l.spans) if (sp.piece === 0 && dec[`span:${pg.page_id}:${sp.span_id}`]) n++; return n; }, 0);
+    const whoDec = uniq(lineIds.flatMap(lid => { const l = pg.lines.find(x => x.line_id === lid); return l ? l.spans.map(sp => (dec[`span:${pg.page_id}:${sp.span_id}`] || {}).who).filter(Boolean) : []; }));
+    let prov = `Transcription: medoid ${pg.diplomatic.reader}, run ${pg.diplomatic.run_id}, settled build ${DATA.build_id}` + (nDec ? `, ${nDec} decision${nDec === 1 ? '' : 's'}${whoDec.length ? ' by ' + whoDec.join(', ') : ''}` : '') + '.';
+    if (layer === 'translation' && pg.translation) {
+      const b = block || null, d = b ? dec[`block:${pg.page_id}:${b.block_id}`] : null;
+      const model = d && d.body.choice === 'b' ? pg.translation.models[1] : d && d.body.choice === 'custom' ? 'a person' : pg.translation.models[0];
+      prov += ` Translation: ${model}, run ${pg.translation.run_id}` + (b ? `, block ${b.block_id}` + (d ? ` decided by ${d.who || 'a reader'}` : '') : '') + '.';
+    }
+    plain += ' ' + prov;
+    const repo = `${DATA.case}/outputs/reading/builds/${DATA.build_id}/settled.json · ${pg.page_id} ${lineIds.join(' ')}`;
+    const markdown = (quote ? '> ' + quote.replace(/\n/g, '\n> ') + '\n\n' : '') + `[^1]: ${plain} \`${repo}\``;
+    const csl = { type: doc.type || 'document', title: doc.title || pg.doc_id };
+    if (doc.author) csl.author = doc.author.map(splitName);
+    const y = String(doc.date || '').match(/\d{4}/); if (y) csl.issued = { 'date-parts': [[+y[0]]] };
+    for (const [s, d] of [['publisher', 'publisher'], ['place', 'publisher-place'], ['url', 'URL'], ['archive', 'archive'], ['shelfmark', 'archive_location'], ['language', 'language']]) if (doc[s]) csl[d] = doc[s];
+    csl.locator = label.replace(/^(p\.|pp\.|S\.|fol\.)\s*/, '') + (lines ? `, ${lines}` : ''); csl.label = 'page';
+    csl.note = ((doc.synthetic ? 'Synthetic page, not a historical source. ' : '') + (layer === 'translation' ? 'English translation. ' : '') + prov).trim();
+    return { plain, markdown, csl, csl_json: JSON.stringify(csl, null, 1) };
+  }
+  function wordDiff(a, b) {
+    const A = a.split(/(\s+)/), B = b.split(/(\s+)/);
+    const n = A.length, m = B.length, L = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    const outA = [], outB = []; let i = 0, j = 0;
+    while (i < n && j < m) {
+      if (A[i] === B[j]) { outA.push([A[i], false]); outB.push([B[j], false]); i++; j++; }
+      else if (L[i + 1][j] >= L[i][j + 1]) { outA.push([A[i], true]); i++; }
+      else { outB.push([B[j], true]); j++; }
+    }
+    while (i < n) outA.push([A[i++], true]); while (j < m) outB.push([B[j++], true]);
+    return [outA, outB];
+  }
+  const diffNode = parts => { const f = document.createDocumentFragment(); for (const [t, changed] of parts) { if (changed && t.trim()) { const m = el('span', 'dmark', t); f.append(m); } else f.append(document.createTextNode(t)); } return f; };
+  function offsetWithin(container, node, offset) {
+    // character offset of (node, offset) inside container's visible text, skipping nothing: lids are CSS, buttons live outside .ln
+    let n = 0; const w = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    if (node.nodeType !== 3) { // element boundary: count text before child[offset]
+      const target = node.childNodes[offset] || null; let cur;
+      while ((cur = w.nextNode())) { if (target && (cur === target || target.contains(cur))) break; if (target && target.compareDocumentPosition(cur) & Node.DOCUMENT_POSITION_FOLLOWING) break; n += cur.length; }
+      return n;
+    }
+    let cur; while ((cur = w.nextNode())) { if (cur === node) return n + offset; n += cur.length; }
+    return n;
+  }
+
+  // ---------- rendering ----------
+  let barEl, noticeEl, workEl, footEl;
+  function renderAll() {
+    app.replaceChildren();
+    barEl = el('div', 'rr-bar'); noticeEl = el('div'); workEl = el('div', 'rr-work'); footEl = el('div', 'rr-foot');
+    app.append(barEl, noticeEl, workEl, footEl);
+    renderBar(); renderWork(); renderFoot();
+  }
+  function renderBar() {
+    if (!barEl) return;
+    barEl.replaceChildren();
+    const pg = page();
+    const pager = el('div', 'rr-pager');
+    const head = el('div', 'rr-pager-head');
+    head.append(el('span', 'eyebrow', `Source page ${pageIdx + 1} of ${pages.length}`));
+    const prev = el('button', 'ghost', '← Previous'), next = el('button', 'ghost', 'Next →');
+    prev.disabled = pageIdx === 0; next.disabled = pageIdx === pages.length - 1;
+    prev.title = 'Previous page (← key)'; next.title = 'Next page (→ key)';
+    prev.onclick = () => goPage(pageIdx - 1); next.onclick = () => goPage(pageIdx + 1);
+    const add = el('button', 'ghost', '+ Add a source'); add.title = 'How to bring another document into this room';
+    add.onclick = () => openAddSource(add);
+    head.append(prev, next, add);
+    const nav = el('div', 'rr-pages'); nav.setAttribute('role', 'tablist'); nav.setAttribute('aria-label', 'Pages in this reading room');
+    pages.forEach((p, i) => {
+      const b = el('button'); b.setAttribute('role', 'tab'); b.setAttribute('aria-current', String(i === pageIdx));
+      b.append(el('small', 'n', `${i + 1}`), document.createTextNode(docOf(p).title || p.doc_id), el('small', '', `${pageLabel(p)} · ${(docOf(p).date || '')}${docOf(p).synthetic ? ' · synthetic' : ''}`));
+      b.onclick = () => goPage(i);
+      nav.append(b);
+    });
+    pager.append(head, nav);
+    const modeBox = el('div', 'rr-mode'); modeBox.setAttribute('role', 'group'); modeBox.setAttribute('aria-label', 'What to show beside the scan');
+    for (const [v, label] of [['transcription', 'Transcription'], ['translation', 'Translation'], ['both', 'Both']]) {
+      const b = el('button', '', label); b.setAttribute('aria-pressed', String(mode() === v));
+      if (v !== 'transcription' && !hasTranslation(pg)) { b.disabled = true; b.title = 'No translation run for this page yet'; }
+      b.onclick = () => { prefs.mode = v; savePrefs(); renderBar(); renderWork(); };
+      modeBox.append(b);
+    }
+    const who = el('label', 'rr-who'); who.append('Reading as'); const inp = el('input'); inp.value = prefs.who || ''; inp.placeholder = 'your name'; inp.setAttribute('aria-label', 'Your name, written on every event');
+    inp.onchange = () => { prefs.who = inp.value.trim(); savePrefs(); }; who.append(inp);
+    const conn = el('span', 'rr-conn' + (store.connected ? '' : ' off'), store.connected ? `Saving to ${DATA.paths.log}` : 'Not connected · kept in this browser');
+    conn.title = store.connected ? 'Every event is appended to the log on disk as you make it.' : 'Open the page through `python -m mueser.reading serve` to write straight into the log, or use Export.';
+    const exp = el('button', 'ghost', 'Export log ↓'); exp.onclick = () => store.exportAll(); exp.title = 'Download every event made in this browser as JSONL';
+    const logBtn = el('button', 'ghost', prefs.showLog ? 'Hide log' : 'Show log'); logBtn.onclick = () => { prefs.showLog = !prefs.showLog; savePrefs(); renderBar(); renderWork(); };
+    barEl.append(pager, el('span', 'grow'), modeBox, who, conn, exp, logBtn);
+    // notices
+    noticeEl.replaceChildren();
+    const dec = decisions();
+    const pending = Object.values(dec).filter(e => { const [kind, pid, id] = e.body.target.split(':'); const p = pages.find(x => x.page_id === pid); if (!p) return false; if (kind === 'span') { const sp = p.lines.flatMap(l => l.spans).find(s => s.span_id === id); return sp ? sp.status !== 'decided' : false; } if (kind === 'line') return true; if (kind === 'block') return !(p.translation && p.translation.resolved && p.translation.resolved.some(r => r.block_id === id)); return false; }).length;
+    if (pending) { const n = el('p', 'rr-notice'); n.append(`${pending} decision${pending === 1 ? '' : 's'} made since build `, el('code', '', DATA.build_id), '. They show here as decided; to settle them into the text run ', el('code', '', `python -m mueser.reading apply --case ${DATA.case}`), ' then ', el('code', '', 'build'), '.'); noticeEl.append(n); }
+    if (!store.connected && /^https?:$/.test(location.protocol) === false) { const n = el('p', 'rr-notice'); n.append('Opened as a file: your decisions and notes are kept in this browser only. ', el('b', '', 'Export log'), ' writes them to a file; drop it into ', el('code', '', DATA.paths.inbox), ' and run ', el('code', '', `python -m mueser.reading ingest --case ${DATA.case}`), '. Or open the page with ', el('code', '', `python -m mueser.reading serve --case ${DATA.case}`), ' and it saves as you go.'); noticeEl.append(n); }
+    if (store.connected && store.serverBuild && store.serverBuild !== DATA.build_id) { const n = el('p', 'rr-notice'); n.append(`The server has a newer build (${store.serverBuild}) than this page (${DATA.build_id}). Reload after running build.`); noticeEl.append(n); }
+    if (pg.consensus && pg.consensus.agreement < 0.6) { const n = el('p', 'rr-notice'); n.append(`Readers disagreed too much on this page for span-by-span decisions (agreement ${pg.consensus.agreement.toFixed(2)}). Read the text against the image and use ✎ at the end of a line to replace the whole line.`); noticeEl.append(n); }
+  }
+
+  function rowsFor(pg) {
+    const lines = pg.lines;
+    if (!hasTranslation(pg)) return lines.map(l => ({ lines: [l], blocks: [] }));
+    const byLine = new Map();
+    for (const b of pg.translation.blocks) for (const lid of b.lines) if (!byLine.has(lid)) byLine.set(lid, b);
+    const rows = []; let i = 0;
+    while (i < lines.length) {
+      const b = byLine.get(lines[i].line_id);
+      if (!b) { rows.push({ lines: [lines[i]], blocks: [] }); i++; continue; }
+      const grp = []; while (i < lines.length && byLine.get(lines[i].line_id) === b) grp.push(lines[i++]);
+      rows.push({ lines: grp, blocks: [b] });
+    }
+    const placed = new Set(rows.flatMap(r => r.blocks.map(b => b.block_id)));
+    for (const b of pg.translation.blocks) if (!placed.has(b.block_id)) { const r = rows.find(r => r.lines.some(l => b.lines.includes(l.line_id))) || rows[rows.length - 1]; r.blocks.push(b); }
+    return rows;
+  }
+
+  function renderWork() {
+    if (!workEl) return;
+    closePop(); hideFloat();
+    const pg = page(); const dec = decisions();
+    workEl.replaceChildren(); workEl.className = 'rr-work' + (prefs.showLog ? ' with-log' : '');
+    // image
+    const imgBox = el('div', 'rr-image');
+    const lab = el('div', 'image-label'); lab.append(el('span', '', 'Original document'), el('span', 'mono', pg.page_id)); imgBox.append(lab);
+    const fig = el('div', 'fig show-boxes'); const img = el('img'); img.src = pg.image; img.alt = `${docOf(pg).title || pg.doc_id}, ${pageLabel(pg)}`; img.loading = 'eager';
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', `0 0 ${pg.width} ${pg.height}`); svg.setAttribute('preserveAspectRatio', 'none');
+    for (const l of pg.lines) {
+      const a = l.anchor; if (!a || !a.bbox) continue;
+      const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      const [x, y, w, h] = a.bbox; r.setAttribute('x', x); r.setAttribute('y', y); r.setAttribute('width', w); r.setAttribute('height', h); r.dataset.line = l.line_id;
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'title'); t.textContent = `${l.line_id} · ${a.op}${a.confidence != null ? ` · confidence ${a.confidence}` : ''}\n${l.settled}`; r.append(t);
+      r.addEventListener('mouseenter', () => hot([l.line_id])); r.addEventListener('mouseleave', () => hot([]));
+      r.addEventListener('click', () => goTo(pg.page_id, [l.line_id]));
+      svg.append(r);
+    }
+    fig.append(img, svg); imgBox.append(fig);
+    const tools = el('div', 'tools'); const cb = el('label'); const ck = el('input'); ck.type = 'checkbox'; ck.checked = true; ck.onchange = () => fig.classList.toggle('show-boxes', ck.checked); cb.append(ck, ' Show line boxes'); tools.append(cb);
+    const open = el('a', '', 'Open image ↗'); open.href = pg.image; open.target = '_blank'; tools.append(open); imgBox.append(tools);
+    if (pg.anchors) { const a = pg.anchors; imgBox.append(el('div', 'anchors', `Lines anchored to ${short(a.segmentation && a.segmentation.reader)} boxes: ${a.matched} matched · ${a.merged} merged · ${a.split} split · ${a.unanchored} unanchored${a.dropped_polygons ? ` · ${a.dropped_polygons} polygon${a.dropped_polygons === 1 ? '' : 's'} with no text` : ''}${a.mean_confidence != null ? ` · mean confidence ${a.mean_confidence}` : ''}`)); }
+    else imgBox.append(el('div', 'anchors', 'No segmentation with boxes for this page: selections cannot be shown on the scan.'));
+    // text
+    const txt = el('div', 'rr-text mode-' + mode());
+    const head = el('div', 'head');
+    head.append(el('span', '', `Transcription: medoid of ${pg.consensus.readers.length} readers, `), el('b', '', short(pg.diplomatic.reader)), el('span', '', ` · agreement ${pg.consensus.agreement.toFixed(3)} · ${pg.consensus.check_in} passage${pg.consensus.check_in === 1 ? '' : 's'} to check`));
+    if (hasTranslation(pg)) { const tr = pg.translation; head.append(el('span', '', `Translation: ${tr.models.map(short).join(' · ')} · ${tr.blocks.filter(b => b.divergent).length} of ${tr.blocks.length} blocks diverge${tr.stale ? ' · STALE: the text changed after this translation' : ''}`)); }
+    txt.append(head);
+    const filters = el('div', 'filters'); const fl = el('label'); fl.append('Highlight '); const fs = el('select');
+    for (const [v, t] of [['review', 'passages to check'], ['all', 'every disagreement'], ['none', 'nothing']]) { const o = el('option', '', t); o.value = v; fs.append(o); }
+    fs.value = prefs.marks || 'review'; fs.onchange = () => { prefs.marks = fs.value; savePrefs(); rows.className = 'rows' + (fs.value === 'review' ? ' hide-weak' : fs.value === 'none' ? ' hide-marks' : ''); }; fl.append(fs); filters.append(fl);
+    filters.append(el('span', 'muted', 'Select text to see it on the scan, copy it with a citation, or leave a note. Click a highlighted passage to decide it. ✎ at a line’s end replaces the whole line.'));
+    txt.append(filters);
+    const rows = el('div', 'rows' + (prefs.marks === 'review' || !prefs.marks ? ' hide-weak' : prefs.marks === 'none' ? ' hide-marks' : ''));
+    for (const row of rowsFor(pg)) {
+      const r = el('div', 'row'); const cs = el('div', 'col-src'), ct = el('div', 'col-tr');
+      for (const l of row.lines) cs.append(renderLine(pg, l, dec));
+      for (const b of row.blocks) ct.append(renderBlock(pg, b, dec));
+      if (hasTranslation(pg) && !row.blocks.length) { const e = el('div', 'seg empty', row.lines.every(l => !l.settled.trim()) ? '' : 'no segment covers this line'); e.dataset.lines = row.lines.map(l => l.line_id).join(' '); ct.append(e); }
+      r.append(cs, ct); rows.append(r);
+    }
+    txt.append(rows);
+    workEl.append(imgBox, txt);
+    if (prefs.showLog) workEl.append(renderLog());
+  }
+
+  function decidedText(sp, d, orig) {
+    const c = d.body.choice || 'keep';
+    if (c === 'keep') return orig;
+    if (sp.piece > 0) return '';
+    if (c === 'alt') { const t = sp.alternatives[d.body.reader]; return t != null ? t : (d.body.text || ''); }
+    return d.body.text || '';
+  }
+  function renderLine(pg, l, dec) {
+    const wrap = el('div', 'lnwrap');
+    const s = el('span', 'ln'); s.dataset.line = l.line_id;
+    if (!l.anchor || l.anchor.op === 'unanchored') { s.classList.add('unanchored'); s.title = 'No box on the scan for this line'; }
+    const ld = dec[`line:${pg.page_id}:${l.line_id}`];
+    if (ld) { s.classList.add('decided-line'); s.textContent = ld.body.text || ''; s.title = `Whole line decided by ${ld.who || 'a reader'} on ${ld.ts}. Was: ${l.settled}`; }
+    else {
+      let pos = 0; const text = l.settled; const minw = pg.consensus.min_weight || 0.25;
+      for (const sp of l.spans) {
+        if (sp.start > pos) s.append(document.createTextNode(text.slice(pos, sp.start)));
+        const m = el('mark'); m.dataset.span = sp.span_id; m.dataset.piece = sp.piece; m.tabIndex = 0; m.setAttribute('role', 'button');
+        if ((sp.weight || 0) >= minw) m.classList.add('strong');
+        const orig = text.slice(sp.start, sp.end);
+        const d = dec[`span:${pg.page_id}:${sp.span_id}`];
+        if (d) { m.classList.add('decided'); m.textContent = decidedText(sp, d, orig); m.title = `Decided by ${d.who || 'a reader'} (${d.body.choice}${d.body.reader ? ', ' + short(d.body.reader) : ''}) on ${d.ts}. Medoid had: “${orig}”${d.body.note ? '\nNote: ' + d.body.note : ''}`; }
+        else {
+          if (sp.start === sp.end) { m.classList.add('ins'); m.textContent = '‸'; } else m.textContent = orig;
+          const alts = Object.entries(sp.alternatives).map(([k, v]) => `${short(k)}: ${v ? '“' + v + '”' : '(nothing)'}`).join('\n');
+          m.title = `${Object.keys(sp.alternatives).length} of ${pg.consensus.readers.length - 1} readers differ (weight ${(sp.weight || 0).toFixed(2)})${sp.of > 1 ? ` · part ${sp.piece + 1} of ${sp.of} of a span across lines` : ''}\n${alts}\nClick to decide.`;
+        }
+        m.setAttribute('aria-label', m.title.split('\n')[0]);
+        const openIt = () => openSpanDecision(pg, l, sp, m);
+        m.onclick = e => { e.preventDefault(); e.stopPropagation(); openIt(); };
+        m.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openIt(); } };
+        s.append(m); pos = Math.max(pos, sp.end);
+      }
+      if (pos < text.length) s.append(document.createTextNode(text.slice(pos)));
+      if (!text.length) s.append(document.createTextNode(' '));
+    }
+    s.addEventListener('mouseenter', () => hot([l.line_id])); s.addEventListener('mouseleave', () => hot([]));
+    const edit = el('button', 'edit', '✎'); edit.title = 'Replace this whole line'; edit.setAttribute('aria-label', `Replace line ${l.line_id}`);
+    edit.onclick = e => { e.stopPropagation(); openLineDecision(pg, l, edit); };
+    wrap.append(s, edit);
+    return wrap;
+  }
+  function renderBlock(pg, b, dec) {
+    const seg = el('div', 'seg'); seg.dataset.lines = b.lines.join(' '); seg.dataset.block = b.block_id;
+    const [ma, mb] = pg.translation.models; const d = dec[`block:${pg.page_id}:${b.block_id}`];
+    const notes = (pg.translation.segments || {});
+    const segNotes = [];
+    for (const m of [ma, mb]) for (const sid of ((m === ma ? b.a : b.b) || {}).segments || []) { const sg = (notes[m] || []).find(x => x.segment_id === sid); if (sg && sg.note) segNotes.push(`${short(m)}: ${sg.note}`); if (sg && sg.verified === false) segNotes.push(`${short(m)}: line reference could not be verified`); }
+    if (d) {
+      seg.classList.add('decided');
+      const c = d.body.choice || 'a'; const text = c === 'b' ? (b.b || {}).text : c === 'custom' ? d.body.text : (b.a || {}).text;
+      seg.append(el('span', 'tag', c === 'custom' ? `${d.who || 'reader'}` : short(c === 'b' ? mb : ma)), document.createTextNode(text || ''));
+      const ch = el('button', 'decide', 'Change'); ch.onclick = e => { e.stopPropagation(); openBlockDecision(pg, b, ch); }; seg.append(el('span', 'note', `Decided by ${d.who || 'a reader'} on ${d.ts}${d.body.note ? ' · ' + d.body.note : ''}`), ch);
+    } else if (b.divergent && b.a && b.b) {
+      seg.classList.add('divergent');
+      const [pa, pb] = wordDiff(b.a.text, b.b.text);
+      const A = el('div'); A.append(el('span', 'tag', short(ma)), diffNode(pa)); const B = el('div', 'alt'); B.append(el('span', 'tag', short(mb)), diffNode(pb));
+      seg.append(A, B);
+      const btn = el('button', 'decide', 'Decide'); btn.onclick = e => { e.stopPropagation(); openBlockDecision(pg, b, btn); }; seg.append(el('span', 'note', `The two translations differ (distance ${(b.dist || 0).toFixed(2)}).`), btn);
+    } else if (b.a) {
+      seg.append(el('span', 'tag', short(ma)), document.createTextNode(b.a.text));
+      if (b.b) { seg.title = `${short(mb)}: ${b.b.text}`; const alt = el('button', 'decide', 'Other reading'); alt.onclick = e => { e.stopPropagation(); openBlockDecision(pg, b, alt); }; seg.append(alt); }
+    } else if (b.b) {
+      seg.append(el('span', 'tag', short(mb)), document.createTextNode(b.b.text));
+    }
+    if (segNotes.length) seg.append(el('span', 'note', segNotes.join(' · ')));
+    if (pg.translation.stale) seg.append(el('span', 'note stale', 'The transcription changed after this translation was made.'));
+    seg.addEventListener('mouseenter', () => hot(b.lines)); seg.addEventListener('mouseleave', () => hot([]));
+    return seg;
+  }
+
+  function renderLog() {
+    const box = el('aside', 'rr-log'); box.setAttribute('aria-label', 'Log');
+    const all = store.all(), st = statuses(), pg = page();
+    const open = all.filter(e => ['issue', 'question', 'comment'].includes(e.type) && st[e.id] === 'open').length;
+    box.append(el('h2', '', `Log · ${open} open`));
+    const f = el('div', 'filters');
+    const mkSel = (key, opts) => { const s = el('select'); for (const [v, t] of opts) { const o = el('option', '', t); o.value = v; s.append(o); } s.value = prefs.log[key]; s.onchange = () => { prefs.log[key] = s.value; savePrefs(); renderWork(); }; return s; };
+    f.append(mkSel('scope', [['page', 'this page'], ['all', 'all pages']]), mkSel('type', [['all', 'everything'], ['issue', 'issues'], ['question', 'questions'], ['comment', 'comments'], ['decision', 'decisions'], ['excerpt', 'excerpts']]), mkSel('status', [['open', 'open'], ['all', 'open and resolved'], ['resolved', 'resolved']]));
+    box.append(f);
+    const shown = all.filter(e => e.type !== 'status' && e.type !== 'highlight').filter(e => prefs.log.scope === 'all' || (e.anchor && e.anchor.page === pg.page_id))
+      .filter(e => prefs.log.type === 'all' || e.type === prefs.log.type)
+      .filter(e => { if (!(e.id in st)) return prefs.log.status !== 'resolved'; return prefs.log.status === 'all' || (prefs.log.status === 'open' ? st[e.id] === 'open' : st[e.id] !== 'open'); })
+      .reverse();
+    if (!shown.length) box.append(el('p', 'empty', 'Nothing here yet. Select a passage and leave a question, or decide a highlighted passage.'));
+    for (const e of shown) {
+      const it = el('div', 'item' + (st[e.id] && st[e.id] !== 'open' ? ' resolved' : ''));
+      const meta = el('div', 'meta'); meta.append(el('span', 'badge ' + e.type, e.type), el('span', '', e.who || 'unsigned'), el('span', '', e.ts.replace('T', ' ').slice(0, 16)));
+      if (e.anchor) meta.append(el('span', 'mono', `${e.anchor.page === pg.page_id ? '' : e.anchor.page + ' '}${(e.anchor.lines || []).join(' ')}${e.anchor.layer === 'translation' ? ' (translation)' : ''}`));
+      it.append(meta);
+      if (e.anchor && e.anchor.quote) it.append(el('div', 'quote', e.anchor.quote));
+      if (e.type === 'decision') it.append(el('div', 'text', `${e.body.target.split(':')[0]} ${e.body.target.split(':').slice(2).join(':')}: ${e.body.choice}${e.body.reader ? ' (' + short(e.body.reader) + ')' : ''}${e.body.text != null && e.body.choice !== 'keep' ? ' → “' + e.body.text + '”' : ''}${e.body.note ? ' · ' + e.body.note : ''}`));
+      else if (e.type === 'excerpt') it.append(el('div', 'text', `copied as ${e.body.format}`));
+      else if (e.body && e.body.text) it.append(el('div', 'text', e.body.text));
+      const acts = el('div', 'acts');
+      if (e.anchor && e.anchor.lines && e.anchor.lines.length) { const g = el('button', '', 'Go to'); g.onclick = () => goTo(e.anchor.page, e.anchor.lines); acts.append(g); }
+      if (e.id in st) { const r = el('button', '', st[e.id] === 'open' ? 'Resolve' : 'Reopen'); r.onclick = () => store.add(mk('status', e.anchor, { target: e.id, status: st[e.id] === 'open' ? 'resolved' : 'open', note: '' }, e.id)); acts.append(r); }
+      if (st[e.id] === 'open') { const rp = el('button', '', 'Reply'); rp.onclick = () => openNote('comment', e.anchor, rp, e.id); acts.append(rp); }
+      it.append(acts); box.append(it);
+    }
+    return box;
+  }
+  function renderFoot() {
+    if (!footEl) return;
+    footEl.replaceChildren(); const pg = page();
+    const d = el('details'); d.append(el('summary', '', 'Where this page comes from · readers, runs, build'));
+    const inner = el('div'); const t = el('table');
+    const row = (k, v) => { const tr = el('tr'); tr.append(el('th', '', k), el('td', 'mono', v == null ? '' : String(v))); t.append(tr); };
+    row('build', `${DATA.build_id}${DATA.parent_build ? ' (from ' + DATA.parent_build + ')' : ''} · created ${DATA.created}`);
+    row('settled text', `medoid reader ${pg.diplomatic.reader}, run ${pg.diplomatic.run_id}, prompt sha256 ${(pg.diplomatic.prompt_sha256 || '').slice(0, 12)}…, ${pg.diplomatic.path}`);
+    row('consensus', `run ${pg.consensus.run_id} · ${pg.consensus.readers.join(', ')} · agreement ${pg.consensus.agreement} · ${pg.consensus.spans} spans, ${pg.consensus.check_in} to check (weight ≥ ${pg.consensus.min_weight})${pg.consensus.medoid_cer_norm != null ? ' · medoid normalised CER ' + pg.consensus.medoid_cer_norm : ''}`);
+    if (pg.anchors) row('anchors', `${pg.anchors.segmentation.reader} (${pg.anchors.segmentation.polygons} polygons, ${pg.anchors.segmentation.path}) · max distance ${pg.anchors.max_dist} · ${pg.anchors.matched} matched, ${pg.anchors.merged} merged, ${pg.anchors.split} split, ${pg.anchors.unanchored} unanchored`);
+    if (hasTranslation(pg)) row('translation', `run ${pg.translation.run_id} · ${pg.translation.models.join(' vs ')} · divergence threshold ${pg.translation.min_divergence} · ${pg.translation.blocks.length} blocks${Object.values(pg.translation.uncovered || {}).some(u => u.length) ? ' · uncovered lines: ' + Object.entries(pg.translation.uncovered).map(([m, u]) => `${short(m)} ${u.join(' ')}`).join('; ') : ''}`);
+    row('normalisation', `evaluate.normalize sha256 ${(DATA.normalize_sha256 || '').slice(0, 12)}… (ſ→s, superscript umlauts, hyphenation, whitespace; spans were computed on it)`);
+    row('log', `${DATA.paths.log} · ${(DATA.log || []).length} events at build time`);
+    inner.append(t); d.append(inner); footEl.append(d);
+  }
+
+  // ---------- hover, selection, navigation ----------
+  function hot(ids) {
+    $$('.fig rect.hot', workEl).forEach(r => r.classList.remove('hot'));
+    $$('.ln.hot, .seg.hot', workEl).forEach(n => n.classList.remove('hot'));
+    for (const id of ids) { $$(`.fig rect[data-line="${id}"]`, workEl).forEach(r => r.classList.add('hot')); $$(`.ln[data-line="${id}"]`, workEl).forEach(n => n.classList.add('hot')); }
+    $$('.seg[data-lines]', workEl).forEach(s => { if (s.dataset.lines.split(' ').some(x => ids.includes(x))) s.classList.add('hot'); });
+  }
+  function selRects(ids) { $$('.fig rect.sel', workEl).forEach(r => r.classList.remove('sel')); for (const id of ids) $$(`.fig rect[data-line="${id}"]`, workEl).forEach(r => r.classList.add('sel')); }
+  function goTo(pid, lines) {
+    const i = pages.findIndex(p => p.page_id === pid);
+    if (i >= 0 && i !== pageIdx) { pageIdx = i; prefs.page = pid; savePrefs(); history.replaceState(null, '', '#' + encodeURIComponent(pid)); renderBar(); renderWork(); renderFoot(); }
+    const first = $(`.ln[data-line="${lines[0]}"]`, workEl) || $(`.seg[data-lines~="${lines[0]}"]`, workEl);
+    if (first) first.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    for (const id of lines) { $$(`.fig rect[data-line="${id}"], .ln[data-line="${id}"]`, workEl).forEach(n => { n.classList.remove('flash'); void n.offsetWidth; n.classList.add('flash'); setTimeout(() => n.classList.remove('flash'), 1700); }); }
+  }
+  let floatEl = null, popEl = null, currentSel = null;
+  const hideFloat = () => { if (floatEl) { floatEl.remove(); floatEl = null; } };
+  const closePop = () => { if (popEl) { popEl.remove(); popEl = null; } };
+  function selectionInfo() {
+    const s = getSelection(); if (!s || s.isCollapsed || !s.rangeCount) return null;
+    const r = s.getRangeAt(0); const pane = $('.rr-text', workEl); if (!pane || !pane.contains(r.commonAncestorContainer)) return null;
+    const nodes = $$('.ln, .seg', pane).filter(n => r.intersectsNode(n)); if (!nodes.length) return null;
+    const layer = nodes.every(n => n.classList.contains('seg')) ? 'translation' : 'transcription';
+    const picked = nodes.filter(n => n.classList.contains(layer === 'translation' ? 'seg' : 'ln'));
+    const lines = uniq(picked.flatMap(n => n.classList.contains('ln') ? [n.dataset.line] : n.dataset.lines.split(' ').filter(Boolean)));
+    const pg = page(); let quote = s.toString().replace(/\s+\n/g, '\n').trim();
+    if (layer === 'translation') for (const n of picked) for (const x of n.querySelectorAll('.tag, .note, button')) quote = quote.replace(x.textContent, '').trim();
+    const info = { doc: pg.doc_id, page: pg.page_id, layer, lines, segment: null, block: layer === 'translation' ? (picked[0].dataset.block || null) : null, start: null, end: null, quote };
+    if (layer === 'transcription' && picked.length) {
+      const f = picked[0], l = picked[picked.length - 1];
+      const so = f.contains(r.startContainer) ? offsetWithin(f, r.startContainer, r.startOffset) : 0;
+      const eo = l.contains(r.endContainer) ? offsetWithin(l, r.endContainer, r.endOffset) : l.textContent.length;
+      info.start = { line: f.dataset.line, char: so }; info.end = { line: l.dataset.line, char: eo };
+      // the quote is cut from the lines themselves, so nothing outside the text (the ✎ button) can leak in
+      const texts = picked.map(n => n.textContent.replace(/ /g, ''));
+      info.quote = (picked.length === 1 ? texts[0].slice(so, eo) : [texts[0].slice(so), ...texts.slice(1, -1), texts[texts.length - 1].slice(0, eo)].join('\n')).trim();
+    }
+    return { info, rect: r.getBoundingClientRect(), block: layer === 'translation' && pg.translation ? pg.translation.blocks.find(b => b.block_id === info.block) : null };
+  }
+  let selTimer = null;
+  document.addEventListener('selectionchange', () => { clearTimeout(selTimer); selTimer = setTimeout(onSelection, 140); });
+  function onSelection() {
+    if (popEl) return;
+    const si = selectionInfo();
+    if (!si) { selRects([]); hideFloat(); currentSel = null; return; }
+    currentSel = si; selRects(si.info.lines); showFloat(si);
+  }
+  function showFloat(si) {
+    hideFloat();
+    const f = el('div', 'rr-float'); f.setAttribute('role', 'toolbar'); f.addEventListener('mousedown', e => e.preventDefault());
+    const b = (t, fn, title) => { const x = el('button', '', t); x.onclick = fn; if (title) x.title = title; f.append(x); return x; };
+    b('Issue', () => openNote('issue', si.info, f), 'Something is wrong here; log it to come back to');
+    b('Question', () => openNote('question', si.info, f), 'Something to ask or look up');
+    b('Comment', () => openNote('comment', si.info, f), 'A note on this passage');
+    f.append(el('span', 'sep'));
+    b('Copy', () => copyOut('text', si), 'Copy the selected text');
+    b('Cite', () => copyOut('plain', si), 'Copy the passage with its citation');
+    b('Markdown', () => copyOut('markdown', si), 'Blockquote with a footnote citation');
+    b('CSL-JSON', () => copyOut('csl', si), 'For Zotero: Import from Clipboard');
+    document.body.append(f); floatEl = f;
+    const w = f.offsetWidth, left = Math.max(8, Math.min(window.innerWidth - w - 8, si.rect.left)), top = si.rect.bottom + 8 > window.innerHeight - 50 ? si.rect.top - f.offsetHeight - 8 : si.rect.bottom + 8;
+    f.style.left = left + 'px'; f.style.top = Math.max(8, top) + 'px';
+  }
+  async function copyOut(format, si) {
+    const pg = page(); const c = citeFor(pg, si.info.lines, si.info.layer, si.info.quote, si.block);
+    const text = format === 'text' ? si.info.quote : format === 'plain' ? `“${si.info.quote}” — ${c.plain}` : format === 'markdown' ? c.markdown : c.csl_json;
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (_) { ok = false; }
+    if (format !== 'text') store.add(mk('excerpt', si.info, { format, text: si.info.quote, citation: format === 'csl' ? c.csl : c.plain }));
+    if (ok) toast(format === 'text' ? 'Copied.' : format === 'csl' ? 'CSL-JSON copied. In Zotero: File → Import from Clipboard.' : 'Copied with citation.');
+    else { openPop(si.rect, pop => { pop.append(el('h3', '', 'Copy this'), (() => { const p = el('pre', '', text); return p; })(), el('p', 'hint', 'The browser would not write to the clipboard; select and copy from here.')); }); }
+  }
+  function openPop(rect, fill) {
+    closePop(); hideFloat();
+    const pop = el('div', 'rr-pop'); pop.setAttribute('role', 'dialog'); pop.addEventListener('mousedown', e => e.stopPropagation());
+    fill(pop);
+    const acts = pop.querySelector('.actions') || el('div', 'actions'); if (!acts.parentElement) pop.append(acts);
+    const cancel = el('button', '', 'Close'); cancel.onclick = closePop; acts.prepend(cancel);
+    document.body.append(pop); popEl = pop;
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    let left = Math.max(8, Math.min(window.innerWidth - w - 8, rect.left)), top = rect.bottom + 10; if (top + h > window.innerHeight - 10) top = Math.max(8, rect.top - h - 10);
+    pop.style.left = left + 'px'; pop.style.top = top + 'px';
+    const first = pop.querySelector('textarea, input[type=text], input[type=radio]'); if (first) first.focus();
+  }
+  function openNote(type, anchor, near, ref) {
+    const rect = near.getBoundingClientRect ? near.getBoundingClientRect() : near;
+    openPop(rect, pop => {
+      pop.append(el('h3', '', { issue: 'Mark an issue', question: 'Ask a question', comment: ref ? 'Reply' : 'Add a comment' }[type]));
+      if (anchor && anchor.quote) pop.append(el('div', 'q', anchor.quote));
+      const ta = el('textarea'); ta.rows = 3; ta.placeholder = type === 'issue' ? 'What is wrong, or what to check' : type === 'question' ? 'What you want to know or look up' : 'Your note'; pop.append(ta);
+      const acts = el('div', 'actions'); const save = el('button', 'primary', 'Save to log'); save.onclick = () => { if (!ta.value.trim()) { ta.focus(); return; } store.add(mk(type, anchor, { text: ta.value.trim() }, ref)); closePop(); getSelection().removeAllRanges(); toast('Logged.'); }; acts.append(save); pop.append(acts);
+    });
+  }
+  function openSpanDecision(pg, l, sp, markEl) {
+    const orig = l.settled.slice(sp.start, sp.end);
+    openPop(markEl.getBoundingClientRect(), pop => {
+      pop.append(el('h3', '', `Readers disagree here · ${Object.keys(sp.alternatives).length} of ${pg.consensus.readers.length - 1} differ · weight ${(sp.weight || 0).toFixed(2)}`));
+      pop.append(el('div', 'q', l.settled));
+      if (sp.of > 1) pop.append(el('p', 'hint', `This passage runs across ${sp.of} lines; the decision text is placed on its first part.`));
+      const name = 'd' + sp.span_id; let chosen = { choice: 'keep', reader: null, text: orig };
+      const opt = (label, t, value, reader) => { const lab = el('label', 'opt'); const r = el('input'); r.type = 'radio'; r.name = name; r.value = value; if (value === 'keep') r.checked = true; r.onchange = () => { chosen = { choice: value, reader, text: t }; }; const box = el('span'); box.append(el('span', 'r', label), el('span', 't', t === '' ? '(nothing: the readers have no text here)' : t)); lab.append(r, box); pop.append(lab); };
+      opt(`keep the medoid (${short(pg.diplomatic.reader)})`, orig, 'keep', null);
+      for (const [k, v] of Object.entries(sp.alternatives)) opt(short(k), v, 'alt', k);
+      const lab = el('label', 'opt'); const r = el('input'); r.type = 'radio'; r.name = name; r.value = 'custom'; const inp = el('input'); inp.type = 'text'; inp.placeholder = 'your own reading (ſ and old spelling welcome)'; inp.oninput = () => { r.checked = true; chosen = { choice: 'custom', reader: null, text: inp.value }; }; r.onchange = () => { chosen = { choice: 'custom', reader: null, text: inp.value }; inp.focus(); }; const box = el('span'); box.style.flex = '1'; box.append(el('span', 'r', 'other'), inp); lab.append(r, box); pop.append(lab);
+      const note = el('textarea'); note.rows = 2; note.placeholder = 'why (optional)'; pop.append(note);
+      pop.append(el('p', 'hint', 'Alternatives are shown as the consensus normalised them (ſ as s). Your decision is recorded as an event; the text itself changes when apply and build are run.'));
+      const acts = el('div', 'actions'); const save = el('button', 'primary', 'Record decision'); save.onclick = () => {
+        if (chosen.choice === 'custom' && !inp.value.trim()) { inp.focus(); return; }
+        const anchor = { doc: pg.doc_id, page: pg.page_id, layer: 'transcription', lines: [l.line_id], segment: null, block: null, start: { line: l.line_id, char: sp.start }, end: { line: l.line_id, char: sp.end }, quote: orig };
+        store.add(mk('decision', anchor, { target: `span:${pg.page_id}:${sp.span_id}`, choice: chosen.choice, reader: chosen.reader, text: chosen.choice === 'custom' ? inp.value : chosen.text, note: note.value.trim() })); closePop(); toast('Decision recorded.');
+      }; acts.append(save); pop.append(acts);
+    });
+  }
+  function openLineDecision(pg, l, near) {
+    const dec = decisions(); const cur = (dec[`line:${pg.page_id}:${l.line_id}`] || {}).body; const text = cur ? cur.text : l.settled;
+    openPop(near.getBoundingClientRect(), pop => {
+      pop.append(el('h3', '', `Replace line ${l.line_id}`), el('p', 'hint', 'The medoid reading of this line is below; edit it to what the page says. The diplomatic text is kept; your version becomes the settled text at the next apply.'));
+      const ta = el('textarea', 'src'); ta.rows = 3; ta.value = text; pop.append(ta);
+      const note = el('textarea'); note.rows = 2; note.placeholder = 'why (optional)'; pop.append(note);
+      const acts = el('div', 'actions'); const save = el('button', 'primary', 'Record decision'); save.onclick = () => { store.add(mk('decision', { doc: pg.doc_id, page: pg.page_id, layer: 'transcription', lines: [l.line_id], segment: null, block: null, start: { line: l.line_id, char: 0 }, end: { line: l.line_id, char: l.settled.length }, quote: l.settled }, { target: `line:${pg.page_id}:${l.line_id}`, choice: 'custom', reader: null, text: ta.value, note: note.value.trim() })); closePop(); toast('Decision recorded.'); }; acts.append(save); pop.append(acts);
+    });
+  }
+  function openBlockDecision(pg, b, near) {
+    const [ma, mb] = pg.translation.models;
+    openPop(near.getBoundingClientRect(), pop => {
+      pop.append(el('h3', '', `Translation of ${b.lines.join(' ')}`));
+      pop.append(el('div', 'q', b.lines.map(id => (pg.lines.find(l => l.line_id === id) || {}).settled || '').join('\n')));
+      let chosen = { choice: 'a', text: (b.a || {}).text || '' }; const name = 'b' + b.block_id;
+      const opt = (label, t, value) => { const lab = el('label', 'opt'); const r = el('input'); r.type = 'radio'; r.name = name; r.value = value; if (value === 'a') r.checked = true; r.onchange = () => { chosen = { choice: value, text: t }; }; const box = el('span'); box.append(el('span', 'r', label), el('span', 't', t)); lab.append(r, box); pop.append(lab); };
+      if (b.a) opt(short(ma), b.a.text, 'a'); if (b.b) opt(short(mb), b.b.text, 'b');
+      const lab = el('label', 'opt'); const r = el('input'); r.type = 'radio'; r.name = name; r.value = 'custom'; const ta = el('textarea'); ta.rows = 3; ta.placeholder = 'your own translation'; ta.oninput = () => { r.checked = true; chosen = { choice: 'custom', text: ta.value }; }; r.onchange = () => { chosen = { choice: 'custom', text: ta.value }; ta.focus(); }; const box = el('span'); box.style.flex = '1'; box.append(el('span', 'r', 'other'), ta); lab.append(r, box); pop.append(lab);
+      const note = el('textarea'); note.rows = 2; note.placeholder = 'why (optional)'; pop.append(note);
+      const acts = el('div', 'actions'); const save = el('button', 'primary', 'Record decision'); save.onclick = () => { if (chosen.choice === 'custom' && !ta.value.trim()) { ta.focus(); return; } store.add(mk('decision', { doc: pg.doc_id, page: pg.page_id, layer: 'translation', lines: b.lines, segment: null, block: b.block_id, start: null, end: null, quote: (b.a || b.b || {}).text || '' }, { target: `block:${pg.page_id}:${b.block_id}`, choice: chosen.choice, reader: chosen.choice === 'a' ? ma : chosen.choice === 'b' ? mb : null, text: chosen.choice === 'custom' ? ta.value : chosen.text, note: note.value.trim() })); closePop(); toast('Decision recorded.'); }; acts.append(save); pop.append(acts);
+    });
+  }
+  function goPage(i) {
+    if (i < 0 || i >= pages.length) return;
+    pageIdx = i; prefs.page = pages[i].page_id; savePrefs();
+    history.replaceState(null, '', '#' + encodeURIComponent(pages[i].page_id));
+    renderBar(); renderWork(); renderFoot();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function openAddSource(near) {
+    openPop(near.getBoundingClientRect(), pop => {
+      pop.append(el('h3', '', 'Bringing another document into this room'));
+      pop.append(el('p', 'hint', 'A source arrives here after it has been through the bake-off with a hybrid reader and the consensus step (02-your-project/README.md has those commands). Then, from the repository root:'));
+      pop.append(el('pre', '', [
+        `uv run python -m mueser.reading collect --case ${DATA.case} \\`,
+        `  --consensus <outputs/consensus/consensus.json> --runs <outputs/runs/<run_id>> --pages <inputs/pages> --segmentation "hybrid:*"`,
+        `uv run python -m mueser.reading init-doc --pages <inputs/my-source> --out ${DATA.case}/inputs/metadata.json`,
+        `uv run python -m mueser.reading settle --case ${DATA.case}`,
+        `uv run python -m mueser.reading translate --case ${DATA.case}`,
+        `uv run python -m mueser.reading build --case ${DATA.case}`,
+      ].join('\n')));
+      pop.append(el('p', 'hint', 'init-doc writes the page ids; the title, author, date, place, publisher and archive in metadata.json are yours to fill, and the citations come from them. The README of this case, section "Your own pages", says the same at more length.'));
+    });
+  }
+  document.addEventListener('keydown', e => {
+    const t = e.target;
+    if (popEl || (t && typeof t.matches === 'function' && t.matches('input, textarea, select'))) return;
+    if (e.key === 'ArrowRight' && !e.altKey && !e.metaKey && !e.ctrlKey) goPage(pageIdx + 1);
+    if (e.key === 'ArrowLeft' && !e.altKey && !e.metaKey && !e.ctrlKey) goPage(pageIdx - 1);
+  });
+  let toastTimer = null;
+  function toast(msg) { let t = $('.rr-toast'); if (!t) { t = el('div', 'rr-toast'); t.setAttribute('role', 'status'); document.body.append(t); } t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, msg.length > 60 ? 9000 : 2600); }
+  document.addEventListener('mousedown', e => { if (popEl && !popEl.contains(e.target)) closePop(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePop(); hideFloat(); } });
+  window.addEventListener('hashchange', () => { const pid = decodeURIComponent(location.hash.slice(1)); const i = pages.findIndex(p => p.page_id === pid); if (i >= 0 && i !== pageIdx) { pageIdx = i; renderBar(); renderWork(); renderFoot(); } });
+
+  // ---------- boot ----------
+  store.load();
+  renderAll();
+  store.ping().then(() => { renderBar(); renderWork(); });
+})();
+</script>
+
+
+
+<!-- mueser-review:start -->
+<style>/* Shared reading room: source first, evidence one disclosure away. */
+body.review-ui {
+  --bg:#f6f5f0; --panel:#fffefa; --ink:#25342f; --muted:#667169;
+  --line:#dcded5; --accent:#335f4c; --soft:#eaf0e7; --warn:#956129;
+  --del:#f8ddd6; --ins:#dfecdc;
+  background:var(--bg); color:var(--ink); margin:0;
+  font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.review-ui *, .review-ui *::before, .review-ui *::after { box-sizing:border-box; }
+.review-ui [hidden] { display:none!important; }
+.review-ui a { color:var(--accent); text-underline-offset:4px; }
+.review-ui button,.review-ui input,.review-ui select { font:inherit; color:inherit; }
+.review-ui button,.review-ui select { cursor:pointer; }
+.review-ui :focus-visible { outline:3px solid #b17937; outline-offset:4px; }
+.review-ui h1,.review-ui h2,.review-ui h3 { color:var(--ink); line-height:1.18; }
+.review-ui h1 { font:normal clamp(30px,3.5vw,48px)/1.12 Georgia,serif; letter-spacing:-1.2px; margin:12px 0 18px; max-width:1000px; }
+.review-ui h2 { font:normal 27px/1.2 Georgia,serif; margin:0 0 18px; }
+.review-ui h3 { font-size:16px; margin:18px 0 12px; }
+.review-ui p { margin:10px 0 18px; }
+.review-ui .mono,.review-ui code { font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; overflow-wrap:anywhere; }
+.review-ui .muted { color:var(--muted); }
+.review-ui .eyebrow { font:600 10px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-transform:uppercase; letter-spacing:1.8px; color:var(--muted); }
+.review-topbar { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:17px 32px; border-bottom:1px solid var(--line); background:var(--panel); }
+.review-topbar a { text-decoration:none; font-size:13px; }
+.review-brand { display:flex; align-items:center; gap:12px; font-weight:650; }
+.review-brand::before { content:"M"; display:grid; place-items:center; width:30px; height:30px; background:var(--accent); color:white; font:20px Georgia,serif; }
+.review-topbar .top-links { display:flex; gap:22px; flex-wrap:wrap; }
+.review-ui .review-header { max-width:none; padding:32px 40px 24px; margin:0; border-bottom:1px solid var(--line); }
+.review-header .lead { max-width:720px; color:var(--muted); font-size:16px; margin-bottom:0; }
+.review-header .methodology { margin-top:18px; max-width:1000px; }
+.review-ui details { border:1px solid var(--line); border-radius:5px; background:var(--panel); margin:12px 0; }
+.review-ui summary { padding:13px 17px; cursor:pointer; font-size:13px; font-weight:600; }
+.review-ui details[open]>summary { border-bottom:1px solid var(--line); margin-bottom:14px; }
+.review-ui details>p,.review-ui details>pre,.review-ui details>ul,.review-ui details>table,.review-ui details>div { margin:14px 18px; }
+.review-ui details>details { margin:14px 18px; }
+.review-ui .review-shell { display:grid; grid-template-columns:235px minmax(0,1fr); max-width:1800px; margin:auto; }
+.source-nav { padding:26px 18px; border-right:1px solid var(--line); align-self:start; position:sticky; top:0; max-height:100vh; overflow:auto; }
+.source-nav .eyebrow { padding:0 10px; }
+.source-nav input { display:block; width:100%; min-width:0; background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:9px 10px; font-size:12px; margin:16px 0 22px; }
+.source-nav .source-group { font-size:10px; font-weight:600; letter-spacing:1.3px; text-transform:uppercase; padding:15px 10px 7px; color:var(--muted); }
+.source-nav a { display:block; color:var(--ink); text-decoration:none; padding:11px 12px; margin:3px 0; font-size:13px; line-height:1.45; border-left:2px solid transparent; border-radius:0 4px 4px 0; }
+.source-nav a:hover { background:#eeeee7; }
+.source-nav a[aria-current="page"] { background:var(--soft); border-left-color:var(--accent); color:var(--accent); font-weight:600; }
+.source-nav small { display:block; color:var(--muted); font-size:11px; font-weight:400; margin-top:4px; }
+.source-nav .nav-foot { border-top:1px solid var(--line); padding:18px 10px; margin-top:24px; color:var(--muted); font-size:11px; }
+.review-content { min-width:0; padding:26px 32px 60px; }
+.review-ui .review-content>section { padding:0; max-width:none; margin:0; }
+.review-ui .review-content>.run-evidence { margin:0 0 22px; }
+.source-bar { display:flex; gap:16px; justify-content:space-between; align-items:center; padding-bottom:20px; }
+.source-bar h2 { margin:7px 0 0; }
+.source-bar .source-kind { display:block; color:var(--muted); font-size:11px; margin-top:7px; }
+.source-pager { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.source-pager button { border:1px solid var(--line); background:var(--panel); width:34px; height:34px; border-radius:4px; }
+.source-pager button:disabled { opacity:.35; cursor:default; }
+.source-counter { font:11px ui-monospace,monospace; color:var(--muted); margin:0 6px; }
+.review-ui .page { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:24px; border:0; margin:0; padding:0; }
+.review-ui .page>div { min-width:0; }
+.review-ui .source-image { align-self:start; position:sticky; top:22px; padding:18px; border:1px solid var(--line); background:#eeede5; border-radius:5px; }
+.source-image .image-label { display:flex; justify-content:space-between; gap:10px; margin-bottom:14px; font-size:10px; text-transform:uppercase; letter-spacing:1.3px; color:var(--muted); }
+.review-ui .page img { display:block; width:100%; height:auto; border:0; box-shadow:0 2px 12px #26382d12; }
+.review-ui .source-image p { font-size:12px; line-height:1.6; }
+.source-image .image-hint { margin:12px 0 0; text-align:center; font-size:11px; }
+.review-ui .reading-column>h3:first-child { margin-top:0; }
+.review-ui .reading-column { padding:20px 24px; background:var(--panel); border:1px solid var(--line); border-radius:5px; }
+.reader-picker { display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1.2px; margin-bottom:18px; }
+.reader-picker select { display:block; width:100%; max-width:100%; padding:11px 34px 11px 12px; margin-top:9px; background:var(--bg); border:1px solid var(--line); border-radius:4px; font-size:13px; text-transform:none; letter-spacing:0; font-weight:500; }
+.reader-note { font-size:11px; color:var(--muted); margin-top:-10px!important; }
+.review-ui pre,.review-ui .text { font:17px/1.85 Georgia,"Times New Roman",serif; white-space:pre-wrap; overflow-wrap:anywhere; word-break:normal; background:transparent; border:0; border-radius:0; padding:0; margin:20px 0; }
+.review-ui .text { padding:0; }
+.review-ui details pre { font:12px/1.7 ui-monospace,monospace; margin:18px; }
+.review-ui .pane>p:has(.stat) { display:flex; flex-wrap:wrap; gap:12px 20px; padding:16px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.review-ui .stat { display:block; margin:0; font:16px/1.5 ui-monospace,monospace; }
+.review-ui .stat b { display:block; font:500 10px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.review-ui .provenance summary { font-weight:500; color:var(--muted); }
+.review-ui .table-scroll { max-width:100%; overflow:auto; margin:14px 0; }
+.review-ui table { border-collapse:collapse; width:100%; font:12px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+.review-ui td,.review-ui th { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+.review-ui th { font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-weight:600; background:var(--bg); }
+.review-ui td.num { text-align:right; font-variant-numeric:tabular-nums; }
+.review-ui .matrix { min-width:850px; }
+.review-ui .matrix th { text-transform:none; letter-spacing:0; }
+.review-ui .chip { display:inline-block; padding:2px 6px; margin:3px 5px 3px 0; font:11px/1.5 ui-monospace,monospace; background:var(--soft); border-radius:3px; overflow-wrap:anywhere; }
+.review-ui mark { background:#efe5cb; border-bottom:1px solid #c8b57d; color:inherit; cursor:pointer; }
+.review-ui mark.strong { background:#eed3a8; border-color:#9e7130; }
+.review-ui mark.selected { outline:2px solid var(--accent); outline-offset:2px; }
+.review-ui .highlight-review mark:not(.strong),.review-ui .highlight-none mark { background:transparent; border-color:transparent; }
+.highlight-picker { display:flex; align-items:center; gap:12px; margin:18px 0 12px; font-size:12px; }
+.highlight-picker select { min-width:0; max-width:100%; background:var(--bg); border:1px solid var(--line); padding:7px 9px; border-radius:4px; font-size:12px; }
+.consensus-metrics { display:flex; flex-wrap:wrap; gap:20px; border-bottom:1px solid var(--line); padding:0 0 16px; margin-bottom:16px; }
+.consensus-metrics span { display:block; color:var(--muted); font-size:10px; }
+.consensus-metrics strong { font:24px/1.7 Georgia,serif; }
+.annotation-help { font-size:12px; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--line); }
+.annotation-detail { position:sticky; bottom:14px; background:var(--soft); border:1px solid var(--accent); padding:14px; border-radius:4px; font-size:12px; white-space:pre-wrap; overflow-wrap:anywhere; max-height:220px; overflow:auto; box-shadow:0 4px 16px #25342f14; }
+.annotation-detail button { float:right; background:transparent; border:0; font-size:17px; }
+.review-list { display:grid; gap:8px; }
+.review-list details { margin:0; }
+.review-list summary { display:flex; align-items:baseline; gap:12px; }
+.review-list .review-number { color:var(--muted); font:11px ui-monospace,monospace; min-width:22px; }
+.review-list .review-base { flex:1; min-width:0; font:16px/1.5 Georgia,serif; overflow-wrap:anywhere; }
+.review-list .review-weight { font:10px/1.5 ui-monospace,monospace; color:var(--muted); white-space:nowrap; }
+.review-ui .full-evidence { grid-column:1/-1; min-width:0; }
+.review-ui .consensus-stats { font-size:12px; margin:0 0 18px; padding-bottom:14px; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+.review-ui .layout-source { margin-bottom:24px; }
+.review-ui .layout-source .page { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.review-ui .layout-source .page>div { padding:16px; background:#eeede5; border:1px solid var(--line); border-radius:5px; }
+.review-ui .layout-source .page>div>p { min-height:48px; }
+.review-ui .fig svg { pointer-events:none; }
+.review-ui .layout-source .fig rect { pointer-events:all; }
+.review-ui .layout-tools { display:flex; gap:20px; align-items:center; margin:0 0 20px; font-size:12px; }
+.review-ui .leg { display:flex; flex-wrap:wrap; gap:8px; }
+.review-ui .leg span { font-size:11px; }
+/* Collection landing page. */
+.review-home main { max-width:1240px; padding:0 40px 70px; }
+.collection-hero { display:grid; grid-template-columns:1.25fr .75fr; gap:50px; padding:60px 0 45px; align-items:center; border-bottom:1px solid var(--line); }
+.collection-hero h1 { font-size:clamp(38px,5vw,66px); line-height:1.05; max-width:700px; }
+.collection-hero .sub { font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; max-width:620px; }
+.hero-image { position:relative; height:290px; overflow:hidden; background:#eae6d8; border:1px solid #d9d2bc; }
+.hero-image img { width:78%; display:block; margin:25px auto; transform:rotate(-5deg); box-shadow:0 6px 24px #342b2024; }
+.hero-image figcaption { position:absolute; bottom:0; left:0; right:0; padding:11px 15px; background:#eeeadfee; font:10px/1.4 ui-monospace,monospace; color:#645f51; }
+.collection-links { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+.collection-links a,.case-actions a { font-size:12px; text-decoration:none; border:1px solid var(--line); border-radius:4px; padding:9px 14px; background:var(--panel); }
+.collection-links a:first-child { background:var(--accent); border-color:var(--accent); color:white; }
+.review-ui .collection-intro { padding:26px 0 0; }
+.review-ui .collection-intro>h2 { font:24px Georgia,serif; }
+.review-ui .collection-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:22px 0 44px; }
+.review-ui .case-card { padding:25px; border:1px solid var(--line); background:var(--panel); border-radius:5px; display:flex; flex-direction:column; min-width:0; }
+.case-card h2 { font:27px/1.2 Georgia,serif; margin:8px 0 12px; }
+.case-card .case-desc { color:var(--muted); font-size:14px; margin:0 0 18px; }
+.case-card .case-result { font-size:12px; padding:14px 0; border-top:1px solid var(--line); margin:16px 0 0; }
+.case-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:auto; }
+.case-actions a:first-child { background:var(--soft); color:var(--accent); border-color:#c9d7c6; }
+.case-card details { background:transparent; margin:18px 0 0; border:0; border-top:1px solid var(--line); border-radius:0; }
+.case-card details summary { padding:12px 0 0; color:var(--muted); font-weight:400; }
+.review-home .flow { display:grid; grid-template-columns:1fr; gap:12px; }
+.review-home .step { padding:0 0 0 14px; border:0; border-left:2px solid var(--line); border-radius:0; background:transparent; font-size:12px; }
+.review-home .step h3 { font-size:13px; margin:6px 0; }
+.review-home .step .k { font-size:9px; }
+.review-home .flow .out { border-color:var(--accent); }
+.review-home .collection-notes { padding:22px 0; border-top:1px solid var(--line); }
+.review-home .collection-notes p { max-width:850px; }
+.review-home .legend { font-size:11px; }
+.review-home .collection-footer { font-size:12px; color:var(--muted); }
+/* Maps: quiet chrome around an expansive canvas, separate filters and evidence. */
+.review-map { height:100vh; display:flex; flex-direction:column; }
+.review-map .review-topbar { flex-shrink:0; padding:12px 24px; }
+.review-map>header { display:block; padding:20px 28px 16px; border:0; }
+.review-map>header h1 { font:32px/1.15 Georgia,serif; margin:0 0 8px; }
+.review-map>header .sub { display:block; font:12px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; max-width:1000px; }
+.review-map #counts { font:11px/1.6 ui-monospace,monospace; color:var(--accent); margin-top:8px; }
+.review-map>.controls { padding:12px 28px; background:var(--panel); gap:12px 22px; flex-shrink:0; align-items:flex-start; border-top:1px solid var(--line); }
+.review-map .controls label { font-size:12px; }
+.review-map .controls input[type=range] { width:120px; accent-color:var(--accent); }
+.review-map .controls select { background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:4px 7px; font-size:12px; }
+.review-map .controls details { margin:0; background:transparent; }
+.review-map .controls details summary { padding:5px 10px; font-size:11px; }
+.review-map .controls details>div { display:flex; flex-wrap:wrap; gap:12px; margin:12px; }
+.review-map main { flex:1; min-height:250px; height:auto; display:grid; grid-template-columns:minmax(0,1fr) 360px; }
+.review-map aside { padding:24px; min-width:0; background:var(--panel); border-left:1px solid var(--line); font-size:13px; overflow:auto; }
+.review-map aside h2 { font:25px Georgia,serif; margin:0 0 15px; }
+.review-map aside h3 { font-size:13px; }
+.review-map aside table { font-size:11px; }
+.review-map aside td { padding:8px 4px; }
+.review-map .unresolved { padding-left:18px; }
+.review-map .unresolved li { padding:10px 0; font-size:12px; border-bottom:1px solid var(--line); }
+.review-map .cand { padding:13px; border-radius:4px; font-size:12px; }
+.review-map .cand.chosen { background:var(--soft); border-color:#b6c8b2; }
+.review-map .legend { font-size:10px; }
+:root[data-theme="dark"] .review-map { --bg:#202923; --panel:#253129; --ink:#edf1e9; --muted:#bbc7ba; --line:#425247; --accent:#b2d7b8; --soft:#354938; }
+.review-ui .skip-link { position:absolute; left:16px; top:-80px; z-index:100; background:var(--panel); padding:12px; }
+.review-ui .skip-link:focus { top:10px; }
+@media(min-width:1600px) { .review-ui .page { gap:32px; } .review-ui .reading-column { padding:28px 36px; } }
+@media(max-width:1100px) { .review-ui .review-shell { grid-template-columns:195px minmax(0,1fr); } .review-content { padding:24px; } .review-ui .page { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; } .review-ui .reading-column { padding:16px; } .review-map main { grid-template-columns:minmax(0,1fr) 320px; } }
+@media(max-width:800px) {
+  .review-topbar { padding:12px 18px; } .review-topbar .eyebrow { display:none; } .review-topbar .top-links { gap:12px; } .review-topbar a { font-size:11px; }
+  .review-ui .review-header { padding:26px 20px; } .review-ui h1 { letter-spacing:-.6px; }
+  .review-ui .review-shell { display:block; } .source-nav { position:static; max-height:260px; border-right:0; border-bottom:1px solid var(--line); padding:18px 20px; }
+  .source-nav input { margin:12px 0; } .source-nav .nav-foot { display:none; } .source-nav a { display:inline-block; vertical-align:top; min-width:170px; max-width:100%; }
+  .source-nav .source-group { padding-top:8px; } .review-content { padding:22px 20px 40px; }
+  .review-ui .page,.review-ui .layout-source .page { grid-template-columns:1fr; } .review-ui .source-image { position:static; } .review-ui .source-image img { max-height:65vh; object-fit:contain; }
+  .source-bar { align-items:flex-start; } .source-bar h2 { font-size:24px; } .source-pager { gap:3px; }
+  .review-ui .collection-grid { grid-template-columns:1fr; } .review-home main { padding:0 20px 40px; }
+  .collection-hero { grid-template-columns:1fr; gap:20px; padding:36px 0; } .hero-image { display:none; }
+  .review-map { height:auto; min-height:100vh; } .review-map main { display:flex; flex-direction:column; } .review-map #map { height:55vh; min-height:320px; }
+  .review-map aside { overflow:visible; border-left:0; border-top:1px solid var(--line); } .review-map .controls { padding:14px 20px; } .review-map .controls>label:first-child { flex-wrap:wrap; }
+}
+@media print {
+  .review-ui [hidden] { display:block!important; } .review-topbar,.source-nav,.source-pager,.reader-picker,.skip-link { display:none!important; }
+  .review-ui .review-shell,.review-ui .page { display:block; } .review-ui .source-image { position:static; max-width:45%; } .review-content { padding:0; }
+}
+</style>
+<script>window.REVIEW_CONFIG={"kind": "reading", "home": "../../../../index.html"};
+/* Progressive enhancement only: the generated research content remains intact. */
+(() => {
+  'use strict';
+  const config = window.REVIEW_CONFIG;
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+  const link = (text, href) => { const a = el('a', '', text); a.href = href; return a; };
+  const disclosure = (title, nodes = [], cls = '') => {
+    const d = el('details', cls); d.append(el('summary', '', title), ...nodes); return d;
+  };
+  const wrapTable = t => {
+    if (t.parentElement.classList.contains('table-scroll')) return;
+    const box = el('div', 'table-scroll'); box.tabIndex = 0;
+    box.setAttribute('role', 'region'); box.setAttribute('aria-label', 'Scrollable evidence table');
+    t.before(box); box.append(t);
+  };
+  const labels = {
+    'real-gartenlaube-1853-p001': ['Die Gartenlaube', '1853 · Fraktur print'],
+    'real-grimm-khm-1812-i-p093': ['Grimm’s fairy tales', '1812 · Fraktur print'],
+    'real-schiller-musenalmanach-1796-p093': ['Schiller’s Musenalmanach', '1796 · Antiqua print'],
+    'real-kaskel-to-schnorr-1864': ['Kaskel to Schnorr', '1864 · Secretary’s hand'],
+    'real-schnitzler-to-beer-hofmann-1896': ['Schnitzler to Beer-Hofmann', '1896 · Private correspondence'],
+    'real-poesiealbum-hedwig-1901-p02': ['Hedwig’s poetry album', '1901 · Handwritten album'],
+  };
+  const sourceName = id => labels[id] || (/^synth-/.test(id)
+    ? [`Synthetic page ${Number(id.replace('synth-', ''))}`, 'Invented text · Rendered sample']
+    : [id.replace(/^real-/, '').replaceAll('-', ' '), 'Source page']);
+
+  document.body.classList.add('review-ui', `review-${config.kind}`);
+  const top = el('nav', 'review-topbar'); top.setAttribute('aria-label', 'Project navigation');
+  const brand = link('Four projects for Ben', config.home); brand.className = 'review-brand';
+  const topLinks = el('div', 'top-links');
+  if (config.kind !== 'home') topLinks.append(link('Home', config.home));
+  if (config.kind === 'consensus') topLinks.append(link('Compare readers', '../index.html'));
+  if (config.kind === 'reading') topLinks.append(link('Consensus pages', '../../03-layout-and-hybrid/outputs/consensus-print/index.html'));
+  if (config.kind === 'timeline') topLinks.append(link('Reading room', '../../../transcription/04-reading-room/outputs/index.html'));
+  if (config.consensus) topLinks.append(link('Review disagreements', config.consensus));
+  if (config.kind === 'home') topLinks.append(el('span', 'eyebrow', 'Bok Center · Learning Lab'));
+  top.append(brand, topLinks); document.body.prepend(top);
+  const skip = link('Skip to content', '#review-main'); skip.className = 'skip-link'; document.body.prepend(skip);
+
+  function makeHeader() {
+    const header = $('body > header'); if (!header) return;
+    header.className = 'review-header';
+    const title = $('h1', header);
+    const original = [...header.children].filter(n => n !== title);
+    const type = {report:'Compare the readers', consensus:'Human review', layout:'Understand the page'}[config.kind];
+    header.prepend(el('div', 'eyebrow', `Transcription / ${type}`));
+    const lead = {
+      report:'Choose a source, then compare its readers. The image and transcription sit side by side; scores, differences, and provenance are available below.',
+      consensus:'Read the source beside a shared starting text. Select a highlighted passage to see the alternatives, then work through the passages that need a decision.',
+      layout:'Compare how a vision model and Kraken divide the same page. Switch sources to inspect regions, line counts, and reading order.',
+    }[config.kind];
+    header.append(el('p', 'lead', lead), disclosure('About this experiment · methods and definitions', original, 'methodology'));
+    if (config.kind === 'consensus') {
+      const exports = el('div', 'collection-links');
+      exports.append(link('Download review spreadsheet ↓', 'checkin.csv'), link('Full consensus data ↓', 'consensus.json'));
+      header.append(exports);
+    }
+  }
+
+  function prepareReport(page) {
+    const imageCol = page.children[0], reading = page.children[1];
+    imageCol.classList.add('source-image'); reading.classList.add('reading-column');
+    const tabs = $('.tabs', reading);
+    if (tabs) {
+      const buttons = $$('button', tabs);
+      const picker = el('label', 'reader-picker', 'Reader'); const select = el('select');
+      select.setAttribute('aria-label', `Reader for ${sourceName(page.id)[0]}`);
+      buttons.forEach(b => { const o = el('option', '', b.textContent); o.value = b.dataset.target; select.append(o); });
+      picker.append(select); tabs.before(picker); tabs.hidden = true;
+      select.addEventListener('change', () => buttons.find(b => b.dataset.target === select.value)?.click());
+      // Select by this page's measured normalised error, never a mixed-corpus mean.
+      const scores = buttons.map(b => {
+        const pane = document.getElementById(b.dataset.target);
+        const stat = $$('.stat', pane).find(s => $('b', s)?.textContent === 'cer_norm');
+        return {button:b, score:stat ? Number(stat.textContent.replace('cer_norm', '').trim()) : Infinity};
+      });
+      const best = scores.reduce((a, b) => b.score < a.score ? b : a, scores[0]);
+      if (best && Number.isFinite(best.score)) {
+        select.value = best.button.dataset.target; best.button.click();
+        picker.after(el('p', 'reader-note', 'Starts with the lowest measured normalised character error on this page.'));
+      }
+    }
+    $$('.pane', reading).forEach(pane => {
+      const rawDetails = $$(':scope > details', pane).find(d => $('summary', d)?.textContent === 'Output as written');
+      if (rawDetails) {
+        const raw = $('pre', rawDetails), diff = $(':scope > pre', pane);
+        const explanation = diff?.previousElementSibling;
+        const evidence = disclosure('Compare with reference text · highlighted differences');
+        if (diff) { diff.before(raw); if (explanation) evidence.append(explanation); evidence.append(diff); }
+        rawDetails.replaceWith(evidence);
+      }
+      const path = $$(':scope > p', pane).find(p => p.textContent.startsWith('output:'));
+      if (path) { const details = disclosure('Source files and prompt fingerprint', [], 'provenance'); path.before(details); details.append(path); }
+      const names = {cer:'Character error', cer_norm:'Normalised error', wer:'Word error', wer_norm:'Normalised word error', lines:'Lines', '$':'Cost · USD', s:'Seconds'};
+      $$('.stat b', pane).forEach(b => { if (names[b.textContent]) b.textContent = names[b.textContent]; });
+      // Retain backend notes (including incomplete line crops) as visible evidence.
+    });
+  }
+
+  function prepareConsensus(page) {
+    const imageCol = page.children[0], reading = page.children[1];
+    imageCol.classList.add('source-image'); reading.classList.add('reading-column');
+    const matrix = $('.matrix', imageCol);
+    if (matrix) {
+      const caption = matrix.nextElementSibling;
+      const d = disclosure('Reader agreement · full matrix and reliability', caption ? [matrix, caption] : [matrix], 'full-evidence');
+      page.append(d);
+    }
+    const stats = $(':scope > p.mono', imageCol);
+    if (stats) {
+      const metrics = el('div', 'consensus-metrics');
+      for (const [label, pattern, percent] of [
+        ['Reader agreement', /agreement ([\d.]+)/, true],
+        ['Reference error · norm', /medoid CER norm ([\d.]+)/, false],
+        ['Passages to review', /(\d+) on the check-in list/, false],
+      ]) {
+        const value = stats.textContent.match(pattern)?.[1]; if (value == null) continue;
+        const metric = el('div'); metric.append(el('span', '', label), el('strong', '', percent ? `${(Number(value)*100).toFixed(1)}%` : value)); metrics.append(metric);
+      }
+      stats.className = 'consensus-stats';
+      reading.prepend(metrics, disclosure('Starting reader, family gap, and complete scores', [stats]));
+    }
+    const text = $('.text', reading);
+    if (text) {
+      const heading = text.previousElementSibling;
+      if (heading?.tagName === 'H3') heading.textContent = 'A starting text to review';
+      const highlights = el('label', 'highlight-picker', 'Highlight '), select = el('select');
+      [['review','Passages needing review'],['all','All disagreements'],['none','Read without highlights']].forEach(([value, label]) => { const o = el('option', '', label); o.value = value; select.append(o); });
+      select.setAttribute('aria-label', 'Highlight disagreements'); highlights.append(select);
+      text.classList.add('highlight-review');
+      select.onchange = () => { text.classList.remove('highlight-review', 'highlight-all', 'highlight-none'); text.classList.add(`highlight-${select.value}`); };
+      text.before(highlights, el('p', 'annotation-help', 'Select a marked passage to inspect the alternatives. Agreement measures how similar the readings are; it does not establish correctness.'));
+      const detail = el('div', 'annotation-detail'); detail.hidden = true;
+      detail.setAttribute('role', 'status'); detail.setAttribute('aria-live', 'polite');
+      const close = el('button', '', '×'); close.setAttribute('aria-label', 'Close alternatives');
+      const contents = el('div'); detail.append(close, contents); text.after(detail);
+      close.onclick = () => { detail.hidden = true; $('mark.selected', text)?.classList.remove('selected'); };
+      $$('mark', text).forEach(mark => {
+        mark.tabIndex = 0; mark.setAttribute('role', 'button');
+        mark.setAttribute('aria-label', `Alternatives for ${mark.textContent || 'an insertion'}`);
+        const show = () => {
+          $$('mark.selected', text).forEach(m => m.classList.remove('selected'));
+          mark.classList.add('selected'); contents.textContent = mark.title.split(' / ').join('\n\n'); detail.hidden = false;
+        };
+        mark.onclick = show;
+        mark.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(); } if (e.key === 'Escape') close.click(); };
+      });
+    }
+    const checks = $(':scope > table', reading);
+    if (checks) {
+      const heading = checks.previousElementSibling;
+      const review = el('div', 'review-list');
+      $$('tr', checks).slice(1).forEach(row => {
+        const c = [...row.cells]; if (c.length < 5) return;
+        const d = disclosure(''); const s = $('summary', d);
+        s.append(el('span', 'review-number', `#${c[0].textContent}`), el('span', 'review-base', c[1].textContent || '(insertion)'), el('span', 'review-weight', `${c[3].textContent} readers · weight ${c[2].textContent}`));
+        const alternatives = el('div'); alternatives.append(...c[4].childNodes); d.append(alternatives); review.append(d);
+      });
+      const group = disclosure(`Passages to review · ${review.children.length}`, [el('p', 'muted', heading?.textContent || ''), review]);
+      if (heading?.tagName === 'H3') heading.remove(); checks.replaceWith(group);
+    }
+  }
+
+  function readingWorkspace() {
+    makeHeader();
+    let pages;
+    if (config.kind === 'layout') {
+      const section = $('body > section');
+      const headings = $$(':scope > h2', section);
+      pages = headings.map(h => {
+        const article = el('article', 'layout-source'); article.id = h.firstChild.textContent.trim();
+        h.before(article); article.append(h);
+        while (article.nextSibling && !(article.nextSibling.nodeType === 1 && article.nextSibling.tagName === 'H2')) article.append(article.nextSibling);
+        const table = $(':scope > table', article);
+        if (table) { const d = disclosure('Region inventory · types, hands, lines, and notes'); table.before(d); d.append(table); }
+        const tools = el('div', 'layout-tools'); const label = el('label'); const check = el('input');
+        check.type = 'checkbox'; check.checked = true; label.append(check, document.createTextNode(' Show segmentation boxes')); tools.append(label);
+        const figures = $('.page', article); figures.before(tools);
+        check.onchange = () => $$('svg', article).forEach(svg => svg.hidden = !check.checked);
+        return article;
+      });
+    } else {
+      pages = $$('body > section > .page');
+      pages.forEach(p => config.kind === 'consensus' ? prepareConsensus(p) : prepareReport(p));
+    }
+    if (!pages.length) return;
+    const shell = el('div', 'review-shell'), nav = el('aside', 'source-nav'), main = el('main', 'review-content');
+    main.id = 'review-main'; main.tabIndex = -1;
+    nav.setAttribute('aria-label', 'Source navigator');
+    nav.append(el('div', 'eyebrow', `${pages.length} source pages`));
+    const search = el('input'); search.type = 'search'; search.placeholder = 'Find a source…'; search.setAttribute('aria-label', 'Find a source'); nav.append(search);
+    const navigation = el('nav'); navigation.setAttribute('aria-label', 'Choose a source'); nav.append(navigation);
+    const bar = el('div', 'source-bar'), sourceTitle = el('div');
+    sourceTitle.append(el('div', 'eyebrow', 'Source'), el('h2'), el('span', 'source-kind'));
+    const pager = el('div', 'source-pager'); const prev = el('button', '', '←'), next = el('button', '', '→'), counter = el('span', 'source-counter');
+    prev.setAttribute('aria-label', 'Previous source'); next.setAttribute('aria-label', 'Next source'); pager.append(prev, counter, next); bar.append(sourceTitle, pager); main.append(bar);
+    const navItems = [];
+    for (const [synthetic, groupTitle] of [[false, 'Historical sources'], [true, 'Synthetic samples']]) {
+      const members = pages.filter(p => /^synth-/.test(p.id) === synthetic); if (!members.length) continue;
+      const group = el('div'); group.append(el('div', 'source-group', groupTitle)); navigation.append(group);
+      members.forEach(page => {
+        const [name, subtitle] = sourceName(page.id); const a = link(name, `#${page.id}`); a.append(el('small', '', subtitle));
+        a.title = page.id; a.dataset.source = page.id; group.append(a); navItems.push(a);
+      });
+    }
+    const empty = el('p', 'muted', 'No matching sources.'); empty.hidden = true; navigation.append(empty);
+    search.oninput = () => {
+      const q = search.value.toLowerCase(); navItems.forEach(a => { a.hidden = !(a.textContent + a.dataset.source).toLowerCase().includes(q); });
+      $$(':scope > div', navigation).forEach(g => { g.hidden = !$$('a', g).some(a => !a.hidden); });
+      empty.hidden = navItems.some(a => !a.hidden);
+    };
+    nav.append(el('p', 'nav-foot', 'Historical sources and synthetic samples stay separate. Every reading retains its source and method.'));
+    const sections = $$('body > section');
+    sections.forEach(section => {
+      if (pages.some(p => section.contains(p))) {
+        const redundant = $(':scope > h2', section);
+        if (redundant?.textContent === 'Every page, every backend') redundant.remove();
+        main.append(section);
+      } else {
+        const d = disclosure('All readers · scores, costs, and run details', [...section.childNodes], 'run-evidence');
+        const mixed = pages.some(p => /^synth-/.test(p.id)) && pages.some(p => !/^synth-/.test(p.id));
+        if (mixed) $('summary', d).after(el('p', 'muted', 'This original summary averages historical and synthetic pages together. Use the individual source scores to judge performance on real material.'));
+        main.append(d); section.remove();
+      }
+    });
+    shell.append(nav, main); document.body.append(shell);
+    pages.forEach(page => {
+      const originalHeading = config.kind === 'layout' ? $(':scope > h2', page) : $(':scope > div:first-child > h2, :scope > div:first-child > h3', page);
+      if (originalHeading) {
+        if (config.kind === 'layout') { originalHeading.className = 'mono muted'; originalHeading.style.fontSize = '12px'; }
+        else { const d = disclosure('Source identifier', [el('p', 'mono', page.id)], 'provenance'); originalHeading.replaceWith(d); }
+      }
+      const image = $('.source-image', page);
+      if (image) { image.prepend(el('div', 'image-label', 'Original document')); image.append(el('p', 'image-hint', 'Open the image for a closer look ↗')); }
+    });
+    let active = 0;
+    const activate = id => {
+      const found = pages.findIndex(p => p.id === id); active = found < 0 ? 0 : found;
+      const page = pages[active]; pages.forEach(p => { p.hidden = p !== page; });
+      navItems.forEach(a => { if (a.dataset.source === page.id) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+      const [name, sub] = sourceName(page.id); $('h2', sourceTitle).textContent = name; $('.source-kind', sourceTitle).textContent = sub;
+      counter.textContent = `${active + 1} / ${pages.length}`; prev.disabled = active === 0; next.disabled = active === pages.length - 1;
+    };
+    function choose(id) { history.replaceState(null, '', `#${encodeURIComponent(id)}`); activate(id); }
+    navItems.forEach(a => a.onclick = e => { e.preventDefault(); choose(a.dataset.source); if (innerWidth < 801) bar.scrollIntoView({block:'start'}); });
+    prev.onclick = () => choose(pages[active - 1].id); next.onclick = () => choose(pages[active + 1].id);
+    const fromHash = () => { let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) {} activate(id); };
+    window.addEventListener('hashchange', fromHash); fromHash();
+  }
+
+  function home() {
+    const main = $('body > main'); main.id = 'review-main';
+    const h1 = $('h1', main), sub = $('.sub', main), legend = $('.legend', main);
+    const hero = el('header', 'collection-hero'), words = el('div');
+    words.append(el('div', 'eyebrow', 'Four projects for Ben / November 2026'), h1, sub);
+    const actions = el('div', 'collection-links');
+    actions.append(link('Open the reading room ↗', '01-use-cases/transcription/04-reading-room/outputs/index.html'), link('The timeline, in progress ↗', '01-use-cases/timeline/README.md'), link('The four projects ↓', '#projects'), link('How the text was made ↓', '#transcription'), link('Maps ↓', '#maps'));
+    words.append(actions);
+    const figure = el('figure', 'hero-image'); const img = el('img'); img.src = '01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/real-grimm-khm-1812-i-p093.jpg'; img.alt = 'A page of Grimm’s fairy tales, printed in Fraktur in 1812';
+    figure.append(img, el('figcaption', '', 'GRIMM · 1812 · A SOURCE IN THE READING ROOM')); hero.append(words, figure); main.prepend(hero);
+    const headers = $$(':scope > h2', main);
+    const groups = {
+      Projects: { id: 'projects', eyebrow: '01 / The four projects', title: 'Reading, timeline, style, notes' },
+      Transcription: { id: 'transcription', eyebrow: '02 / How the reading room’s text was made', title: 'Nine readers on a page, and where they disagree' },
+      Maps: { id: 'maps', eyebrow: '03 / Earlier: the places a page names', title: 'Maps & place histories' },
+    };
+    const descriptions = {
+      'Reading room': 'Read a page beside its scan with the translation in register; decide the doubtful passages and keep a log of questions and citations. Built.',
+      'Timeline': 'Thinkers, works, events and concepts on one band of years, every node cited and linked out; layers for how thinkers connect, how events connect, and where the two meet. Being built today.',
+      'Style: handouts': 'Infers the house style your handouts already share, applies it without touching a word, and refreshes one for a new term. Scoped.',
+      'Style: CV': 'Adds entries to your CV by cloning a neighbouring entry’s paragraph, so indents, tabs and page count stay yours. Scoped.',
+      'Style: footnotes': 'Checks a manuscript’s footnotes against its bibliography with nine named rules and lists every proposed change for you before anything is written. Scoped.',
+      'Notes apparatus': 'Gathers email, voice memos, files, PDF highlights and Zotero items into one local database, reviewed by project and theme. Scoped.',
+      'Fraktur print': 'Compare nine readers on printed sources, then inspect the passages where their readings diverge.',
+      'Kurrent handwriting': 'Follow the same comparison through letters and an album, from a clear hand to difficult photographs.',
+      'Layout and hybrid': 'See how readers divide a page into regions and lines before they transcribe it.',
+      'Places to map': 'Follow 24 historical place names from a ledger to a map, with the reason for every match.',
+      'Historical map overlay': 'Inspect the historical map search and the evidence behind the decision to leave the overlay off.',
+      'From page to map (the bridge)': 'Trace a map point all the way back to the page and line where its name appeared.',
+      'From map data, no text': 'Explore place-name histories around Breslau and the changes recorded across 1945.',
+    };
+    let grid = null, current = null, count = 0;
+    headers.forEach(h => {
+      const section = el('section'); h.before(section); section.append(h);
+      while (section.nextSibling && !(section.nextSibling.nodeType === 1 && section.nextSibling.tagName === 'H2')) section.append(section.nextSibling);
+      const flow = $('.flow', section), output = flow && $('.out', flow);
+      const m = /^(Projects|Transcription|Maps) · (.+)$/.exec(h.textContent);
+      if (m) {
+        const [, group, name] = m;
+        if (group !== current) {
+          current = group; const g = groups[group];
+          const intro = el('div', 'collection-intro'); intro.id = g.id;
+          intro.append(el('div', 'eyebrow', g.eyebrow), el('h2', '', g.title));
+          section.before(intro); grid = el('div', 'collection-grid'); section.before(grid); count = 0;
+        }
+        section.className = 'case-card'; grid.append(section);
+        h.textContent = name;
+        const result = $(':scope > p.num', section);
+        const scoped = result && /^Scoped/.test(result.textContent);
+        section.prepend(el('div', 'eyebrow', group === 'Projects' ? (scoped ? `Project · scoped, brief ready` : `Project · built`) : `Experiment ${String(count + 1).padStart(2, '0')}`));
+        h.after(el('p', 'case-desc', descriptions[name] || ''));
+        const actions = el('div', 'case-actions');
+        if (output) $$('a', output).forEach(a => { const copy = a.cloneNode(true);
+          const t = copy.textContent;
+          if (t === 'Explorer') copy.textContent = 'Compare readers ↗'; if (t === 'Consensus') copy.textContent = 'Review disagreements ↗'; if (t === 'Map') copy.textContent = 'Explore map ↗';
+          if (t === 'Reading room') copy.textContent = 'Open the reading room ↗'; if (t === 'Timeline') copy.textContent = 'Open the timeline ↗';
+          if (t === 'Guide') copy.textContent = 'Read the guide'; if (t === 'Brief') copy.textContent = 'The brief for an agent';
+          actions.append(copy); });
+        if (result) result.classList.add('case-result');
+        section.append(actions);
+        if (flow) { const d = disclosure(group === 'Projects' ? 'How it works' : 'How this experiment works', [flow]); section.append(d); }
+        count++;
+      } else {
+        section.className = 'collection-notes';
+        if (h.textContent === 'The shape of the work') {
+          const d = disclosure('The shape of the work · diverge, converge, decide', [...section.childNodes]); if (legend) d.append(legend); section.append(d);
+        }
+        if (h.textContent === 'Where the evidence is') { const table = $('table', section); if (table) section.append(disclosure('Find the files behind a result', [table])); }
+      }
+    });
+  }
+
+  function maps() {
+    const main = $('body > main'); main.id = 'review-main';
+    const controls = $('.controls');
+    const advanced = disclosure('Map options'); const options = el('div'); advanced.append(options);
+    ['allmaps', 'overlayOpacity', 'theme'].forEach(id => { const input = document.getElementById(id); if (input) options.append(input.closest('label')); });
+    const legend = $('.legend', controls); if (legend) options.append(legend);
+    controls.append(advanced);
+    $('#yearMin').setAttribute('aria-label', 'Start year'); $('#yearMax').setAttribute('aria-label', 'End year');
+    const aside = $('aside', main), unresolved = $('#unresolvedList');
+    if (unresolved) {
+      const explanation = unresolved.previousElementSibling, heading = explanation?.previousElementSibling;
+      const d = disclosure(`Unresolved names · ${unresolved.children.length}`);
+      if (heading?.tagName === 'H2') heading.remove();
+      if (explanation) d.append(explanation); d.append(unresolved); aside.append(d);
+    }
+    const detail = $('#detail');
+    if (detail) {
+      const groupEvidence = () => {
+        if ($('.cand', detail) && !$('.candidate-disclosure', detail)) {
+          $$(':scope > h3', detail).filter(h => h.textContent.startsWith('Gazetteer candidates')).forEach(h => {
+            const d = disclosure(h.textContent, [], 'candidate-disclosure'); h.before(d); h.remove();
+            while (d.nextElementSibling && d.nextElementSibling.tagName !== 'H3') d.append(d.nextElementSibling);
+          });
+        }
+        $$('table', detail).forEach(wrapTable);
+      };
+      new MutationObserver(groupEvidence).observe(detail, {childList:true});
+    }
+    // Existing MapLibre listeners remain attached to the original controls.
+    advanced.addEventListener('toggle', () => window.dispatchEvent(new Event('resize')));
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  if (config.kind === 'reading' || config.kind === 'timeline') return;   // these pages render themselves from embedded data; only the top bar is shared
+  if (config.kind === 'home') home();
+  else if (config.kind === 'map') maps();
+  else readingWorkspace();
+  $$('table').forEach(wrapTable);
+})();
+</script>
+<!-- mueser-review:end -->
+</body>
+</html>

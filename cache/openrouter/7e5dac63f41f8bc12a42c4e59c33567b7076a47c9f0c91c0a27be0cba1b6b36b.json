@@ -1,0 +1,231 @@
+{
+ "namespace": "openrouter",
+ "key": "7e5dac63f41f8bc12a42c4e59c33567b7076a47c9f0c91c0a27be0cba1b6b36b",
+ "fetched_at": "2026-11-10T19:50:58Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 6000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given the transcription of one page of a historical German document, one line per entry, each line prefixed with its id (l1, l2, …). The transcription is diplomatic: old spelling, ſ (long s), abbreviations and line-end hyphens are as the page has them. Translate it into English, sentence by sentence.\n\n- One segment per sentence of the source. A sentence may run over several lines; a segment then names its first and last line id. A segment must never skip a line that lies between its first and last line.\n- Translate in order, and cover every line that holds text. A line that is only a page number, a catchword or an ornament still gets a segment, translated as it stands (a number stays a number).\n- Keep the source's gaps and doubts: where the German has [...] write [...] in the English; where it has [?word] translate the word and keep the marker, as [?word].\n- Do not resolve abbreviations, fill gaps, correct the German, or modernise names. Translate what is there.\n- Where a line-end hyphen splits a word across two lines, translate the whole word once.\n- \"first_words\" and \"last_words\" are the first three and the last three words of the source sentence, copied verbatim from the transcription (with ſ, if the transcription has it).\n- \"note\" is for a genuine difficulty with the German (an ambiguous word, a damaged passage); otherwise leave it empty. \"notes\" at the top level is for anything about the page as a whole; otherwise empty.\n- Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "Page real-kaskel-to-schnorr-1864. Lines:\n\nl1: 84\nl2: Hochgeehrter Freund!\nl3: So herrlich und unvergleichlich als\nl4: gestern im unsterblichen Werke\nl5: Meyerbeer's, habe ich Ihren so\nl6: hochtrefflichen Sohn nie gehört,\nl7: obwohl er stets der erste Tenor\nl8: der Gegenwart ist. Meine\nl9: Freude wurde verdoppelt, als\nl10: ich seinen so hochverehrten, und\nl11: ebenfalls unvergleichlichen Vater\nl12: unter den Zuhörern erblickte\nl13: und mir sagte was dieser da\nl14: empfinden müßte!\nl15: Aber meinem verewigten\nl16: großen Freunde war, ach! das\nl17: Glück nicht beschieden, seinen\nl18: Raoul so zu hören!\nl19: Gott erhalte Sie!\nl20: Ihr treu ergebener\nl21: am 30t Juny Carl Kaskel\nl22: 1864"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "translation",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "segments",
+      "notes"
+     ],
+     "properties": {
+      "segments": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "line_start",
+         "line_end",
+         "first_words",
+         "last_words",
+         "translation",
+         "note"
+        ],
+        "properties": {
+         "line_start": {
+          "type": "string"
+         },
+         "line_end": {
+          "type": "string"
+         },
+         "first_words": {
+          "type": "string"
+         },
+         "last_words": {
+          "type": "string"
+         },
+         "translation": {
+          "type": "string"
+         },
+         "note": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "notes": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1794340236-3QhtPqaeQhBGpsOFtUtn",
+  "object": "chat.completion",
+  "created": 1794340236,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"segments\": [\n    {\n      \"line_start\": \"l1\",\n      \"line_end\": \"l1\",\n      \"first_words\": \"84\",\n      \"last_words\": \"84\",\n      \"translation\": \"84\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l2\",\n      \"line_end\": \"l2\",\n      \"first_words\": \"Hochgeehrter Freund!\",\n      \"last_words\": \"Hochgeehrter Freund!\",\n      \"translation\": \"Highly esteemed friend!\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l3\",\n      \"line_end\": \"l8\",\n      \"first_words\": \"So herrlich und\",\n      \"last_words\": \"der Gegenwart ist.\",\n      \"translation\": \"Never have I heard your so highly excellent son so magnificent and incomparable as yesterday in Meyerbeer's immortal work, although he is always the first tenor of the present day.\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l8\",\n      \"line_end\": \"l14\",\n      \"first_words\": \"Meine Freude wurde\",\n      \"last_words\": \"da empfinden müßte!\",\n      \"translation\": \"My joy was doubled when I caught sight of his so highly revered and likewise incomparable father among the audience, and told myself what he must be feeling at that moment!\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l15\",\n      \"line_end\": \"l18\",\n      \"first_words\": \"Aber meinem verewigten\",\n      \"last_words\": \"so zu hören!\",\n      \"translation\": \"Yet to my late, great friend, alas, the good fortune was not granted to hear his Raoul thus!\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l19\",\n      \"line_end\": \"l19\",\n      \"first_words\": \"Gott erhalte Sie!\",\n      \"last_words\": \"Gott erhalte Sie!\",\n      \"translation\": \"May God preserve you!\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l20\",\n      \"line_end\": \"l22\",\n      \"first_words\": \"Ihr treu ergebener\",\n      \"last_words\": \"Carl Kaskel 1864\",\n      \"translation\": \"Your faithfully devoted Carl Kaskel, on 30th June 1864\",\n      \"note\": \"\"\n    }\n  ],\n  \"notes\": \"\"\n}",
+     "refusal": null,
+     "reasoning": "**Translating German Letter**\n\nI'm currently working on a sentence-by-sentence English translation of a transcribed German letter. My focus is on generating JSON output that adheres to the specified schema, including `segments` and `notes` for each part of the text. I've begun by examining the first line of the transcription.\n\n**Parsing Closing Signature**\n\nI'm now scrutinizing the closing lines, specifically debating whether \"am 30t Juny Carl Kaskel 1864\" functions as a singular entity or if the date is a distinct element from the signature. My current translation separates the date.\n\n**Analyzing Closing Structure**\n\nI'm currently evaluating the final section of the letter, specifically the closing. I'm dissecting the structure of \"Ihr treu ergebener,\" the date and signature (\"am 30t Juny Carl Kaskel\"), and the year (\"1864\") to determine the most accurate segmentation and translation for these elements.\n\n**Segmenting Closing Lines**\n\nI'm now re-evaluating the segmentation of the final lines. Specifically, I'm considering if the closing, date, and signature (lines l20-l22) can be treated as a single segment, and I'm carefully checking how the `first_words` and `last_words` fields should be populated based on the exact word count.\n\n**Adjusting Segment Boundaries**\n\nI'm refining segment 3, identifying that line 8 spans two sentences. I'll adjust the `line_end` for segment 3 to \"l8\" and set the `line_start` for the subsequent segment to also be \"l8\" to reflect this split.\n\n**Refining Sentence Boundaries**\n\nI'm now adjusting segment 4 to accurately capture the sentence structure, ensuring the `line_end` for segment 3 is correctly set to \"l8\" and segment 4 begins at \"l8\" to reflect the split. This segmentation is crucial for accurate translation.\n\n**Finalizing Closing Segment**\n\nI'm reviewing the last three words of the closing section, specifically \"Carl Kaskel 1864,\" to ensure they are accurately captured as `last_words` within segment 7, aligning with the overall structure of the transcribed letter.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Translating German Letter**\n\nI'm currently working on a sentence-by-sentence English translation of a transcribed German letter. My focus is on generating JSON output that adheres to the specified schema, including `segments` and `notes` for each part of the text. I've begun by examining the first line of the transcription.\n\n**Parsing Closing Signature**\n\nI'm now scrutinizing the closing lines, specifically debating whether \"am 30t Juny Carl Kaskel 1864\" functions as a singular entity or if the date is a distinct element from the signature. My current translation separates the date.\n\n**Analyzing Closing Structure**\n\nI'm currently evaluating the final section of the letter, specifically the closing. I'm dissecting the structure of \"Ihr treu ergebener,\" the date and signature (\"am 30t Juny Carl Kaskel\"), and the year (\"1864\") to determine the most accurate segmentation and translation for these elements.\n\n**Segmenting Closing Lines**\n\nI'm now re-evaluating the segmentation of the final lines. Specifically, I'm considering if the closing, date, and signature (lines l20-l22) can be treated as a single segment, and I'm carefully checking how the `first_words` and `last_words` fields should be populated based on the exact word count.\n\n**Adjusting Segment Boundaries**\n\nI'm refining segment 3, identifying that line 8 spans two sentences. I'll adjust the `line_end` for segment 3 to \"l8\" and set the `line_start` for the subsequent segment to also be \"l8\" to reflect this split.\n\n**Refining Sentence Boundaries**\n\nI'm now adjusting segment 4 to accurately capture the sentence structure, ensuring the `line_end` for segment 3 is correctly set to \"l8\" and segment 4 begins at \"l8\" to reflect the split. This segmentation is crucial for accurate translation.\n\n**Finalizing Closing Segment**\n\nI'm reviewing the last three words of the closing section, specifically \"Carl Kaskel 1864,\" to ensure they are accurately captured as `last_words` within segment 7, aligning with the overall structure of the transcribed letter.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 848,
+   "completion_tokens": 3046,
+   "total_tokens": 3894,
+   "cost": 0.0120585,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0120585,
+    "upstream_inference_prompt_cost": 0.000636,
+    "upstream_inference_completions_cost": 0.0114225
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2428,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"segments\": [\n    {\n      \"line_start\": \"l1\",\n      \"line_end\": \"l1\",\n      \"first_words\": \"84\",\n      \"last_words\": \"84\",\n      \"translation\": \"84\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l2\",\n      \"line_end\": \"l2\",\n      \"first_words\": \"Hochgeehrter Freund!\",\n      \"last_words\": \"Hochgeehrter Freund!\",\n      \"translation\": \"Highly esteemed friend!\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l3\",\n      \"line_end\": \"l8\",\n      \"first_words\": \"So herrlich und\",\n      \"last_words\": \"der Gegenwart ist.\",\n      \"translation\": \"Never have I heard your so highly excellent son so magnificent and incomparable as yesterday in Meyerbeer's immortal work, although he is always the first tenor of the present day.\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l8\",\n      \"line_end\": \"l14\",\n      \"first_words\": \"Meine Freude wurde\",\n      \"last_words\": \"da empfinden müßte!\",\n      \"translation\": \"My joy was doubled when I caught sight of his so highly revered and likewise incomparable father among the audience, and told myself what he must be feeling at that moment!\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l15\",\n      \"line_end\": \"l18\",\n      \"first_words\": \"Aber meinem verewigten\",\n      \"last_words\": \"so zu hören!\",\n      \"translation\": \"Yet to my late, great friend, alas, the good fortune was not granted to hear his Raoul thus!\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l19\",\n      \"line_end\": \"l19\",\n      \"first_words\": \"Gott erhalte Sie!\",\n      \"last_words\": \"Gott erhalte Sie!\",\n      \"translation\": \"May God preserve you!\",\n      \"note\": \"\"\n    },\n    {\n      \"line_start\": \"l20\",\n      \"line_end\": \"l22\",\n      \"first_words\": \"Ihr treu ergebener\",\n      \"last_words\": \"Carl Kaskel 1864\",\n      \"translation\": \"Your faithfully devoted Carl Kaskel, on 30th June 1864\",\n      \"note\": \"\"\n    }\n  ],\n  \"notes\": \"\"\n}",
+  "parsed": {
+   "segments": [
+    {
+     "line_start": "l1",
+     "line_end": "l1",
+     "first_words": "84",
+     "last_words": "84",
+     "translation": "84",
+     "note": ""
+    },
+    {
+     "line_start": "l2",
+     "line_end": "l2",
+     "first_words": "Hochgeehrter Freund!",
+     "last_words": "Hochgeehrter Freund!",
+     "translation": "Highly esteemed friend!",
+     "note": ""
+    },
+    {
+     "line_start": "l3",
+     "line_end": "l8",
+     "first_words": "So herrlich und",
+     "last_words": "der Gegenwart ist.",
+     "translation": "Never have I heard your so highly excellent son so magnificent and incomparable as yesterday in Meyerbeer's immortal work, although he is always the first tenor of the present day.",
+     "note": ""
+    },
+    {
+     "line_start": "l8",
+     "line_end": "l14",
+     "first_words": "Meine Freude wurde",
+     "last_words": "da empfinden müßte!",
+     "translation": "My joy was doubled when I caught sight of his so highly revered and likewise incomparable father among the audience, and told myself what he must be feeling at that moment!",
+     "note": ""
+    },
+    {
+     "line_start": "l15",
+     "line_end": "l18",
+     "first_words": "Aber meinem verewigten",
+     "last_words": "so zu hören!",
+     "translation": "Yet to my late, great friend, alas, the good fortune was not granted to hear his Raoul thus!",
+     "note": ""
+    },
+    {
+     "line_start": "l19",
+     "line_end": "l19",
+     "first_words": "Gott erhalte Sie!",
+     "last_words": "Gott erhalte Sie!",
+     "translation": "May God preserve you!",
+     "note": ""
+    },
+    {
+     "line_start": "l20",
+     "line_end": "l22",
+     "first_words": "Ihr treu ergebener",
+     "last_words": "Carl Kaskel 1864",
+     "translation": "Your faithfully devoted Carl Kaskel, on 30th June 1864",
+     "note": ""
+    }
+   ],
+   "notes": ""
+  },
+  "usage": {
+   "prompt_tokens": 848,
+   "completion_tokens": 3046,
+   "total_tokens": 3894,
+   "cost": 0.0120585,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0120585,
+    "upstream_inference_prompt_cost": 0.000636,
+    "upstream_inference_completions_cost": 0.0114225
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2428,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0120585,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 21.43
+ },
+ "meta": {}
+}
