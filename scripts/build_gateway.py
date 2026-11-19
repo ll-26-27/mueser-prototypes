@@ -14,7 +14,7 @@ TIMELINE_READY = (ROOT / '01-use-cases/timeline/01-thinkers-and-events/outputs/i
 PROJECTS = [
     ('transcription', 'Reading room', 'Read a source closely.', 'Scans, German transcriptions and English translations, with a place to settle doubts and copy citations.', 'Working example', 'ready'),
     ('timeline', 'Timeline', 'See ideas in their time.', 'Thinkers, works, events and concepts, connected to their sources and open to your interpretation.', 'Working example' if TIMELINE_READY else 'In development', 'ready' if TIMELINE_READY else 'progress'),
-    ('style', 'Style & documents', 'Keep the shape of your writing.', 'Handouts, a CV and a manuscript: consistent formatting and citations, with changes you can review.', 'Planned', ''),
+    ('style', 'Style & documents', 'Keep the shape of your writing.', 'A CV you can extend and a draft you can bring to a journal’s house style, with every change yours to accept. Handouts and footnotes are planned.', 'Two tools working', 'progress'),
     ('notes', 'Notes apparatus', 'Bring the loose pieces together.', 'Email, voice notes, highlights and references, gathered by project without losing where they came from.', 'Planned', ''),
 ]
 
@@ -63,11 +63,80 @@ def resources(path, items, heading='Go further'):
     return '<section class="section-line"><h2>'+heading+'</h2><ul class="link-list">'+''.join('<li>'+anchor(label,target,path)+f'<small>{description}</small></li>' for label,target,description in items)+'</ul></section>'
 
 
+NOTES = [('context/session-notes-2026-11-19.md', 'session-notes-2026-11-19.html')]
+
+
+def inline(text):
+    """Markdown inside a line: code, links, bold, italic. The text is escaped first."""
+    text = escape(text.replace('&#32;', '').replace('****', ''), quote=False)
+    text = re.sub(r'`([^`]+)`', r'<code>\1</code>', text)
+    text = re.sub(r'\[([^\]]+)\]\((https?://[^)\s]+)\)', r'<a href="\2">\1</a>', text)
+    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+    return re.sub(r'\*([^*]+?)(\s*)\*', r'<em>\1</em>\2', text).strip()
+
+
+def markdown(lines):
+    """The subset the session notes use: headings, paragraphs, lists, task lists and one kind of table."""
+    out, i = [], 0
+    while i < len(lines):
+        line = lines[i]
+        if not line.strip():
+            i += 1
+        elif line.startswith('## '):
+            title = line[3:].strip()
+            out.append(f'<h2 id="{re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")}">{inline(title)}</h2>')
+            i += 1
+        elif line.startswith('|'):
+            rows = []
+            while i < len(lines) and lines[i].startswith('|'):
+                rows.append([c.strip() for c in lines[i].strip().strip('|').split('|')])
+                i += 1
+            head, body = rows[0], rows[2:]
+            out.append('<div class="table-wrap"><table><thead><tr>' + ''.join(f'<th>{inline(c)}</th>' for c in head) + '</tr></thead><tbody>'
+                       + ''.join('<tr>' + ''.join(f'<td>{inline(c)}</td>' for c in r) + '</tr>' for r in body) + '</tbody></table></div>')
+        elif re.match(r'\d+\. ', line):
+            items = []
+            while i < len(lines) and re.match(r'\d+\. ', lines[i]):
+                items.append(inline(re.sub(r'^\d+\. ', '', lines[i])))
+                i += 1
+            out.append('<ol>' + ''.join(f'<li>{x}</li>' for x in items) + '</ol>')
+        elif line.startswith('- '):
+            items = []
+            while i < len(lines) and lines[i].startswith('- '):
+                items.append(lines[i][2:])
+                i += 1
+            if all(x.startswith('[ ] ') or x.startswith('[x] ') for x in items):
+                out.append('<ul class="todo">' + ''.join(f'<li class="{"done" if x.startswith("[x]") else "open"}">{inline(x[4:])}</li>' for x in items) + '</ul>')
+            else:
+                out.append('<ul>' + ''.join(f'<li>{inline(x)}</li>' for x in items) + '</ul>')
+        else:
+            out.append(f'<p>{inline(line)}</p>')
+            i += 1
+    return '\n'.join(out)
+
+
+def note_page(source, path):
+    """A note kept as Markdown under context/, shown whole as a page: first line the title, second the date and author."""
+    lines = (ROOT / source).read_text(encoding='utf-8').splitlines()
+    title = lines[0].lstrip('# ').strip()
+    rest = [x for x in lines[1:]]
+    while rest and not rest[0].strip():
+        rest.pop(0)
+    byline = rest.pop(0).replace('@', '')
+    heads = [x[3:].strip() for x in rest if x.startswith('## ')]
+    toc = '<nav class="note-toc" aria-label="On this page">' + ''.join(f'<a href="#{re.sub(r"[^a-z0-9]+", "-", h.lower()).strip("-")}">{inline(h)}</a>' for h in heads) + '</nav>'
+    body = f'<div class="hero section-hero"><p class="breadcrumb">{anchor("Projects","index.html",path)} / Session notes</p><p class="eyebrow">{escape(byline)}</p><h1>{inline(title)}</h1></div>{toc}<article class="prose">{markdown(rest)}</article>'
+    page(title, path, body, current='')
+    return title
+
+
 def build():
+    notes=[(note_page(src,dest),dest) for src,dest in NOTES]
     path='index.html'
+    latest=''.join(f'<a class="start-here" href="{url(dest,path)}"><span>Start here</span><b>{escape(title)} →</b><small>What to do next, the clarifications, where each project stands, and what is still owed.</small></a>' for title,dest in notes)
     cards=''.join(f'''<article class="project-card"><div class="card-meta"><span class="number">0{i}</span>{status(state,cls)}</div>
 <h2>{anchor(name,f'01-use-cases/{slug}/index.html',path)}</h2><p><strong>{tag}</strong> {description}</p>{anchor('Explore '+name+' →',f'01-use-cases/{slug}/index.html',path,'text-link')}</article>''' for i,(slug,name,tag,description,state,cls) in enumerate(PROJECTS,1))
-    page('Projects',path,f'''<div class="hero"><p class="eyebrow">Four projects · one local workspace</p><h1>Your research workspace.</h1><p class="lead">Read sources, explore connections, prepare documents, and bring your notes together. Choose a project to see what it does and where to begin.</p></div>
+    page('Projects',path,latest+f'''<div class="hero"><p class="eyebrow">Four projects · one local workspace</p><h1>Your research workspace.</h1><p class="lead">Read sources, explore connections, prepare documents, and bring your notes together. Choose a project to see what it does and where to begin.</p></div>
 <div class="project-grid" aria-label="Projects">{cards}</div>
 <section class="bridge"><div><h2>{anchor('How the pieces fit together →','how-it-works.html',path)}</h2><p>Your desktop AI app, your project folder, the models, and the pages you review. A map of what happens where.</p></div><div class="steps" aria-label="Instruct, work, review"><span><b>01 / Instruct</b>Desktop app</span><i aria-hidden="true">→</i><span><b>02 / Work</b>Your folder</span><i aria-hidden="true">→</i><span><b>03 / Review</b>These pages</span></div></section>'''+resources(path,[('Maps & places','01-use-cases/maps/index.html','Earlier experiments connecting historical sources to geography.'),('Methods & experiments','experiments.html','The full pipelines, comparisons, results and evidence behind this work.')],'Around the projects'))
 
@@ -137,24 +206,24 @@ def build():
     page('Timeline',path,body)
 
     path='01-use-cases/style/index.html'
-    body=overview_header(path,'Style & documents','Make recurring document work easier while keeping your own form: the handout, the CV, the chapter and its notes.','Planned')
-    body+='<p class="note">These are scoped workflows, not working document tools yet. The next step is to test each one against a small set of your documents.</p><div class="subprojects">'
-    for title,desc,target in [('Handouts','Infer a house style from existing examples, apply it without changing the words, and update course details for a new term.','01-handouts'),('CV','Add entries by copying the formatting of neighbouring entries, then report changes to page count and layout.','02-cv'),('Footnotes & bibliography','Find inconsistent citations and unmatched short forms. Review proposed fixes before applying them to a copy.','03-footnotes')]:
-        body+=f'<article><h2>{title}</h2><p>{desc}</p>'+anchor('Read the brief →',f'01-use-cases/style/{target}/HANDOFF.md',path)+'</article>'
-    body+='</div><div class="two-col"><section><h2>What you bring</h2><p>Three to five handouts, your current CV, and a chapter or manuscript. Include the relevant citation rules, bibliography and examples of the form you want.</p></section><section><h2>What comes back</h2><p>The planned output is a new document plus a report of proposed or applied changes. Source documents remain available for comparison.</p></section></div>'
+    body=overview_header(path,'Style & documents','Make recurring document work easier while keeping your own form: the handout, the CV, the article and its notes.','Two tools working','progress')
+    body+='<p class="note">The CV tool and the journal-style tool work and have been run on synthetic documents only. The next step is to run each on one of yours. Handouts and the footnote checker are scoped, not built.</p><div class="subprojects">'
+    for title,desc,target,built in [('CV','Add an entry as a line of text. It is written into a copy as a duplicate of the neighbouring entry’s paragraph, so indents, tab stops and fonts stay yours. Working; run on a synthetic CV.','02-cv',True),('Journal house style','Give it a few recent articles from the journal. It counts the journal’s conventions, lists where your draft differs, and writes the changes you accept into a copy. Working; run on synthetic files.','04-journal-style',True),('Handouts','Infer a house style from existing examples, apply it without changing the words, and update course details for a new term. Planned.','01-handouts',False),('Footnotes & bibliography','Find inconsistent citations and unmatched short forms. Review proposed fixes before applying them to a copy. Planned.','03-footnotes',False)]:
+        body+=f'<article><h2>{title}</h2><p>{desc}</p>'+anchor('Read the guide →' if built else 'Read the brief →',f'01-use-cases/style/{target}/'+('README.md' if built else 'HANDOFF.md'),path)+'</article>'
+    body+='</div><div class="two-col"><section><h2>What you bring</h2><p>Your current CV as a Word file. For a submission, your draft as a Word file and three or more recent articles from the journal. For the planned tools, three to five handouts and a chapter or manuscript.</p></section><section><h2>What comes back</h2><p>A new copy of the document plus a report of what changed and what was refused. Your original file is never written to.</p></section></div>'
     body+=diagram('A document, a rule, a reviewable change','''flowchart LR
   A["Your documents + examples"] --> B["Desktop agent runs document tools"]
   B --> C["Extract structure and check rules"]
-  C -. "ambiguous citation pairs only" .-> M["Optional model proposal"]
+  C -. "citations only" .-> M["Optional model proposal"]
   C --> D["Report of changes and questions"]
   M --> D
   D --> E["You review"]
   E --> F["Apply to a copy; compare text and layout"]''',[
         'Start with the actual document and its reference examples or written style rules.',
-        'The planned tools handle formatting and explicit checks in code. A model is optional for ambiguous bibliography matches; unresolved references remain questions.',
+        'Formatting and explicit checks run in code. A model is optional, for restyling citations after a journal’s examples; each of its answers is a proposal, with any word it added named.',
         'Review the report, then write an updated copy and inspect the differences.'
-    ],'Planned workflow. The desktop app can help operate it once the document tools are built; these pages do not edit a Word document themselves.')
-    body+=resources(path,[(name,f'01-use-cases/style/{slug}/README.md',desc) for name,slug,desc in [('Handouts guide','01-handouts','House style, course details and the inputs needed.'),('CV guide','02-cv','Preserving geometry and checking page changes.'),('Footnotes guide','03-footnotes','Bibliography matching, explicit rules and unresolved questions.')]])
+    ],'The CV and journal-style tools follow this workflow now; the desktop app can run their commands for you. These pages do not edit a Word document themselves.')
+    body+=resources(path,[(name,f'01-use-cases/style/{slug}/README.md',desc) for name,slug,desc in [('CV guide','02-cv','Adding an entry, what the report says, what was checked.'),('Journal style guide','04-journal-style','The fifteen conventions, the review, and what the model pass is checked against.'),('Handouts guide','01-handouts','House style, course details and the inputs needed.'),('Footnotes guide','03-footnotes','Bibliography matching, explicit rules and unresolved questions.')]])
     page('Style & documents',path,body)
 
     path='01-use-cases/notes/index.html'

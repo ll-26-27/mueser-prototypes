@@ -54,17 +54,21 @@ READMEs; rules for assistants stay here.
   evaluate, bakeoff, report, compare, layout, extract, synth, models.
 - `src/mueser/maps`: load, gazetteer (gov, wikidata, whg, geonames),
   reconcile, resolve, db, export, build_map, `web/map-template.html`.
+- `src/mueser/style`: `cv` (extract, render, check), `journal` (rules,
+  profile, check, report, apply), `shared` (docx as XML, PDF page count),
+  fixtures. Handouts and the footnote checker are briefs only.
 - `src/mueser/shared`: record model, cache, runs, env, OpenRouter client.
 - `context/handoff.md`: the scoping note, with where the build departed.
 - `models/` is local; `cache/` is committed except the Allmaps index;
   `.env` is ignored.
 
 ```sh
-uv sync --extra text --extra maps --extra dev --extra htr
+uv sync --extra text --extra maps --extra dev --extra htr --extra docx
 uv run pytest -q
 uv run python -m mueser.text.bakeoff run --help
 uv run python -m mueser.text.compare run --help
 uv run python -m mueser.maps.resolve run --help
+uv run python -m mueser.style --help
 ```
 
 Run everything from the repository root.

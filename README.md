@@ -16,9 +16,11 @@ answer a proposal until a person decides, every decision an event in a log.
    on one band of years, with layers for how thinkers connect, how events
    connect and where the two meet; a model's proposed connections wait for
    your accept or reject.
-3. **Style** (`style/`, scoped): handouts normed to a house style, the CV
-   extended without changing its page geometry, a book's footnotes checked
-   against its bibliography with nothing guessed.
+3. **Style** (`style/`, two of four built): the CV extended without
+   changing its page geometry, and an article brought to a journal's house
+   style from a few of the journal's own articles, each change decided
+   before it is made. Scoped: handouts normed to a house style, a book's
+   footnotes checked against its bibliography with nothing guessed.
 4. **Notes** (`notes/`, scoped): email, voice memos, files, PDF highlights
    and Zotero items into one local database, reviewed by project and theme.
 
@@ -69,7 +71,7 @@ say what each group is for.
 ```sh
 git clone https://github.com/ll-26-27/mueser-prototypes.git && cd mueser-prototypes
 brew install tesseract                                       # macOS; apt install tesseract-ocr on Linux
-uv sync --extra text --extra maps --extra dev --extra htr     # Python 3.12 and uv; drop --extra htr to skip Kraken
+uv sync --extra text --extra maps --extra dev --extra htr --extra docx   # Python 3.12 and uv; drop --extra htr to skip Kraken
 uv run python -m mueser.text.models fetch tesseract
 uv run python -m mueser.text.models fetch fonts
 uv run python -m mueser.text.models fetch kraken

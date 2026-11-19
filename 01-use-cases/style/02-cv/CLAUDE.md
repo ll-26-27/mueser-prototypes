@@ -10,13 +10,17 @@ exists. In this folder:
   stops are read from Ben's document, never from library defaults. A new
   entry clones a sibling entry's paragraph XML (`w:p` with its `w:pPr`
   and run properties) and replaces only the run text.
+- A new entry goes where `cv.yml` places it, after the entry above it.
+  It is never sorted by date and nothing is ever deleted from the document.
+- After `render`, every unit that was not edited must match the source as
+  canonical XML; keep that check, and fail the run when it fails.
 - Never shrink to fit. If a change grows the page count, `check` reports
   it and stops. Ben decides what to cut.
 - Existing entries stay byte-identical unless `cv.yml` changed their
   text; sections, headers, footers and page geometry are never touched.
 - No model is involved in this case.
 - `inputs/cv/` and `outputs/out/` are ignored by git. `inputs/config/cv.yml`
-  is Ben's CV as data: commit it only if he agrees. Fixtures are synthetic,
+  is Ben's CV as data and is ignored too. Fixtures are synthetic,
   named `synth-*`, in `inputs/fixtures/`.
 - LibreOffice (`soffice`) is needed for page counts; skip with a message
   when absent.

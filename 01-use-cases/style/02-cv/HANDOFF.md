@@ -1,7 +1,7 @@
 # HANDOFF — CV: new entries, same page
 
 **Owner:** Madeleine (Bok Center Learning Lab), for Ben
-**Status:** Scoped 5 November 2026 (as part b of the `mueser-style` brief); moved here 19 November 2026. Nothing built. Ben's CV is not here yet.
+**Status:** Scoped 5 November 2026 (as part b of the `mueser-style` brief); moved here 19 November 2026. **Built 19 November 2026** on a synthetic CV; the README records what runs and where the build departs from this brief. Ben's CV is not here yet.
 **Audience:** a coding agent building this case. Read the repository `CLAUDE.md`, then the group brief [`../HANDOFF.md`](../HANDOFF.md) for the shared package `src/mueser/style/shared/`, then this file.
 
 ---

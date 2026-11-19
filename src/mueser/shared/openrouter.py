@@ -110,6 +110,7 @@ def chat(
     retries: int = 4,
     timeout: float = 180.0,
     cache: Optional[DiskCache] = None,
+    reasoning: Optional[dict] = None,
 ) -> dict:
     """Return {"text", "parsed", "usage", "cost_usd", "cached", "model", "provider", "raw", "key"}.
 
@@ -124,6 +125,8 @@ def chat(
         "openrouter", model=model, system=sha256_text(system), user=sha256_text(user_text),
         image=sha256_file(image_path) if image_path else None, schema=schema, temperature=temperature,
         max_tokens=max_tokens,
+        # part of the key only when set, so every earlier cache entry keeps its key
+        **({"reasoning": reasoning} if reasoning else {}),
     )
     hit = cache.get(ck)
     if hit:
@@ -141,6 +144,8 @@ def chat(
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": content}],
         "usage": {"include": True},
     }
+    if reasoning:
+        body["reasoning"] = reasoning  # OpenRouter's control over thinking tokens, e.g. {"effort": "low"}
     if schema:
         body["response_format"] = {"type": "json_schema", "json_schema": {"name": schema_name, "strict": True, "schema": schema}}
 

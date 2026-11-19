@@ -1,0 +1,229 @@
+{
+ "namespace": "openrouter",
+ "key": "020afe849ea948c62b0b8493f5e4765e5c86f404244062e42744fd23429ca3c0",
+ "fetched_at": "2026-11-19T17:54:41Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 16000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You read published articles from one journal and report how the journal cites sources.\nCopy example citations exactly as printed, character for character, each from a single footnote, endnote or reference-list entry.\nDo not correct, complete or normalise anything. Do not invent an example for a kind of source the articles do not cite."
+   },
+   {
+    "role": "user",
+    "content": "Below are 3 articles from the journal, whole.\n\nReturn:\n- system: whether sources are cited in notes, by author and date in the text, or both.\n- rules: the citation conventions you can see, one per line, each concrete enough to apply (order of elements, punctuation between them, italics or quotation marks for titles as far as the text shows, how pages are given, how a later citation of the same work is shortened, how ibid or cross-references are used).\n- examples: up to four verbatim examples for each of these kinds, where the articles have them: book-first, book-later, article-first, article-later, chapter-first, chapter-later, edited-or-translated, ibid, cross-reference, case, statute, archival, other.\n\n===== ARTICLE 1: synth-journal-sample-1.txt =====\nFirst Invented Article The colour of the argument was set in the seventeenth century – not gradually, but at once. Writers of the eighteenth century organised their replies around what one of them called ‘the condition of man’, and a later critic spoke of ‘a civilised honour’. On 12 March 1651 roughly 40 per cent of the pamphlets, sermons and tracts took the theme up, eg in the centre of the debate. The colour of the reply mattered; its authors recognised the labour involved, analysed the sources and emphasised the defence. A second group – smaller, and later – travelled to the theatre of the dispute and favoured what they called ‘the neighbour’s claim’. By 3 June 1660 another 15 per cent had, ie on the same grounds, realised the point and apologised for the behaviour of the first. Compare the treatment of ‘sovereignty’, ‘liberty’ and ‘right’, cf the earlier account, and the programme set out at the start. Notes 1 Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9. 2 ibid 90. 3 Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34. 4 Author (n 1) 201–9; see eg Writer (n 3) 125–6. 5 ibid 127. 6 Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\n\n===== ARTICLE 2: synth-journal-sample-2.txt =====\nSecond Invented Article The flavour of the argument was set in the seventeenth century – not gradually, but at once. Writers of the eighteenth century organised their replies around what one of them called ‘the condition of man’, and a later critic spoke of ‘a civilised honour’. On 14 March 1651 roughly 35 per cent of the pamphlets, sermons and tracts took the theme up, eg in the centre of the debate. The colour of the reply mattered; its authors recognised the labour involved, analysed the sources and emphasised the defence. A second group – smaller, and later – travelled to the theatre of the dispute and favoured what they called ‘the neighbour’s claim’. By 7 June 1660 another 22 per cent had, ie on the same grounds, realised the point and apologised for the behaviour of the first. Compare the treatment of ‘sovereignty’, ‘liberty’ and ‘right’, cf the earlier account, and the programme set out at the start. Notes 1 Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 101–4. 2 ibid 112. 3 Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34. 4 Author (n 1) 201–9; see eg Writer (n 3) 125–6. 5 ibid 127. 6 Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\n\n===== ARTICLE 3: synth-journal-sample-3.txt =====\nThird Invented Article The vigour of the argument was set in the seventeenth century – not gradually, but at once. Writers of the eighteenth century organised their replies around what one of them called ‘the condition of man’, and a later critic spoke of ‘a civilised honour’. On 21 March 1651 roughly 60 per cent of the pamphlets, sermons and tracts took the theme up, eg in the centre of the debate. The colour of the reply mattered; its authors recognised the labour involved, analysed the sources and emphasised the defence. A second group – smaller, and later – travelled to the theatre of the dispute and favoured what they called ‘the neighbour’s claim’. By 9 June 1660 another 31 per cent had, ie on the same grounds, realised the point and apologised for the behaviour of the first. Compare the treatment of ‘sovereignty’, ‘liberty’ and ‘right’, cf the earlier account, and the programme set out at the start. Notes 1 Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 210–15. 2 ibid 214. 3 Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34. 4 Author (n 1) 201–9; see eg Writer (n 3) 125–6. 5 ibid 127. 6 Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "citations",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "system",
+      "rules",
+      "examples"
+     ],
+     "properties": {
+      "system": {
+       "type": "string",
+       "enum": [
+        "notes",
+        "author-date",
+        "mixed"
+       ]
+      },
+      "rules": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "examples": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "kind",
+         "text"
+        ],
+        "properties": {
+         "kind": {
+          "type": "string"
+         },
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795110865-GX4jL5rCceAYQWeoeSY2",
+  "object": "chat.completion",
+  "created": 1795110865,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"system\": \"notes\",\n  \"rules\": [\n    \"Sources are cited in numbered endnotes or footnotes ending with a full stop.\",\n    \"First citations of books list author, book title, publication details in parentheses (editor designated by 'ed', publisher, year of publication), and pinpoint page range without 'p.' or 'pp.'\",\n    \"First citations of journal articles list author, article title in single quotation marks, publication year in parentheses, volume number, journal title, first page, comma, and pinpoint page range.\",\n    \"First citations of book chapters list author, chapter title in single quotation marks, 'in', editor name with '(ed),', book title, publisher and year in parentheses, and page range.\",\n    \"Subsequent references to an earlier cited work cite the author's surname followed by '(n X)' pointing to the first citation note number, followed by the pinpoint page number or range.\",\n    \"Consecutive citations to the immediately preceding source use 'ibid' in lower case, followed by the pinpoint page number.\",\n    \"Multiple citations in a single note are separated by a semi-colon.\",\n    \"Page ranges use en-dashes with elided numbers (eg 88–9, 130–34).\"\n  ],\n  \"examples\": [\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9.\"\n    },\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 101–4.\"\n    },\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 210–15.\"\n    },\n    {\n      \"kind\": \"article-first\",\n      \"text\": \"Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34.\"\n    },\n    {\n      \"kind\": \"chapter-first\",\n      \"text\": \"Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\"\n    },\n    {\n      \"kind\": \"edited-or-translated\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9.\"\n    },\n    {\n      \"kind\": \"edited-or-translated\",\n      \"text\": \"Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\"\n    },\n    {\n      \"kind\": \"cross-reference\",\n      \"text\": \"Author (n 1) 201–9; see eg Writer (n 3) 125–6.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 90.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 127.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 112.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 214.\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Citation Styles**\n\nI'm currently focused on extracting citation patterns from the provided articles to identify their underlying systems. My aim is to categorize each into \"notes,\" \"author-date,\" or \"mixed\" based on their conventions, which I'll then document as specific rules.\n\n**Deducing Citation Formats**\n\nI'm currently analyzing Article 1 and have identified it as a \"notes\" format. I'm now documenting specific citation styles within this format, focusing on book citations and their subsequent references.\n\n**Classifying Citation Elements**\n\nI'm refining my understanding of what constitutes a single citation unit, specifically whether footnotes like '4' are whole entries or contain multiple, and focusing on verbatim extraction of specific citation types within the identified \"notes\" system.\n\n**Documenting Citation Rules**\n\nI've distilled the observed citation patterns into a set of explicit rules, detailing how to cite books, journal articles, and book chapters within the identified \"notes\" system. I'm also documenting the specific format for subsequent references and the use of \"ibid.\"\n\n**Refining Citation Rules**\n\nI've analyzed the structure of multiple citations within a single note, noting the semicolon separator and specific page range conventions. I am now investigating if the \"book-later\" format can also accommodate \"article-later\" and cross-references within this structure.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Citation Styles**\n\nI'm currently focused on extracting citation patterns from the provided articles to identify their underlying systems. My aim is to categorize each into \"notes,\" \"author-date,\" or \"mixed\" based on their conventions, which I'll then document as specific rules.\n\n**Deducing Citation Formats**\n\nI'm currently analyzing Article 1 and have identified it as a \"notes\" format. I'm now documenting specific citation styles within this format, focusing on book citations and their subsequent references.\n\n**Classifying Citation Elements**\n\nI'm refining my understanding of what constitutes a single citation unit, specifically whether footnotes like '4' are whole entries or contain multiple, and focusing on verbatim extraction of specific citation types within the identified \"notes\" system.\n\n**Documenting Citation Rules**\n\nI've distilled the observed citation patterns into a set of explicit rules, detailing how to cite books, journal articles, and book chapters within the identified \"notes\" system. I'm also documenting the specific format for subsequent references and the use of \"ibid.\"\n\n**Refining Citation Rules**\n\nI've analyzed the structure of multiple citations within a single note, noting the semicolon separator and specific page range conventions. I am now investigating if the \"book-later\" format can also accommodate \"article-later\" and cross-references within this structure.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1575,
+   "completion_tokens": 2402,
+   "total_tokens": 3977,
+   "cost": 0.01018875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01018875,
+    "upstream_inference_prompt_cost": 0.00118125,
+    "upstream_inference_completions_cost": 0.0090075
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1577,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"system\": \"notes\",\n  \"rules\": [\n    \"Sources are cited in numbered endnotes or footnotes ending with a full stop.\",\n    \"First citations of books list author, book title, publication details in parentheses (editor designated by 'ed', publisher, year of publication), and pinpoint page range without 'p.' or 'pp.'\",\n    \"First citations of journal articles list author, article title in single quotation marks, publication year in parentheses, volume number, journal title, first page, comma, and pinpoint page range.\",\n    \"First citations of book chapters list author, chapter title in single quotation marks, 'in', editor name with '(ed),', book title, publisher and year in parentheses, and page range.\",\n    \"Subsequent references to an earlier cited work cite the author's surname followed by '(n X)' pointing to the first citation note number, followed by the pinpoint page number or range.\",\n    \"Consecutive citations to the immediately preceding source use 'ibid' in lower case, followed by the pinpoint page number.\",\n    \"Multiple citations in a single note are separated by a semi-colon.\",\n    \"Page ranges use en-dashes with elided numbers (eg 88–9, 130–34).\"\n  ],\n  \"examples\": [\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9.\"\n    },\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 101–4.\"\n    },\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 210–15.\"\n    },\n    {\n      \"kind\": \"article-first\",\n      \"text\": \"Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34.\"\n    },\n    {\n      \"kind\": \"chapter-first\",\n      \"text\": \"Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\"\n    },\n    {\n      \"kind\": \"edited-or-translated\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9.\"\n    },\n    {\n      \"kind\": \"edited-or-translated\",\n      \"text\": \"Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\"\n    },\n    {\n      \"kind\": \"cross-reference\",\n      \"text\": \"Author (n 1) 201–9; see eg Writer (n 3) 125–6.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 90.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 127.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 112.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 214.\"\n    }\n  ]\n}",
+  "parsed": {
+   "system": "notes",
+   "rules": [
+    "Sources are cited in numbered endnotes or footnotes ending with a full stop.",
+    "First citations of books list author, book title, publication details in parentheses (editor designated by 'ed', publisher, year of publication), and pinpoint page range without 'p.' or 'pp.'",
+    "First citations of journal articles list author, article title in single quotation marks, publication year in parentheses, volume number, journal title, first page, comma, and pinpoint page range.",
+    "First citations of book chapters list author, chapter title in single quotation marks, 'in', editor name with '(ed),', book title, publisher and year in parentheses, and page range.",
+    "Subsequent references to an earlier cited work cite the author's surname followed by '(n X)' pointing to the first citation note number, followed by the pinpoint page number or range.",
+    "Consecutive citations to the immediately preceding source use 'ibid' in lower case, followed by the pinpoint page number.",
+    "Multiple citations in a single note are separated by a semi-colon.",
+    "Page ranges use en-dashes with elided numbers (eg 88–9, 130–34)."
+   ],
+   "examples": [
+    {
+     "kind": "book-first",
+     "text": "Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9."
+    },
+    {
+     "kind": "book-first",
+     "text": "Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 101–4."
+    },
+    {
+     "kind": "book-first",
+     "text": "Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 210–15."
+    },
+    {
+     "kind": "article-first",
+     "text": "Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34."
+    },
+    {
+     "kind": "chapter-first",
+     "text": "Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45."
+    },
+    {
+     "kind": "edited-or-translated",
+     "text": "Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9."
+    },
+    {
+     "kind": "edited-or-translated",
+     "text": "Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45."
+    },
+    {
+     "kind": "cross-reference",
+     "text": "Author (n 1) 201–9; see eg Writer (n 3) 125–6."
+    },
+    {
+     "kind": "ibid",
+     "text": "ibid 90."
+    },
+    {
+     "kind": "ibid",
+     "text": "ibid 127."
+    },
+    {
+     "kind": "ibid",
+     "text": "ibid 112."
+    },
+    {
+     "kind": "ibid",
+     "text": "ibid 214."
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1575,
+   "completion_tokens": 2402,
+   "total_tokens": 3977,
+   "cost": 0.01018875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01018875,
+    "upstream_inference_prompt_cost": 0.00118125,
+    "upstream_inference_completions_cost": 0.0090075
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1577,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.01018875,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 16.09
+ },
+ "meta": {}
+}

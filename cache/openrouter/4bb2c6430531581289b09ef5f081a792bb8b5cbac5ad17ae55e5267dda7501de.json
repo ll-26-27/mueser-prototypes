@@ -1,0 +1,229 @@
+{
+ "namespace": "openrouter",
+ "key": "4bb2c6430531581289b09ef5f081a792bb8b5cbac5ad17ae55e5267dda7501de",
+ "fetched_at": "2026-11-19T17:59:34Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 16000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You read published articles from one journal and report how the journal cites sources.\nCopy example citations exactly as printed, character for character, each from a single footnote, endnote or reference-list entry.\nDo not correct, complete or normalise anything. Do not invent an example for a kind of source the articles do not cite."
+   },
+   {
+    "role": "user",
+    "content": "Below are 3 articles from the journal, whole.\n\nReturn:\n- system: whether sources are cited in notes, by author and date in the text, or both.\n- rules: the citation conventions you can see, one per line, each concrete enough to apply (order of elements, punctuation between them, italics or quotation marks for titles as far as the text shows, how pages are given, how a later citation of the same work is shortened, how ibid or cross-references are used).\n- examples: up to four verbatim examples for each of these kinds, where the articles have them: book-first, book-later, article-first, article-later, chapter-first, chapter-later, edited-or-translated, ibid, cross-reference, case, statute, archival, other.\n\n===== ARTICLE 1: synth-journal-sample-1.txt =====\nFirst Invented Article The colour of the argument was set in the seventeenth century – not gradually, but at once. Writers of the eighteenth century organised their replies around what one of them called ‘the condition of man’, and a later critic spoke of ‘a civilised honour’. On 12 March 1651 roughly 40 per cent of the pamphlets, sermons and tracts took the theme up, eg in the centre of the debate. The colour of the reply mattered; its authors recognised the labour involved, analysed the sources and emphasised the defence. A second group – smaller, and later – travelled to the theatre of the dispute and favoured what they called ‘the neighbour’s claim’. By 3 June 1660 another 15 per cent had, ie on the same grounds, realised the point and apologised for the behaviour of the first. Compare the treatment of ‘sovereignty’, ‘liberty’ and ‘right’, cf the earlier account, and the programme set out at the start. Notes 1 Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9. 2 ibid 90. 3 Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34. 4 Author (n 1) 201–9; see eg Writer (n 3) 125–6. 5 ibid 127. 6 Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\n\n===== ARTICLE 2: synth-journal-sample-2.txt =====\nSecond Invented Article The flavour of the argument was set in the seventeenth century – not gradually, but at once. Writers of the eighteenth century organised their replies around what one of them called ‘the condition of man’, and a later critic spoke of ‘a civilised honour’. On 14 March 1651 roughly 35 per cent of the pamphlets, sermons and tracts took the theme up, eg in the centre of the debate. The colour of the reply mattered; its authors recognised the labour involved, analysed the sources and emphasised the defence. A second group – smaller, and later – travelled to the theatre of the dispute and favoured what they called ‘the neighbour’s claim’. By 7 June 1660 another 22 per cent had, ie on the same grounds, realised the point and apologised for the behaviour of the first. Compare the treatment of ‘sovereignty’, ‘liberty’ and ‘right’, cf the earlier account, and the programme set out at the start. Notes 1 Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 101–4. 2 ibid 112. 3 Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34. 4 Author (n 1) 201–9; see eg Writer (n 3) 125–6. 5 ibid 127. 6 Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\n\n===== ARTICLE 3: synth-journal-sample-3.txt =====\nThird Invented Article The vigour of the argument was set in the seventeenth century – not gradually, but at once. Writers of the eighteenth century organised their replies around what one of them called ‘the condition of man’, and a later critic spoke of ‘a civilised honour’. On 21 March 1651 roughly 60 per cent of the pamphlets, sermons and tracts took the theme up, eg in the centre of the debate. The colour of the reply mattered; its authors recognised the labour involved, analysed the sources and emphasised the defence. A second group – smaller, and later – travelled to the theatre of the dispute and favoured what they called ‘the neighbour’s claim’. By 9 June 1660 another 31 per cent had, ie on the same grounds, realised the point and apologised for the behaviour of the first. Compare the treatment of ‘sovereignty’, ‘liberty’ and ‘right’, cf the earlier account, and the programme set out at the start. Notes 1 Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 210–15. 2 ibid 214. 3 Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34. 4 Author (n 1) 201–9; see eg Writer (n 3) 125–6. 5 ibid 127. 6 Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45."
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "reasoning": {
+   "effort": "low"
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "citations",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "system",
+      "rules",
+      "examples"
+     ],
+     "properties": {
+      "system": {
+       "type": "string",
+       "enum": [
+        "notes",
+        "author-date",
+        "mixed"
+       ]
+      },
+      "rules": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "examples": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "kind",
+         "text"
+        ],
+        "properties": {
+         "kind": {
+          "type": "string"
+         },
+         "text": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795111169-RB5NlQJTIsrGXHXrctaG",
+  "object": "chat.completion",
+  "created": 1795111169,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"system\": \"notes\",\n  \"rules\": [\n    \"Citations are given in numbered endnotes or footnotes without a terminal full stop unless punctuation is present.\",\n    \"Books are cited: Author, Title in Italics (Editor ed, Publisher Year) Pinpoint Page Range.\",\n    \"Journal articles are cited: Author, ‘Article Title in Single Quotation Marks’ (Year) Volume Journal Name in Italics Starting Page, Pinpoint Page Range.\",\n    \"Book chapters in edited collections are cited: Author, ‘Chapter Title in Single Quotation Marks’ in Editor (ed), Book Title in Italics (Publisher Year) Page Range.\",\n    \"Subsequent citations use the author surname followed by a cross-reference to the first note in parentheses (eg 'Author (n 1)') followed by pinpoint page numbers.\",\n    \"Immediate repetitions of the same source use 'ibid' (in lower case, unitalicised) followed by the pinpoint page number.\",\n    \"Multiple citations within a single note are separated by a semicolon (eg '; see eg ').\"\n  ],\n  \"examples\": [\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9.\"\n    },\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 101–4.\"\n    },\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 210–15.\"\n    },\n    {\n      \"kind\": \"book-later\",\n      \"text\": \"Author (n 1) 201–9\"\n    },\n    {\n      \"kind\": \"article-first\",\n      \"text\": \"Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34.\"\n    },\n    {\n      \"kind\": \"article-later\",\n      \"text\": \"Writer (n 3) 125–6\"\n    },\n    {\n      \"kind\": \"chapter-first\",\n      \"text\": \"Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\"\n    },\n    {\n      \"kind\": \"edited-or-translated\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 90.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 127.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 112.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 214.\"\n    },\n    {\n      \"kind\": \"cross-reference\",\n      \"text\": \"Author (n 1) 201–9; see eg Writer (n 3) 125–6.\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a19iBDOnmWgW2y9rOmUHA9OJ7027AqfjjlYdLqKtQXROUqa4Y/vPONff3ZAW9uWRRZrY+oiMkfTzk54Ow73JdrCzQWgruPKrZojPyI2xMZXedM1hlGWSAEW1MHSkE9XeOlV6uSjY50pQrDZgJ7WbXvy84tbe6ybkyylRLg==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1575,
+   "completion_tokens": 789,
+   "total_tokens": 2364,
+   "cost": 0.00414,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00414,
+    "upstream_inference_prompt_cost": 0.00118125,
+    "upstream_inference_completions_cost": 0.00295875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"system\": \"notes\",\n  \"rules\": [\n    \"Citations are given in numbered endnotes or footnotes without a terminal full stop unless punctuation is present.\",\n    \"Books are cited: Author, Title in Italics (Editor ed, Publisher Year) Pinpoint Page Range.\",\n    \"Journal articles are cited: Author, ‘Article Title in Single Quotation Marks’ (Year) Volume Journal Name in Italics Starting Page, Pinpoint Page Range.\",\n    \"Book chapters in edited collections are cited: Author, ‘Chapter Title in Single Quotation Marks’ in Editor (ed), Book Title in Italics (Publisher Year) Page Range.\",\n    \"Subsequent citations use the author surname followed by a cross-reference to the first note in parentheses (eg 'Author (n 1)') followed by pinpoint page numbers.\",\n    \"Immediate repetitions of the same source use 'ibid' (in lower case, unitalicised) followed by the pinpoint page number.\",\n    \"Multiple citations within a single note are separated by a semicolon (eg '; see eg ').\"\n  ],\n  \"examples\": [\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9.\"\n    },\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 101–4.\"\n    },\n    {\n      \"kind\": \"book-first\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 210–15.\"\n    },\n    {\n      \"kind\": \"book-later\",\n      \"text\": \"Author (n 1) 201–9\"\n    },\n    {\n      \"kind\": \"article-first\",\n      \"text\": \"Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34.\"\n    },\n    {\n      \"kind\": \"article-later\",\n      \"text\": \"Writer (n 3) 125–6\"\n    },\n    {\n      \"kind\": \"chapter-first\",\n      \"text\": \"Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45.\"\n    },\n    {\n      \"kind\": \"edited-or-translated\",\n      \"text\": \"Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 90.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 127.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 112.\"\n    },\n    {\n      \"kind\": \"ibid\",\n      \"text\": \"ibid 214.\"\n    },\n    {\n      \"kind\": \"cross-reference\",\n      \"text\": \"Author (n 1) 201–9; see eg Writer (n 3) 125–6.\"\n    }\n  ]\n}",
+  "parsed": {
+   "system": "notes",
+   "rules": [
+    "Citations are given in numbered endnotes or footnotes without a terminal full stop unless punctuation is present.",
+    "Books are cited: Author, Title in Italics (Editor ed, Publisher Year) Pinpoint Page Range.",
+    "Journal articles are cited: Author, ‘Article Title in Single Quotation Marks’ (Year) Volume Journal Name in Italics Starting Page, Pinpoint Page Range.",
+    "Book chapters in edited collections are cited: Author, ‘Chapter Title in Single Quotation Marks’ in Editor (ed), Book Title in Italics (Publisher Year) Page Range.",
+    "Subsequent citations use the author surname followed by a cross-reference to the first note in parentheses (eg 'Author (n 1)') followed by pinpoint page numbers.",
+    "Immediate repetitions of the same source use 'ibid' (in lower case, unitalicised) followed by the pinpoint page number.",
+    "Multiple citations within a single note are separated by a semicolon (eg '; see eg ')."
+   ],
+   "examples": [
+    {
+     "kind": "book-first",
+     "text": "Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9."
+    },
+    {
+     "kind": "book-first",
+     "text": "Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 101–4."
+    },
+    {
+     "kind": "book-first",
+     "text": "Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 210–15."
+    },
+    {
+     "kind": "book-later",
+     "text": "Author (n 1) 201–9"
+    },
+    {
+     "kind": "article-first",
+     "text": "Fictional Writer, ‘The Organisation of Liberty’ (2001) 12 Journal of Examples 123, 130–34."
+    },
+    {
+     "kind": "article-later",
+     "text": "Writer (n 3) 125–6"
+    },
+    {
+     "kind": "chapter-first",
+     "text": "Another Person, ‘A Further Invented Title’ in Sample Editor (ed), A Collection of Examples (Sample University Press 2010) 310–45."
+    },
+    {
+     "kind": "edited-or-translated",
+     "text": "Invented Author, A Made-Up Treatise (Sample Editor ed, Sample University Press 1996) 88–9."
+    },
+    {
+     "kind": "ibid",
+     "text": "ibid 90."
+    },
+    {
+     "kind": "ibid",
+     "text": "ibid 127."
+    },
+    {
+     "kind": "ibid",
+     "text": "ibid 112."
+    },
+    {
+     "kind": "ibid",
+     "text": "ibid 214."
+    },
+    {
+     "kind": "cross-reference",
+     "text": "Author (n 1) 201–9; see eg Writer (n 3) 125–6."
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1575,
+   "completion_tokens": 789,
+   "total_tokens": 2364,
+   "cost": 0.00414,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00414,
+    "upstream_inference_prompt_cost": 0.00118125,
+    "upstream_inference_completions_cost": 0.00295875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00414,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.32
+ },
+ "meta": {}
+}

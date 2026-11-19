@@ -1,7 +1,7 @@
 # HANDOFF — style: handouts, CV and footnotes to one standard
 
 **Owner:** Madeleine (Bok Center Learning Lab), for Ben
-**Status:** Scoped 5 November 2026 as the private sibling repository `mueser-style`; moved into this repository on 19 November 2026 as three atomic cases. Nothing built. Ben's documents are not here yet.
+**Status:** Scoped 5 November 2026 as the private sibling repository `mueser-style`; moved into this repository on 19 November 2026 as three atomic cases. Built 19 November 2026: `02-cv`, and a fourth case this brief did not foresee, `04-journal-style`; the shared package exists as `src/mueser/style/shared/` (`docx.py`, `pdf.py`) and reads `.docx` as XML with `lxml`, without `python-docx`. Not built: `01-handouts`, `03-footnotes`. Ben's documents are not here yet.
 **Audience:** a coding agent (CLI) building the three cases under `01-use-cases/style/`. Read the repository `CLAUDE.md` first, then this file for the shared package, then the case's own `HANDOFF.md`: [`01-handouts/HANDOFF.md`](01-handouts/HANDOFF.md), [`02-cv/HANDOFF.md`](02-cv/HANDOFF.md), [`03-footnotes/HANDOFF.md`](03-footnotes/HANDOFF.md). Each is complete on its own; this file holds what they share.
 
 ---
