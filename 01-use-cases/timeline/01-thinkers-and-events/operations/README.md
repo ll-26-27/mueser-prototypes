@@ -9,6 +9,7 @@ The exact invocations that produced what is in `outputs/`, in order. Run from an
 | `02-connect.sh` | model proposals, thinker to event | `outputs/timeline/proposals/connect-<id>/proposals.json`, `run.json` |
 | `03-db.sh` | the database and the page's JSON | `outputs/timeline/timeline.sqlite`, `timeline.json`, `run.json` |
 | `04-build.sh` | the page | `outputs/index.html`, `outputs/timeline/builds/<data_id>/run.json` |
-| `05-serve.sh [name]` | the local server | appends to `outputs/timeline/log.jsonl` |
+| `05-serve.sh [name]` | the local server for the static page | appends to `outputs/timeline/log.jsonl` |
+| `06-site.sh [name]` | the Next.js site (`site/`) on http://localhost:3001, over the same data and log | appends to `outputs/timeline/log.jsonl` |
 
 `python -m mueser.timeline ingest` appends exported browser logs from `outputs/timeline/inbox/`; `python -m mueser.timeline query --case … "SELECT …"` runs SQL against the database.

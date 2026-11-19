@@ -10,9 +10,10 @@ import re
 import textwrap
 
 ROOT = Path(__file__).resolve().parents[1]
+TIMELINE_READY = (ROOT / '01-use-cases/timeline/01-thinkers-and-events/outputs/index.html').exists()
 PROJECTS = [
     ('transcription', 'Reading room', 'Read a source closely.', 'Scans, German transcriptions and English translations, with a place to settle doubts and copy citations.', 'Working example', 'ready'),
-    ('timeline', 'Timeline', 'See ideas in their time.', 'Thinkers, works, events and concepts, connected to their sources and open to your interpretation.', 'In development', 'progress'),
+    ('timeline', 'Timeline', 'See ideas in their time.', 'Thinkers, works, events and concepts, connected to their sources and open to your interpretation.', 'Working example' if TIMELINE_READY else 'In development', 'ready' if TIMELINE_READY else 'progress'),
     ('style', 'Style & documents', 'Keep the shape of your writing.', 'Handouts, a CV and a manuscript: consistent formatting and citations, with changes you can review.', 'Planned', ''),
     ('notes', 'Notes apparatus', 'Bring the loose pieces together.', 'Email, voice notes, highlights and references, gathered by project without losing where they came from.', 'Planned', ''),
 ]
@@ -118,7 +119,7 @@ def build():
     path='01-use-cases/timeline/index.html'
     live=ROOT/'01-use-cases/timeline/01-thinkers-and-events/outputs/index.html'
     action='<div class="actions">'+anchor('Open the timeline →','01-use-cases/timeline/01-thinkers-and-events/outputs/index.html',path,'button primary')+'</div>' if live.exists() else ''
-    body=overview_header(path,'Timeline','Explore thinkers, works, events and concepts together. Follow the connections, inspect their sources, and add your own interpretations.','In development','progress',action)
+    body=overview_header(path,'Timeline','Explore thinkers, works, events and concepts together. Follow the connections, inspect their sources, and add your own interpretations.','Working example' if TIMELINE_READY else 'In development','ready' if TIMELINE_READY else 'progress',action)
     if not live.exists():body+='<p class="note">The viewer and pipeline are implemented and tested with synthetic data. The first real-data page is still being assembled; this overview is available while that run finishes.</p>'
     body+='''<div class="two-col"><section><h2>What goes in</h2><p>A written rule for the people, works, events and concepts to include. Wikidata supplies records and identifiers; encyclopedia metadata and Wikipedia extracts provide references and context.</p></section><section><h2>What you get</h2><p>A timeline and connection map, with links and citations. Recorded relationships, model proposals and connections you add remain distinguishable.</p></section></div>'''
     body+=diagram('From reference records to a reviewed connection','''flowchart LR

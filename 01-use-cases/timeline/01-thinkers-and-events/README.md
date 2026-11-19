@@ -13,18 +13,33 @@ covers it and links out to the rest; every connection says where it comes
 from; every decision you make is appended to one file,
 `outputs/timeline/log.jsonl`.
 
-Open it with one command from the repository root:
+There are two ways to open it, over the same data and the same log.
+
+**The site** (preferred): a Next.js app in [`site/`](site/README.md) that
+serves one node per page.
+
+```sh
+cd 01-use-cases/timeline/01-thinkers-and-events/site && npm install && npm run dev
+```
+
+Then `http://localhost:3001`, which opens on Thomas Hobbes. Node 20.9 or
+later; `.node-version` names 26.10.0.
+
+**The single file**: `outputs/index.html`, every node in one 35 MB page,
+served with
 
 ```sh
 uv run python -m mueser.timeline serve --case 01-use-cases/timeline/01-thinkers-and-events --who ben
 ```
 
-It prints `http://127.0.0.1:8767/01-use-cases/timeline/01-thinkers-and-events/outputs/index.html`
-and opens it. The page also opens by double-clicking `outputs/index.html`;
-then it keeps your work in the browser and **Export log** writes a file to
-drop into `outputs/timeline/inbox/` (see [Keeping what you did](#keeping-what-you-did)).
-Images come from Wikimedia Commons and need a connection; everything else
-is in the file.
+at `http://127.0.0.1:8767/01-use-cases/timeline/01-thinkers-and-events/outputs/index.html`,
+or opened by double-click, in which case it keeps your work in the browser
+and **Export log** writes a file to drop into `outputs/timeline/inbox/` (see
+[Keeping what you did](#keeping-what-you-did)). It is the fallback that
+needs no Node and the form that travels as one file.
+
+In both, images come from Wikimedia Commons and need a connection;
+everything else is local.
 
 The layout is the mock-up Ben had made for the project some years ago,
 kept on purpose for this first version; what differs is where the data

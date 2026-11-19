@@ -7,7 +7,8 @@
 | `CLAUDE.md` | rules for a coding assistant in this folder |
 | `inputs/rules.json` | the written rule for the node set and the edge properties; copied into every collect run |
 | `inputs/README.md` | what the rule controls |
-| `operations/00-collect.sh` … `05-serve.sh` | the exact invocations, in order; `operations/README.md` explains each |
+| `operations/00-collect.sh` … `06-site.sh` | the exact invocations, in order; `operations/README.md` explains each |
+| `site/` | the Next.js site over `timeline.json` and the log: one node per page; `site/README.md` |
 | `outputs/index.html` | the page: one self-contained file with the data embedded; opens from disk, saves through `serve` |
 | `outputs/timeline/runs/collect-<id>/` | `nodes.json`, `edges.json`, `rules.json`, `summary.json`, `run.json`: one collect run |
 | `outputs/timeline/sources/sep.json` | per node with an SEP entry: title, authors, first published, substantive revision, as the entry page states them |
