@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "1a88daed58b18962ec6aa9a35214b0e3847ca025fc507d6a31ef5599b1ef8d59",
+ "fetched_at": "2026-11-19T16:43:33Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Adam de Wodeham (1295–1358). medieval philosopher and theologian\n\nEXTRACT:\nAdam of Wodeham, OFM (1298–1358) was a philosopher and theologian. Currently, Wodeham is best known for having been a secretary of William Ockham and for his interpretations of John Duns Scotus. But Wodeham was also an influential thinker in his own right who made valuable philosophical contributions during his life.\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ264012  Nanboku-chō period (1336–1392) — period (1336–1392) within the Muromachi period of Japanese history, in which two men had competing claims to the Japanese imperial throne\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ826021  Kenmu Restoration (1333) — period of Japanese history, 1333–1336\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12551  Hundred Years' War (1337–1453) — series of conflicts and wars between England and France between 1337 and 1453\nQ698985  Ottoman Wars in Europe (1354–1683) — series of military conflicts between the Ottoman Empire and various European states\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ2658255  Byzantine Civil War of 1341–1347 (1341–1347) — civil war in the Byzantine Empire\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ550172  War of the Breton Succession (1341–1365) — conflict between the Counts of Blois and the Montforts of Brittany\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ112524  Red Turban Rebellion (1351–1368) — Revolt against the Yuan dynasty in China (1351–1368)\nQ7126013  Jacquerie (1358) — French peasant uprising, 1358\nQ853685  Treaty of Nöteborg (1323) — 1323 peace treaty between Kingdom of Sweden and the Novgorod Republic\nQ27759  Battle of Crécy (1346) — 1346 battle of the Hundred Years' War\nQ201692  Battle of Poitiers (1356) — 1356 battle of the Hundred Years' War\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ42005  Black Death (1346–1352) — 1346–1353 pandemic in Eurasia and North Africa\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106610-y26I2epnWNzzb2hcDAk4",
+  "object": "chat.completion",
+  "created": 1795106610,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Wodeham's Life**\n\nI'm currently focusing on pinpointing any direct links within the extract between Adam de Wodeham and specific historical occurrences. My priority is to identify direct relationships, if any are present, based solely on the provided text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Wodeham's Life**\n\nI'm currently focusing on pinpointing any direct links within the extract between Adam de Wodeham and specific historical occurrences. My priority is to identify direct relationships, if any are present, based solely on the provided text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1938,
+   "completion_tokens": 375,
+   "total_tokens": 2313,
+   "cost": 0.00285975,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00285975,
+    "upstream_inference_prompt_cost": 0.0014535,
+    "upstream_inference_completions_cost": 0.00140625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 366,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1938,
+   "completion_tokens": 375,
+   "total_tokens": 2313,
+   "cost": 0.00285975,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00285975,
+    "upstream_inference_prompt_cost": 0.0014535,
+    "upstream_inference_completions_cost": 0.00140625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 366,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00285975,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 2.95
+ },
+ "meta": {}
+}

@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "97b09cff4a9fdd4c6b71cc3e094ae51052ed375e1b986c4c0fee5ee746c8278a",
+ "fetched_at": "2026-11-19T16:35:16Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Avicenna (980–1037-06-24). Persian polymath, physician and philosopher (c. 980–1037)\n\nEXTRACT:\nIbn Sina (c. 980 – 22 June 1037), commonly known in the West as Avicenna, was a preeminent philosopher and physician of the Muslim world. He was a seminal figure of the Islamic Golden Age, serving in the courts of various Iranian rulers, and was influential to medieval European medical and Scholastic thought. Avicenna is considered one of the greatest thinkers and medical scholars in history.\nOften described as the father of early modern medicine, Avicenna's most famous works are The Book of Healing, a philosophical and scientific encyclopedia, and The Canon of Medicine, a medical encyclopedia that became a standard medical text at many medieval European universities and remained in use as late as 1650. \nBesides philosophy and medicine, Avicenna's corpus includes writings on astronomy, alchemy, geography and geology, psychology, Islamic theology, logic, mathematics, physics, and works of poetry. His philosophy was of the Peripatetic school derived from Aristotelianism, of which he is considered among the greatest proponents within the Muslim world.\nAvicenna wrote most of his philosophical and scientific works in Arabic but also wrote several key works in Persian; his poetry was written in both languages. Of the 450 works  he is believed to have written, around 240 have survived, including 150 on philosophy and 40 on medicine.\nAvicenna is also known for his unique methodological approach to his works. He combines a unique blend of empirical observation, philosophical reasoning, and logical analysis, in order to conduct his analysis and reach his conclusions. This is especially the case in his medical works, namely The Canon of Medicine.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ614082  Carolingian art (800–1000) — art of the Frankish empire, ca. 780–900\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106108-ILtmtBvw0oGAlTbaztfh",
+  "object": "chat.completion",
+  "created": 1795106108,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q745799\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Avicenna lived during and was a leading figure of the Islamic Golden Age.\",\n      \"evidence\": \"He was a seminal figure of the Islamic Golden Age, serving in the courts of various Iranian rulers, and was influential to medieval European medical and Scholastic thought.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Avicenna's Era**\n\nI'm currently analyzing Avicenna's significance within the Islamic Golden Age and its temporal relationship to broader historical occurrences. My focus is on identifying any direct or indirect linkages between his intellectual contributions and contemporary global events from that period.\n\n**Mapping Avicenna's Influence**\n\nMy current focus is on classifying Avicenna's relationship to the Islamic Golden Age. I'm leaning towards \"lived_through\" given his description as a \"seminal figure,\" but I'm examining the nuances of this and other potential descriptors like \"took_part_in\" to ensure accuracy.\n\n**Defining Avicenna's Role**\n\nI'm refining my understanding of how Avicenna \"took_part_in\" the Islamic Golden Age. While he was a \"seminal figure,\" I'm distinguishing between actively participating in events versus simply existing and contributing during that period. My analysis suggests \"lived_through\" might be more accurate for the era itself.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Avicenna's Era**\n\nI'm currently analyzing Avicenna's significance within the Islamic Golden Age and its temporal relationship to broader historical occurrences. My focus is on identifying any direct or indirect linkages between his intellectual contributions and contemporary global events from that period.\n\n**Mapping Avicenna's Influence**\n\nMy current focus is on classifying Avicenna's relationship to the Islamic Golden Age. I'm leaning towards \"lived_through\" given his description as a \"seminal figure,\" but I'm examining the nuances of this and other potential descriptors like \"took_part_in\" to ensure accuracy.\n\n**Defining Avicenna's Role**\n\nI'm refining my understanding of how Avicenna \"took_part_in\" the Islamic Golden Age. While he was a \"seminal figure,\" I'm distinguishing between actively participating in events versus simply existing and contributing during that period. My analysis suggests \"lived_through\" might be more accurate for the era itself.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1585,
+   "completion_tokens": 828,
+   "total_tokens": 2413,
+   "cost": 0.00429375,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00429375,
+    "upstream_inference_prompt_cost": 0.00118875,
+    "upstream_inference_completions_cost": 0.003105
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 720,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q745799\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Avicenna lived during and was a leading figure of the Islamic Golden Age.\",\n      \"evidence\": \"He was a seminal figure of the Islamic Golden Age, serving in the courts of various Iranian rulers, and was influential to medieval European medical and Scholastic thought.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q745799",
+     "type": "lived_through",
+     "reason": "Avicenna lived during and was a leading figure of the Islamic Golden Age.",
+     "evidence": "He was a seminal figure of the Islamic Golden Age, serving in the courts of various Iranian rulers, and was influential to medieval European medical and Scholastic thought.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1585,
+   "completion_tokens": 828,
+   "total_tokens": 2413,
+   "cost": 0.00429375,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00429375,
+    "upstream_inference_prompt_cost": 0.00118875,
+    "upstream_inference_completions_cost": 0.003105
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 720,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00429375,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 34.42
+ },
+ "meta": {}
+}

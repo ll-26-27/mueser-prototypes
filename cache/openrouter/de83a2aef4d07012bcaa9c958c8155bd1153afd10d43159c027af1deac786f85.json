@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "de83a2aef4d07012bcaa9c958c8155bd1153afd10d43159c027af1deac786f85",
+ "fetched_at": "2026-11-19T16:14:40Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Xunzi (312 BCE–230s BCE). Chinese Confucian philosopher (c. 310 – after 238 BCE)\n\nEXTRACT:\nXunzi (荀子, Xúnzǐ, lit. 'Master Xun'; c. 310 – c. after 238 BCE), born Xun Kuang, was a late Warring States period Confucian Chinese philosopher, often ranked as the third great Confucian philosopher of antiquity after his predecessors Confucius and Mencius. By his time, Confucianism had suffered considerable criticism from Taoist and Mohist thinkers, and Xunzi is traditionally regarded as a synthesizer of these traditions with earlier Confucian thought. The result was a thorough and cohesive revision of Confucianism, which was crucial to the philosophy's ability to flourish in the Han dynasty and throughout the later history of East Asia. His works were compiled in the eponymous Xunzi, and survive in excellent condition. Unlike other ancient compilations, his authorship of these texts is generally secure, though it is likely that Western Han dynasty historian Liu Xiang organized them into their present form centuries after Xunzi's death.\nBorn in the state of Zhao, Xunzi studied at the prestigious Jixia Academy in Qi, where he learned about every major philosophical tradition of his time. After graduating, Xunzi traveled to Chu where he mastered poetry, returning to the academy as a highly regarded teacher. His students Han Fei and Li Si each had important political and academic careers, though some of their Legalist sentiments were at odds with his philosophy. Other students such as Fuqiu Bo, Zhang Cang and Mao Heng authored important editions and commentaries on the Confucian classics. Later in his life, Xunzi served in the court of Lord Chunshen and died sometime after Lord Chunshen's death. The constant warfare of his time informed his work profoundly, as did his interactions with leaders and witnessing the downfall of various states.\nXunzi's writings respond to dozens of thinkers, often naming and criticizing them directly. His well-known notion that \"Human nature is evil\" has led many commentators to place him opposite to Mencius, who believed human nature was intrinsically good. Both saw education and ritual as key to self-cultivation, which for Xunzi could circumvent one's naturally foul nature. Xunzi's definition of both concepts was loose, encouraging lifelong education and applied ritual to every aspect of life. Though he still cited the ancient sages, he differed from other Confucian philosophers by his insistence on emulating recent rulers rather than those of long ago. Other important topics include the promotion of music and the careful application of names.\nRepeated oversimplifications and misunderstandings on Xunzi's teachings, particularly his view on human nature, led to gradual dismissal and condemnation of his thought from the Tang dynasty onwards. By the rise of Neo-Confucianism in the 10th century, Mencius gradually upended Xunzi, particularly by the choice to include the Mencius in the Four Books. Since the 20th century, a reevaluation of Xunzi's doctrine has taken place in East Asia, leading to recognition of his profound impact and relevance to both his times and present day.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ714557  Kalinga War (-261–-260) — war fought by Ashoka\nQ6286  First Punic War (-263–-240) — First War between Rome and Carthage\nQ109251  Samnite Wars (-342–-289) — series of wars between the early Roman Republic and the Samnites on the Italian Peninsula\nQ124988  Punic Wars (-263–-145) — series of three wars fought between Rome and Carthage from 264 BC to 146 BC, at the time probably the largest wars that had ever taken place\nQ596373  Pyrrhic War (-279–-274) — war\nQ1330607  Syrian Wars (-273–-167) — series of wars between Egypt and the Seleucid Empire in Syria (274-168 BCE)\nQ2912306  Wars of the Diadochi (-321–-274) — series of conflicts after the death of Alexander the Great\nQ1132393  Mercenary War (-239–-237) — revolt of mercenaries"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795104862-fwv6ZI0QMWPiCfwGmSbz",
+  "object": "chat.completion",
+  "created": 1795104862,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q185063\",\n      \"type\": \"shaped_by\",\n      \"reason\": \"The widespread warfare and the collapse of various states during the Warring States period deeply influenced Xunzi's philosophical work.\",\n      \"evidence\": \"The constant warfare of his time informed his work profoundly, as did his interactions with leaders and witnessing the downfall of various states.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Xunzi and Warring States**\n\nI'm currently focusing on establishing a direct link between Xunzi's life and the Warring States period provided. The extract confirms his birth and death dates fall squarely within this era, which is a crucial starting point for further exploration.\n\n**Establishing Xunzi's Context**\n\nI'm solidifying Xunzi's connection to the Warring States period. The data confirms he was a philosopher of that era, and critically, his work was profoundly shaped by the constant warfare and political shifts he witnessed. This direct influence is now clearly established.\n\n**Identifying Direct Influence**\n\nI'm now exploring the specific ways the Warring States period influenced Xunzi's thought. I've found evidence directly stating that the constant warfare of his time profoundly informed his work, alongside his observations of political events and interactions with leaders. This is a critical link.\n\n**Distinguishing Influences**\n\nI'm now distinguishing between Xunzi merely living through the Warring States period and being actively shaped by it. The evidence clearly indicates his thinking was profoundly informed by the constant warfare and political landscape, not just that he existed within it.\n\n**Confirming Xunzi's Context**\n\nI've confirmed that Xunzi lived through and was profoundly shaped by the Warring States period. The provided text directly links the \"constant warfare of his time\" to the shaping of his work, alongside his interactions with leaders and witnessing state downfall. This direct causal influence is now clear.\n\n**Focusing on Causality**\n\nI'm now zeroing in on the causal link. The text explicitly states the \"constant warfare of his time\" profoundly informed his work, along with his observations of political events and state downfall. This confirms a direct, formative influence.\n\n**Validating Causality**\n\nI'm now confirming that the \"constant warfare of his time\" directly equates to the Warring States period, as the text links this warfare to \"witnessing the downfall of various states.\" This solidifies the causal relationship between the era and Xunzi's formative experiences.\n\n**Linking Warfare to Period**\n\nI'm refining the connection between \"the constant warfare of his time\" and the \"Warring States period.\" The text links this warfare to witnessing state downfall, which is a direct characteristic of the era. This solidifies the causal link.\n\n**Defining 'Warring States Period'**\n\nI'm now clarifying that \"witnessing the downfall of various states\" directly references the Warring States period. This confirms the text establishes a causal relationship between this historical era and Xunzi's intellectual development.\n\n**Validating Formative Influence**\n\nI'm confirming the direct causal link. The text states the \"constant warfare of his time\" profoundly shaped his work, alongside observations of political events and state downfall, directly tying the Warring States period to his intellectual development.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Xunzi and Warring States**\n\nI'm currently focusing on establishing a direct link between Xunzi's life and the Warring States period provided. The extract confirms his birth and death dates fall squarely within this era, which is a crucial starting point for further exploration.\n\n**Establishing Xunzi's Context**\n\nI'm solidifying Xunzi's connection to the Warring States period. The data confirms he was a philosopher of that era, and critically, his work was profoundly shaped by the constant warfare and political shifts he witnessed. This direct influence is now clearly established.\n\n**Identifying Direct Influence**\n\nI'm now exploring the specific ways the Warring States period influenced Xunzi's thought. I've found evidence directly stating that the constant warfare of his time profoundly informed his work, alongside his observations of political events and interactions with leaders. This is a critical link.\n\n**Distinguishing Influences**\n\nI'm now distinguishing between Xunzi merely living through the Warring States period and being actively shaped by it. The evidence clearly indicates his thinking was profoundly informed by the constant warfare and political landscape, not just that he existed within it.\n\n**Confirming Xunzi's Context**\n\nI've confirmed that Xunzi lived through and was profoundly shaped by the Warring States period. The provided text directly links the \"constant warfare of his time\" to the shaping of his work, alongside his interactions with leaders and witnessing state downfall. This direct causal influence is now clear.\n\n**Focusing on Causality**\n\nI'm now zeroing in on the causal link. The text explicitly states the \"constant warfare of his time\" profoundly informed his work, along with his observations of political events and state downfall. This confirms a direct, formative influence.\n\n**Validating Causality**\n\nI'm now confirming that the \"constant warfare of his time\" directly equates to the Warring States period, as the text links this warfare to \"witnessing the downfall of various states.\" This solidifies the causal relationship between the era and Xunzi's formative experiences.\n\n**Linking Warfare to Period**\n\nI'm refining the connection between \"the constant warfare of his time\" and the \"Warring States period.\" The text links this warfare to witnessing state downfall, which is a direct characteristic of the era. This solidifies the causal link.\n\n**Defining 'Warring States Period'**\n\nI'm now clarifying that \"witnessing the downfall of various states\" directly references the Warring States period. This confirms the text establishes a causal relationship between this historical era and Xunzi's intellectual development.\n\n**Validating Formative Influence**\n\nI'm confirming the direct causal link. The text states the \"constant warfare of his time\" profoundly shaped his work, alongside observations of political events and state downfall, directly tying the Warring States period to his intellectual development.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1919,
+   "completion_tokens": 2530,
+   "total_tokens": 4449,
+   "cost": 0.01092675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01092675,
+    "upstream_inference_prompt_cost": 0.00143925,
+    "upstream_inference_completions_cost": 0.0094875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2421,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q185063\",\n      \"type\": \"shaped_by\",\n      \"reason\": \"The widespread warfare and the collapse of various states during the Warring States period deeply influenced Xunzi's philosophical work.\",\n      \"evidence\": \"The constant warfare of his time informed his work profoundly, as did his interactions with leaders and witnessing the downfall of various states.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q185063",
+     "type": "shaped_by",
+     "reason": "The widespread warfare and the collapse of various states during the Warring States period deeply influenced Xunzi's philosophical work.",
+     "evidence": "The constant warfare of his time informed his work profoundly, as did his interactions with leaders and witnessing the downfall of various states.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1919,
+   "completion_tokens": 2530,
+   "total_tokens": 4449,
+   "cost": 0.01092675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01092675,
+    "upstream_inference_prompt_cost": 0.00143925,
+    "upstream_inference_completions_cost": 0.0094875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2421,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.01092675,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 18.04
+ },
+ "meta": {}
+}

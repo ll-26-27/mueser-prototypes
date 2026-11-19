@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "4dc59b87d725c72a64822062a972caf013115843be91264b1f1ec7d83ea7bd9c",
+ "fetched_at": "2026-11-19T16:35:55Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Cheng Hao (1032–1085). Chinese philosopher (1032–1085)\n\nEXTRACT:\nChéng Hào (Chinese: 程顥, 1032–1085), Courtesy name Bóchún (Chinese: 伯淳), was a Chinese philosopher and politician from Luoyang, China. In his youth, he and his younger brother Cheng Yi were students of Zhou Dunyi, one of the architects of Neo-Confucian cosmology. His philosophy was dualistic (between all that is tangible and all that is intangible) and pantheistic (believing that all that is intangible is the same thing, such as god, the human nature, feelings, actions (we see things acting, but not the action itself), movement (likewise), social roles and relations (likewise), chance, etc., and that such a unified, universal principle is in everything that is sensible [rather than in an external reality as in Platonism]); among his quotes are \"outside dao there are no things and outside things there is no dao\", \"we call it god to emphasize the wonderful mystery of principle in ten thousand things, just as we call it lord (di) to characterize its being the ruler of events\" and \"in terms of the reality, it is change; in terms of principle, it is dao; in terms of its function, it is god; in terms of its destiny in a human being, it is human nature\".\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ83224  Battle of Hastings (1066) — battle which occurred on 14 October 1066\nQ200032  Battle of Manzikert (1071) — 1071 battle between the Byzantine Empire and Seljuk Turks\nQ203225  Battle of Stamford Bridge (1066) — 1066 battle in the East Riding of Yorkshire, England, UK\nQ51648  East-West Schism (1054) — division of Christianity into two large parts in 1054\nQ2224419  1061 papal election (1061) — 1061 election of the Catholic pope"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106148-ZxITfMnvoUStKa4xDYeq",
+  "object": "chat.completion",
+  "created": 1795106148,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Historical Context**\n\nI'm currently focused on pinpointing specific historical events that align with Cheng Hao's lifespan and his role as a philosopher and politician. My aim is to leverage the provided EXTRACT to establish concrete connections.\n\n**Synthesizing Neo-Confucian Ideas**\n\nMy current focus is integrating Cheng Hao's dualistic and pantheistic philosophy with his historical context as a Neo-Confucian scholar and student of Zhou Dunyi. I'm examining his quotes to understand how his concepts of \"dao\" and \"god\" relate to tangible and intangible realities.\n\n**Reviewing Historical Data**\n\nI'm meticulously re-examining the provided extract for any indirect references to the \"Song dynasty\" or other listed historical periods. My current focus is ensuring no possible connection is overlooked before concluding on event relevance.\n\n**Connecting Cheng Hao's Philosophy**\n\nI'm now connecting Cheng Hao's dualistic and pantheistic ideas to the concrete historical context of the Song Dynasty. My focus is on how his philosophical concepts, particularly his quotes on \"dao\" and \"god,\" manifest within the tangible and intangible realities of his time.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Historical Context**\n\nI'm currently focused on pinpointing specific historical events that align with Cheng Hao's lifespan and his role as a philosopher and politician. My aim is to leverage the provided EXTRACT to establish concrete connections.\n\n**Synthesizing Neo-Confucian Ideas**\n\nMy current focus is integrating Cheng Hao's dualistic and pantheistic philosophy with his historical context as a Neo-Confucian scholar and student of Zhou Dunyi. I'm examining his quotes to understand how his concepts of \"dao\" and \"god\" relate to tangible and intangible realities.\n\n**Reviewing Historical Data**\n\nI'm meticulously re-examining the provided extract for any indirect references to the \"Song dynasty\" or other listed historical periods. My current focus is ensuring no possible connection is overlooked before concluding on event relevance.\n\n**Connecting Cheng Hao's Philosophy**\n\nI'm now connecting Cheng Hao's dualistic and pantheistic ideas to the concrete historical context of the Song Dynasty. My focus is on how his philosophical concepts, particularly his quotes on \"dao\" and \"god,\" manifest within the tangible and intangible realities of his time.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1623,
+   "completion_tokens": 976,
+   "total_tokens": 2599,
+   "cost": 0.00487725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00487725,
+    "upstream_inference_prompt_cost": 0.00121725,
+    "upstream_inference_completions_cost": 0.00366
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 967,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1623,
+   "completion_tokens": 976,
+   "total_tokens": 2599,
+   "cost": 0.00487725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00487725,
+    "upstream_inference_prompt_cost": 0.00121725,
+    "upstream_inference_completions_cost": 0.00366
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 967,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00487725,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 7.63
+ },
+ "meta": {}
+}

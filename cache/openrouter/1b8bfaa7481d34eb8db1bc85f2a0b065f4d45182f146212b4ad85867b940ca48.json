@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "1b8bfaa7481d34eb8db1bc85f2a0b065f4d45182f146212b4ad85867b940ca48",
+ "fetched_at": "2026-11-19T16:34:52Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Anselm of Canterbury (1033–1109-05-05). 11th‑century Benedictine monk, Archbishop of Canterbury, philosopher and theologian\n\nEXTRACT:\nAnselm of Canterbury (; 1033/4–1109), also known as Anselm of Aosta (French: Anselme d'Aoste, Italian: Anselmo d'Aosta) after his birthplace and Anselm of Bec (French: Anselme du Bec) after his monastery, was a Benedictine abbot, philosopher and theologian who served as Archbishop of Canterbury from 1093 to 1109.\nAs Archbishop of Canterbury, he defended the Church's interests in England amid the Investiture Controversy. For his resistance to the English kings William II and Henry I, he was exiled twice: once from 1097 to 1100 and then from 1105 to 1107. While in exile, he participated in the Council of Bari, where he helped convince the Greek Catholic bishops of southern Italy to adopt the Roman Rite. In England, he asserted the primacy of Canterbury over the Archbishop of York and over the bishops of Wales, and at the time of his death he appeared to have been successful in this. However, Pope Paschal II later reversed the papal decisions on the matter and restored York's earlier status.\nBeginning during his time at Bec, Anselm composed dialogues and treatises with both a mystical and a rational or philosophical approach, this latter aspect causing him sometimes to be credited as the founder of Scholasticism. Despite his lack of recognition in this field in his own lifetime, Anselm is famously regarded as the originator of the ontological argument for the existence of God and of the satisfaction theory of atonement.\nAfter his death, Anselm was canonized as a saint; his feast day is 21 April. He was proclaimed a Doctor of the Church by a papal bull of Pope Clement XI in 1720.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ51650  People's Crusade (1096) — poor people's army to fight muslim Turks in Jerusalem (1095-1100)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ51649  First Crusade (1096–1099) — 1096–1099 Christian conquest of the Holy Land\nQ51653  Crusade of 1101 (1101) — battle in the summer of 1101\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ83224  Battle of Hastings (1066) — battle which occurred on 14 October 1066\nQ200032  Battle of Manzikert (1071) — 1071 battle between the Byzantine Empire and Seljuk Turks\nQ203225  Battle of Stamford Bridge (1066) — 1066 battle in the East Riding of Yorkshire, England, UK\nQ392538  Battle of Sagrajas (1086) — 1086 battle of the Reconquista\nQ456993  Siege of Jerusalem (1099) — 1099 battle during which the Crusaders captured Jerusalem from the Fatimid Caliphate\nQ51648  East-West Schism (1054) — division of Christianity into two large parts in 1054\nQ2224419  1061 papal election (1061) — 1061 election of the Catholic pope\nQ166861  Cistercians (1098) — Roman Catholic order of the Benedictine reform in the tradition of the monastery of Citaux"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106082-wfjpGJr1js0Fxbdr4uIA",
+  "object": "chat.completion",
+  "created": 1795106082,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Anselm's Actions**\n\nI'm focusing on how Anselm's tenure as Archbishop, particularly his defense of the Church against William II and Henry I during the Investiture Controversy, directly influenced the historical landscape of England.\n\n**Clarifying Anselm's Influence**\n\nI'm currently assessing how Anselm's diplomatic work at the Council of Bari and his assertion of Canterbury's primacy connect with his academic and theological contributions, particularly in light of his exiles and eventual canonization.\n\n**Verifying Historical Context**\n\nI'm now reviewing the provided text to see which historical periods and specific events, like the Crusades or the East-West Schism, are explicitly mentioned or strongly implied, beyond what's already been noted about the Council of Bari.\n\n**Checking Mentioned Events**\n\nI'm currently verifying if the provided text explicitly mentions the Siege of Jerusalem, the East-West Schism, the 1061 papal election, or the Cistercians. My initial scan suggests none of these specific events are present in the extract.\n\n**Recalibrating Focus**\n\nI'm shifting my attention to the direct textual evidence concerning scholasticism and Anselm's theological arguments. My recent focus has been on identifying explicit mentions of specific events, but now I'm prioritizing the core philosophical and theological contributions as described in the provided content.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Anselm's Actions**\n\nI'm focusing on how Anselm's tenure as Archbishop, particularly his defense of the Church against William II and Henry I during the Investiture Controversy, directly influenced the historical landscape of England.\n\n**Clarifying Anselm's Influence**\n\nI'm currently assessing how Anselm's diplomatic work at the Council of Bari and his assertion of Canterbury's primacy connect with his academic and theological contributions, particularly in light of his exiles and eventual canonization.\n\n**Verifying Historical Context**\n\nI'm now reviewing the provided text to see which historical periods and specific events, like the Crusades or the East-West Schism, are explicitly mentioned or strongly implied, beyond what's already been noted about the Council of Bari.\n\n**Checking Mentioned Events**\n\nI'm currently verifying if the provided text explicitly mentions the Siege of Jerusalem, the East-West Schism, the 1061 papal election, or the Cistercians. My initial scan suggests none of these specific events are present in the extract.\n\n**Recalibrating Focus**\n\nI'm shifting my attention to the direct textual evidence concerning scholasticism and Anselm's theological arguments. My recent focus has been on identifying explicit mentions of specific events, but now I'm prioritizing the core philosophical and theological contributions as described in the provided content.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1993,
+   "completion_tokens": 1570,
+   "total_tokens": 3563,
+   "cost": 0.00738225,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00738225,
+    "upstream_inference_prompt_cost": 0.00149475,
+    "upstream_inference_completions_cost": 0.0058875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1561,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1993,
+   "completion_tokens": 1570,
+   "total_tokens": 3563,
+   "cost": 0.00738225,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00738225,
+    "upstream_inference_prompt_cost": 0.00149475,
+    "upstream_inference_completions_cost": 0.0058875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1561,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00738225,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 10.36
+ },
+ "meta": {}
+}

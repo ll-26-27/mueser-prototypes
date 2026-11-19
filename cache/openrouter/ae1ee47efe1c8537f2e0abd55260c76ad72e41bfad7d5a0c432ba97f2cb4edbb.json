@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "ae1ee47efe1c8537f2e0abd55260c76ad72e41bfad7d5a0c432ba97f2cb4edbb",
+ "fetched_at": "2026-11-19T16:38:16Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Peter of Spain (13th century–13th century). alleguedly Spanish philosopher\n\nEXTRACT:\nPeter of Hispania (Latin: Petrus Hispanus; Portuguese and Spanish: Pedro Hispano; fl. 13th century) was the author of the Tractatus, later known as the Summulae Logicales, an important medieval university textbook on Aristotelian logic. As the Latin Hispania was considered to include the entire Iberian Peninsula, he is traditionally and usually identified with the medieval Portuguese scholar and ecclesiastic Peter Juliani, who was elected Pope John XXI in 1276. The identification is sometimes disputed, usually by Spanish authors, who claim the author of the Tractatus was a Castilian Blackfriar. He is also sometimes identified as Petrus Ferrandi Hispanus (d. 1254 x 1259).\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106276-pGRs4mH8LFwZpgcFK4dF",
+  "object": "chat.completion",
+  "created": 1795106276,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Peter of Spain is identified as a medieval Portuguese scholar who lived and wrote during the Middle Ages.\",\n      \"evidence\": \"As the Latin Hispania was considered to include the entire Iberian Peninsula, he is traditionally and usually identified with the medieval Portuguese scholar and ecclesiastic Peter Juliani, who was elected Pope John XXI in 1276.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Extract and Events**\n\nI'm currently working on identifying any potential links or thematic overlaps between the provided extract about Peter of Hispania and the given list of events. My focus is on spotting any direct or indirect relationships that might be relevant.\n\n**Refining Event Links**\n\nI'm now trying to see if \"medieval university textbook\" directly links to any of the listed medieval periods. The challenge is the generality of the phrase.\n\n**Verifying Event Connections**\n\nI'm re-examining the descriptor \"medieval\" in relation to the Middle Ages event. The extract uses \"medieval Portuguese scholar\" and \"medieval university textbook\" to describe circumstances, not necessarily lived experience within the period. I'm confirming if this usage aligns with the guideline of mentioning the event as part of circumstances.\n\n**Assessing \"Medieval\" Context**\n\nI'm questioning if \"medieval\" within the extract's descriptions of a scholar and textbook directly qualifies as the \"Middle Ages\" event, given the prompt's emphasis on the extract \"bringing up\" an event rather than it simply occurring during the period.\n\n**Clarifying \"Medieval\" Mentions**\n\nI'm grappling with whether the adjective \"medieval\" itself constitutes mentioning the \"Middle Ages\" event, especially when it modifies descriptions like \"Portuguese scholar\" or \"university textbook\" rather than directly stating the era. I'm considering how this applies when the extract doesn't explicitly state the person lived *in* the Middle Ages.\n\n**Questioning Event Relevance**\n\nI'm reassessing the fundamental premise: if \"Middle Ages\" and \"High Middle Ages\" are in the candidate list solely due to date overlap with Peter of Hispania's life, how can they \"bear on this person\" based *only* on the extract's use of \"medieval\"? This feels like a circular logic trap.\n\n**Confirming Event Triggers**\n\nI'm now focusing on whether describing Peter as a \"medieval Portuguese scholar\" and author of a \"medieval university textbook\" sufficiently \"brings up\" the \"Middle Ages\" event as part of his circumstances, as per the `lived_through` definition, even if the extract doesn't explicitly state he lived *in* that period.\n\n**Determining Event Relevance**\n\nI'm analyzing whether the repeated use of \"medieval\" as an adjective, qualifying \"university textbook\" and \"Portuguese scholar,\" constitutes \"bringing up\" the \"Middle Ages\" event. The instruction about the extract mentioning an event, even indirectly, feels key here.\n\n**Deciding Event Connection**\n\nI'm considering the instruction about returning an empty list if no events are relevant. The core question is whether \"medieval Portuguese scholar\" and \"medieval university textbook\" truly \"bear on\" Peter of Hispania, or if the connection to \"Middle Ages\" is too trivial based solely on the extract's phrasing.\n\n**Refining Event Triggers**\n\nI'm currently evaluating whether the descriptors \"medieval Portuguese scholar\" and \"medieval university textbook\" are sufficient to \"bring up\" the \"Middle Ages\" event. My primary concern is discerning if the adjective \"medieval\" is a direct trigger or merely a descriptive modifier, especially when the extract doesn't explicitly place Peter *within* that period.\n\n**Clarifying Event Triggers**\n\nI'm evaluating whether the descriptors \"medieval Portuguese scholar\" and \"medieval university textbook\" are sufficient to \"bring up\" the \"Middle Ages\" event. My primary concern is discerning if the adjective \"medieval\" is a direct trigger or merely a descriptive modifier, especially when the extract doesn't explicitly place Peter *within* that period.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Extract and Events**\n\nI'm currently working on identifying any potential links or thematic overlaps between the provided extract about Peter of Hispania and the given list of events. My focus is on spotting any direct or indirect relationships that might be relevant.\n\n**Refining Event Links**\n\nI'm now trying to see if \"medieval university textbook\" directly links to any of the listed medieval periods. The challenge is the generality of the phrase.\n\n**Verifying Event Connections**\n\nI'm re-examining the descriptor \"medieval\" in relation to the Middle Ages event. The extract uses \"medieval Portuguese scholar\" and \"medieval university textbook\" to describe circumstances, not necessarily lived experience within the period. I'm confirming if this usage aligns with the guideline of mentioning the event as part of circumstances.\n\n**Assessing \"Medieval\" Context**\n\nI'm questioning if \"medieval\" within the extract's descriptions of a scholar and textbook directly qualifies as the \"Middle Ages\" event, given the prompt's emphasis on the extract \"bringing up\" an event rather than it simply occurring during the period.\n\n**Clarifying \"Medieval\" Mentions**\n\nI'm grappling with whether the adjective \"medieval\" itself constitutes mentioning the \"Middle Ages\" event, especially when it modifies descriptions like \"Portuguese scholar\" or \"university textbook\" rather than directly stating the era. I'm considering how this applies when the extract doesn't explicitly state the person lived *in* the Middle Ages.\n\n**Questioning Event Relevance**\n\nI'm reassessing the fundamental premise: if \"Middle Ages\" and \"High Middle Ages\" are in the candidate list solely due to date overlap with Peter of Hispania's life, how can they \"bear on this person\" based *only* on the extract's use of \"medieval\"? This feels like a circular logic trap.\n\n**Confirming Event Triggers**\n\nI'm now focusing on whether describing Peter as a \"medieval Portuguese scholar\" and author of a \"medieval university textbook\" sufficiently \"brings up\" the \"Middle Ages\" event as part of his circumstances, as per the `lived_through` definition, even if the extract doesn't explicitly state he lived *in* that period.\n\n**Determining Event Relevance**\n\nI'm analyzing whether the repeated use of \"medieval\" as an adjective, qualifying \"university textbook\" and \"Portuguese scholar,\" constitutes \"bringing up\" the \"Middle Ages\" event. The instruction about the extract mentioning an event, even indirectly, feels key here.\n\n**Deciding Event Connection**\n\nI'm considering the instruction about returning an empty list if no events are relevant. The core question is whether \"medieval Portuguese scholar\" and \"medieval university textbook\" truly \"bear on\" Peter of Hispania, or if the connection to \"Middle Ages\" is too trivial based solely on the extract's phrasing.\n\n**Refining Event Triggers**\n\nI'm currently evaluating whether the descriptors \"medieval Portuguese scholar\" and \"medieval university textbook\" are sufficient to \"bring up\" the \"Middle Ages\" event. My primary concern is discerning if the adjective \"medieval\" is a direct trigger or merely a descriptive modifier, especially when the extract doesn't explicitly place Peter *within* that period.\n\n**Clarifying Event Triggers**\n\nI'm evaluating whether the descriptors \"medieval Portuguese scholar\" and \"medieval university textbook\" are sufficient to \"bring up\" the \"Middle Ages\" event. My primary concern is discerning if the adjective \"medieval\" is a direct trigger or merely a descriptive modifier, especially when the extract doesn't explicitly place Peter *within* that period.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1283,
+   "completion_tokens": 2866,
+   "total_tokens": 4149,
+   "cost": 0.01170975,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01170975,
+    "upstream_inference_prompt_cost": 0.00096225,
+    "upstream_inference_completions_cost": 0.0107475
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2742,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Peter of Spain is identified as a medieval Portuguese scholar who lived and wrote during the Middle Ages.\",\n      \"evidence\": \"As the Latin Hispania was considered to include the entire Iberian Peninsula, he is traditionally and usually identified with the medieval Portuguese scholar and ecclesiastic Peter Juliani, who was elected Pope John XXI in 1276.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Peter of Spain is identified as a medieval Portuguese scholar who lived and wrote during the Middle Ages.",
+     "evidence": "As the Latin Hispania was considered to include the entire Iberian Peninsula, he is traditionally and usually identified with the medieval Portuguese scholar and ecclesiastic Peter Juliani, who was elected Pope John XXI in 1276.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1283,
+   "completion_tokens": 2866,
+   "total_tokens": 4149,
+   "cost": 0.01170975,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01170975,
+    "upstream_inference_prompt_cost": 0.00096225,
+    "upstream_inference_completions_cost": 0.0107475
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2742,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.01170975,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 43.56
+ },
+ "meta": {}
+}

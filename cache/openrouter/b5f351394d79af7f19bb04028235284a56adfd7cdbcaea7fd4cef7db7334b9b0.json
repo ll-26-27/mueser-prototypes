@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "b5f351394d79af7f19bb04028235284a56adfd7cdbcaea7fd4cef7db7334b9b0",
+ "fetched_at": "2026-11-19T16:34:55Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Nicholas of Cusa (1401–1464-08-20). German philosopher (1401 – 1464)\n\nEXTRACT:\nNicholas of Cusa (1401 – 11 August 1464), also referred to as Nicholas of Kues and Nicolaus Cusanus (), was a German Catholic bishop and polymath active as a philosopher, theologian, jurist, mathematician, and astronomer. One of the first German proponents of Renaissance humanism, he made spiritual and political contributions to European culture. A notable example of this is his mystical or spiritual writings on \"learned ignorance\", as well as his participation in power struggles between Rome and the German states of the Holy Roman Empire.\nAs papal legate to Germany from 1446, he was appointed cardinal for his merits by Pope Nicholas V in 1448 and Prince-Bishop of Brixen two years later. In 1459, he became vicar general in the Papal States. Nicholas has remained an influential figure. In 2001, the sixth centennial of his birth was celebrated on four continents and commemorated by publications on his life and work.\n\nEVENTS (id, name, years):\nQ871792  Ottoman Greece (1453–1821) — period of Ottoman rule of Greece\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ157109  Burgundian Netherlands (1384–1482) — portion of the Low Countries ruled by the Dukes of Burgundy in the period from 1384 to 1482\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ315921  Thirteen Years' War (1454–1466) — 1454-1466 war between the Kingdom of Poland and the Teutonic Order\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12551  Hundred Years' War (1337–1453) — series of conflicts and wars between England and France between 1337 and 1453\nQ127751  Wars of the Roses (1455–1487) — dynastic civil war in England from 1455 to 1487\nQ937255  Polish-Lithuanian-Teutonic War (1409–1411) — war (1409-11) between the Teutonic Knights and the alliance of Poland and Lithuania\nQ698985  Ottoman Wars in Europe (1354–1683) — series of military conflicts between the Ottoman Empire and various European states\nQ1420791  Ottoman–Venetian Wars (1396–1718) — series of wars in the 14th–18th century\nQ726261  Ottoman Interregnum (1402–1413) — civil war in the early 15th century Ottoman Empire\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ478301  Hussite Wars (1419–1434) — 15th-century wars fought between proto-Protestant Hussites and Catholic forces\nQ33570  Battle of Grunwald (1410) — 1410 battle between the Teutonic Knights and Poland–Lithuania\nQ188495  Battle of Agincourt (1415) — 1415 English victory in the Hundred Years' War\nQ209387  Battle of Ankara (1402) — battle near Ankara on 20 July 1402, between the Timurid Empire and the Ottoman Sultanate\nQ160077  Fall of Constantinople (1453) — 1453 capture of the Byzantine capital by the Ottoman Empire\nQ32832  Battle of Varna (1444) — 1444 battle\nQ244980  Siege of Belgrade (1456) — 1456 military blockade halting Ottoman advance\nQ931024  1447 papal conclave (1447) — conclave\nQ1637578  1455 papal conclave (1455) — election of Pope Callixtus III\nQ1781741  1458 papal conclave (1458) — election of Pope Pius II\nQ2233458  1464 papal conclave (1464) — election of Pope Paul II\nQ154001  Council of Constance (1414–1418) — Catholic ecumenical council (1414–1418) held in Constance that ended the Western Schism and condemned Jan Hus"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106089-VFQzR9AzRuvMkbScaIkX",
+  "object": "chat.completion",
+  "created": 1795106089,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Historical Data**\n\nI'm currently sifting through the provided extract, looking for any mentions of historical events that can be directly linked to Nicholas of Cusa. My focus is on identifying specific dates, occurrences, or affiliations that align with his life and work as described.\n\n**Gathering Cusa's Connections**\n\nI'm now reviewing the text for specific historical events that connect directly to Nicholas of Cusa, focusing on periods and conflicts where his influence is evident, such as his involvement with the Holy Roman Empire and papal affairs.\n\n**Searching Historical Context**\n\nI'm actively scanning the provided text for any direct mentions of the historical events listed. My current priority is to cross-reference these specific conflicts and councils with Nicholas of Cusa's documented activities and timeline, particularly those related to papal and imperial affairs.\n\n**Finding Specific Mentions**\n\nI've meticulously re-examined the extract. To my disappointment, none of the specific historical events I was searching for—such as the Council of Constance, conclaves, or various wars like the Hussite Wars—are directly mentioned or even clearly implied within the text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Historical Data**\n\nI'm currently sifting through the provided extract, looking for any mentions of historical events that can be directly linked to Nicholas of Cusa. My focus is on identifying specific dates, occurrences, or affiliations that align with his life and work as described.\n\n**Gathering Cusa's Connections**\n\nI'm now reviewing the text for specific historical events that connect directly to Nicholas of Cusa, focusing on periods and conflicts where his influence is evident, such as his involvement with the Holy Roman Empire and papal affairs.\n\n**Searching Historical Context**\n\nI'm actively scanning the provided text for any direct mentions of the historical events listed. My current priority is to cross-reference these specific conflicts and councils with Nicholas of Cusa's documented activities and timeline, particularly those related to papal and imperial affairs.\n\n**Finding Specific Mentions**\n\nI've meticulously re-examined the extract. To my disappointment, none of the specific historical events I was searching for—such as the Council of Constance, conclaves, or various wars like the Hussite Wars—are directly mentioned or even clearly implied within the text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2041,
+   "completion_tokens": 1117,
+   "total_tokens": 3158,
+   "cost": 0.0057195,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0057195,
+    "upstream_inference_prompt_cost": 0.00153075,
+    "upstream_inference_completions_cost": 0.00418875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1108,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 2041,
+   "completion_tokens": 1117,
+   "total_tokens": 3158,
+   "cost": 0.0057195,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0057195,
+    "upstream_inference_prompt_cost": 0.00153075,
+    "upstream_inference_completions_cost": 0.00418875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1108,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0057195,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.73
+ },
+ "meta": {}
+}

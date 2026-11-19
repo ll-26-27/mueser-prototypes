@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "91785ec95b8386b87565d3f87fd3e8db446d091723248a9fd89bafa5a3577af8",
+ "fetched_at": "2026-11-19T16:43:30Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Peter of Spain (13th century–13th century). alleguedly Spanish philosopher\n\nEXTRACT:\nPeter of Hispania (Latin: Petrus Hispanus; Portuguese and Spanish: Pedro Hispano; fl. 13th century) was the author of the Tractatus, later known as the Summulae Logicales, an important medieval university textbook on Aristotelian logic. As the Latin Hispania was considered to include the entire Iberian Peninsula, he is traditionally and usually identified with the medieval Portuguese scholar and ecclesiastic Peter Juliani, who was elected Pope John XXI in 1276. The identification is sometimes disputed, usually by Spanish authors, who claim the author of the Tractatus was a Castilian Blackfriar. He is also sometimes identified as Petrus Ferrandi Hispanus (d. 1254 x 1259).\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106596-hrF2F8hEDq1od4G9O6SZ",
+  "object": "chat.completion",
+  "created": 1795106596,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Logical Textbooks**\n\nI'm currently focused on understanding the historical context and significance of Peter of Hispania's \"Tractatus,\" or \"Summulae Logicales.\" My analysis points to its crucial role as a medieval university textbook for Aristotelian logic and the traditional identification of its author with a Portuguese scholar.\n\n**Dissecting Historical Figures**\n\nMy current thinking delves into the attribution of the \"Tractatus.\" I'm evaluating whether the text implicitly places its author within the Middle Ages, noting the varying claims of authorship between Portuguese and Spanish scholars.\n\n**Defining Historical Context**\n\nMy current focus is on how the term \"medieval\" functions in relation to biographical information. I'm assessing whether a descriptor like \"medieval Portuguese scholar\" implies direct participation in the Middle Ages, adhering strictly to what the extract explicitly states or clearly implies about lived experience.\n\n**Assessing Textual Connections**\n\nI'm scrutinizing whether the descriptor \"medieval\" itself necessitates a connection to the broader historical period, or if such connections only arise from explicitly mentioned events. My current assessment suggests \"medieval\" alone may not be sufficient for a direct link.\n\n**Considering Adjectives**\n\nI'm re-evaluating the use of \"medieval\" as an adjective. My current thought process is questioning whether it truly signifies lived circumstances or is merely a descriptive label, especially in light of the prompt's strict requirements for inferring connections to events.\n\n**Questioning Event Links**\n\nI'm reflecting on how \"medieval Portuguese scholar\" connects to specific historical events. My current assessment is that the descriptor itself doesn't automatically link to listed events like \"Middle Ages\" unless explicitly stated or clearly implied by the text's content regarding lived experience.\n\n**Clarifying Temporal Links**\n\nI'm refining my understanding of how temporal descriptors like \"medieval\" function. My current assessment is that simply labeling something \"medieval\" doesn't inherently mean it was part of or directly influenced by specific historical events mentioned in the context, unless explicitly stated.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Logical Textbooks**\n\nI'm currently focused on understanding the historical context and significance of Peter of Hispania's \"Tractatus,\" or \"Summulae Logicales.\" My analysis points to its crucial role as a medieval university textbook for Aristotelian logic and the traditional identification of its author with a Portuguese scholar.\n\n**Dissecting Historical Figures**\n\nMy current thinking delves into the attribution of the \"Tractatus.\" I'm evaluating whether the text implicitly places its author within the Middle Ages, noting the varying claims of authorship between Portuguese and Spanish scholars.\n\n**Defining Historical Context**\n\nMy current focus is on how the term \"medieval\" functions in relation to biographical information. I'm assessing whether a descriptor like \"medieval Portuguese scholar\" implies direct participation in the Middle Ages, adhering strictly to what the extract explicitly states or clearly implies about lived experience.\n\n**Assessing Textual Connections**\n\nI'm scrutinizing whether the descriptor \"medieval\" itself necessitates a connection to the broader historical period, or if such connections only arise from explicitly mentioned events. My current assessment suggests \"medieval\" alone may not be sufficient for a direct link.\n\n**Considering Adjectives**\n\nI'm re-evaluating the use of \"medieval\" as an adjective. My current thought process is questioning whether it truly signifies lived circumstances or is merely a descriptive label, especially in light of the prompt's strict requirements for inferring connections to events.\n\n**Questioning Event Links**\n\nI'm reflecting on how \"medieval Portuguese scholar\" connects to specific historical events. My current assessment is that the descriptor itself doesn't automatically link to listed events like \"Middle Ages\" unless explicitly stated or clearly implied by the text's content regarding lived experience.\n\n**Clarifying Temporal Links**\n\nI'm refining my understanding of how temporal descriptors like \"medieval\" function. My current assessment is that simply labeling something \"medieval\" doesn't inherently mean it was part of or directly influenced by specific historical events mentioned in the context, unless explicitly stated.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1/bCp9Oz4oE+WJFoIvgf3JRB82x9c34nwG6qdtvfsGvXPC8NtdUzAkYdc1ehVlvgWT9h6TAx8vEkgaW5CJWjpNCQymUPQAxS/5XVOHMGZyBFtiF//TyGj/UIZIMtq9YKPFe6QzJMotXytqT/gPsAM8dQl+9rrMflv9x5iIi0D9Ie9UeWN3ljigOG4YnBYbj1f+ScSBsbxuzAiXK+f55KOdokhi1GTIyuRq6JUocKK9RF/LvZ/epjqszGnZoMq7doi/YzL4WfXehmuZ3BM2o1tssxnvGXI+tfkJXe9Zh6Y5LpSet52B0pmREnV0mQuUbfIHcEomU2Y50cuGQebyXJIn8pfkz05i4FQNLVuaKMuC6MKyfY48XUEn5EwZaXto+S50c80t8gxHUhPxm+9Ao+xTP4Oj4J/NgAAZVb/m+7LFugQsrOHcodTA3gFw9sLnJ6MyM9yscZ+T4fBk6pV3/hx+anCTTnM6owHx7hvlpvt0GJFr7irX+AQxxrab0Df8HYJTf5kecvjyopTxA86N3PyLItNj8w0ENUqR3ggHKFW7VSB0DdAHl2AYo26ioakBQIMCdAroWxv2FYIBFjROhQxitDCs1btq6GDyfSkOT85oMQzBh5ebL/4azOvRdS7czw6xsvsjA/T9iV7Q3qiieJ31QD0ygfdVuYG2gMn/EbZeP3+OERMgqcLk7ULW+4+FE6TLUyHMJrkK7pSX6NE028nvwyDE9OUMAOrzehpeV6HslJ9eV1TQ+D7OiiStZRCYC1TZrhpTikeJjD8SOBqTJ5tZa6xWU7FMVqT6fxEbc9lLvJEGA1lYJfcYp4juWihaoYzMBXFDJsGOPYWY0rwjezIHNk8bp7/B0iHkx8vaiBCkKbe9VaXv1l5KJwb/gO4+rWNa2d1t9Qa3qj9yfP7Et2exnFpSvACHQuuwfX/NqgmW/X+5LFhCssLQ/DFxBFgdFG7Oe5qj+UDKiyyCxY9XcJnobCCnH/Dhtn0kwgOic2tvTEUDEuQaMujg0ym85itLYMpJtnZjKI6iH31XkRxPG8RBfQcq7yVc/ODuo/Bye1nYyMm7Z4wWbvBVIyPbV/iI38MgXh97fFSo06vfuPHR3Rgg1YCWsQUW8MmXe9hmxNFFjjLxwB9KZLGBlUqhhpkCRG5hnuIKkONkOQcDgAoNMVyZakZbAgBvHLJcLoWl1tLeOTQ9SaOwSVYgFQ/i7FP5I3ZPqSHnp/KMezr4FrkvNijYBrOpczwtN+iCsk/EvsYGQrDli1IFpYJQFxRdzlJS2p/bTiwG6CskzHJadoxhR7xiCMKT+dubuoarkDThkAgDy+I8a5ivcfj0znA2dvmRtWFgugAaN29szHm60BquRdRaKQZItB0lPepO6073bkKKsSHZ9fjC5Zw3FkFj2UbLEePBVJIYiQTM9bDhLhJqdnTW6msZhG91HV6+f0mLsxQoKUTz8HpqKCtuz2SQzlqaMbCZSOwvN7tBwxD2cA7sauTMNlcgJyco0QxnNYjXNnG1F42itbE/SeRiGQ1QSQcnksoUTUJkHmNTZOsnfswAGas9Sh9t0BE7owUQknYfEz25WpRYxcSuD4b0YN391iQjNGyequlC03XgdaZC8U4CFlrMTD7W6WFBAjdJ+/tMd2rtO59CIpR4R9/cPwgO7qE5+SVVFQ4tD/WZ8KsiIKpuOVHSWKUalZ0I8coMySsQOZsrV7EYDgDw8yJGXuHMqcxIMILb7/9vRXEoWfDHVQRwVFcwq0P3kk0vusxtJ8v2KFfcNxZaU5lHxM3L1nTHspVQuYoKCb8DU2ZqpS1iEdYf3UcGddqUFwCQxe4BcweiheksDI4U8nPAn05igN/DCRLb0OCojfFHSnZIn/oxKWjHWhry6wtSPUnXNCEoz0V1TU4Duk93z82cXPHe698fMgscDTEa7Jfg/3hJ/K0dxHeQAt9u+SbfiKViKubCC2om7EOclquok6Jvzhp48+MHG4MAoZT10Kqa1zNfJ//6yHqVkC81lK5Vc6Xe4RImfdjL01y0M265YOgqMA8VPUi6JuiCNFfd0vEWdlIAwxhOI9jm9secOiMV3+phaZesWriIMO5mIGBrNwUGdMVfvM32XU9Y87IsJGCWSkKBQC3MSQ8O0y3uuBxpipeLUr9iy2aqtU7jWkGaeCVAAQfLsaxFU/nk8ZPkkwm7RHHxWGUIpTJ82cEGmVjIO4Tzod/uOSRnOftDhwTyhF9U5ufe7Cm0ebxlASwVhVUozTjMYae81lkQ2YGyejAyt067hMRwatpytBeQuVGCUnu5f3ioPgIcBbDmZcXafwbunGXzENFkBA5xnf9xWavcoyDsJJZQXT3HXINZAXVA+t6L1uCGsqDdntj89ZKNhmI89h+yrFPMxMsWJI9+FYP9nXbRO1NTi1OkEhbfscy6CrxRaNeXA0y7W2lXjc8+cXX0rO4cHir5gYdOhy5rwsCvGzrIGr7ujrFzr9KXjgroUaEI4HhMHL8XdPJmYtoa2fWoTMqsQCdhh2+R0utiyV9bkO4F2mWrUAIvuVtJ/hr8QQAPQF1UWjmVP8SMh0VSbsRR5+jim0sUSmOH9Fu9VWNlZg7hADOrGGk5I3JnNGMStOdbe9KevFVUTHCKtLHcLh9CvAPUIX1lQG473FfLwU9CIbp0zdL+gtrS9Z+BnzxR5rc7UkUvqRnYZ8L4lCyFoq9CCompzzepM8ae0xXKa6oxdeY6b/6aJBwWWTR5t0nqEWtABpLvTgzKVBVYYbkGTP5eEDbphCJTopon0nPW2ZZO/oqC7QBjo+7gI3sfrs2pBlVMEZWjCHQBNtQkklw+2QXTHM/JAM36b4J/pAbgV8xYOiQbd3LewRIOIOPI6Kpq5NnKIVDjmhj44FKZ1T0aq2gZUy8VENbyYamR7bHRnjxSFgP0xZnZIiuFKilBmxqobLvcGUft0IfQ5POoI+uNtrDNpr00s3Qzj5zURjJduFRDUj9S+FCL3Y/ZXAB1LUtOkg47sDk9vEUSeSNfBgDKpcvBcxPrB4CU0b0YnCYAj1ZgngOyjyCuixS0P0D3aqLiGFXfMPjJqu5H+tLXy6+UhFFVDRB/1O1Wv/bS03p7bsds77QAoeM1rTH4DbrBHaoxnatlrqCiEuqdQRlxZ69m41E1mlBSWRB3s7nrH5KDcgJY7PI06LSbR2WA5H+C9rkewMRULiY7Pl/tbJV0K8ugL3pdchdvWV9ObULMx+GJ9MOBN27IWo6+d1q1IQQTBaW4gVsDcTp1F+mKYBdCl9iea+uz3k9ejCCPNuO5RikYx6bOrbACFTbl2MZCLOm/+lZTtHkMsY8ln5LW0nyMsbd0MuPBzkAeuQmuC4C8bGmiqC9/7o1RdjiBSmA8JpD1I0irZJWcRIaa0Mrl/FumDXfDe1atLCg0HTDxsPoSHmcEVX9X+5eQom1kpeTZ8nWkYEzbTU7hDkT/ogWTqS858EchnC86QfKp+NFlsW4vmzolGJUbONcM6HOkXlpG/ccJqxybDqEfQ3G9IdqBP3ifWf2HM01gGKrbo+8jERPLH5y77eEu9JV15B2Zj3exzyg73FNdmbBn5w0tlIW80SWDQISW4NpBAGxwYCJBmho7HgYnbh8ngWHMpG2tFK1IUI9PeEu3oBYa976uTw355TfFBv7L+iPxD0XaNzQPz47/x3Ot7b/XEpOBKfe4uRK+/qG5iyBnBd3xVdFuhaRlZnerjvaRxnNKVW8aaG7fULiv6cWMrPV2C+oy9/LbdqOpnOtX9jujQIYFq5Q07Uz9U2HcyAVgDW7dsxpMeDn7zSdGbbxem980CwafmpzEVprJ+9ng5P4gL/E/xPsYnbih42VxWJ+rGamK8ztQbUssHXmWuWk+7q8MPblROzUA3QbvRGzm0nE1AxyizNrbggb6FEQHhHKmhZl2fMCG1k01mtnEflFVmHDh68Dh91xrGXORVXFNOYMOuoimza45WHUKts42L4Yd9/0+hmlG1sX8ZwhhpbeRj3ANDxw967Qmtt3Z6wOGB77BwZc6CY6xzmN6H3L50yLptixbz0Q06Eq1wal/sLdIOVANljLFWRAkrotqqCqwWiEzPnc5Gol+rFCQ6JTdizpzDPXANDLMf1BawsrkX+vfWkM2eajp57b8akONBq5hNgUyDgPW4Dht9AmRKptpqxkXfdXCqC8AMYEsY1FZT6trJqEUqNltGe9ruD3n8l2X/vTt/GEzkU9HFTGkZFUBRRxNr+gfBMvhFcSzIB8YRJmr+PgcDZWBTIY9PLlRC6FE/xDIHGbAILjUU7qKp4g8Yyl5qaeyZtHLnvS4ClxowTabQfMBoBfSWOK3lOSQW6ve1JUqYqxmyxFGrmQ3NxKC2ETK5YNuWCbCT2zDwSdfrAukd/bxdICbHNVUQ4QpE6kOSdfwRKL7hysU7VKjJEJTvXwOv9x3AKxOYODFAbf/qECZCz0bTc6VUscUQ+c9PL4b8Gb937tcpvoAs5vWvcBHi3fBdgcEXYjhwuOLQswHMUuBhjb2fSg0cKBkyE7I/onpWV5cdtrUO+p784e3jkp3eciMkZyEDrMUT6EKMJhFLpwIMrvIb6ZZlzOapIRcVKjNP8/2pEPWZ5CAjdRVnrraAefhRAA628iMedNoHAWh7TNxKK+OknxloJvshZU8J42a3Br0CgqZ06Xenm2cde+16QXuyOwt+w5amVnz7hS1Gzbd+vs1IWd1Q8eMxbd/SFeoNa2s3legGQQSgI8JieqKkZKGsqVQ0g3P4yDju3Sjz93CYisZkfaBuajZGv/0Nutqawggv5PT0N4XmtEFudX1WHHbB1JoN7tMqM3MnvOQMXJ/u4kL7/hLqaagCTcf9+Hhs5K//RqJ4HZ72zNMlNm4FfYYLnwKXHzhmdLuex/5XjOBUb4KLZlaJoZWLDUDjJMyS7CL+QOi99KC9vkXPbpy7RgX0mTP2HN0Hrs0DT8uY/o4Z/asZnMqru0/+OuCjLxjU4MWzdQd/27DjBhQ3rOXNDU0+VuqDYUrMrCW7SJNHRonqIuXYO5QYPtVUEXiX4ZNKIDKJ24ftzzNAhJuavp4YG24KOSPMwdSqlP5HdjEJ6wd4okz0Y++LgFmxJtDp+tPu8eOM6bFbqlEmjEAJUbRdn9vMVyI74fnDohCHZrRKBPc+oEobHnqvnr3a9pBtfllqpHpl/4aSuoGPixTtkGbHu1cu9YkzO6V1KtgokOEJgt8T/TGcLsCj3aF9P2YHhHBjjE5IxWcEkfGYcaZg7ooPui6sqZnDPJohYEU0wmQYn6fepaXWHZ81bamquYPTs4oDPI1wj8/mHsG67lIFsbqXzDSwhFHwvoQ5wR9L1ixymk49xvVpK5wCmkNtzYbOydc4udMtSG+g8QLkK1ILvtoBIgR9w+T7Y/Z1Mp2/zLEBmETCf38L9SemdiUK8MWcq4y81o3BIbbwJSEjt9fgZWEsZ9MgcdxZXQRNOag+d+3Mpg//Vv1af88Q+WUP0XZdSiUluwdMIN6IhdiUarlpMrvlPSjbYulO00ysXpMF9HaX7Il0kO9s59zQQ4NLxvLAwZ84jUEnyGgNXC6OA5knX394/JmikiQicwQ6cQzE2d+DHeaXO6S4qwgz9iqB5be6sSLPc8S0/FDP0VoMRtYKV2D2L+CovBxMGc/5MeW8gKGoXupMoJ4CNIakPePggwEsrrh0e51u4OPuoTDDxWCCI5hAnCOmJKBCj0q0pU4aDgrRC7iDpgy5pakFc/8PpIrAAs1XdCASiddcDIhh71oSs6zvtqKaAAm4q6ZnkPogR7DIJ5N+kzhkAyKmkxlGOjpsyr1Sa1s1ByQI0cZVg1h/ubUl/GH7FsV4ghV2KfwKpVGeERcXDimF1iqQaetTU6Z301CIrO1v1WLxr1wiCWVwYfIYEU1tS/TlLq3/ujwdhM+VbkzIIWiOS0Uo/lLiruieuM3/UJJrpXI9fHg2Mym5RG/n0boq20Pe9eXAl/ZtD91kuFE+hBJLTc2Rmj8OOk7eox2xFfOZlNnnL61PTqDS6MJpoOQW6ZnVLYooVLLewykuc7rOttz8s7smXWH2AXiNOay5sxJe24mfZ5U6+rD686wmgD5S2daoC0Mj+mFFM/cSL53pU3nLSTznHGGzc4YxVPGOPRgE1df20kljMnGCCr2jncHrvkIoV9W93id1acmTWPqJJBe5XKGDijCaUsWC9pUNv8nioD5NxVwmihzuunLOudKYVyLDTEpf9R0FW66hONzJwKOQh0Q5NazTjB9MXzfWC3NMeZzYEYCb28yEUCZafdE4Auf/Zftmu27FPlE34kFmiKsludq9CJU2tB0koD8gV5SRMBSxjXnAtsdBZC0P1pJpF2OWkXYhUSjmULemMbhBb+SqbfpzWlNarU4/ZvkBLitvupJ/XUusPSyc3ynsjMxzPYZwsPL6dy3Npy0remtYulXmcBXWm0Qg5I3XnZKkde6dOVlZhvmErSPBM+G0jfQGCq28kw0uMv+BOLtNffAW5tgrdY8ZumB9i7hXKGX9Jsx47hkOACJJeBEsvsxWJt86wGqhsgcGbSl7Yg7di3BRnwG4DIkgqi/5TVendB6VXHjd0kjXOkPftmjj3o1oUptAFfQJl7uDmqAsLqW+rePaqvbqLIQ16wiKm3z/Lp0pMWpXVpyxmvfSpymXtCF5Nwzi3fICEOgCm3ExeET7B6Tew1Qx+rLAIQsUCU4fCTYepeNL4ELwnB74F0jQ/HgRqgc9AnC8DbZZ1zC5d4HNCdpSNH/NcJmkHZ9VbllNqABd6Hucn+F8N802O+qTmiaEPnRjjWKao4XsxFpnn+NkTos+KfaTx40yUJ9lMG+GdJ7vUVspwzTE+cCjAtR6zeX8HwGR6IPIRErOElmR4H/SU8zeYvKMKcxyvvwgrR/WL0T5QcZ7y6JYM97Rkf7123lKudpx2ab3HgXOb/aYKGGSemPpZAkXCDGXUH/HO0zpBL3nAvEe3O3G5gK/LNlWD+4jj+caBAZlcHDC48vmSbrK0q3Xd/zH0R3uMALD+XQ6IAay9yPjjIAKKhTrsPsl6PF7HguZPo9V4JG96kSOerHNItSdsTeqERTaZUSvM7udZ2vrzXXw4Vlj0kCpuyg6YHs4bC5w6YgWcPoTltcG6Rc4hRDK6DnoMTqV4Rc5+jU/cYTCG0ESmzVpp1+6T8uusIIZ7lMUN99JC8u3HRt6N81fVleX1iGl52tbHtRjspCYsIKYvmWUgL3e1XFj8vaFmLM+YLfD81/MGTHC+WtA+UTlSb/MJH49yo/iluE1RdraOuBfhuONEYE61vTpIkL9BF3QGQon8tfs1sK4cd3+wwxdoqbXWgnzUsH4aPEKehN1kXMMB8bxp2CgTO3MVGzXw/juEs2svXT2st+x9iIzvDNUGupsCxknnXw71Ss0lIlmXDZYy11E7ysXPy2rHvRFdcJGFxJCImOrsVpKlpMmTlw6eA1PanqyyWyHtePCu0Us02aRodXXZdbwj107zn54fpiUCYwpfoui75GIz7hiG8c41DHqOIG7brBB+6qyLtwSHNFoEFZVqsD2+OBJMAu+a1Zl3pcMOEIcZbqMKnJujRMAIcaquyPP4wwrKq/rcp3mrG0CwMeZBP1jmRuaCUuVmHaOiU9z/QjquhANHfwY/cFP2+fWrSZanphs1PEQnPFycttjpjtY7yiKm0Y3T4yn2kNtGV7xexA1tC1QdyaEBwJbJjILa/c0gkUvWgAvxe+LwTiMCSDR3hQ/M8B30KLt76+eOWDFLxC9p3gjD9+rEFqrTyCdihmMWJsS54W/pZQZ7b/Ez4DyuLVM82/yJv7mAbdwGYKXjCmE267HjsORznpizXVUlEQtCSl2hc00cUd4Atk7+yhP9tg0CRCHw86sag8sMtLgDejRahzrtS8vghAiGjACM0bzxTfD5qOCk0JjySkxJt8dpaSPoxYhT1tMYpK+K9DVQvfv7ngac4xs2822rQjhZSZYBH2/Khoc6Rfz3HnYNcI4U9jpj2csOE/ZSl1ll2h1k549YIlUojC6G0PWRaodA2K1fzdYOASz1ZtgBiHXjpKikSBOEpEgRRtHFUvRz78oCIeVTWMGh0/wkm+3bN9ALCnKIDXoN92o1o56euMmTW2gxO8YbQV1/AfuonWYs+vrZtToe6HSbak8zDbE2XyIq2oER9r3FkTaeRAwXaFdvKBiPKnZMleNS1caEfQZAyG/VP/XEKBScICcvxFUETwjMHxhEyOvKag8pIwPy0ubjTenQM7Qu3EKF3lNeNDbl7i/PNXYgNaIyspYvb2HB3toy+SkGOkPqCHxaON9JNibQtmi5cTTxXXHNotNYapj+P/2r5mWhEch4Nf7cTvbQ59+1HrkNxUE/SExUHAM5djuX6Jy+a3ZTFcPFiaqW25a+TXdvocE7mwKFrA/R8W6hyPhdBIpUz/WReu7z72eH5RQys1wOpc5cVRW3xO3bVGeIFoHuqXZ+m94SSzvcTrAUhjXYhY93GMBuTKdgwGOHXBYArpLG7fGVIgA5ZgMqWvjnDff20mC3U6vaOi/mhD58F5ZP80am5mcSsuUSgXK0GDwg0sHu/ywoRdPDISVxforF8HVI+o+luH3DRTbQzYyi0fLX/FLMUDI9e36H+IBrLWnKBG+YpGXB6sCSnd1pE5u4UCfNRi7DgqHZeatuI5l7Z+9swJax1Gx0AOGMsOpSrrMQ4yq717qzxYuFViAxQyEacGVGQdYxE0I3oEkB9B2VcR4JeNzNp2pXsQVm1Km+n/0wQJjd4KxlVzGUQhQwsPmZzcYJminkMJt2XWUbzu6hiS+5BDRlqDapf98xnUDq+y/h8uSObV5OH/EG22J9+t1uVEiK1PccMg/S+pX5J8DzTTLrvlxKCKVaze0Xx0Gg0RY8uM1fVYDjb7XXbutUXxkTFKK12uEiXy6kEhvXj2GsJ5nQuDvqcUSF0yjXDEte3yGdggds/M/QiMDpBBoj1tTCpHxjkISADESH/CwlnYiWQuUONjdQXwTVMRQ3zOlc+/mbR3VItLncJr4bGkRyx3FSkYMKLyfqK35tBDVGNzvZes1TkEeLMnvjy2TESX2hMFZ6amDyNmBRiyDlNC4fy4jBhKFfjyfxDZFkaEtd3lfgPFv7PSvVmK4fT9rBgciBFJ8D2Ur7cbpbnpfq9OLfmGEkdgIr+Jv2KotgdiWQpmtOd/jsMcYbOZRFiLd0rHayTPyOop1CflCK4GwWZeTs1fCyTiZo8YC+PBLhp5XLuNeT1UeD0wB0g8RAKLgg5xN6OAi95tfcAPDiNqItTy7aHxddtF6fH1hUqyBbUp6jerBosb81M+bCADG1we0n5m3gAczk0utMzvqTbAQWEQqDb239KBL8HxckwErSyKpAD1lNiBdDogYfWDKwxD7XLGKRuycHBVfm7TV9i92l9MssThBARudNLXvik3l1fqDmBYVKgiiYb/SviFHHmaQRnUKgJIuBYMFlO2Rpof6tFKtAdZj7X0iqDv2uZWhbGjvlc/YfOvL6C2/gvI6EiHVeH6EmnpiTjt7pRXkFxW7abxJ9/Lgd0EeVnOLDRcdIYDDFKpyf2e3VR+ebQfjPwOWWPQWvtUwtW9ScLQOG95VSIxlja2fQHKisEbuqUj1dmvnBDEOiOkWg936Xh3qaVscyKHxIUW7gcCWdSouDMlIv76HwMfyJaWf8ycqJqK28QKkEhCh8llEALrrlCVU2pHCiN/CfOS4w4/iSp4IzQEZCS8rT9CGlMH7HuT0Wz7dFGBdZoEF/JrrVgN/5VO9X7XbZioebhfI/7/Q36/t8zamx/9i0BeTziJqt57vMIB9f7gilc7sx60T+Kdl6E6iht9EWpjcFNL960h1xxm0NJ2fV3fMiwV8HmV9vOSeGv9Ch4kk8fEwKA7zsm8Ghk6tQHms0JeOPd/mJPTRDh7/tM0jgtCmL08YB0LvEOmv1XwUCzDh+a5GsAcogcBnvILUQhTkzvoaKsYhT012yUW/zoiixa05I2F4RIcCO42ryCeaJuQwfMXpxcGS2S1vrKJPGNOQCXqA1AtP6fsI9mjE7tTuf5wDuZpPKQFxRdjVRLel2MvU5tWk9qzI9fcCAWLcb4dJnhqeBVojxqhstnwvkzqddFGpeVU3MPvCsSf+27xCdHvJMA4ZsHmxx2N/yzoNHmNgiil9Hdb0fh1VQeUeyLQ/oG+XbCOl4Cyo566kniv//Ozr+VBD1+RF3BfrH1Ae4YmjfYw2dauJBcKGfyDm0WgDlykOUSue9in2APvzQAQonM5xXWbSAKQ04WlO9dA8tibXPqlYxBZ8DjtHZM4cXmcouuP6x61nZHYiU64HzTUHSQzDMW7hmAB7J9mgEFyqKmRvcGXJrH2Rx1hRQg4qF2iBoDdHL4M5ewlwoYDRYk5iiG5WUfOdjlMllOwCmnpkTDVGeB3I8i83gnGvg3sQan/3GS5tE5fkV71XPAlDylarTa8VwpRbkSiPY0BC7qjeYAfxeiFpxOsnyqC217E6KLBmoLB2weIqDi/0QGgeinxvOqMQy4liAwEERiIDcp+fYQWece/jQc54Cobfe32vlIpbfQtEn3Fpl0zH0fk/aZfjYB6mkR/mbHry+tU1s+DoO2TksJE3mLWTWsYm2ick/zkJgt8fTpth9T1mtk66tiRNZjlc13mTA1yIKBBxr3jHZL1RaU6FUbOPfgPzEoygqO3LpJdT0TYeyXVSd4u1ahqkP0zD6cdJQyjQBvhCWlZbUFM4ZwgulXV2ygZcP+Dc/I6yXgmgL+oXu4fyrUb11Bx2yu9i5kXdYLdgiE2UvqNMtIoWMw4JbPIP3+J/NyXc/0LCKJRn0+6HjRjcg6obhN7Ji65Qz1mqNKUfJPHrmhs7SPy2X7b92wX64Y/Pou58kWZ1whONCOttwNufxMO2r3ugGydp3yK/Sz0jhsfh3mz3A0nTQBlqUkMeQHU1wfmqddVHkeKcQeULKp4CnBaEMUDiwdamir8I7A==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1283,
+   "completion_tokens": 1661,
+   "total_tokens": 2944,
+   "cost": 0.007191,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.007191,
+    "upstream_inference_prompt_cost": 0.00096225,
+    "upstream_inference_completions_cost": 0.00622875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1652,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1283,
+   "completion_tokens": 1661,
+   "total_tokens": 2944,
+   "cost": 0.007191,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.007191,
+    "upstream_inference_prompt_cost": 0.00096225,
+    "upstream_inference_completions_cost": 0.00622875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1652,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.007191,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 13.92
+ },
+ "meta": {}
+}

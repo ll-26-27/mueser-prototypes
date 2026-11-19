@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "7efc9ff28c08ec1c2a484ab3ea4827762f1ff691f4bea86bcbd380deb79fb9b6",
+ "fetched_at": "2026-11-19T16:41:29Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Anaxarchus (379 BCE–319 BCE). 4th-century BC Greek philosopher\n\nEXTRACT:\nAnaxarchus (; Greek: Ἀνάξαρχος; c. 380 – c. 320 BC) was a Greek philosopher of the school of Democritus. Together with Pyrrho, he accompanied Alexander the Great into Asia. The reports of his philosophical views suggest that he was a forerunner of the Greek skeptics.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ386303  Thirtieth Dynasty of Egypt (-379) — ancient Egyptian dynasty\nQ511257  Twenty-ninth Dynasty of Egypt (-397–-377) — ancient Egyptian dynasty\nQ978071  Thirty-first Dynasty of Egypt (-342–-331) — second and last Achaemenid rule on Egypt (343–332 BC)\nQ28365  Lamian War (-322–-321) — fought by a coalition of Greek cities against Macedon and its ally Boeotia\nQ737907  Second Latin War (-340–-337) — wars fought between ancient Rome (including both the Roman Kingdom and the Roman Republic) and the Latins, from the earliest stages of the history of Rome until the final subjugation of the Latins to Rome in the aftermath of the Latin War\nQ109251  Samnite Wars (-342–-289) — series of wars between the early Roman Republic and the Samnites on the Italian Peninsula\nQ551888  Wars of Alexander the Great (-335–-322) — conflicts fought by King Alexander III of Macedon (\"The Great\"), against other Greek powers, the Persian Empire and warlords as far east as India\nQ2912306  Wars of the Diadochi (-321–-274) — series of conflicts after the death of Alexander the Great\nQ200716  Battle of Chaeronea (-337) — 338 BCE battle during the expansion of Macedonia under Philip II\nQ201526  Battle of Issus (-332) — second great battle of Alexander's conquest of Asia\nQ213074  Battle of the Hydaspes (-325) — battle fought by Alexander the Great in 326 BCE against King Porus of the Paurava kingdom on the banks of the Hydaspes River (Jhelum River) in the Punjab near Bhera\nQ179670  Battle of Gaugamela (-330) — decisive battle of Alexander the Great's invasion of the Persian Achaemenid Empire\nQ461599  Battle of Leuctra (-370) — battle between Thebes and Sparta, 371 BCE\nQ192938  Battle of the Granicus (-333) — 334 BCE battle between Macedonians and Persians"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106485-2PbvclnpRC02GNTnpufJ",
+  "object": "chat.completion",
+  "created": 1795106485,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q551888\",\n      \"type\": \"took_part_in\",\n      \"reason\": \"Anaxarchus accompanied Alexander the Great on his military expedition into Asia.\",\n      \"evidence\": \"Together with Pyrrho, he accompanied Alexander the Great into Asia.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Considering Philosophical Roots**\n\nI'm currently focused on understanding Anaxarchus's philosophical lineage. My investigation into his connections with Democritus is ongoing. I'm also examining the implications of his association with Alexander the Great and Pyrrho during their Asian expedition.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Considering Philosophical Roots**\n\nI'm currently focused on understanding Anaxarchus's philosophical lineage. My investigation into his connections with Democritus is ongoing. I'm also examining the implications of his association with Alexander the Great and Pyrrho during their Asian expedition.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1687,
+   "completion_tokens": 409,
+   "total_tokens": 2096,
+   "cost": 0.002799,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002799,
+    "upstream_inference_prompt_cost": 0.00126525,
+    "upstream_inference_completions_cost": 0.00153375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 319,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q551888\",\n      \"type\": \"took_part_in\",\n      \"reason\": \"Anaxarchus accompanied Alexander the Great on his military expedition into Asia.\",\n      \"evidence\": \"Together with Pyrrho, he accompanied Alexander the Great into Asia.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q551888",
+     "type": "took_part_in",
+     "reason": "Anaxarchus accompanied Alexander the Great on his military expedition into Asia.",
+     "evidence": "Together with Pyrrho, he accompanied Alexander the Great into Asia.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1687,
+   "completion_tokens": 409,
+   "total_tokens": 2096,
+   "cost": 0.002799,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002799,
+    "upstream_inference_prompt_cost": 0.00126525,
+    "upstream_inference_completions_cost": 0.00153375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 319,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.002799,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.14
+ },
+ "meta": {}
+}

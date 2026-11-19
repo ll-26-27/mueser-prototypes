@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "a7bfda557af7781c612c289f405afbd0a9e85f0bf47e08c324335c1cf7fac1d3",
+ "fetched_at": "2026-11-19T16:37:11Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: William of Auvergne (1180–1249). French bishop and scholastic philosopher\n\nEXTRACT:\nWilliam of Auvergne (Latin: Guilielmus Alvernus; French: Guillaume d'Auvergne; 1180/90–1249), also known as William of Paris, was a French theologian and philosopher who served as Bishop of Paris from 1228 until his death. He was one of the first western high medieval European philosophers to engage with and comment extensively upon Aristotelian and Islamic philosophy.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ196409  Livonian Crusade (1198) — German and Danish conquest of medieval Livonia\nQ431177  Mongol invasion of Khwarazmian Empire and Eastern Iran (1219–1221) — 1219–1221 military campaign\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ737542  Genpei War (1180–1185) — conflict during late-Heian period of Japan\nQ2086498  First Barons' War (1215–1217) — civil war in the Kingdom of England (1215-1217)\nQ51655  Third Crusade (1189–1192) — attempt by European leaders to reconquer the Holy Land from Ayyubid\nQ51656  Fourth Crusade (1202–1204) — armed expedition against Constantinople\nQ51657  Albigensian Crusade (1209–1229) — 1209 military campaigns against Catharism in southern France\nQ51658  Children's Crusade (1212) — attempted crusade by European Christians to expel Muslims from the Holy Land\nQ51659  Fifth Crusade (1213–1221) — an attempt to recontrol Jerusalem and the holy land from Ayyubid control\nQ51660  Sixth Crusade (1228–1229) — 13th-century military raid against Ayyubids\nQ51661  Seventh Crusade (1248–1254) — military conflict (1248-1254)\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ646409  Crusade of 1197 (1197–1198) — crusade\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ233568  Battle of Hattin (1187) — Victory of Ayyubid forces under Saladin against Crusader joint forces, 1187\nQ521799  Battle of the Neva (1240) — 1240 battle\nQ570204  Battle of the Kalka River (1223) — 1223 middle ages battle\nQ14689  Battle of the Ice (1242) — 1242 battle during Northern Crusades\nQ159512  Battle of Legnica (1241) — 1241 battle between Polish and Mongol forces\nQ219697  Battle of Las Navas de Tolosa (1212) — 1212 battle between Iberian Christian armies and an Almohad Muslim army\nQ815161  Conquest of Jerusalem (1187) — 1187 conquest that marks the end of Christian dominion over the Greater Jerusalem"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106225-TOtaCq32fbsoKQzolBOm",
+  "object": "chat.completion",
+  "created": 1795106225,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q212685\",\n      \"type\": \"lived_through\",\n      \"reason\": \"William of Auvergne was active as a European philosopher during the High Middle Ages.\",\n      \"evidence\": \"He was one of the first western high medieval European philosophers to engage with and comment extensively upon Aristotelian and Islamic philosophy.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting William Auvergne**\n\nI'm currently reviewing the provided text to identify any direct links or mentions of William of Auvergne in relation to specific historical occurrences. My focus is solely on the information presented in the extract to establish these connections.\n\n**Identifying Philosopher Connections**\n\nI'm refining my understanding of William of Paris's context, specifically noting his engagement with Aristotelian and Islamic philosophy. I'm examining how \"high medieval European philosophers\" links him to the High Middle Ages.\n\n**Defining Medieval Context**\n\nI've confirmed that \"high medieval European philosophers\" directly links to the High Middle Ages. I'm concluding that the \"Middle Ages\" (Q12554) is less precise here, and the connection to the High Middle Ages via Q212685 is the most appropriate interpretation of the provided text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting William Auvergne**\n\nI'm currently reviewing the provided text to identify any direct links or mentions of William of Auvergne in relation to specific historical occurrences. My focus is solely on the information presented in the extract to establish these connections.\n\n**Identifying Philosopher Connections**\n\nI'm refining my understanding of William of Paris's context, specifically noting his engagement with Aristotelian and Islamic philosophy. I'm examining how \"high medieval European philosophers\" links him to the High Middle Ages.\n\n**Defining Medieval Context**\n\nI've confirmed that \"high medieval European philosophers\" directly links to the High Middle Ages. I'm concluding that the \"Middle Ages\" (Q12554) is less precise here, and the connection to the High Middle Ages via Q212685 is the most appropriate interpretation of the provided text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2027,
+   "completion_tokens": 860,
+   "total_tokens": 2887,
+   "cost": 0.00474525,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00474525,
+    "upstream_inference_prompt_cost": 0.00152025,
+    "upstream_inference_completions_cost": 0.003225
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 759,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q212685\",\n      \"type\": \"lived_through\",\n      \"reason\": \"William of Auvergne was active as a European philosopher during the High Middle Ages.\",\n      \"evidence\": \"He was one of the first western high medieval European philosophers to engage with and comment extensively upon Aristotelian and Islamic philosophy.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q212685",
+     "type": "lived_through",
+     "reason": "William of Auvergne was active as a European philosopher during the High Middle Ages.",
+     "evidence": "He was one of the first western high medieval European philosophers to engage with and comment extensively upon Aristotelian and Islamic philosophy.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 2027,
+   "completion_tokens": 860,
+   "total_tokens": 2887,
+   "cost": 0.00474525,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00474525,
+    "upstream_inference_prompt_cost": 0.00152025,
+    "upstream_inference_completions_cost": 0.003225
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 759,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00474525,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.02
+ },
+ "meta": {}
+}

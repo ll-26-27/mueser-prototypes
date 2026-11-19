@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "a1e5446e06aca6616e54b671c72867db0fb91a0413d6bc9937d8000f74cb4ee1",
+ "fetched_at": "2026-11-19T16:41:25Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Democritus (460s BCE–360s BCE). Greek philosopher (c. 460–c. 370 BC)\n\nEXTRACT:\nDemocritus ( dih-MOK-rih-təs; Greek: Δημόκριτος, Dēmókritos; c. 460 – c. 370 BC) was a pre-Socratic Greek philosopher from Abdera, primarily remembered today for his formulation of an atomic theory of the universe. Democritus wrote extensively on a wide variety of topics.\nNone of Democritus' original work has survived, except through second-hand references. Many of these references come from Aristotle, who viewed him as an important rival in the field of natural philosophy. He was known in antiquity as the 'laughing philosopher' because of his emphasis on the value of cheerfulness.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ386303  Thirtieth Dynasty of Egypt (-379) — ancient Egyptian dynasty\nQ511257  Twenty-ninth Dynasty of Egypt (-397–-377) — ancient Egyptian dynasty\nQ833118  Twenty-eighth Dynasty of Egypt (-403–-398) — ancient Egyptian dynasty\nQ651008  Corinthian War (-394–-386) — 395-387 BCE Greek conflict\nQ33745  Peloponnesian War (-430–-403) — war fought between Athens and Sparta (431–404 BCE)\nQ76026  Greco-Persian Wars (-498–-448) — series of conflicts between the Achaemenid Empire of Persia and poleis of the Hellenic world in the fifth century BCE\nQ11924845  Messenian Wars (-742–-453) — series of wars between Sparta and Messenia\nQ370709  Peace of Callias (-448) — possible Greco-Persian peace treaty (c. 449 BC)\nQ932202  Peace of Nicias (-420) — 421 BC treaty between Athens and Sparta\nQ1132922  Peace of Antalcidas (-386) — Greek-Persian treaty of 387 BCE\nQ461599  Battle of Leuctra (-370) — battle between Thebes and Sparta, 371 BCE"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106475-wjZ3DPW1BHFmydRQxgoW",
+  "object": "chat.completion",
+  "created": 1795106475,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Ancient Philosophers**\n\nI'm currently reviewing the provided extract, focusing on identifying any explicit or implicit links between Democritus and the listed events. My analysis is strictly limited to the information presented within that specific text.\n\n**Finding Democritus' Connections**\n\nI'm currently examining the provided text to see if it explicitly mentions any of the listed historical events in relation to Democritus. My focus remains solely on the information contained within this particular extract.\n\n**Considering Definitional Nuances**\n\nI'm delving into the precise implications of phrases like \"in antiquity\" regarding biographical timelines and historical periods. My current focus is on distinguishing between an individual's reception in a period versus their lived experience within it, strictly adhering to the provided extract's explicit content.\n\n**Distinguishing Historical Eras**\n\nI'm refining my understanding of \"lived_through\" concerning historical periods. The extract states he was \"known in antiquity,\" which seems to refer to how he was perceived by others in that era, not necessarily that he actively participated in or experienced the entirety of \"classical antiquity\" as a lived circumstance.\n\n**Clarifying Event Links**\n\nI'm reassessing whether the provided text offers any direct ties to specific historical events. It appears the extract focuses on his philosophical contributions and reputation, rather than any direct engagement with particular historical occurrences.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Ancient Philosophers**\n\nI'm currently reviewing the provided extract, focusing on identifying any explicit or implicit links between Democritus and the listed events. My analysis is strictly limited to the information presented within that specific text.\n\n**Finding Democritus' Connections**\n\nI'm currently examining the provided text to see if it explicitly mentions any of the listed historical events in relation to Democritus. My focus remains solely on the information contained within this particular extract.\n\n**Considering Definitional Nuances**\n\nI'm delving into the precise implications of phrases like \"in antiquity\" regarding biographical timelines and historical periods. My current focus is on distinguishing between an individual's reception in a period versus their lived experience within it, strictly adhering to the provided extract's explicit content.\n\n**Distinguishing Historical Eras**\n\nI'm refining my understanding of \"lived_through\" concerning historical periods. The extract states he was \"known in antiquity,\" which seems to refer to how he was perceived by others in that era, not necessarily that he actively participated in or experienced the entirety of \"classical antiquity\" as a lived circumstance.\n\n**Clarifying Event Links**\n\nI'm reassessing whether the provided text offers any direct ties to specific historical events. It appears the extract focuses on his philosophical contributions and reputation, rather than any direct engagement with particular historical occurrences.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1+UbEqFhn5cO58pUaWd7/4RGC5jbnM0x6PjTQM4zkANmyJX9+JdR0wS3YXxBJ0/3iGLxiE37zb9FteGVn51kziLzxas7PqM6PfbnCaPmTlQ0DH9+s031k8xtdKw8PceJXeyvPrJzcWpE4pt4E1KayW4fQUpqmE2Zo6lkHS/tSLEi2ht7DscPPXZUBqA5Tfh/i2NwWGi1PUrE6iSEpYnJ/HLBnw9xjFWOBTH6HpaFLwEErgiosxj9sjOVvUD3e8qjvKZcxXeusnwXOjViS5sFeEdMX70gDDqeyj6a17uOB7pa1tH68l9W/1k2BEpFrJl/s06iXOiVtASknMTtMsak48iqwaED74AR22CavMNainljW2wZz6Ur5sRPHr89LZ4Lji242xwnyoR+9qu786fYbLq9J1qAMytWFSR0XB7iGGbSIxQJDJuv5OAbW7K+fW5KdSWdtzamKUGRXI/EOzID1HRIdc1vzj+sdS0puhlQWfDU9OIozbBC0vo5OHmYqD+Y4nfoN6Mwje8d+4Cs8rMYD7nTyArwQhTefEgPVwDLC2wY2OHC0nU+UIX4TU0SSz93cr1O9/Gm5gQhJdQAIIIM9vBefGoLhrBWDSxEf75J10vjlHqNqXjMFqkS/HeQlXM28dYCm7tPvM03vhzQYZNbqH27mimSdH2y+OWcUA+gxa31DENsIeIiimqlap//uq4rxLCic8uCueiB/RiYgW8rdAA67GMcVemNyzul/NAU6GvYdD35sl0NZCewj4qMDLCZCySfB9kQpSSTevHUhLSIf4siNoP9Nf8qNzoJ0ysmc6ngigWQZBXmNbXtO4ozB/E3Lw1dbFekJzhLIixI4L5XwQsd0ySlAfln+aJgq4bIQLz3/uUEIeCJQ04LQLJw9RiGD5lIXyt+OpndMoqSOsOCdT8wYF3SLEDZtMg+zndRAyCLvwYIPae2d1mAzwLkXIiCLDZnLivBfi4lPjfjUaG/oH4+NO9Shay4hq2/K8xuB+w906hFndmhcZmRqvlg/li+N0pp4inTUV0Q/510ic5XmG7UZ2jBjlfLeSaiLyAbDw8kdz4MaZYKzx+NMS7NEm0WU9ehc9S1Jj4/FbUL3SJgnpNyPbqGFMkmUZKnV0y9dliDPEBz6rBKDJKPwlkLhQqJTzrEtKjLXV3v8UgWJX21OuOQJH0W2KkiVnN1z0wQvQTlcWLP3nZYLzO9kibg5U3VT4iecz/SHxjsUBl27FJzxVw6890ubxqFndWkYeN6vdK8nDFL7/jt+H1iemU05PmU4Qf0MCia8H4NpGMFPEX7oknIh4L9v6qam4wkYv8l4/1pvKTjvjxE6hiuZ0NYZD/VvxKQ90CkH4bY1eOBsDtCgsCykSkk0FpLyCs3tgyWA0+lwbpSVsyryio0tSEXULAEVJVfDIRzV6uch3FLW6VQQLh6Z+Dl1drAHtievsLl/0s7uDUtLJzUoFA9/40xZz+cHuO2ZZTL1Va5URx2i3lighmtKhbYaB4zFiNGQsn6t8aRl+eEpeszVsqbY+trJXM4GLad0XbGJZwEmZZM45S4eUwaHHckw/Q9aClfvD4xsf9PjGk4kPOcsiJBWJ+U4qYRAtQRM4ak37EJTiP35JpgBXk0fqciFzJpIir1nDggdWXUolIBR/z25RFm7lFDSlp9f+PtKUnOLlJjYyxSf732z3PAiLX/2ElSE1BMZLaZLI9iIFkf0rfu/RZBwrJo3JZRnwvq6ZNRtneHiZP+eVHtgyXFVvLAR0kN184w/N0+xpBDt5wIQoPtDquN+pc6ZnWb6F/0E6i78h0sS/zxelVL40qVPzMlY3sySXcKuI5R4TegIMv0HEjrexNSwqCC5/YeVG1ocrI2/gSbchZt/NM5hea3t3RjesTFmjT81ocBF8bdnlmqdSpMPbAhv6n1vCSfOEK4isk3mM7DBblAna4Yqh5OldF7TmrrQ01oirRz5VJBvO5tH6tz0kPigaUigUIh/j5/Y9V/p1jznFGC9+OO+bt7pSnyUlYuZutOMSPlZw1mDxD4lfNkLh7N14eDXUSm2+Duve9v5NdShgou5B9iaa5vX6qxpGO1Qoyzzkjn8g/urvxjYJhGBcmXq3dCiWGo1sI1xX+cpc7x8VBOHQnVlzPnsKwNfB+LpoKNOLogkxXJY8lOX5IjekfINgtN0k8ednOBEwVLln4+xmP25Z7wLhak3itZAs25DU/G6dVB5sAPWHorOK7rvFykvmLk8dSVnH9dhG2EtrwOWILm+h2LYwADEobaGyQSYms51ll5Sit+iSQUEjsuaWg7gHdREelyVxWk/3/r5RSSj9WpnE3L5i3kEsu3hcOia0vC2AwCo2BklXnnzOs7EcdOfBeL7IM+If0SNaq3xr1rUMqANALXkGn6Zi1Zs9BrZzq/2QLugnF8DOmWdb4a87X794nUN+yVbDmJxlxbhsubHQ2YsjsD6Mo8OTNHXnAyQzzRXk87W8ZJ4FsYYSEmuNCAKcVBR7SUhQj8HK/KXHIk5iZnhsdv80FZCNs31IcF7LhH4VEj9AJcPiylf5TQr7s1Q2XCtRx9jWwdQe3gX6nEctkH5UFaxjVbxZ3i4zUy0Txw8o0sZ6GUNoDJjYbMatCV6iEz5zf6FO8Fuc5QAEeggwI3UQcZVz5h+TOHR1iLEgK30Unwra0lx5A00xPieH12vtPz8Z5uSibotGi6n2Rn+uqS0XNeLs2u7FQLn2mt/B8OTzpB4jF2TKGctnVLK4PbrFh87IrjCWl3nL0zj9T/lbL8pPUXrfBls9+ZiF9tIHrga/aXfu/HFxj1h9A11e0xO9qZ+wmw90Nqp+0U9ycWDIAWONPL+67DZDU3uda1bvvp3+PsH1mFpTszlx4xatQ21eHHh0QQBvhVohKarN5LiPfZ7AWrxGiByM9fyPbk6Tf7bLmgwlPZpv6olIyc9+sgZOyzsWBHihgyer8PuloCGrymNi8sPMPW+aVmplI8XL7GjfgxPuHMGss1poZ5z26Qbmzrp+DyDRfnr0Qi7mxoa90brB08OiEdpXGFbcKV0l/ieu1DF+5fwW5Uo2PutiTvuXtcPTQmmmVS1rJNV+4+osul7pSqEWajlIii1PzW8ZJydsfcStFkFd1BN1wiwEyaVX6i9OFJ3dPVfwcY5jUDlnsL6Ocy1MdcbKyWVlxJ3/t13w35jRqo3lM0dfe9w2RqkRqAVo3IHnlNevYamPNsb3HhqAPpreTHW67tImpPE7XkwivGb0MBTJX2iYQx/hHIFaE0iS2yN8Y8LO1jIdzwUy8z79BBufcgDWL3TwSCg0nreFsoNa2uErNoHTgrFNd4tBcb9OPXqDpjppicdwLvCGnYo7/SfmsNqZtw/1PBUxIC62Coa9+Ms9hBBzlpxhhZtMRqPjU9yOl5/CvTQ231nRmw/RSlX7Cs6eh0p6rNZk29eQoAHAxlVtcLxlP0e30PvEomYK/jCWfIGaPc9m1l1O/sH5s3iV0ank2eX2VTJu7lhTyj9QF78N5+wQ18pPPlcP8flzT9aQrBhyH6ialcLTCHr5m2a8bF5p+cVS2apKgJTgKVY6m0TBT5Df+QfW+Ypt6CmI6RAgiEjrn1mhcMDEg18Y0natS47Y6r1Dsry5HRXbvg0DMDszh9OHA3BUB399fzlcZmM9wp6g6yBbZNpHwFgCLGDjTSxlWacMtVQQWzsWAVOwal7RJ79druzAxK+E/bGQLLDHdHfW+9lI53kvHe9ibRWRhGkQDgnxoN5tiUi98NPxA3zA6JKgl9epxtym+hJFuQ/sdbLjLMONDe4Z7itmuQAwREU663WLPQHbZ5GQ6ZLlDvAd33AxqfzfbDo5MgHEO/Ado2oBti31ZFHwsc3Vc3Zs5jyyB2w4HYtlATAuHpWa3ZI4TmtcCcXJTM/RADMjQqs+UYx9BQQ0IzxX+92lwQe/sEPZpDBcmGbyl8Sy1edpuJOesdXsz0AI691Fo9EEG7c6SIRW4tBlRnmdoYFeY9Pm3+XrMm04RirkRLIVmxN+ljl7VEniQbM8noC2QBtLCPM4QvJNXwrLnDVcNc+ooS+Co0nSL9OlUg5UT+gYnZLDKaadNuwWvkifWywsOlyn7v37W6mnDuNvYJzpeMjic9N40wqvBzMNMGaibOjQdpCd/OhQxA25qLJsfC1zMNVVSZOO/cN9fu0BgigfUewRPq8wtt/4jF4F3VXqxRdUf+QU6CLPYva6F2THp2l3zJ7sep3IHnZLfdYieQ6mf5edpcEozol5ZwncTfAWBeEDvGZsEr6YzvLtcrH6reZcTEnwNFgkybwLp03W8g80aA8niyvDcuGJCgMSu4IC60RjgKhgahCN4BqWuVig9g1CTCAKhB2X9Ftv4Va1hU0X/LyAcdy3GCjk2jR3s6lDEjzcgoXopKA1WTp+Jrh0BKKfdgFj/ehyzl+wY3PVNko4SAfc7L3wFHy7Z4NJMegszsG1rwgewBULJJtBRno35jIYnUEkT8IPrIoH/6f8O386u2Z9sjWJWTbEFd3SPvWHP9NzNSKfzdHzBn2l7BCAvdEBHyqLt7kvS23CvrqHuTKrQgF/No6QqZgLrEPEj4XVuql9qanFOOy/gQEzEQ5WOLSR62nRMi0rZ/UcLbui6aO+EaW9/rBrL2nl2IoU70NTJVk3q4LA+7JPbZuMR6J3OHMgTgdxy4Uox3+5ocJvbJj8JKk3VBWZtgS+myRL0wAlCgOkgm43oXSo09IaY3oOvLn2VXdDZsMhFtNW5CzhEtknYn8z52LbYtJKRZybZOJyIEh28cxSzPbSEH2B8CcDxcjm2HtJg4e2qbOTG+OhRIdmeQYUrzZn9gpYFIO5RrVlQOe2nLjB6tLpkrxrvqm+uuoHx136VDhV93F6OBIefqJlFvbg5lx//ssfoBXt13zXUqZmTnfb4+S5/BrpzPiBBBH26YnydLqr9a0mkmAdzcYAhXnqZjsb6QPbzK0FxGgHjWcJjFMrBUdLeR28sK4OjU0kTTXxnxKgvHqnbgpjHrwedirJ7BXTiqEVmZk5u7CwUrJTJSfljRyG9NGuU9uJpMjiehLKhSMFsgPaVAgs9/tu7zDa/UggvBoBpFDkoUmWLiAmZ87vjDGk/Psp3FuTSaI9ljFFael3WwFBMt+BN0DB4ogCq53mHDda35bmx5ecIQ8L/LT6Y3Ny03BjI4biPqRdxKPU/z9TNgLO/0+w0QuUseJi0GeWqBWJ5VH7mofS/vc7fSznOtZMd36WhEZiiDkci2z33pLg3jsYhGgjRQyj6ngU+OZfK+XO+D9SjR3tkjzsvjbNYuSm/PYHUcf+wa12FzbYjLspCY1aO4CW5BgdmyO5QZboEDWnhsB4FsW5fFDvhfMkHDtJXOEZVRKcdK2M+bwiRBnLpoGVWQFf+5F4mI/aTsNB1Qo+EaZZI52bBavfWJPwcRvqAFKR+C4Gep48IZ0LVG4VgIMbdh6OHdN/BDLLi+/XGfzXVnRvciNL/RSKZNeaS00IKCd/cJ7OiXmojMr0cs6zPYWjWMfsd78ppltb/q73X35G8yxnrjv2xyo+Nz+t0yFhKTB/rbT0dEOtTyn9LspVPr3GvvLacK29bIVfO395TzuHABauGjl/J9NbwNWFdLgnwXrYwVr4l8KUenVwV9UDtcgWmXzUw8Umc9vlDOnLeBpUdrcuOm2MSJ4+/kotLxU0tFbTiNxgaNO8aEaUdu9jv/t0tO/c7qOHPmruWnc8bgu4g3Lw1qVMrln33mgrAHz1O/XxBA4uVXzXsHbpLLD8uuUABYKPuuoAmKwb+j6jthCXMwst6tPNWQVp5WjIXBDzn5KNh/QbJR3yZuORdPZUK8XlUzOEb3zr6GZvkg70NxyloFqu4XS8I07V7E4XjHRhCeN5dUKIbzkLPtiDtPCo8lvvKg8zA1bipB2dcu2tzBDGbrw0ospPVzsAqW4Y78CzIqJ2iymNDONTtoh39jfCv6pW3Yyio/EWvtR84hh6NO/GrL5rqZHQHiP3BmNvfjtHJhJPr32Yyij1UeyKdsc15ienGB6y772zO8MIuv0MvrELhmTuuxSmq47uFGMvwR9boSAr4MLnHNe//giKtCAGyj1KCnjGtWFG8EIgYa2w2JLmZ8OY2ZngZegXsj+kThTRlXyBGidPKFlsxHwIIBQVoHiJSRDThIUlJ6oY9LOuEOMQ+VR9FqqY80zdv+5Wp9ge6RGP4bGY4BRn2J4Mwcb3+Mm7qN3W9VVBmKI9Z3383eSPXwHUDinJIu3i5WKilddh9oB2zftWSI3l2ObzpeF0XulupupYGb5inApHOxdsiIeuyiTFmtXDeAPkhX+xOCB1dirjHSmdxLcThRHzQGKGAE6upVRD01b9gfo6rvTlZ9C4EhXxJvrWW5Nu+gzuVnx5c8BnpYZpG29JHxGUsqYnKR68aVtCodLFg4vQkO9n1Jxo+GhVygssZNbnnerr5l2529crJluql3JczKZZE6r94cGJVcsABWurk8BYXTYZM6NPDrDUtFU1BIFoWqRAsKfQD6BB9e1sliASYPZgPhVs7W3sSjqFfLMbfyDl2FeHoAMi0RqJppwoatPLTUNYkZyLSzkNWlDvBqFqFmF4TKJPzjQb+T9ImwseT/FUtmL6fWaeR1V81BkWzDUvj5nO+TR74FIcTUAXZep2IFo8z+H8lP+/uuDGbltu4Nz/dyYQ2LAGsYnqETSfKGoJYAnOQpvuVLQY1EBbBBJtzisViDuxbLkKnGTVU2URG5XrfoP9CAtJhDy/isruuUcrS8Mfa0TJoTPQ0W7X0aBi9WV/1H/HAPj5VkoHrcgIPr/W1bh44pCr5n92y56EDO2m0dsjjkF53TTwlsYmpXH4w7mhQymMM6pj7EFRNVZfXBOWOYyXs/04d4MNx18ik5HRgGFE/zQMeH7wjR3vZ9UMvOjx4+EqLX+Pu54GYNwZc67e3mpFrD681dAcW4l9Irwk8Ojr8XJG0L/Oi0ECnMETnIGTkMNrf+hkD/0XMHjfXWRuqOFuncZdUPmWssltuBEJub2e+eUsits7CCixYcCXLEvW1um7XtLTHaQmvlIpLXkq39iIQiP3F1+gv2KGSk+Jdh1IkV0J6coAVUkY31qjoo8/aa7eMGJqPoxjWDYULe/FwHm50tJpQJVk+27dnXVBFOjhDcwzVuWdBrsOHPMp/DEdJr5Gv/zJJMrCde1ybgPkXLgdzNpDaaF/TJuZCZQO4EcPzJrDLm9RUKiQyW1ZA+Lkl+s8jDK7g4xI1104HBIXjmln46I/UVI1RVIqivE+Ordb0+GbUbN4J+jfuzZNdoUcoE+KZhjV4WPdfA2rC4xMJUcemQBEMRdgBUNPrOf2LWzHVLN3pSGCV9HbpiNSHdTNyrB8y2lTeATdh6ws40k6+KQugiUFHiDsnFqy32MjmciWLMGZoUwLuGM/NSXBZKk7G4JaeEV/VrBd/gmAjWAI2ZAr7iZmUgwaiB+XEvFhtdP4gmYnCuawtMCYur87HIo4X1cin8DyG7GOpPneHCstTYlHSQsU2G8jedVxefQSKxEongfLLIPaRGRrNYDgwV9cXrXjMAk1qLcD/hIj37C8nB/gzpUzUUJkIikX5tPiRpyvVd8P/qeCwwJUdHCLpQGsg5MMg8JaIcLru0qt1g1S4GR0C14ojYOCXTVFaisxttrZJCQ6V59If6BHFKnaa7inKlneQq7OWJ+rkzzytGZsLR78Np4zMYzYKZrFL7hhTzYmL40fkyp/TH3VK8gkLS64L5Ro9rk5EkJdbliI1JFnP+8H1hWFJYPdeThcnmo0QXrLSrmYhKqfoQ3ClvTwXz6Gjc/AcrPgTVAPN90CswhGt89UdFagYj8HH8HtINP0vqhKsS9TTJ1TAAyu4QhDqkUsJAZ7/aVk8kSiqapTklaqn3yOEQ7EDWBofN3JS78+9sWiLphMOPEy8wnMpaqKze5ywTF6IYAWR37v/+/LCJtAUPSrdnjkhGgJyokwLz2PvoOyLZfvVK5/cY4KV9wZWKtBJp+uLztR5DNdEtk1XJwjzWcy22QN1X/WHqWHAnO8twYa6gu/W30R5ebkNyq8e3bmIhesMyuHAYb5h5j8f9lhZW7pZz3mQWx6rEZI8w4Koh0tf/lkeJO4xn5m8AKQPvRxLrYIv7mvrdF4vS7xWo7eYFia13795ahLiCM5R3dHuVNybgSlTUfiSPcTHqPHCmNqJWa/9AsomxzMDHzHBwwuzn194xIAVaoYa9LkbwrDth3BPnTiUvB2Q6ZVQQ4QMPQ6CgLbMWDLIuYeYnFPRcAFS00jTQviczawfXk7asa0w1n7GGWtDmJSIDFon5vM8+j/zMJDNxGkV/TVLTpLKPMeQrdz7.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1543,
+   "completion_tokens": 1317,
+   "total_tokens": 2860,
+   "cost": 0.006096,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.006096,
+    "upstream_inference_prompt_cost": 0.00115725,
+    "upstream_inference_completions_cost": 0.00493875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1308,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1543,
+   "completion_tokens": 1317,
+   "total_tokens": 2860,
+   "cost": 0.006096,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.006096,
+    "upstream_inference_prompt_cost": 0.00115725,
+    "upstream_inference_completions_cost": 0.00493875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1308,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.006096,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 10.59
+ },
+ "meta": {}
+}

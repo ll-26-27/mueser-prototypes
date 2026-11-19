@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "a6f0aeeb856e1a465612ce304b8b02866869785f70292efc6a0a9abb25d1b61d",
+ "fetched_at": "2026-11-19T16:34:31Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Mencius (371 BCE–288 BCE). Chinese Confucian philosopher (372–289 BC)\n\nEXTRACT:\nMencius (孟子, Mèngzǐ, MEN-shee-əs; c. 371 – c. 289 BC), born Meng Ke (孟軻), was a Chinese Confucian philosopher, often described as the Second Sage (亞聖) to reflect his traditional esteem relative to Confucius himself. He was part of Confucius's fourth generation of disciples, inheriting his ideology and developing it further. Living during the Warring States period, he is said to have spent much of his life travelling around the states offering counsel to different rulers. Conversations with these rulers form the basis of the Mencius, which would later be canonised as a Confucian classic.\nOne primary principle of his work is that human nature is righteous and humane. The responses of citizens to the policies of rulers embodies this principle, and a state with righteous and humane policies will flourish by nature. The citizens, if they enjoy freedom under good rulers, will willingly take the time to care for their families, learn to perform proper rites, and become better citizens. This placed him at odds with his near contemporary, Xunzi, who believed that human nature is evil.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ978071  Thirty-first Dynasty of Egypt (-342–-331) — second and last Achaemenid rule on Egypt (343–332 BC)\nQ28365  Lamian War (-322–-321) — fought by a coalition of Greek cities against Macedon and its ally Boeotia\nQ737907  Second Latin War (-340–-337) — wars fought between ancient Rome (including both the Roman Kingdom and the Roman Republic) and the Latins, from the earliest stages of the history of Rome until the final subjugation of the Latins to Rome in the aftermath of the Latin War\nQ109251  Samnite Wars (-342–-289) — series of wars between the early Roman Republic and the Samnites on the Italian Peninsula\nQ551888  Wars of Alexander the Great (-335–-322) — conflicts fought by King Alexander III of Macedon (\"The Great\"), against other Greek powers, the Persian Empire and warlords as far east as India\nQ2912306  Wars of the Diadochi (-321–-274) — series of conflicts after the death of Alexander the Great\nQ200716  Battle of Chaeronea (-337) — 338 BCE battle during the expansion of Macedonia under Philip II\nQ201526  Battle of Issus (-332) — second great battle of Alexander's conquest of Asia\nQ213074  Battle of the Hydaspes (-325) — battle fought by Alexander the Great in 326 BCE against King Porus of the Paurava kingdom on the banks of the Hydaspes River (Jhelum River) in the Punjab near Bhera\nQ179670  Battle of Gaugamela (-330) — decisive battle of Alexander the Great's invasion of the Persian Achaemenid Empire\nQ461599  Battle of Leuctra (-370) — battle between Thebes and Sparta, 371 BCE\nQ192938  Battle of the Granicus (-333) — 334 BCE battle between Macedonians and Persians"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106066-PMpiu5JpqaLRqQLtHiUV",
+  "object": "chat.completion",
+  "created": 1795106066,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q185063\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Mencius lived during the Warring States period and spent much of his life traveling among its constituent states to counsel rulers.\",\n      \"evidence\": \"Living during the Warring States period, he is said to have spent much of his life travelling around the states offering counsel to different rulers.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Mencius's Ideas**\n\nI'm currently exploring how Mencius's philosophy, particularly his ideas on human nature and governance during the Warring States period, might illuminate the provided events. My focus is on identifying thematic parallels and potential applications of his teachings.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Mencius's Ideas**\n\nI'm currently exploring how Mencius's philosophy, particularly his ideas on human nature and governance during the Warring States period, might illuminate the provided events. My focus is on identifying thematic parallels and potential applications of his teachings.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1+jEh8ekSZIjRHm0rsOK7EzsTzm65Fm3SiihXdMtKTnNpSyMR084xJo/escnKeMRbe+bKIKlNv51HCSK9RUm9HwOVtZtxUsN8sAY4FEQVHDCXQ7rRrOvYEapMwmsVjJ8T0AlMhAHd8eB/9GUOaEOtBPK8HCWosphEdnatyJwIH2TayfeoTEd/wKl/g7S7ZMxDtdJIvW1bYtybB2azK/XWfcyT/u279SGZYkySlJ6O/FSWxA6cU7/pwlE+HBIiUbT2qgGA7tU4NQiWCulF+Y4ZL0eSQVcWyJROUhe6SWygwlQJadoJEwxE6AHEK5ujnP/ujt6BhnHW7RVqckXj4JOIVHOIhd3hnywm5uxkz8E47QlunK66zE3XmsEgkQevefB3qRPKyJ9bLnQxMr3+cmFuZ+OaukjtiueMfsBcE0YfOlLDzDbZUceE5IPgpX/KylEfYOa2D6uxUlQrnsuRUH0EJXV7+ZnKLd45S4wbodOTQPFs/9M8i+o/YXswKO+ITOlWDCQQb+DbXczGZWSB9ggwDnYcnuXYOINByrpyL+vIpmTtaqAmQ30WdGXrfu/Lppq62Jg5nZby0f3ImJ7whqtPS0ndt/MhhbQLjnfZ8n7E6ETkCb9yYF93Bsh6rhmklNbyEr7m/Ku6LLvQVxhxDQWruTdRHswn3qW7RaVvSvtSTDBN1PIza5wddYymSl5zsW7269T/tug1AdI4hd2ledLrpPjjbKx1O535vMRpUqtnGs1eZXWTglb9XQ6iqeMQk2+8FKBpGKKPrKiUyWsKHR2veu7WsH8VLmf6SsS3xUxTx8RbTam57UIS6uWrf8hhLVWFVOFTSryWdFZqwb30wVKYZrQbXDFhJYcnp4//qyi8JFBxVnL87YVGoM9rWirrAgYbJZiEnsFFtBClogrxGIigxQ5q77kGGT+xBu4O/nbMnrCeKWh3BWPV8+PiU2jP8JVyoCuz3Y+nPuVOAO5SP87ri+ACLBqk/5KISqi1O1QpGHVk532o/ygn+TlftoVrHp780o/ns6SxaZ7v6rZpjzK4lbMcoJ+bjUZax0kcK2rLqKpe65O2pek/4qtCxAygkeErYT0X2/9NGnNYuAc7gRIjPhcELJwF8qdLpErJ7K+NFGCOdVKGSCM6y3pQyzzby13JY1rlICP6wlFcyFvvVGY7CFojobFnwaZR46ltlsTN+5vCIpXWV2+/rJfbmB6uoKLAcGAjpXX4ijSn/7T6ws+pXzfFHYwKti+VfR4Dm/fq5EM2N1vODpiQNf4Nv4ruYF/ABeL+4wRJYdsuZcRK9GUHHogkwPX/UGAWE7lEQYGCRSO4Tbv1O1Bjewy3LehZTf+adoMVNGKXmuS3XNvqkHsLcH8C9t5N/AWJ3G1Wi21yM1n5kVCXG+ue22WZQCGVviRImNQjsv+LxBWLQy66pib/NgFS/fQIp54y3CF7VN2SJrKSYIKgcSn37YvRp0HPTbp6zx4e+pvH7esDESJ1q/BgznLzSKAAZHMYVgidPBfcvYBxC7SWDAw+W36eedTUiV8MKQsvv9UdCowKfND/R8bXyYMrNCEZiUuKM1e4SsV8WoQjpmTNpxombsOBwX/duhd4Ndkqm0fjbAzjvz17CPv/Qo85EhnZo6iy1w6qLR8+ciQI4Q1lpVQiKi2DGhhNeKNQxG9SBYcdaf8htR3PBziHkd5P4xqcyth588xerhSj1TBEy4V5mJud+mmKc=.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1829,
+   "completion_tokens": 343,
+   "total_tokens": 2172,
+   "cost": 0.002658,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002658,
+    "upstream_inference_prompt_cost": 0.00137175,
+    "upstream_inference_completions_cost": 0.00128625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 230,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q185063\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Mencius lived during the Warring States period and spent much of his life traveling among its constituent states to counsel rulers.\",\n      \"evidence\": \"Living during the Warring States period, he is said to have spent much of his life travelling around the states offering counsel to different rulers.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q185063",
+     "type": "lived_through",
+     "reason": "Mencius lived during the Warring States period and spent much of his life traveling among its constituent states to counsel rulers.",
+     "evidence": "Living during the Warring States period, he is said to have spent much of his life travelling around the states offering counsel to different rulers.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1829,
+   "completion_tokens": 343,
+   "total_tokens": 2172,
+   "cost": 0.002658,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002658,
+    "upstream_inference_prompt_cost": 0.00137175,
+    "upstream_inference_completions_cost": 0.00128625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 230,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.002658,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.46
+ },
+ "meta": {}
+}

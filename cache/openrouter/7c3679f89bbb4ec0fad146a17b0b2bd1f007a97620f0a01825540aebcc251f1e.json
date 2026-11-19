@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "7c3679f89bbb4ec0fad146a17b0b2bd1f007a97620f0a01825540aebcc251f1e",
+ "fetched_at": "2026-11-19T16:16:07Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Diogenes of Sinope (399 BCE–322 BCE). 4th-century BC Greek Cynic philosopher\n\nEXTRACT:\nDiogenes the Cynic (, dy-OJ-in-eez; c. 413/403 – c. 324/321 BC), also known as Diogenes of Sinope, was an ancient Greek philosopher during the period of Classical Greece, and one of the founders of Cynicism.\nRenowned for his ascetic lifestyle and radical critiques of social conventions, he became a legendary figure whose life and teachings have been recounted, often through anecdote, in both antiquity and modernity.  Diogenes advocated a return to nature, the renunciation of wealth, and introduced early ideas of cosmopolitanism by proclaiming himself a \"citizen of the world\".\nDiogenes was born to a prosperous family in Sinope. His life took a dramatic turn following a scandal involving the debasement of coinage, an event that led to his exile and ultimately his radical rejection of conventional values. Embracing a life of poverty and self-sufficiency, he became famous for his unconventional, shameless behaviors that openly challenged societal norms, such as living in a large ceramic jar or wandering public spaces with a lit lantern in daylight, claiming to be \"looking for a man\", that is to say \"for a wise man\" (sophos).\nHis memorable encounters, including that with Alexander the Great, along with various accounts of his death, have made him a lasting symbol of philosophical defiance to established authorities and artificial values.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ386303  Thirtieth Dynasty of Egypt (-379) — ancient Egyptian dynasty\nQ511257  Twenty-ninth Dynasty of Egypt (-397–-377) — ancient Egyptian dynasty\nQ833118  Twenty-eighth Dynasty of Egypt (-403–-398) — ancient Egyptian dynasty\nQ978071  Thirty-first Dynasty of Egypt (-342–-331) — second and last Achaemenid rule on Egypt (343–332 BC)\nQ651008  Corinthian War (-394–-386) — 395-387 BCE Greek conflict\nQ28365  Lamian War (-322–-321) — fought by a coalition of Greek cities against Macedon and its ally Boeotia\nQ737907  Second Latin War (-340–-337) — wars fought between ancient Rome (including both the Roman Kingdom and the Roman Republic) and the Latins, from the earliest stages of the history of Rome until the final subjugation of the Latins to Rome in the aftermath of the Latin War\nQ109251  Samnite Wars (-342–-289) — series of wars between the early Roman Republic and the Samnites on the Italian Peninsula\nQ551888  Wars of Alexander the Great (-335–-322) — conflicts fought by King Alexander III of Macedon (\"The Great\"), against other Greek powers, the Persian Empire and warlords as far east as India\nQ1132922  Peace of Antalcidas (-386) — Greek-Persian treaty of 387 BCE\nQ200716  Battle of Chaeronea (-337) — 338 BCE battle during the expansion of Macedonia under Philip II\nQ201526  Battle of Issus (-332) — second great battle of Alexander's conquest of Asia\nQ213074  Battle of the Hydaspes (-325) — battle fought by Alexander the Great in 326 BCE against King Porus of the Paurava kingdom on the banks of the Hydaspes River (Jhelum River) in the Punjab near Bhera\nQ179670  Battle of Gaugamela (-330) — decisive battle of Alexander the Great's invasion of the Persian Achaemenid Empire\nQ461599  Battle of Leuctra (-370) — battle between Thebes and Sparta, 371 BCE\nQ192938  Battle of the Granicus (-333) — 334 BCE battle between Macedonians and Persians"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795104961-TWTdN5MsBYqdU4omuXOB",
+  "object": "chat.completion",
+  "created": 1795104961,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q843745\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Diogenes lived and philosophized during the period of Classical Greece.\",\n      \"evidence\": \"Diogenes the Cynic (, dy-OJ-in-eez; c. 413/403 – c. 324/321 BC), also known as Diogenes of Sinope, was an ancient Greek philosopher during the period of Classical Greece, and one of the founders of Cynicism.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Investigating Diogenes' Connections**\n\nI'm focusing on identifying direct links between Diogenes of Sinope and the events you've listed, using only the information presented in the provided EXTRACT. The initial review confirms Diogenes' existence and basic biographical details.\n\n**Exploring Cynic Principles**\n\nI'm zeroing in on Diogenes' core tenets. His radical critiques of social conventions and advocacy for a return to nature, alongside renouncing wealth, are particularly compelling. The scandal leading to his exile seems to be a significant catalyst for these developed philosophies.\n\n**Verifying Historical Context**\n\nI'm meticulously cross-referencing Diogenes' life dates with the \"period of Classical Greece\" as indicated in the extract. The text implies his experiences occurred within this specific timeframe, and I'm confirming if \"antiquity\" as mentioned broadly also directly pertains to this defined era.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Investigating Diogenes' Connections**\n\nI'm focusing on identifying direct links between Diogenes of Sinope and the events you've listed, using only the information presented in the provided EXTRACT. The initial review confirms Diogenes' existence and basic biographical details.\n\n**Exploring Cynic Principles**\n\nI'm zeroing in on Diogenes' core tenets. His radical critiques of social conventions and advocacy for a return to nature, alongside renouncing wealth, are particularly compelling. The scandal leading to his exile seems to be a significant catalyst for these developed philosophies.\n\n**Verifying Historical Context**\n\nI'm meticulously cross-referencing Diogenes' life dates with the \"period of Classical Greece\" as indicated in the extract. The text implies his experiences occurred within this specific timeframe, and I'm confirming if \"antiquity\" as mentioned broadly also directly pertains to this defined era.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1967,
+   "completion_tokens": 931,
+   "total_tokens": 2898,
+   "cost": 0.0049665,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0049665,
+    "upstream_inference_prompt_cost": 0.00147525,
+    "upstream_inference_completions_cost": 0.00349125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 786,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q843745\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Diogenes lived and philosophized during the period of Classical Greece.\",\n      \"evidence\": \"Diogenes the Cynic (, dy-OJ-in-eez; c. 413/403 – c. 324/321 BC), also known as Diogenes of Sinope, was an ancient Greek philosopher during the period of Classical Greece, and one of the founders of Cynicism.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q843745",
+     "type": "lived_through",
+     "reason": "Diogenes lived and philosophized during the period of Classical Greece.",
+     "evidence": "Diogenes the Cynic (, dy-OJ-in-eez; c. 413/403 – c. 324/321 BC), also known as Diogenes of Sinope, was an ancient Greek philosopher during the period of Classical Greece, and one of the founders of Cynicism.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1967,
+   "completion_tokens": 931,
+   "total_tokens": 2898,
+   "cost": 0.0049665,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0049665,
+    "upstream_inference_prompt_cost": 0.00147525,
+    "upstream_inference_completions_cost": 0.00349125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 786,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0049665,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.86
+ },
+ "meta": {}
+}

@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "a9221bc1b9c870cd03767e8665cfdee7e6197145141be85a8b894509ad091ef9",
+ "fetched_at": "2026-11-19T16:41:48Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Cheng Yi (1033–1107-10-12). Chinese philosopher (1033–1107)\n\nEXTRACT:\nCheng Yi (1033–1107), also known by various other names and romanizations, was a Chinese classicist, essayist, philosopher, and politician of the Song Dynasty. He worked with his older brother Cheng Hao. Like his brother, he was a student of Zhou Dunyi, a friend of Shao Yong, and a nephew of Zhang Zai. The five of them, along with Sima Guang, are called the Six Great Masters by his follower Zhu Xi. He became a prominent figure in neo-Confucianism, and the philosophy of Cheng Yi, Cheng Hao and Zhu Xi is referred to as the Cheng–Zhu school or the Rationalistic School.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ51650  People's Crusade (1096) — poor people's army to fight muslim Turks in Jerusalem (1095-1100)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ51649  First Crusade (1096–1099) — 1096–1099 Christian conquest of the Holy Land\nQ51653  Crusade of 1101 (1101) — battle in the summer of 1101\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ83224  Battle of Hastings (1066) — battle which occurred on 14 October 1066\nQ200032  Battle of Manzikert (1071) — 1071 battle between the Byzantine Empire and Seljuk Turks\nQ203225  Battle of Stamford Bridge (1066) — 1066 battle in the East Riding of Yorkshire, England, UK\nQ392538  Battle of Sagrajas (1086) — 1086 battle of the Reconquista\nQ456993  Siege of Jerusalem (1099) — 1099 battle during which the Crusaders captured Jerusalem from the Fatimid Caliphate\nQ51648  East-West Schism (1054) — division of Christianity into two large parts in 1054\nQ2224419  1061 papal election (1061) — 1061 election of the Catholic pope\nQ166861  Cistercians (1098) — Roman Catholic order of the Benedictine reform in the tradition of the monastery of Citaux"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106492-y6Vi54jNDSIuNkohXjNP",
+  "object": "chat.completion",
+  "created": 1795106492,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q7462\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Cheng Yi lived and worked during the Song Dynasty as a philosopher, classicist, essayist, and politician.\",\n      \"evidence\": \"Cheng Yi (1033–1107), also known by various other names and romanizations, was a Chinese classicist, essayist, philosopher, and politician of the Song Dynasty.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Mapping Cheng Yi's Connections**\n\nI'm currently focused on identifying specific links between Cheng Yi and the events as detailed in the provided text.\n\n**Identifying Political Role**\n\nI'm examining the text to determine if \"politician of the Song Dynasty\" implies active participation or simply existence during that era, to decide between \"lived_through\" and \"took_part_in\" for Cheng Yi's relation to Q7462.\n\n**Reconsidering Song Dynasty Role**\n\nI'm revisiting the definition of \"took_part_in,\" specifically its examples like \"governed\" or \"led.\" This makes me question if \"politician of the Song Dynasty\" implies direct action within the dynasty itself, or if it's more of a temporal descriptor akin to \"lived_through.\"\n\n**Clarifying Political Involvement**\n\nI'm now analyzing whether \"politician of the Song Dynasty\" inherently signifies active participation within that temporal period or merely denotes association. The examples provided for \"took_part_in,\" such as \"governed\" or \"led,\" are crucial here, prompting me to consider if mere description of a role within a dynasty equates to direct action within it.\n\n**Differentiating Roles**\n\nI'm re-evaluating whether \"politician of the Song Dynasty\" implies active participation versus temporal association. The examples for \"took_part_in\" (governed, led) suggest direct action, leading me to consider \"lived_through\" if the Song Dynasty is viewed as a period, not an event he actively engaged with.\n\n**Re-evaluating Temporal Association**\n\nI'm distinguishing between active engagement and temporal existence. The phrase \"politician of the Song Dynasty\" suggests I should lean towards \"lived_through\" unless the text explicitly details actions like governing or leading within that era.\n\n**Resolving Temporal Ambiguity**\n\nI'm grappling with whether \"politician of the Song Dynasty\" signifies active participation or mere temporal existence. The definition of \"lived_through\" states \"without saying they acted in it,\" which aligns with the lack of explicit action verbs. Given \"Song Dynasty\" is categorized as a \"dynasty\" and \"historical period,\" \"lived_through\" appears to be the more precise and safer choice, unless direct involvement like governing is specified.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Mapping Cheng Yi's Connections**\n\nI'm currently focused on identifying specific links between Cheng Yi and the events as detailed in the provided text.\n\n**Identifying Political Role**\n\nI'm examining the text to determine if \"politician of the Song Dynasty\" implies active participation or simply existence during that era, to decide between \"lived_through\" and \"took_part_in\" for Cheng Yi's relation to Q7462.\n\n**Reconsidering Song Dynasty Role**\n\nI'm revisiting the definition of \"took_part_in,\" specifically its examples like \"governed\" or \"led.\" This makes me question if \"politician of the Song Dynasty\" implies direct action within the dynasty itself, or if it's more of a temporal descriptor akin to \"lived_through.\"\n\n**Clarifying Political Involvement**\n\nI'm now analyzing whether \"politician of the Song Dynasty\" inherently signifies active participation within that temporal period or merely denotes association. The examples provided for \"took_part_in,\" such as \"governed\" or \"led,\" are crucial here, prompting me to consider if mere description of a role within a dynasty equates to direct action within it.\n\n**Differentiating Roles**\n\nI'm re-evaluating whether \"politician of the Song Dynasty\" implies active participation versus temporal association. The examples for \"took_part_in\" (governed, led) suggest direct action, leading me to consider \"lived_through\" if the Song Dynasty is viewed as a period, not an event he actively engaged with.\n\n**Re-evaluating Temporal Association**\n\nI'm distinguishing between active engagement and temporal existence. The phrase \"politician of the Song Dynasty\" suggests I should lean towards \"lived_through\" unless the text explicitly details actions like governing or leading within that era.\n\n**Resolving Temporal Ambiguity**\n\nI'm grappling with whether \"politician of the Song Dynasty\" signifies active participation or mere temporal existence. The definition of \"lived_through\" states \"without saying they acted in it,\" which aligns with the lack of explicit action verbs. Given \"Song Dynasty\" is categorized as a \"dynasty\" and \"historical period,\" \"lived_through\" appears to be the more precise and safer choice, unless direct involvement like governing is specified.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1750,
+   "completion_tokens": 1879,
+   "total_tokens": 3629,
+   "cost": 0.00835875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00835875,
+    "upstream_inference_prompt_cost": 0.0013125,
+    "upstream_inference_completions_cost": 0.00704625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1758,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q7462\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Cheng Yi lived and worked during the Song Dynasty as a philosopher, classicist, essayist, and politician.\",\n      \"evidence\": \"Cheng Yi (1033–1107), also known by various other names and romanizations, was a Chinese classicist, essayist, philosopher, and politician of the Song Dynasty.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q7462",
+     "type": "lived_through",
+     "reason": "Cheng Yi lived and worked during the Song Dynasty as a philosopher, classicist, essayist, and politician.",
+     "evidence": "Cheng Yi (1033–1107), also known by various other names and romanizations, was a Chinese classicist, essayist, philosopher, and politician of the Song Dynasty.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1750,
+   "completion_tokens": 1879,
+   "total_tokens": 3629,
+   "cost": 0.00835875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00835875,
+    "upstream_inference_prompt_cost": 0.0013125,
+    "upstream_inference_completions_cost": 0.00704625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1758,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00835875,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 15.82
+ },
+ "meta": {}
+}

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "ea1af4e6763c3878bcc6d24c63e99cd36e89da2b23a3ff52cedcaed981c6b4de",
+ "fetched_at": "2026-11-19T16:40:04Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Carneades (212 BCE–128 BCE). ancient Greek philosopher\n\nEXTRACT:\nCarneades (; Greek: Καρνεάδης, Karneadēs, \"of Carnea\"; 214/3-129/8 BC) was a Greek philosopher, perhaps the most prominent head of the Skeptical Academy in Ancient Greece. He was born in Cyrene. By the time of his embassy to Rome in 155 BC, he was already a leading critic of dogmatic doctrines, especially those of Stoicism and the Epicureans, continuing the critical engagement that his predecessor Arcesilaus had also directed against both schools.\nAs scholarch (leader) of the Academy, he was one of three philosophers sent to Rome in 155 BC where his lectures on the uncertainty of justice caused consternation among leading politicians. He left no writings. His ideas were passed on to us through his successor Clitomachus whose own books were lost but relayed to us indirectly in the writings of Cicero and Sextus Empiricus. He seems to have doubted the ability not just of the senses but of reason too in acquiring truth. His skepticism was, however, moderated by the belief that we can, nevertheless, ascertain probabilities (not in the sense of statistical probability, but in the sense of persuasiveness) of truth, to enable us to act.\nAccording to Douglas Walton, Carneades' most important contribution to philosophy was his theory of plausibility based on reasonable evidence. The 3 criteria, as relayed by Empiricus,  for accepting an argument, even if tentatively, is that it should be presented in a convincing way, that it is consistent with other arguments put forward, and that it can be confirmed by testing. Walton argues that Carneades provided a pragmatic response to skepticism by asserting that reasonable grounds were sufficient for action and belief in daily life rather than absolute certainty.\n\nEVENTS (id, name, years):\nQ7209  Han dynasty (-205) — imperial dynasty in China from 202 BC to 220 AD\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ486831  Roman–Seleucid War (-191–-187) — war between Rome and the Seleucid Empire, 192–188 BCE\nQ618066  First Servile War (-134–-131) — ancient Roman slave rebellion, 135-132 BCE\nQ6271  Second Punic War (-217–-200) — second war between the Roman Republic and Carthage, fought between 218 and 201 BCE\nQ6334  Third Punic War (-148–-145) — war between the Roman Republic and Carthage between 149 and 146 BCE\nQ75626  First Macedonian War (-213–-204) — war between Rome and Macedonia\nQ75665  Second Macedonian War (-199–-196) — war\nQ76118  Third Macedonian War (-170–-167) — war between the Roman Republic and King Perseus of Macedon\nQ75813  Macedonian Wars (-213–-147) — series of conflicts between the Roman Empire and various Greek kingdoms\nQ124988  Punic Wars (-263–-145) — series of three wars fought between Rome and Carthage from 264 BC to 146 BC, at the time probably the largest wars that had ever taken place\nQ1330607  Syrian Wars (-273–-167) — series of wars between Egypt and the Seleucid Empire in Syria (274-168 BCE)\nQ11475544  Servile Wars (-134–-70) — series of wars during the Roman Republic\nQ7930888  Maccabean Revolt (-166–-159) — Jewish rebellion against the Seleucid Empire in the 2nd century BCE\nQ1259381  Treaty of Apamea (-187) — Hellenistic peace treaty (188 BCE)\nQ200056  Battle of Zama (-201) — final battle of the Second Punic War"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106383-fdja5sbRUSASzvrgeJNb",
+  "object": "chat.completion",
+  "created": 1795106383,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Finding Logical Links**\n\nI'm currently working on identifying direct connections between Carneades and the historical events as explicitly stated within the provided text, focusing solely on information present in the extract.\n\n**Connecting Roman Republic**\n\nI've confirmed a direct link to the Roman Republic. The text explicitly mentions an embassy to Rome in 155 BC, placing Carneades squarely within that historical period.\n\n**Identifying Republic Context**\n\nI'm re-evaluating the connection to the Roman Republic. While the text mentions an embassy to \"Rome in 155 BC\" and \"leading politicians,\" I need to definitively establish if this implies the Roman Republic itself as a distinct entity beyond just the city or its leaders, according to the extract's direct implications.\n\n**Determining Historical Context**\n\nI'm scrutinizing whether the mention of an embassy to \"Rome in 155 BC\" and its impact on \"leading politicians\" definitively places me within the Roman Republic as a polity, or merely as a geographical location during that era, based solely on the text's explicit content.\n\n**Validating Historical Links**\n\nI'm reassessing the connection to the Roman Republic. The text clearly states an embassy to \"Rome in 155 BC\" and its effect on \"leading politicians,\" which strongly implies a context within the Roman Republic, though I'm strictly adhering to explicit textual connections.\n\n**Confirming Republic Engagement**\n\nI've confirmed that an embassy to Rome in 155 BC, impacting its leading politicians, constitutes taking part in the Roman Republic period as defined. This aligns with the extract's explicit mention of this event and its immediate political ripple effects.\n\n**Distinguishing Political Entities**\n\nI'm focusing on whether the mention of an \"embassy to Rome in 155 BC\" and its effect on \"leading politicians\" explicitly signifies the Roman Republic as a political entity, or just a geographical location, to determine if Q17167 is applicable.\n\n**Focusing on Textual Clarity**\n\nI'm currently re-examining the text to determine if the \"embassy to Rome in 155 BC\" and its impact on \"leading politicians\" explicitly establishes a connection to the Roman Republic as a political entity, or merely as a geographical location. My focus remains strictly on direct textual implications.\n\n**Clarifying Republic Scope**\n\nI'm currently questioning whether \"Rome\" in the context of a 155 BC embassy to its \"leading politicians\" definitively equates to the \"Roman Republic\" as a distinct historical entity, especially considering my own origins outside of Rome and the potential for it to be a broader temporal classification rather than a specific event I participated in.\n\n**Defining Philosophic Embassy**\n\nI'm clarifying that the \"embassy to Rome in 155 BC\" is not the event itself, but rather context. The actual event linked to me is the Philosophic Embassy, which took place during that embassy to Rome.\n\n**Interpreting Direct Involvement**\n\nI'm re-evaluating the concept of \"taking part in\" the Roman Republic. The text describes an embassy *to* Rome, not participation *in* the Republic's governance or territory. My origins are also outside its direct dominion.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Finding Logical Links**\n\nI'm currently working on identifying direct connections between Carneades and the historical events as explicitly stated within the provided text, focusing solely on information present in the extract.\n\n**Connecting Roman Republic**\n\nI've confirmed a direct link to the Roman Republic. The text explicitly mentions an embassy to Rome in 155 BC, placing Carneades squarely within that historical period.\n\n**Identifying Republic Context**\n\nI'm re-evaluating the connection to the Roman Republic. While the text mentions an embassy to \"Rome in 155 BC\" and \"leading politicians,\" I need to definitively establish if this implies the Roman Republic itself as a distinct entity beyond just the city or its leaders, according to the extract's direct implications.\n\n**Determining Historical Context**\n\nI'm scrutinizing whether the mention of an embassy to \"Rome in 155 BC\" and its impact on \"leading politicians\" definitively places me within the Roman Republic as a polity, or merely as a geographical location during that era, based solely on the text's explicit content.\n\n**Validating Historical Links**\n\nI'm reassessing the connection to the Roman Republic. The text clearly states an embassy to \"Rome in 155 BC\" and its effect on \"leading politicians,\" which strongly implies a context within the Roman Republic, though I'm strictly adhering to explicit textual connections.\n\n**Confirming Republic Engagement**\n\nI've confirmed that an embassy to Rome in 155 BC, impacting its leading politicians, constitutes taking part in the Roman Republic period as defined. This aligns with the extract's explicit mention of this event and its immediate political ripple effects.\n\n**Distinguishing Political Entities**\n\nI'm focusing on whether the mention of an \"embassy to Rome in 155 BC\" and its effect on \"leading politicians\" explicitly signifies the Roman Republic as a political entity, or just a geographical location, to determine if Q17167 is applicable.\n\n**Focusing on Textual Clarity**\n\nI'm currently re-examining the text to determine if the \"embassy to Rome in 155 BC\" and its impact on \"leading politicians\" explicitly establishes a connection to the Roman Republic as a political entity, or merely as a geographical location. My focus remains strictly on direct textual implications.\n\n**Clarifying Republic Scope**\n\nI'm currently questioning whether \"Rome\" in the context of a 155 BC embassy to its \"leading politicians\" definitively equates to the \"Roman Republic\" as a distinct historical entity, especially considering my own origins outside of Rome and the potential for it to be a broader temporal classification rather than a specific event I participated in.\n\n**Defining Philosophic Embassy**\n\nI'm clarifying that the \"embassy to Rome in 155 BC\" is not the event itself, but rather context. The actual event linked to me is the Philosophic Embassy, which took place during that embassy to Rome.\n\n**Interpreting Direct Involvement**\n\nI'm re-evaluating the concept of \"taking part in\" the Roman Republic. The text describes an embassy *to* Rome, not participation *in* the Republic's governance or territory. My origins are also outside its direct dominion.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1889,
+   "completion_tokens": 2857,
+   "total_tokens": 4746,
+   "cost": 0.0121305,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0121305,
+    "upstream_inference_prompt_cost": 0.00141675,
+    "upstream_inference_completions_cost": 0.01071375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2848,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1889,
+   "completion_tokens": 2857,
+   "total_tokens": 4746,
+   "cost": 0.0121305,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0121305,
+    "upstream_inference_prompt_cost": 0.00141675,
+    "upstream_inference_completions_cost": 0.01071375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2848,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0121305,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 21.98
+ },
+ "meta": {}
+}

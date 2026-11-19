@@ -1,0 +1,191 @@
+{
+ "namespace": "openrouter",
+ "key": "a50783b113ad516d887d004c7e7502c2579340ca50e2a6d9a3bd89afee15c27e",
+ "fetched_at": "2026-11-19T16:35:30Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: John Duns Scotus (1266–1308-11-16). priest, friar, philosopher, theologian, college teacher\n\nEXTRACT:\nJohn Duns Scotus ( dunz SKOH-təs; Ecclesiastical Latin: [duns ˈskɔtus], 'Duns the Scot'; c. 1265/66 – 8 November 1308) was a Scottish Catholic priest and Franciscan friar, university professor, philosopher and theologian. He is considered among the most important philosopher-theologians in Western Christendom during the last part of the medieval period, together with Thomas Aquinas, Bonaventure and William of Ockham. The intellectual tradition derived from Scotus's work is called Scotism.\nDuns Scotus has had considerable influence on both Catholic and secular thought. The doctrines for which he is best known are the \"univocity of being\", that existence is the most abstract concept we have, applicable to everything that exists; the formal distinction, a way of distinguishing between different formalities of the same thing; and the idea of haecceity, the property supposed to be in each individual thing that makes it an individual (i.e., a certain \"thisness\"). Duns Scotus also developed a complex argument for the existence of God, and argued for the Immaculate Conception of Mary.\nDuns Scotus was given the scholastic accolade Doctor Subtilis ('the subtle Doctor') for his penetrating and subtle manner of thought. He was beatified by Pope John Paul II in 1993.\n\nEVENTS (id, name, years):\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106111-F1OKjvHwU8t08YKEikPu",
+  "object": "chat.completion",
+  "created": 1795106111,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Duns Scotus lived and was active as a philosopher-theologian during the medieval period.\",\n      \"evidence\": \"He is considered among the most important philosopher-theologians in Western Christendom during the last part of the medieval period, together with Thomas Aquinas, Bonaventure and William of Ockham.\",\n      \"work\": \"\"\n    },\n    {\n      \"event\": \"Q212976\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Duns Scotus lived and worked during the last part of the medieval period.\",\n      \"evidence\": \"He is considered among the most important philosopher-theologians in Western Christendom during the last part of the medieval period, together with Thomas Aquinas, Bonaventure and William of Ockham.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Uncovering Scotus's Connections**\n\nI'm currently examining the provided extract to identify any direct or implied links between John Duns Scotus and the specific events you've listed. My focus is strictly on what's presented in the text, looking for philosopher-theologian context and any relevant historical markers.\n\n**Clarifying Chronological Scope**\n\nI'm grappling with the precise temporal boundaries indicated by \"last part of the medieval period.\" My current thought is to resolve whether this specifically denotes the Late Middle Ages (Q212976) or the broader Middle Ages (Q12554), based on contextual clues.\n\n**Defining Medieval Boundaries**\n\nI'm re-evaluating the temporal scope. While \"medieval period\" usually signifies the Middle Ages (Q12554), the phrase \"last part of the medieval period\" strongly suggests the Late Middle Ages (Q212976). This creates a chronological tension, especially given the inclusion of Aquinas and Bonaventure.\n\n**Refining Temporal Scope**\n\nI'm re-examining the textual evidence concerning \"the last part of the medieval period.\" My current thinking is to consider if this phrase definitively points to the Late Middle Ages (Q212976) or if the broader Middle Ages (Q12554) is more appropriate given the inclusion of figures whose lifespans might precede the typical definition of the \"late\" period.\n\n**Resolving Temporal Ambiguities**\n\nI'm now considering the precise temporal designation of \"the last part of the medieval period.\" My current line of thought suggests that while \"Middle Ages\" is directly mentioned, the specific phrase strongly implies \"Late Middle Ages.\" This leads me to question whether to include both or prioritize the more specific designation, especially given the lifespans of figures like Aquinas and Bonaventure.\n\n**Confirming Temporal Links**\n\nI'm verifying if \"medieval period\" directly maps to Middle Ages (Q12554). The phrase \"last part of the medieval period\" also strongly suggests Late Middle Ages (Q212976), creating a potential for dual connections. My current focus is on solidifying these temporal links based on the provided text.\n\n**Connecting Scotus's Context**\n\nI'm now focusing on how the descriptive phrase \"last part of the medieval period\" influences the temporal connection to Duns Scotus. My current thought is to determine if this description necessitates a specific link to the Late Middle Ages (Q212976) or if the broader Middle Ages (Q12554) remains the primary anchor.\n\n**Distinguishing Chronological Nuances**\n\nI'm currently refining my understanding of \"the last part of the medieval period.\" While it points towards the Late Middle Ages, the inclusion of figures like Aquinas and Bonaventure, whose lifespans predate the strict 1301-1492 definition, suggests a broader, more general interpretation of the later Middle Ages. This necessitates a careful distinction between the general historical context and specific, narrower definitions.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Uncovering Scotus's Connections**\n\nI'm currently examining the provided extract to identify any direct or implied links between John Duns Scotus and the specific events you've listed. My focus is strictly on what's presented in the text, looking for philosopher-theologian context and any relevant historical markers.\n\n**Clarifying Chronological Scope**\n\nI'm grappling with the precise temporal boundaries indicated by \"last part of the medieval period.\" My current thought is to resolve whether this specifically denotes the Late Middle Ages (Q212976) or the broader Middle Ages (Q12554), based on contextual clues.\n\n**Defining Medieval Boundaries**\n\nI'm re-evaluating the temporal scope. While \"medieval period\" usually signifies the Middle Ages (Q12554), the phrase \"last part of the medieval period\" strongly suggests the Late Middle Ages (Q212976). This creates a chronological tension, especially given the inclusion of Aquinas and Bonaventure.\n\n**Refining Temporal Scope**\n\nI'm re-examining the textual evidence concerning \"the last part of the medieval period.\" My current thinking is to consider if this phrase definitively points to the Late Middle Ages (Q212976) or if the broader Middle Ages (Q12554) is more appropriate given the inclusion of figures whose lifespans might precede the typical definition of the \"late\" period.\n\n**Resolving Temporal Ambiguities**\n\nI'm now considering the precise temporal designation of \"the last part of the medieval period.\" My current line of thought suggests that while \"Middle Ages\" is directly mentioned, the specific phrase strongly implies \"Late Middle Ages.\" This leads me to question whether to include both or prioritize the more specific designation, especially given the lifespans of figures like Aquinas and Bonaventure.\n\n**Confirming Temporal Links**\n\nI'm verifying if \"medieval period\" directly maps to Middle Ages (Q12554). The phrase \"last part of the medieval period\" also strongly suggests Late Middle Ages (Q212976), creating a potential for dual connections. My current focus is on solidifying these temporal links based on the provided text.\n\n**Connecting Scotus's Context**\n\nI'm now focusing on how the descriptive phrase \"last part of the medieval period\" influences the temporal connection to Duns Scotus. My current thought is to determine if this description necessitates a specific link to the Late Middle Ages (Q212976) or if the broader Middle Ages (Q12554) remains the primary anchor.\n\n**Distinguishing Chronological Nuances**\n\nI'm currently refining my understanding of \"the last part of the medieval period.\" While it points towards the Late Middle Ages, the inclusion of figures like Aquinas and Bonaventure, whose lifespans predate the strict 1301-1492 definition, suggests a broader, more general interpretation of the later Middle Ages. This necessitates a careful distinction between the general historical context and specific, narrower definitions.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1823,
+   "completion_tokens": 2635,
+   "total_tokens": 4458,
+   "cost": 0.0112485,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0112485,
+    "upstream_inference_prompt_cost": 0.00136725,
+    "upstream_inference_completions_cost": 0.00988125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2416,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Duns Scotus lived and was active as a philosopher-theologian during the medieval period.\",\n      \"evidence\": \"He is considered among the most important philosopher-theologians in Western Christendom during the last part of the medieval period, together with Thomas Aquinas, Bonaventure and William of Ockham.\",\n      \"work\": \"\"\n    },\n    {\n      \"event\": \"Q212976\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Duns Scotus lived and worked during the last part of the medieval period.\",\n      \"evidence\": \"He is considered among the most important philosopher-theologians in Western Christendom during the last part of the medieval period, together with Thomas Aquinas, Bonaventure and William of Ockham.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Duns Scotus lived and was active as a philosopher-theologian during the medieval period.",
+     "evidence": "He is considered among the most important philosopher-theologians in Western Christendom during the last part of the medieval period, together with Thomas Aquinas, Bonaventure and William of Ockham.",
+     "work": ""
+    },
+    {
+     "event": "Q212976",
+     "type": "lived_through",
+     "reason": "Duns Scotus lived and worked during the last part of the medieval period.",
+     "evidence": "He is considered among the most important philosopher-theologians in Western Christendom during the last part of the medieval period, together with Thomas Aquinas, Bonaventure and William of Ockham.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1823,
+   "completion_tokens": 2635,
+   "total_tokens": 4458,
+   "cost": 0.0112485,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0112485,
+    "upstream_inference_prompt_cost": 0.00136725,
+    "upstream_inference_completions_cost": 0.00988125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2416,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0112485,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 18.8
+ },
+ "meta": {}
+}

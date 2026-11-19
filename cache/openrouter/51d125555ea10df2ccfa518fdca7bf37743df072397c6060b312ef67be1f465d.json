@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "51d125555ea10df2ccfa518fdca7bf37743df072397c6060b312ef67be1f465d",
+ "fetched_at": "2026-11-19T16:37:08Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Theodoric of Freiberg (1250–1318). German physicist\n\nEXTRACT:\nTheodoric of Freiberg (; German: Dietrich Von Freiberg; c. 1250 – c. 1311) was a German member of the Dominican order and a theologian, philosopher, and physicist. He was named provincial of the Dominican Order in 1293, Albert the Great's old post. He is considered one of the notable philosophers and theologians of the Middle Ages based on his career and writings.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ51661  Seventh Crusade (1248–1254) — military conflict (1248-1254)\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ369560  Siege of Baghdad (1258) — 1258 Mongol conquest of the Abbasid Caliphate\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ244356  Battle of Ain Jalut (1260) — 1260 battle between the Mamluk Sultanate and the Mongol Empire\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106224-vutEQ6dMS2A5RN1dKV5n",
+  "object": "chat.completion",
+  "created": 1795106224,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Theodoric of Freiberg lived and worked as a philosopher and theologian during the Middle Ages.\",\n      \"evidence\": \"He is considered one of the notable philosophers and theologians of the Middle Ages based on his career and writings.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Freiberg's Ideas**\n\nI'm currently focused on identifying any direct or indirect links between Theodoric of Freiberg and the events on the list, relying solely on the provided text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Freiberg's Ideas**\n\nI'm currently focused on identifying any direct or indirect links between Theodoric of Freiberg and the events on the list, relying solely on the provided text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a18OFjNM7W2+5o0GNnFDUAfxeKSBcwb5P0C+l9CitDZZD1rnh5HML4pwz1GmjyYeN0rZiDBhMc3JwI1/pgJ6anR6Qy5Q0Cs2Bz/fNILOr4u20+8gfFTkDRB6U2IfdYUOvmDGCJx2oaxiG80LX05ORxim4reAjRrcsRzRrZLD6Zm53JcSDg/b5eLnBP4mal0fp3gMCw8lUiThRFVIwjyTrHsedrMyQ69glplvNZB2ufHvcS0UglysF59Pw3SNcwQ8unoBGQYixYq/0UkUnscwPoDytu16KqWYSTNkmzfkcqJHcs+UY4vspovzUKPvKUV1mHawKJtykXiyipkokdxJuNmq9aL790x3rWtHttN+T0ScakstAslGCaYmXyCinfcVf5U/Z4NeET4E3AbUQ0Nbjt9DnVU7YBL8GvKaz2fgiLQF6VhGfb/QFB3wu5kdPF08AnaUl5ChKqWX5xDWJclajLxkbhe27P3xiwLN0iq2CWKQtf1oQ2Wybry/N7kAEocECty4Cn0Z7Wq1aaCQZuKaJoPqeDNC+sogWpg1VrWW5OwGVitldESYtnFpSon5Gxot2PmVyy6agFpL7pzaqnjptQWdk3vrpVMmKDJc49mjMNMf0bTGsj31WKQANvsbSrK0CLMeEOS4DhZsuGH6BjSuLujxXL3qjRsk9rSD6Pawp8iW3YjwaA3b6nov0eYJ4CZH9/pZZxRZmCpNbxI6dMUxjaR+23TP5j0XTW1he2R+MPSmDp1Pu/r9QOAf2uXQfR7rNIMwOCLynoheEc1Wl36amy5ODlz+VWgcwwIH0iLIkymYoQ76FOip6ve61xnw+Rn34wDHu/WOzAQ8xiDKjeOsiysJC2WpSfg+AHK5CSxy37GYhM7dqZAxQkXKaAFBJb35RnBI/i4SVusspKUDx2Xrq4QBfN3SCn9xB8TKbOGS1EENBAASxb+J1pHiLXx8NPcsHMsEIxrSGWSjNWJK6SexKlrNClwIOJdzrNtWwWWWWSdgHUD732gX/Ls43bk/ISW/k77yemN+Q7vZRfdMSYpEd55B+bLzCQn/m8Aee8fgBixUGdAOPWevOFXPo1WwXFvr1YFT8ahR+26lSbBJbqhXCUzyjSpGBNk2O87FhOVLl3fBUfDMnP9AJkLLKEPoz7bRK8pNKCSI1NQhj4LEJq+llxE0c/AoMFxPQe6bflKjD77wSu+rftBX+OAa8XPv4sfdvDDunk1jTyjslDc2ts8zCf5kMfb7Hk2mMwfb3sFTNMd0VSLW+jm0xSUjFGnmTW5C4SotMGq4vsDESvB62iUmt2s8r2sGvkoNTSR/RiHQ/h9Lqi8TiI9TxUYIkEa/XWSeSUKkiF4pRfjqgVUurmLemGTaU1gpO7AfXlkUkJC5gf0ci5EPdL1z4Cpeu+eHUt9+xFvgdI5iNsXIOD6gcsPZPHFSLjsYfBzExsn6nOo8kwt5JK88Y6t3bH1VtuKX5MFQAW6w7NHNOsIoy7zPhtIB7q7F7aJUSTdUbveuB3+mS+RCaqfW0hn3NlQcM/VqmhWCc9lpD23R7IgDruyiYWRwThpqljDn9uRq5sBBpR4yrtgrQoRIESo30qvnVS33qE/yxuMIdGFai++zl6FU9Z12fHrRucEfIMTOjVP6Dym9feVwWiADMtslnFrXTR0R2HkUxGYD/wet3NRz0LAnS4QHhrjpkyjHXbwzb16uc2KlhzXE9j4UaoxT/0PbSfgWVbkqSRT2ipzeB+XAWgFfyOHtxxiPCzrnV26NQ+2TbDUrhRVIXAsY5a3CogZq9APystIe9x2VWlg3sMoFYgsL9KyfEGZXbp4ZnESDGgGEGybfjFew6XFU2QMZNFIGfNCs7SlorHQk.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1837,
+   "completion_tokens": 358,
+   "total_tokens": 2195,
+   "cost": 0.00272025,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00272025,
+    "upstream_inference_prompt_cost": 0.00137775,
+    "upstream_inference_completions_cost": 0.0013425
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 259,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Theodoric of Freiberg lived and worked as a philosopher and theologian during the Middle Ages.\",\n      \"evidence\": \"He is considered one of the notable philosophers and theologians of the Middle Ages based on his career and writings.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Theodoric of Freiberg lived and worked as a philosopher and theologian during the Middle Ages.",
+     "evidence": "He is considered one of the notable philosophers and theologians of the Middle Ages based on his career and writings.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1837,
+   "completion_tokens": 358,
+   "total_tokens": 2195,
+   "cost": 0.00272025,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00272025,
+    "upstream_inference_prompt_cost": 0.00137775,
+    "upstream_inference_completions_cost": 0.0013425
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 259,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00272025,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 3.74
+ },
+ "meta": {}
+}

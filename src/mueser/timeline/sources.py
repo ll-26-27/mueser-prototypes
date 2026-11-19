@@ -19,7 +19,6 @@ import html
 import json
 import re
 import time
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import quote
 
@@ -34,13 +33,13 @@ UA = {"User-Agent": "research-prototype/0.1 (local script)"}
 OFFLINE_WAIT = 3600.0
 
 
-def get(url: str, *, timeout: float = 60.0) -> httpx.Response:
+def get(url: str, *, params: dict | None = None, timeout: float = 60.0) -> httpx.Response:
     """GET with the generic client name; a lost network is waited out for up to an hour, as in wikidata.py."""
     offline_since: float | None = None
     while True:
         try:
             with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-                return client.get(url, headers=UA)
+                return client.get(url, params=params, headers=UA)
         except (httpx.ConnectError, httpx.ConnectTimeout) as e:
             offline_since = offline_since or time.time()
             if time.time() - offline_since > OFFLINE_WAIT:
@@ -105,7 +104,7 @@ def image_url(node: dict, width: int = 360) -> str | None:
 
 _sep_cache = DiskCache("sep")
 _META = re.compile(r'<meta name="citation_(\w+)" content="([^"]*)"')
-_PUB = re.compile(r'<div id="pubinfo">\s*<em>(.*?)</em>', re.S)
+_PUB = re.compile(r'<div id="pubinfo">\s*<em>(.*?)</em>', re.DOTALL)
 
 
 def fetch_sep(entry_id: str, *, pause: float = 0.4) -> dict:
@@ -169,29 +168,60 @@ def sep_citation(meta: dict, accessed: str) -> dict:
 _wp_cache = DiskCache("wikipedia")
 
 
-def fetch_summary(lang: str, title: str) -> dict | None:
-    url = f"https://{lang}.wikipedia.org/api/rest_v1/page/summary/{quote(title.replace(' ', '_'), safe='')}"
-    key = cache_key("wikipedia-summary", url=url)
-    hit = _wp_cache.get(key)
-    if hit:
-        return hit["parsed"]
-    try:
-        res = get(url)
-        if res.status_code != 200:
-            parsed = None
-            _wp_cache.put(key, request={"url": url}, raw={"status": res.status_code, "text": res.text[:2000]}, parsed=None)
-            return parsed
-        raw = res.json()
-        parsed = {
-            "lang": lang, "title": raw.get("title"), "description": raw.get("description"),
-            "extract": raw.get("extract") or "", "revision": raw.get("revision"), "timestamp": raw.get("timestamp"),
-            "url": (raw.get("content_urls") or {}).get("desktop", {}).get("page"),
-            "licence": "CC BY-SA 4.0",
-        }
-        _wp_cache.put(key, request={"url": url}, raw=raw, parsed=parsed)
-        return parsed
-    except Exception:  # noqa: BLE001
-        return None
+def fetch_summaries(lang: str, titles: list[str], *, pause: float = 0.5, echo=None) -> dict[str, dict | None]:
+    """Lead extracts for up to twenty titles per request through the Action API (``prop=extracts``, intro only,
+    plain text), with each page's latest revision id and timestamp and its canonical URL. One request per chunk
+    is cached raw; a rate-limited or failed chunk is retried with a growing pause and, if it still fails, left
+    uncached so the next run asks again. Redirects and title normalisation are followed and recorded.
+    """
+    out: dict[str, dict | None] = {}
+    url = f"https://{lang}.wikipedia.org/w/api.php"
+    for i in range(0, len(titles), 20):
+        chunk = titles[i:i + 20]
+        params = {"action": "query", "format": "json", "formatversion": "2", "prop": "extracts|revisions|info",
+                  "exintro": "1", "explaintext": "1", "exlimit": "max", "rvprop": "ids|timestamp", "inprop": "url",
+                  "redirects": "1", "titles": "|".join(chunk)}
+        key = cache_key("wikipedia-extracts", url=url, params=params)
+        hit = _wp_cache.get(key)
+        raw = hit["raw"] if hit else None
+        if raw is None:
+            for attempt in range(6):
+                try:
+                    res = get(url, params=params)
+                except Exception:  # noqa: BLE001
+                    res = None
+                if res is None or res.status_code == 429 or res.status_code >= 500:
+                    time.sleep(4.0 * (attempt + 1))
+                    continue
+                if res.status_code != 200:
+                    break
+                raw = res.json()
+                _wp_cache.put(key, request={"url": url, "params": params}, raw=raw, parsed=None)
+                time.sleep(pause)
+                break
+        if raw is None:
+            for t in chunk:
+                out[t] = None
+            if echo:
+                echo(f"  chunk at {i} not fetched after retries")
+            continue
+        q = raw.get("query", {})
+        rename = {r["from"]: r["to"] for r in (q.get("normalized") or []) + (q.get("redirects") or [])}
+        pages = {p.get("title"): p for p in q.get("pages") or []}
+        for t in chunk:
+            final = t
+            for _ in range(4):
+                if final in rename and rename[final] != final:
+                    final = rename[final]
+            pg = pages.get(final)
+            if not pg or pg.get("missing") or not (pg.get("extract") or "").strip():
+                out[t] = None
+                continue
+            rev = (pg.get("revisions") or [{}])[0]
+            out[t] = {"lang": lang, "title": pg["title"], "extract": pg["extract"].strip(), "revision": rev.get("revid"),
+                      "timestamp": rev.get("timestamp"), "licence": "CC BY-SA 4.0",
+                      "url": pg.get("fullurl") or f"https://{lang}.wikipedia.org/wiki/{quote(pg['title'].replace(' ', '_'))}"}
+    return out
 
 
 # ----------------------------------------------------------------------------------------------- the run
@@ -218,26 +248,18 @@ def fetch_sources(case: Path, run: Path, *, workers: int = 4, echo=print) -> Pat
     echo(f"  {ok} parsed, {len(sep) - ok} not")
 
     todo = [(n["id"], n["wiki"]) for n in nodes if n.get("wiki")]
-    echo(f"Wikipedia summaries: {len(todo)} …")
+    echo(f"Wikipedia extracts: {len(todo)} nodes, twenty titles per request …")
     summaries: dict[str, dict] = {}
-
-    def one(item):
-        q, wiki = item
-        for lang in ("en", "de"):
-            if wiki.get(lang):
-                s = fetch_summary(lang, wiki[lang])
-                if s and s.get("extract"):
-                    return q, s
-        return q, None
-
-    done = 0
-    with ThreadPoolExecutor(max_workers=workers) as ex:
-        for q, s in ex.map(one, todo):
-            done += 1
-            if s:
-                summaries[q] = s
-            if done % 500 == 0:
-                echo(f"  {done}/{len(todo)}")
+    en = [(q, w["en"]) for q, w in todo if w.get("en")]
+    got = fetch_summaries("en", [t for _, t in en], echo=echo)
+    for q, t in en:
+        if got.get(t):
+            summaries[q] = got[t]
+    de = [(q, w["de"]) for q, w in todo if w.get("de") and q not in summaries]
+    got = fetch_summaries("de", [t for _, t in de], echo=echo)
+    for q, t in de:
+        if got.get(t):
+            summaries[q] = got[t]
     (out / "wikipedia.json").write_text(json.dumps({"accessed": accessed, "summaries": summaries}, ensure_ascii=False, indent=1), encoding="utf-8")
     echo(f"  {len(summaries)} with an extract")
 

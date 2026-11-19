@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "7ef9afe0e8df7be3f6c7fe523b9d7f3920c5bce9e85237befb5b4a6f1011a10b",
+ "fetched_at": "2026-11-19T16:36:27Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Lambert of Auxerre (13th century–13th century). 13th century logical and author\n\nEXTRACT:\nLambert of Auxerre was a medieval 13th century logician best known for writing the book \"Summa Lamberti\" or simply \"Logica\"  in the mid 1250s which became an authoritative textbook on logic in the Western tradition. He was a Dominican in the Dominican house at Auxerre. His contemporaries were Peter of Spain, William of Sherwood, and Roger Bacon.\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106180-T7wcfR5cnCElYKqYdRJN",
+  "object": "chat.completion",
+  "created": 1795106180,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Lambert of Auxerre lived and worked as a logician during the Middle Ages.\",\n      \"evidence\": \"Lambert of Auxerre was a medieval 13th century logician best known for writing the book \\\"Summa Lamberti\\\" or simply \\\"Logica\\\"  in the mid 1250s which became an authoritative textbook on logic in the Western tradition.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Lambert's Logic**\n\nI'm currently focused on identifying direct links between Lambert of Auxerre and the given events. My aim is to establish logical connections based on the provided extract, particularly his known work \"Summa Lamberti\".\n\n**Defining Lambert's Era**\n\nI'm confirming the temporal overlap between Lambert's 13th-century existence and the broader \"Middle Ages\" period. This step solidifies the context for his contributions and influences.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Lambert's Logic**\n\nI'm currently focused on identifying direct links between Lambert of Auxerre and the given events. My aim is to establish logical connections based on the provided extract, particularly his known work \"Summa Lamberti\".\n\n**Defining Lambert's Era**\n\nI'm confirming the temporal overlap between Lambert's 13th-century existence and the broader \"Middle Ages\" period. This step solidifies the context for his contributions and influences.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1213,
+   "completion_tokens": 754,
+   "total_tokens": 1967,
+   "cost": 0.00373725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00373725,
+    "upstream_inference_prompt_cost": 0.00090975,
+    "upstream_inference_completions_cost": 0.0028275
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 624,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Lambert of Auxerre lived and worked as a logician during the Middle Ages.\",\n      \"evidence\": \"Lambert of Auxerre was a medieval 13th century logician best known for writing the book \\\"Summa Lamberti\\\" or simply \\\"Logica\\\"  in the mid 1250s which became an authoritative textbook on logic in the Western tradition.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Lambert of Auxerre lived and worked as a logician during the Middle Ages.",
+     "evidence": "Lambert of Auxerre was a medieval 13th century logician best known for writing the book \"Summa Lamberti\" or simply \"Logica\"  in the mid 1250s which became an authoritative textbook on logic in the Western tradition.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1213,
+   "completion_tokens": 754,
+   "total_tokens": 1967,
+   "cost": 0.00373725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00373725,
+    "upstream_inference_prompt_cost": 0.00090975,
+    "upstream_inference_completions_cost": 0.0028275
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 624,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00373725,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.92
+ },
+ "meta": {}
+}

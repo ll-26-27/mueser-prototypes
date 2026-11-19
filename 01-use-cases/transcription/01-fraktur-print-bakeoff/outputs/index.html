@@ -2817,6 +2817,10 @@ document.querySelectorAll('.tabs').forEach(t => t.addEventListener('click', e =>
 
 
 
+
+
+
+
 <!-- mueser-review:start -->
 <style>/* Shared reading room: source first, evidence one disclosure away. */
 body.review-ui {
@@ -3046,16 +3050,18 @@ body.review-ui {
 
   document.body.classList.add('review-ui', `review-${config.kind}`);
   const top = el('nav', 'review-topbar'); top.setAttribute('aria-label', 'Project navigation');
-  const brand = link('Four projects for Ben', config.home); brand.className = 'review-brand';
+  const brand = link('Ben’s workspace', config.home); brand.className = 'review-brand';
   const topLinks = el('div', 'top-links');
   if (config.kind !== 'home') topLinks.append(link('Home', config.home));
   if (config.kind === 'consensus') topLinks.append(link('Compare readers', '../index.html'));
   if (config.kind === 'reading') topLinks.append(link('Consensus pages', '../../03-layout-and-hybrid/outputs/consensus-print/index.html'));
-  if (config.kind === 'timeline') topLinks.append(link('Reading room', '../../../transcription/04-reading-room/outputs/index.html'));
+  const section = {reading:'transcription', report:'transcription', consensus:'transcription', layout:'transcription', timeline:'timeline', map:'maps'}[config.kind];
+  if (section) topLinks.append(link('Project overview', new URL(`01-use-cases/${section}/index.html`, new URL(config.home, location.href)).href));
   if (config.consensus) topLinks.append(link('Review disagreements', config.consensus));
   if (config.kind === 'home') topLinks.append(el('span', 'eyebrow', 'Bok Center · Learning Lab'));
   top.append(brand, topLinks); document.body.prepend(top);
-  const skip = link('Skip to content', '#review-main'); skip.className = 'skip-link'; document.body.prepend(skip);
+  const contentId = {reading:'rr-app', timeline:'tl-app'}[config.kind] || 'review-main';
+  const skip = link('Skip to content', '#' + contentId); skip.className = 'skip-link'; document.body.prepend(skip);
 
   function makeHeader() {
     const header = $('body > header'); if (!header) return;
@@ -3274,7 +3280,7 @@ body.review-ui {
     const hero = el('header', 'collection-hero'), words = el('div');
     words.append(el('div', 'eyebrow', 'Four projects for Ben / November 2026'), h1, sub);
     const actions = el('div', 'collection-links');
-    actions.append(link('Open the reading room ↗', '01-use-cases/transcription/04-reading-room/outputs/index.html'), link('The timeline, in progress ↗', '01-use-cases/timeline/README.md'), link('The four projects ↓', '#projects'), link('How the text was made ↓', '#transcription'), link('Maps ↓', '#maps'));
+    actions.append(link('Open the reading room ↗', '01-use-cases/transcription/04-reading-room/outputs/index.html'), link('Open the timeline ↗', '01-use-cases/timeline/01-thinkers-and-events/outputs/index.html'), link('The four projects ↓', '#projects'), link('How the text was made ↓', '#transcription'), link('Maps ↓', '#maps'));
     words.append(actions);
     const figure = el('figure', 'hero-image'); const img = el('img'); img.src = '01-use-cases/transcription/01-fraktur-print-bakeoff/inputs/pages/real-grimm-khm-1812-i-p093.jpg'; img.alt = 'A page of Grimm’s fairy tales, printed in Fraktur in 1812';
     figure.append(img, el('figcaption', '', 'GRIMM · 1812 · A SOURCE IN THE READING ROOM')); hero.append(words, figure); main.prepend(hero);
@@ -3286,7 +3292,7 @@ body.review-ui {
     };
     const descriptions = {
       'Reading room': 'Read a page beside its scan with the translation in register; decide the doubtful passages and keep a log of questions and citations. Built.',
-      'Timeline': 'Thinkers, works, events and concepts on one band of years, every node cited and linked out; layers for how thinkers connect, how events connect, and where the two meet. Being built today.',
+      'Timeline': 'Thinkers, works, events and concepts on one band of years, every node cited and linked out; layers for how thinkers connect, how events connect, and where the two meet. Built, first version.',
       'Style: handouts': 'Infers the house style your handouts already share, applies it without touching a word, and refreshes one for a new term. Scoped.',
       'Style: CV': 'Adds entries to your CV by cloning a neighbouring entry’s paragraph, so indents, tabs and page count stay yours. Scoped.',
       'Style: footnotes': 'Checks a manuscript’s footnotes against its bibliography with nine named rules and lists every proposed change for you before anything is written. Scoped.',
@@ -3316,14 +3322,14 @@ body.review-ui {
         section.className = 'case-card'; grid.append(section);
         h.textContent = name;
         const result = $(':scope > p.num', section);
-        const scoped = result && /^Scoped/.test(result.textContent);
-        section.prepend(el('div', 'eyebrow', group === 'Projects' ? (scoped ? `Project · scoped, brief ready` : `Project · built`) : `Experiment ${String(count + 1).padStart(2, '0')}`));
+        const scoped = result && /^Scoped/.test(result.textContent), running = result && /^In progress/.test(result.textContent);
+        section.prepend(el('div', 'eyebrow', group === 'Projects' ? (scoped ? `Project · scoped, brief ready` : running ? `Project · in progress today` : `Project · built`) : `Experiment ${String(count + 1).padStart(2, '0')}`));
         h.after(el('p', 'case-desc', descriptions[name] || ''));
         const actions = el('div', 'case-actions');
         if (output) $$('a', output).forEach(a => { const copy = a.cloneNode(true);
           const t = copy.textContent;
           if (t === 'Explorer') copy.textContent = 'Compare readers ↗'; if (t === 'Consensus') copy.textContent = 'Review disagreements ↗'; if (t === 'Map') copy.textContent = 'Explore map ↗';
-          if (t === 'Reading room') copy.textContent = 'Open the reading room ↗'; if (t === 'Timeline') copy.textContent = 'Open the timeline ↗';
+          if (t === 'Reading room') copy.textContent = 'Open the reading room ↗'; if (t === 'Timeline') copy.textContent = copy.getAttribute('href').endsWith('.html') ? 'Open the timeline ↗' : 'The timeline, in progress ↗';
           if (t === 'Guide') copy.textContent = 'Read the guide'; if (t === 'Brief') copy.textContent = 'The brief for an agent';
           actions.append(copy); });
         if (result) result.classList.add('case-result');

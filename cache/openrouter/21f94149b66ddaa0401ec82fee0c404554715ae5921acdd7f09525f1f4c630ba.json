@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "21f94149b66ddaa0401ec82fee0c404554715ae5921acdd7f09525f1f4c630ba",
+ "fetched_at": "2026-11-19T16:35:01Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Xenophon (429 BCE–353 BCE). Greek philosopher, historian, and soldier (c.430–355/354 BC)\n\nEXTRACT:\nXenophon of Athens (; Ancient Greek: Ξενοφῶν; c. 430 – 355/354 BC) was a Greek military leader, philosopher, economist, and historian. At the age of 30, he was elected as one of the leaders of the retreating Greek mercenaries, the Ten Thousand, who had been part of Cyrus the Younger's attempt to seize control of the Achaemenid Empire. As the military historian Theodore Ayrault Dodge wrote, \"the centuries since have devised nothing to surpass the genius of this warrior\".\nFor at least two millennia, it has been debated whether Xenophon was first and foremost a general, historian, or philosopher. For the majority of time in the past two millennia, Xenophon was recognised as a philosopher. Quintilian in The Orator's Education discusses the most prominent historians, orators and philosophers as examples of eloquence and recognises Xenophon's historical work, but ultimately places Xenophon next to Plato as a philosopher. Today, Xenophon is recognised as one of the greatest writers of antiquity. Xenophon's works span multiple genres and are written in plain Attic Greek, which is why they have often been used in translation exercises for contemporary students of the Ancient Greek language. In the Lives and Opinions of Eminent Philosophers, Diogenes Laërtius observed that Xenophon was known as the \"Attic Muse\" because of the sweetness of his diction.\nDespite being born an Athenian citizen, Xenophon came to be associated with Sparta, the traditional opponent of Athens. Much of what is known today about the Spartan society comes from Xenophon's royal biography of the Spartan king Agesilaus and the Constitution of the Lacedaemonians. The sub-satrap Mania is primarily known through Xenophon's writings. Xenophon's Anabasis recounts his adventures with the Ten Thousand while in the service of Cyrus the Younger, Cyrus's failed campaign to claim the Persian throne from Artaxerxes II of Persia, and the return of Greek mercenaries after Cyrus's death in the Battle of Cunaxa.\nXenophon wrote Cyropaedia, outlining both military and political methods used by Cyrus the Great to conquer the Neo-Babylonian Empire in 539 BC. Anabasis and Cyropaedia inspired Alexander the Great and other Greeks to conquer Babylon and the Achaemenid Empire in 331 BC. The Hellenica continues directly from the final sentence of Thucydides' History of the Peloponnesian War covering the last seven years of the Peloponnesian War (431–404 BC) and the subsequent forty-two years (404–362 BC) ending with the Second Battle of Mantinea. Xenophon's writings on military strategies remain influential and are believed to be among the first to utilise and describe flanking manoeuvres and feints in military tactics.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ386303  Thirtieth Dynasty of Egypt (-379) — ancient Egyptian dynasty\nQ511257  Twenty-ninth Dynasty of Egypt (-397–-377) — ancient Egyptian dynasty\nQ833118  Twenty-eighth Dynasty of Egypt (-403–-398) — ancient Egyptian dynasty\nQ651008  Corinthian War (-394–-386) — 395-387 BCE Greek conflict\nQ33745  Peloponnesian War (-430–-403) — war fought between Athens and Sparta (431–404 BCE)\nQ932202  Peace of Nicias (-420) — 421 BC treaty between Athens and Sparta\nQ1132922  Peace of Antalcidas (-386) — Greek-Persian treaty of 387 BCE\nQ461599  Battle of Leuctra (-370) — battle between Thebes and Sparta, 371 BCE"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106087-DY9wIgJg4ssxPV83yGAA",
+  "object": "chat.completion",
+  "created": 1795106087,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q33745\",\n      \"type\": \"wrote_in_response_to\",\n      \"reason\": \"Xenophon authored a historical account covering the concluding years of the Peloponnesian War.\",\n      \"evidence\": \"The Hellenica continues directly from the final sentence of Thucydides' History of the Peloponnesian War covering the last seven years of the Peloponnesian War (431–404 BC) and the subsequent forty-two years (404–362 BC) ending with the Second Battle of Mantinea.\",\n      \"work\": \"Hellenica\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Xenophon's World**\n\nI'm focusing on identifying direct textual links between Xenophon and the specified historical periods. My current effort is to ascertain how the Achaemenid Empire, Roman Republic, and Warring States period are mentioned or implied within the provided extract, ensuring strict adherence to the text.\n\n**Mapping Historical Connections**\n\nI'm now meticulously reviewing the text to pinpoint explicit mentions of the Achaemenid Empire. My current task involves confirming if the provided excerpt directly references this empire, specifically in relation to Cyrus the Younger's bid for power.\n\n**Analyzing Warring States Connections**\n\nI'm investigating how the Warring States period might be indirectly referenced. My current task is to see if any themes or geographical mentions within the text could plausibly relate to this era, even without explicit naming.\n\n**Verifying Achaemenid Links**\n\nI'm currently cross-referencing the provided text to confirm any direct mentions or implications of the Achaemenid Empire. My focus is on whether Xenophon's narrative or contextual references align with this period, particularly concerning figures or events.\n\n**Clarifying Achaemenid Involvement**\n\nI'm re-examining my understanding of Achaemenid Empire's classification. My focus is now on distinguishing between participation *in* the empire and participation *in an attempt to seize control* of it, based strictly on the provided text.\n\n**Focusing on Peloponnesian War**\n\nI'm now examining Xenophon's direct involvement with the Peloponnesian War. My current task is to ascertain whether the provided text states he fought in this conflict, as opposed to merely writing about it.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Xenophon's World**\n\nI'm focusing on identifying direct textual links between Xenophon and the specified historical periods. My current effort is to ascertain how the Achaemenid Empire, Roman Republic, and Warring States period are mentioned or implied within the provided extract, ensuring strict adherence to the text.\n\n**Mapping Historical Connections**\n\nI'm now meticulously reviewing the text to pinpoint explicit mentions of the Achaemenid Empire. My current task involves confirming if the provided excerpt directly references this empire, specifically in relation to Cyrus the Younger's bid for power.\n\n**Analyzing Warring States Connections**\n\nI'm investigating how the Warring States period might be indirectly referenced. My current task is to see if any themes or geographical mentions within the text could plausibly relate to this era, even without explicit naming.\n\n**Verifying Achaemenid Links**\n\nI'm currently cross-referencing the provided text to confirm any direct mentions or implications of the Achaemenid Empire. My focus is on whether Xenophon's narrative or contextual references align with this period, particularly concerning figures or events.\n\n**Clarifying Achaemenid Involvement**\n\nI'm re-examining my understanding of Achaemenid Empire's classification. My focus is now on distinguishing between participation *in* the empire and participation *in an attempt to seize control* of it, based strictly on the provided text.\n\n**Focusing on Peloponnesian War**\n\nI'm now examining Xenophon's direct involvement with the Peloponnesian War. My current task is to ascertain whether the provided text states he fought in this conflict, as opposed to merely writing about it.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1878,
+   "completion_tokens": 1954,
+   "total_tokens": 3832,
+   "cost": 0.008736,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.008736,
+    "upstream_inference_prompt_cost": 0.0014085,
+    "upstream_inference_completions_cost": 0.0073275
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1794,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q33745\",\n      \"type\": \"wrote_in_response_to\",\n      \"reason\": \"Xenophon authored a historical account covering the concluding years of the Peloponnesian War.\",\n      \"evidence\": \"The Hellenica continues directly from the final sentence of Thucydides' History of the Peloponnesian War covering the last seven years of the Peloponnesian War (431–404 BC) and the subsequent forty-two years (404–362 BC) ending with the Second Battle of Mantinea.\",\n      \"work\": \"Hellenica\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q33745",
+     "type": "wrote_in_response_to",
+     "reason": "Xenophon authored a historical account covering the concluding years of the Peloponnesian War.",
+     "evidence": "The Hellenica continues directly from the final sentence of Thucydides' History of the Peloponnesian War covering the last seven years of the Peloponnesian War (431–404 BC) and the subsequent forty-two years (404–362 BC) ending with the Second Battle of Mantinea.",
+     "work": "Hellenica"
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1878,
+   "completion_tokens": 1954,
+   "total_tokens": 3832,
+   "cost": 0.008736,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.008736,
+    "upstream_inference_prompt_cost": 0.0014085,
+    "upstream_inference_completions_cost": 0.0073275
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1794,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.008736,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 14.15
+ },
+ "meta": {}
+}

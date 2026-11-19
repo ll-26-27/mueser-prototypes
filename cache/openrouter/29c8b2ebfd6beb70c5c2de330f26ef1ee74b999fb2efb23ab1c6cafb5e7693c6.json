@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "29c8b2ebfd6beb70c5c2de330f26ef1ee74b999fb2efb23ab1c6cafb5e7693c6",
+ "fetched_at": "2026-11-19T16:41:28Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Huineng (638–713). semi-legendary Chinese Chan (Zen) patriarch\n\nEXTRACT:\nDajian Huineng or Hui-neng (traditional Chinese: 大鑒惠能; pinyin: Dàjiàn Huìnéng; Cantonese Jyutping: daai6 gaam3 wai6 nang4; Wade–Giles: Ta⁴-chien⁴ Hui⁴-nêng²; Japanese: Daikan Enō; Korean: Daegam Hyeneung; trad. 638-713), also commonly known as the Sixth Patriarch or Sixth Ancestor of Chan (Chinese: 禪宗六祖), is a semi-legendary but central figure in the early history of Chinese Chan Buddhism.\nAccording to tradition Huineng was an uneducated layman who suddenly attained awakening (見性; jianxing) upon hearing the Diamond Sutra. Despite his lack of formal training, he demonstrated his understanding to the fifth patriarch, Daman Hongren, who then supposedly chose Huineng as his true successor instead of his publicly known selection of Yuquan Shenxiu. Huineng is regarded as the founder of the \"Sudden Enlightenment\" Southern Chan school of Buddhism, which focuses on an immediate and direct attainment of Buddhist enlightenment. The Platform Sutra of the Sixth Patriarch (六祖壇經), which is said to be a record of his teachings, is a highly influential text in the East Asian Buddhist tradition.\n20th century scholarship revealed that the story of Huineng's Buddhist career was likely invented by the monk Shenhui, who claimed to be one of Huineng's disciples and was highly critical of Shenxiu's teaching.\n\nEVENTS (id, name, years):\nQ726805  Jahiliyyah (500–700) — Islamic term for pre-Islamic Arabian society\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ189178  Nara period (710–794) — historical medieval period of Japan from CE 710 to 794\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ210688  Asuka period (538–710) — historical period of Japan\nQ248984  Muslim conquest of the Levant (633–640) — 7th-century conquest by the Rashidun Caliphate\nQ1455917  Umayyad conquest of Hispania (711–726) — war resulting in the destruction of the Visigothic Kingdom and the expansion of the Umayyad Caliphate (711–718)\nQ887684  Muslim conquest of Persia (633–654) — historical event (633–651) during which the Rashidun caliphate conquered the Sasanian empire\nQ925960  Muslim conquest of the Maghreb (647–709) — military campaign\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1417059  First Fitna (656–661) — Rashidun-era Muslim civil war (656 to 661)\nQ3621258  Arab conquest of Armenia (642–744) — Arab Rashidun Caliphate conquest of Armenia\nQ626058  Battle of Karbala (680) — battle in October 680 between the army of Ubayd Allah ibn Ziyad and al-Husayn ibn Ali\nQ821711  Plague of Justinian (541–750) — 541–549 AD pandemic in the Byzantine Empire, later northern Europe\nQ504172  Battle of Guadalete (711) — 711 battle between the Visigothic Kingdom and the Umayyad Caliphate; decisive Umayyad victory leads to the fall of the Visigothic Kingdom and the Umayyad conquest of the peninsula\nQ735876  Battle of Siffin (657) — battle of the First Fitna in 657 AD\nQ1133574  Battle of the Camel (656) — 656 battle of the First Fitna"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106483-vGrTkXqldGMFQpplQUY4",
+  "object": "chat.completion",
+  "created": 1795106483,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Huineng's Role**\n\nI'm currently focused on identifying direct links between Huineng and the events in the provided text, adhering strictly to the information given. My goal is to extract only explicit connections.\n\n**Extracting Huineng's Influence**\n\nI am now concentrating on extracting specific instances where Huineng's actions or teachings are explicitly mentioned as influencing subsequent events or texts within the provided information. I am looking for direct causal relationships.\n\n**Connecting Shenhui's Claims**\n\nI'm currently investigating Shenhui's claims about Huineng's discipleship and his critique of Shenxiu's teachings as presented in the text, focusing on how these asserted connections might shape the narrative.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Huineng's Role**\n\nI'm currently focused on identifying direct links between Huineng and the events in the provided text, adhering strictly to the information given. My goal is to extract only explicit connections.\n\n**Extracting Huineng's Influence**\n\nI am now concentrating on extracting specific instances where Huineng's actions or teachings are explicitly mentioned as influencing subsequent events or texts within the provided information. I am looking for direct causal relationships.\n\n**Connecting Shenhui's Claims**\n\nI'm currently investigating Shenhui's claims about Huineng's discipleship and his critique of Shenxiu's teachings as presented in the text, focusing on how these asserted connections might shape the narrative.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1951,
+   "completion_tokens": 981,
+   "total_tokens": 2932,
+   "cost": 0.005142,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005142,
+    "upstream_inference_prompt_cost": 0.00146325,
+    "upstream_inference_completions_cost": 0.00367875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 972,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1951,
+   "completion_tokens": 981,
+   "total_tokens": 2932,
+   "cost": 0.005142,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005142,
+    "upstream_inference_prompt_cost": 0.00146325,
+    "upstream_inference_completions_cost": 0.00367875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 972,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.005142,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.13
+ },
+ "meta": {}
+}

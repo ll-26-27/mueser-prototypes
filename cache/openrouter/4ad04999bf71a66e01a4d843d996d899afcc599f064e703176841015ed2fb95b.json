@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "4ad04999bf71a66e01a4d843d996d899afcc599f064e703176841015ed2fb95b",
+ "fetched_at": "2026-11-19T16:37:33Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Abraham ibn Ezra (1092–1167-01-30). 12th-century Sephardic rabbi and astrologer\n\nEXTRACT:\nAbraham ben Meir Ibn Ezra (Hebrew: ר׳ אַבְרָהָם בֶּן מֵאִיר אִבְּן עֶזְרָא, romanized: ʾAḇrāhām ben Mēʾir ʾibən ʾEzrāʾ, often abbreviated as ראב״ע; Arabic: إبراهيم المجيد ابن عزرا Ibrāhim al-Mājid ibn Ezra; also known as Abenezra or simply ibn Ezra, 1089 / 1092 – 27 January 1164 / 23 January 1167) was one of the most distinguished Jewish biblical commentators and philosophers of the Middle Ages. He was born in Tudela, Taifa of Zaragoza (now Navarre). Ibn Ezra is especially well-known to readers outside of the Jewish tradition as a major source of inspiration for Spinoza's early modern source-criticism on the authorship of the Law of Moses, appearing in theTheologico-Political Treatise.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ148499  Margraviate of Brandenburg (1157) — Holy Roman Empire principality (1157–1806)\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ5066  Jin dynasty (1115) — Jurchen dynasty that ruled in northern China 1115–1234 and its eponymous empire\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ51650  People's Crusade (1096) — poor people's army to fight muslim Turks in Jerusalem (1095-1100)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ743768  The Anarchy (1135–1154) — civil war in England and Normandy between 1135 and 1153\nQ842357  Hōgen rebellion (1156) — civil war in Japan (1156–1156)\nQ51649  First Crusade (1096–1099) — 1096–1099 Christian conquest of the Holy Land\nQ51653  Crusade of 1101 (1101) — battle in the summer of 1101\nQ51654  Second Crusade (1147–1149) — second major crusade launched from Europe as Catholic ('Latin') Holy War against Islam\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ683635  Wendish Crusade (1147) — Saxons and Danes vs Slavs (Wends)\nQ456993  Siege of Jerusalem (1099) — 1099 battle during which the Crusaders captured Jerusalem from the Fatimid Caliphate\nQ166861  Cistercians (1098) — Roman Catholic order of the Benedictine reform in the tradition of the monastery of Citaux"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106246-Vv8NxG5opULhDNvz7xez",
+  "object": "chat.completion",
+  "created": 1795106246,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Abraham ibn Ezra lived during and is identified as one of the most distinguished Jewish biblical commentators and philosophers of the Middle Ages.\",\n      \"evidence\": \"Abraham ben Meir Ibn Ezra (Hebrew: ר׳ אַבְרָהָם בֶּן מֵאִיר אִבְּן עֶזְרָא, romanized: ʾAḇrāhām ben Mēʾir ʾibən ʾEzrāʾ, often abbreviated as ראב״ע; Arabic: إبراهيم المجيد ابن عزرا Ibrāhim al-Mājid ibn Ezra; also known as Abenezra or simply ibn Ezra, 1089 / 1092 – 27 January 1164 / 23 January 1167) was one of the most distinguished Jewish biblical commentators and philosophers of the Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Focusing on Ibn Ezra's Life**\n\nI'm currently concentrating on discerning which specific historical occurrences from the provided list are most directly linked to the life and context of Abraham ibn Ezra, as depicted in the extract.\n\n**Detailing ibn Ezra's Context**\n\nMy current focus is on pinpointing specific historical periods and locations that directly frame Abraham ibn Ezra's life, drawing from the provided details about his birth and his era as a prominent figure in medieval Jewish scholarship.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Focusing on Ibn Ezra's Life**\n\nI'm currently concentrating on discerning which specific historical occurrences from the provided list are most directly linked to the life and context of Abraham ibn Ezra, as depicted in the extract.\n\n**Detailing ibn Ezra's Context**\n\nMy current focus is on pinpointing specific historical periods and locations that directly frame Abraham ibn Ezra's life, drawing from the provided details about his birth and his era as a prominent figure in medieval Jewish scholarship.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1780,
+   "completion_tokens": 905,
+   "total_tokens": 2685,
+   "cost": 0.00472875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00472875,
+    "upstream_inference_prompt_cost": 0.001335,
+    "upstream_inference_completions_cost": 0.00339375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 664,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Abraham ibn Ezra lived during and is identified as one of the most distinguished Jewish biblical commentators and philosophers of the Middle Ages.\",\n      \"evidence\": \"Abraham ben Meir Ibn Ezra (Hebrew: ר׳ אַבְרָהָם בֶּן מֵאִיר אִבְּן עֶזְרָא, romanized: ʾAḇrāhām ben Mēʾir ʾibən ʾEzrāʾ, often abbreviated as ראב״ע; Arabic: إبراهيم المجيد ابن عزرا Ibrāhim al-Mājid ibn Ezra; also known as Abenezra or simply ibn Ezra, 1089 / 1092 – 27 January 1164 / 23 January 1167) was one of the most distinguished Jewish biblical commentators and philosophers of the Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Abraham ibn Ezra lived during and is identified as one of the most distinguished Jewish biblical commentators and philosophers of the Middle Ages.",
+     "evidence": "Abraham ben Meir Ibn Ezra (Hebrew: ר׳ אַבְרָהָם בֶּן מֵאִיר אִבְּן עֶזְרָא, romanized: ʾAḇrāhām ben Mēʾir ʾibən ʾEzrāʾ, often abbreviated as ראב״ע; Arabic: إبراهيم المجيد ابن عزرا Ibrāhim al-Mājid ibn Ezra; also known as Abenezra or simply ibn Ezra, 1089 / 1092 – 27 January 1164 / 23 January 1167) was one of the most distinguished Jewish biblical commentators and philosophers of the Middle Ages.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1780,
+   "completion_tokens": 905,
+   "total_tokens": 2685,
+   "cost": 0.00472875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00472875,
+    "upstream_inference_prompt_cost": 0.001335,
+    "upstream_inference_completions_cost": 0.00339375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 664,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00472875,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 7.49
+ },
+ "meta": {}
+}

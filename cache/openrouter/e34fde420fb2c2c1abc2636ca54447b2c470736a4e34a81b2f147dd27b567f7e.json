@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "e34fde420fb2c2c1abc2636ca54447b2c470736a4e34a81b2f147dd27b567f7e",
+ "fetched_at": "2026-11-19T16:35:02Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Zhu Xi (1130-10-25–1200-04-30). Chinese historian, neo-Confucian philosopher, poet, and politician during the Song dynasty (1130–1200)\n\nEXTRACT:\nZhu Xi (Chinese: 朱熹; [ʈʂú ɕí]; October 18, 1130 – April 23, 1200), formerly romanized Chu Hsi, was a Chinese philosopher, historian, politician, poet, and calligrapher of the Southern Song dynasty. As a leading figure in the development of Neo-Confucianism, Zhu Xi played a pivotal role in shaping the intellectual foundations of later imperial China. He sought to integrate moral self-cultivation, classical interpretation, ritual practice, and cosmological theory into a coherent framework, emphasizing disciplined study and ethical cultivation while criticizing approaches—particularly within contemporary Buddhist traditions—that claimed immediate insight detached from ritual, learning, and moral practice. His extensive commentaries and editorial work on the Four Books became the core texts of the imperial civil service examinations from 1313 until their abolition in 1905. He advanced a rigorous philosophical methodology known as the \"investigation of things\" (格物) and emphasized meditation as an essential practice for moral and intellectual self-cultivation. Zhu Xi's thought exerted profound influence, becoming the official state ideology of China from the Yuan dynasty onward, and was later adopted in other East Asian countries such as Japan, Korea, and Vietnam. In these regions, his Neo-Confucian doctrines were institutionalized through educational systems and civil service examinations, shaping political ideologies, social hierarchies, and cultural values for centuries.\nZhu was a scholar with a wide learning in the classics, commentaries, histories and other writings of his predecessors. In his lifetime, he was able to serve multiple times as a government official, although he avoided public office for most of his adult life. He also wrote, compiled and edited almost a hundred books and corresponded with dozens of other scholars. He acted as a teacher to groups of students, many of whom chose to study under him for years. He built upon the teachings of the Cheng brothers and others, further developing their metaphysical theories in regards to Li (Forma) and Qi (Materia). His followers recorded thousands of his conversations in writing.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ148499  Margraviate of Brandenburg (1157) — Holy Roman Empire principality (1157–1806)\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ196409  Livonian Crusade (1198) — German and Danish conquest of medieval Livonia\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ737542  Genpei War (1180–1185) — conflict during late-Heian period of Japan\nQ743768  The Anarchy (1135–1154) — civil war in England and Normandy between 1135 and 1153\nQ842357  Hōgen rebellion (1156) — civil war in Japan (1156–1156)\nQ51654  Second Crusade (1147–1149) — second major crusade launched from Europe as Catholic ('Latin') Holy War against Islam\nQ51655  Third Crusade (1189–1192) — attempt by European leaders to reconquer the Holy Land from Ayyubid\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ646409  Crusade of 1197 (1197–1198) — crusade\nQ683635  Wendish Crusade (1147) — Saxons and Danes vs Slavs (Wends)\nQ233568  Battle of Hattin (1187) — Victory of Ayyubid forces under Saladin against Crusader joint forces, 1187\nQ815161  Conquest of Jerusalem (1187) — 1187 conquest that marks the end of Christian dominion over the Greater Jerusalem"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106082-FowCjqmLVkUQbqzrDuTs",
+  "object": "chat.completion",
+  "created": 1795106082,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q7462\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Zhu Xi lived and worked during the Southern Song dynasty in China.\",\n      \"evidence\": \"Zhu Xi (Chinese: 朱熹; [ʈʂú ɕí]; October 18, 1130 – April 23, 1200), formerly romanized Chu Hsi, was a Chinese philosopher, historian, politician, poet, and calligrapher of the Southern Song dynasty.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Historical Threads**\n\nI'm currently focused on identifying the direct connections between Zhu Xi and the provided list of events. My analysis is progressing, and I'm cross-referencing the extract to ensure accurate association between the philosopher and each specific historical period or entity.\n\n**Identifying Tangible Links**\n\nI've confirmed Zhu Xi's direct association with the Song dynasty as a native of that era. My current focus is on thoroughly examining the extract for any explicit mention of his participation in other listed events or periods, ensuring the connections are well-supported.\n\n**Clarifying Event Participation**\n\nI'm distinguishing between merely living through the Song dynasty and actively participating in it. The distinction hinges on whether the extract describes my actions as a government official or if it simply situates me within that historical period.\n\n**Serving in Government**\n\nI'm clarifying my role within the Southern Song dynasty. The extract states I was a politician and served multiple times as a government official, though I largely avoided public office. This indicates active participation, not just being alive during that time.\n\n**Interpreting Dynastic Involvement**\n\nI'm grappling with the nuance of \"took_part_in\" versus \"lived_through\" when it comes to dynasties. While I served as a politician, the Southern Song dynasty itself is more of an era than a discrete event. I'm weighing if holding office constitutes active participation in the dynasty or simply existing within its timeframe.\n\n**Serving in Dynasties**\n\nI'm refining the distinction between participation and existence within dynasties. While serving as a politician during the Southern Song dynasty clearly implies action, I'm considering how the extract frames this involvement to determine if \"took_part_in\" is appropriate versus \"lived_through.\"\n\n**Defining Dynastic Involvement**\n\nI'm distinguishing between my direct actions and the influence of my philosophy on later dynasties. While I lived through the Southern Song and served within it, my work's impact on the Yuan dynasty is a separate matter of ideological legacy, not direct participation.\n\n**Focusing on Song Dynasty**\n\nI'm zeroing in on my connection to the Song dynasty. While I definitively \"lived_through\" it and held political office, I'm evaluating whether \"took_part_in\" is the most precise descriptor given the nature of dynasties as eras rather than discrete events.\n\n**Considering Dynastic Actions**\n\nI'm examining if my role as a politician within the Southern Song dynasty constitutes \"taking part in\" it. The definition of \"took_part_in\" includes \"governed,\" which I did. However, I'm still weighing if a dynasty is an event I could actively participate in, or if it's merely an era I \"lived through.\"\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Historical Threads**\n\nI'm currently focused on identifying the direct connections between Zhu Xi and the provided list of events. My analysis is progressing, and I'm cross-referencing the extract to ensure accurate association between the philosopher and each specific historical period or entity.\n\n**Identifying Tangible Links**\n\nI've confirmed Zhu Xi's direct association with the Song dynasty as a native of that era. My current focus is on thoroughly examining the extract for any explicit mention of his participation in other listed events or periods, ensuring the connections are well-supported.\n\n**Clarifying Event Participation**\n\nI'm distinguishing between merely living through the Song dynasty and actively participating in it. The distinction hinges on whether the extract describes my actions as a government official or if it simply situates me within that historical period.\n\n**Serving in Government**\n\nI'm clarifying my role within the Southern Song dynasty. The extract states I was a politician and served multiple times as a government official, though I largely avoided public office. This indicates active participation, not just being alive during that time.\n\n**Interpreting Dynastic Involvement**\n\nI'm grappling with the nuance of \"took_part_in\" versus \"lived_through\" when it comes to dynasties. While I served as a politician, the Southern Song dynasty itself is more of an era than a discrete event. I'm weighing if holding office constitutes active participation in the dynasty or simply existing within its timeframe.\n\n**Serving in Dynasties**\n\nI'm refining the distinction between participation and existence within dynasties. While serving as a politician during the Southern Song dynasty clearly implies action, I'm considering how the extract frames this involvement to determine if \"took_part_in\" is appropriate versus \"lived_through.\"\n\n**Defining Dynastic Involvement**\n\nI'm distinguishing between my direct actions and the influence of my philosophy on later dynasties. While I lived through the Southern Song and served within it, my work's impact on the Yuan dynasty is a separate matter of ideological legacy, not direct participation.\n\n**Focusing on Song Dynasty**\n\nI'm zeroing in on my connection to the Song dynasty. While I definitively \"lived_through\" it and held political office, I'm evaluating whether \"took_part_in\" is the most precise descriptor given the nature of dynasties as eras rather than discrete events.\n\n**Considering Dynastic Actions**\n\nI'm examining if my role as a politician within the Southern Song dynasty constitutes \"taking part in\" it. The definition of \"took_part_in\" includes \"governed,\" which I did. However, I'm still weighing if a dynasty is an event I could actively participate in, or if it's merely an era I \"lived through.\"\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2015,
+   "completion_tokens": 2753,
+   "total_tokens": 4768,
+   "cost": 0.011835,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.011835,
+    "upstream_inference_prompt_cost": 0.00151125,
+    "upstream_inference_completions_cost": 0.01032375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2614,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q7462\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Zhu Xi lived and worked during the Southern Song dynasty in China.\",\n      \"evidence\": \"Zhu Xi (Chinese: 朱熹; [ʈʂú ɕí]; October 18, 1130 – April 23, 1200), formerly romanized Chu Hsi, was a Chinese philosopher, historian, politician, poet, and calligrapher of the Southern Song dynasty.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q7462",
+     "type": "lived_through",
+     "reason": "Zhu Xi lived and worked during the Southern Song dynasty in China.",
+     "evidence": "Zhu Xi (Chinese: 朱熹; [ʈʂú ɕí]; October 18, 1130 – April 23, 1200), formerly romanized Chu Hsi, was a Chinese philosopher, historian, politician, poet, and calligrapher of the Southern Song dynasty.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 2015,
+   "completion_tokens": 2753,
+   "total_tokens": 4768,
+   "cost": 0.011835,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.011835,
+    "upstream_inference_prompt_cost": 0.00151125,
+    "upstream_inference_completions_cost": 0.01032375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2614,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.011835,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 20.43
+ },
+ "meta": {}
+}

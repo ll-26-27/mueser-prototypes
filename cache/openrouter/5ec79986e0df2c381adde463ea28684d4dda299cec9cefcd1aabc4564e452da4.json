@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "5ec79986e0df2c381adde463ea28684d4dda299cec9cefcd1aabc4564e452da4",
+ "fetched_at": "2026-11-19T16:42:48Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Avempace (1095–1139). Arab Andalusian polymath (c. 1085 – 1138)\n\nEXTRACT:\nAbū Bakr Muḥammad ibn Yaḥya ibn aṣ-Ṣā’igh at-Tūjībī ibn Bājja (Arabic: أبو بكر محمد بن يحيى بن الصائغ التجيبي بن باجة), known simply as Ibn Bajja (Arabic: ابن باجة) or his Latinized name Avempace (; c. 1085 – 1138), was an Arab polymath, whose writings include works regarding astronomy, physics, and music, as well as philosophy, medicine, botany, and poetry.\nHe was the author of the Kitāb an-Nabāt (\"The Book of Plants\"), a popular work on botany, which defined the sex of plants. His philosophical theories influenced the work of Ibn Rushd (Averroes) and Albertus Magnus. Most of his writings and books were not completed (or well-organized) due to his early death. He had a vast knowledge of medicine, mathematics, and astronomy. His main contribution to Islamic philosophy was his idea on soul phenomenology, which was never completed.\nAvempace was, in his time, not only a prominent figure of philosophy but also of music and poetry. His diwan (Arabic: collection of poetry) was rediscovered in 1951. Though many of his works have not survived, his theories in astronomy and physics were preserved by Moses Maimonides and Averroes respectively, and influenced later astronomers and physicists in the Islamic civilization and Renaissance Europe, including Galileo Galilei.\nAvempace wrote one of the first (argued by some to be the first) commentaries on Aristotle in the Western world. While his work on projectile motion was never translated from Arabic to Latin, his views became well known around the Western world and to Western philosophers, astronomers, and scientists of many disciplines. His works impacted contemporary medieval thought, and later influenced Galileo and his work. Avempace's theories on projectile motion are found in the text known as \"Text 71\".\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ5066  Jin dynasty (1115) — Jurchen dynasty that ruled in northern China 1115–1234 and its eponymous empire\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ51650  People's Crusade (1096) — poor people's army to fight muslim Turks in Jerusalem (1095-1100)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ743768  The Anarchy (1135–1154) — civil war in England and Normandy between 1135 and 1153\nQ51649  First Crusade (1096–1099) — 1096–1099 Christian conquest of the Holy Land\nQ51653  Crusade of 1101 (1101) — battle in the summer of 1101\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ456993  Siege of Jerusalem (1099) — 1099 battle during which the Crusaders captured Jerusalem from the Fatimid Caliphate\nQ166861  Cistercians (1098) — Roman Catholic order of the Benedictine reform in the tradition of the monastery of Citaux"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106557-pPLkAPcELUehBXe8S87j",
+  "object": "chat.completion",
+  "created": 1795106557,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Contemplating Avempace's Work**\n\nI'm currently focusing on Avempace, a significant Arab polymath. My thoughts are revolving around his diverse writings spanning astronomy, physics, music, philosophy, medicine, botany, and poetry. I'm also noting mentions of \"Kitāb an-Nabāt,\" \"Ibn Rushd,\" and \"Albertus Magnus,\" and considering his key contribution to Islamic philosophy: soul phenomenology.\n\n**Analyzing Avempace's Influence**\n\nMy focus has shifted to quantifying Avempace's direct influence. I'm tracking how his astronomical and physical theories, preserved by Maimonides and Averroes, extended to Galileo, and noting his pioneering commentary on Aristotle within the Western world, impacting medieval thought broadly.\n\n**Evaluating Historical Context**\n\nI'm currently dissecting the phrase \"contemporary medieval thought\" in relation to Avempace. I'm questioning whether this definitively places him within the lived experience of the Middle Ages, as opposed to merely describing the intellectual milieu of his time. My focus is on strict adherence to extract-based connections, avoiding external knowledge.\n\n**Assessing Historical Chronology**\n\nI'm currently scrutinizing the temporal framing of Avempace. The phrase \"contemporary medieval thought\" suggests he existed within that period, but I'm rigorously checking if the provided text directly implies he \"lived through\" the Middle Ages as an event, rather than just his ideas aligning with it.\n\n**Investigating Temporal Context**\n\nI'm currently focusing on the precise temporal framing. The extract links my impact to \"contemporary medieval thought,\" which I'm analyzing to determine if it signifies my direct experience of the Middle Ages as an event, or merely describes the intellectual landscape I influenced.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Contemplating Avempace's Work**\n\nI'm currently focusing on Avempace, a significant Arab polymath. My thoughts are revolving around his diverse writings spanning astronomy, physics, music, philosophy, medicine, botany, and poetry. I'm also noting mentions of \"Kitāb an-Nabāt,\" \"Ibn Rushd,\" and \"Albertus Magnus,\" and considering his key contribution to Islamic philosophy: soul phenomenology.\n\n**Analyzing Avempace's Influence**\n\nMy focus has shifted to quantifying Avempace's direct influence. I'm tracking how his astronomical and physical theories, preserved by Maimonides and Averroes, extended to Galileo, and noting his pioneering commentary on Aristotle within the Western world, impacting medieval thought broadly.\n\n**Evaluating Historical Context**\n\nI'm currently dissecting the phrase \"contemporary medieval thought\" in relation to Avempace. I'm questioning whether this definitively places him within the lived experience of the Middle Ages, as opposed to merely describing the intellectual milieu of his time. My focus is on strict adherence to extract-based connections, avoiding external knowledge.\n\n**Assessing Historical Chronology**\n\nI'm currently scrutinizing the temporal framing of Avempace. The phrase \"contemporary medieval thought\" suggests he existed within that period, but I'm rigorously checking if the provided text directly implies he \"lived through\" the Middle Ages as an event, rather than just his ideas aligning with it.\n\n**Investigating Temporal Context**\n\nI'm currently focusing on the precise temporal framing. The extract links my impact to \"contemporary medieval thought,\" which I'm analyzing to determine if it signifies my direct experience of the Middle Ages as an event, or merely describes the intellectual landscape I influenced.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1/y2dvlQI2vq1sZPV5X2XZwaKF0qiQWrMW3z373btJQhJ+ZuYT28Hx1p+HaElaUpNnhHuUmqXhCOG5AbA+IjvTMHjd8wQFgcGhKUC/WcK5mNDM0lMQZnw4xjK/2+yUbznsBIQYKib0NvXGptTAQ3XdXbLwYuMCBa/SKP2MoHqYlDbaokFH8U6eE5rnQZzPWQ2IUQk3j+GESqhDApRFq9sAx22S+p2SXjplm7b4T+t21Ee12Hud5OqJFXmBBtgadzSKq5p0qRPU9oHfKJwCh8vStrOTdem0QoJ4+pjqsZfRyUYX/WwOqa2Gstx8IYvsyEPHrq3NXPclsvaBtba3DaKWkDMdLrA2+/SIC4/bmnDU4kAgcQ9tbpSIkCKH02faROUWBDKiAT1PrZARWHGcMj9j+/wM15OznNqjmHwstVxUf5lYahoEt2C8Onlt2ej/d1FbnNmpLIf9KSxirc433fc3B/vOZoobj7nzvEdVVG9yz38QqXR+0lXFnLsqTpi/91WdSVY5HeyNHKK1kXNBrBfWFpIZXcE6eAhmGan1R2KCOpZKSJXnk7g8vr0deVM+a3suv3o3un74Xwoo0N6QfC4yFqvpCPiE9krrCvxj2VlZIs8hdPRlCawHf/mXetaNDGFwpvhXSdcvfDIw8hLx4c1Ex0z5R4vUCttxl1V3SpLWvWt42f6dF5G3d5jvgEf4hxcadfBKygBJPfXV40+1aS2rCl/iRm5uD9kIGeQwEPJI7hx2wGyLUv/ji25YyGvqeioiDU5iBR6Zrzvc0yroFng+KSSc55Y+ioECo2fJaqAOXNV3WdbEDEXjMGtVSQEHnDxpEydYQPK6MhYJ3A3gRM/G0P/sBhR4Xc4yuXkGoEXeLOroKUR7t0lh95s4VbhU63tBUbCRn7OWa0ymrjiVgWi3GVhDfJe+gSWdsr9l+Apzd2aYdCllm4y9tMPDNcQrmJ6hzBRl7m1kXMEp/nCIDBFK/UVmz/qTMhWKPrvpSsvHL/Wk/UhU6Rxxm2kKxjTpPU7yW2THSTPmKI1la2+mMxLHWPQdP5WnkGHGg3ca39kOBn2n0sFKasxo9MK6MQWkMccJQOQLBzOxw+mA3AEusnUPHMH0rG0zH3+V5125eZQaOUeWSww5txAwemVTV6QjoK1natMZ+JHa0CLydeJI9yzFu5k4iN957lHSImfZr7yZk3bG3rTJt/zmRbTV1V9dlVqk4LrWgh+62e6mu7rkUo1IJuGp/+EFikDO/QuIKmR2a2KiJhpZeUGvMlNPAiQdoYKMr86cNZ3eVBS4zHA2ryYgjXcnJ01+q09/xG1giycLsqwOMXTX3Buz97ZuTepIRBUl3bENaN7wYCmqfLXs5YgHB1tls+SKgbFp9JrIayNf9z+M0TOEb/LBbwlcD7Jh9CIXkOhNtxoBX/IU0iHyt7aw4XSvSG2MJorl3tqswHiT0cjdGP1VkAOAk0BIT2kkRY11+G3Zmj6tK1L87PANUOC1gYCA4gaExfh1//765XRSu08cLAvzXQZJ9l70ojXedCUbQKAhTJTxYXPBP/uSGhz7Dt4ClGDZR6HdNSOaTCxLhg2R4hGBqtrd3lqIWL85OAWGBxGEB91T1t1sYvNP6Sm6iTGe+F60u+eX5zPtLnY4eINQmmRWH2EEXDKCjrSvSVyVAos24lH5WuwXUheX+ci9t/k7ey/8fjjhjvYKb14mCTBrZxVm6GRxojGzfcZL16/50/STmya2l2Aocq1oPSiPvuUP4OoLxWnQF3zFzisuU6dB2U/Ofye3I9qpw29Qpo5BsuIK0cFenREkjYF8MeYnUIzJj25aZjDI5BsWip0ygcOgLjDmg6r2SQQQmQCOHmqcllifwPssI52MPLfYwn4bKZlHd1ZKJRCeHEHQsxY5RgEZD5idfagj7xQ5dp7nr0DtztHuTLtneayZTlPqaDv/Y+FdYiyMAf1fAuEzfW1J6Ml+E1f8PskTPX07pphqjILaGfF6R0fWNoiMMza7FmCJzWhcAETHi88oiE87Uh2xtc64vhvN8Q2gb0xyEymGdoEsPpam3cktkKGIvaUicFqUDx+uM92xvRyXjEnulgUERjdMAzTDXsQGj1vpIamheBPU7RBhjzPhCtLuGRx/HaRZrbRiohpMii3s8iohiaw73jn2RUp4FfJwgBxe0xB6lG9MYXkoaIcPYRp3t6Ox194SUrDUJHVq01LrSclWNNQGEf3n2t1RUBpUBeaH5qivbre6w9Pagxhz2UEm6g+rQG9xite9so1QDgTXlC83O/YHDoWdibIVjb9xiEtvNb1tsHCBMJ/eOY2HXEoa7BX7seNAn4guR4aRGmQRJv7qQkdjAMW0STwgPn4m1xQu2Rg55DZU2Ya7ymMjLLISB1pziILhWb4Ckjwj6H/Dx+K7Pwp0mwm5Caeb47KbSMD48jBTKbILSy8WOqNBH8z3gdyKZp3GbREEKcQdva73EC1eNu5hVaTYrBtE5jVXtABeMvbeJ+seaB3+giXKXBJs8bBKQrr7gLG1F4ViATeBzXBctyhBlze11Bu8z2VPUhLaPgch1uCyqhRU2cYHveLYJ/UwEB1LaYVsaK/1N2WRYQ6oD/UihPxAoKXMz3UtUQorZcYdLNq+IXdB+ERwzcAa/KQZirEZ+dnLbooSUFvncDHIg5sC3alIAl7efE8sLvJAw2zBWAmZsRmy9hyBSlB6iP/GmRGapM9o1JsMWXEFYDQMjIreNmablGv2H8FYZIk/SROdcbpSNwPxsPgITeKhkXna6d6QK0PS/blNoEqxTiisKMfwt5U84Tqk8pPh2vg7/VKoNzSVPc4JON7SQ4ien/zZ7FXcyE4gAqtSCMbcvV6DIYrd0NaHILt30JfRI1ehr3qGbRPBkVuLaBERHRg8JfrKdJbk/yTYe2YzZ+qKusT3kcWTxA8d5SPeNAJxQmyCjwvOg8zRAB2L7/gXmIwM/ovb9n6laBuvLs+I/UjtoBsXcgFzVZX2+pwWoeNo79PcxnIhNp5gZD2BNneJCtzTlDPxNRw4CVgrUH+TUbbuygAmRoV3/oMgY9M4yjIi8G2vdj0AZ/xd78An6UhV0nHlh/LZtuytahOfVEhYdoDr1j4PO1JPZ2o+edtZuETXAgWYG+DdS4l4ChWJmhipclsSjrUFHt763OKT7/3xC1TlX0LR2Cysfq0pV0H6vAtV1OSwGqVoL/wlcLOTgz/nOcDCSkDTRDDZHMx4qJgzROwy4kdA/IXLGgSXsMd1oYqVIAmMSncCXN1XAHDsbgcNiZ5oxLUfdyzjnT1zggSgzIVndYY56706rIfKUAgYxJhjgkhvmao0AuVGPwF0C6uZcXWAmHCayBbJkLy9q0YdFFDiZulCV4Urf1AgVjW7fgeuhiUYgPy5sOjjygBhv9/EGAbZjroiifqA6nzc2nnB5wpjhEnc6WudmzxTM9+cHzhZxQS6MmSeCfwhg7axrZBhUXSnPLOAwDI4IOugulbYzgerh2QjoqPAJEElHib6t76urXFZ29/5Ss2hBb0tHVuzVmK0BKlw+yuBSVAtbgGCUAv6poy/u0bV6aATaE+SqjuCv+HzcxefDHd6bh6Rrey77Ca2hR2vOIcMDHdRinjq1RluSMBUjkFvrhXKGTH6f100Vn6cxOVylewsrANkvEXMkAhecaBTMAHzyYXOMbadE5H3cb8nkgRsjrvFGMvaLOB8FoZcVEG/KagFeGAw/UizL1GD2+fKzzmmwKCvAi628BEV4/8KDTsuSboih7eWXzoZERujvP4xYj+Wol91R9nCGorFT4PWzt/YxMDhOXcHAX3PuxkDzRGSjNaOjm9U/gx8lC4OzclIYKTrjKlrLklnZVITukyf4dtkkzOASna5O0uieFp487m463XVOZn7MN4yzTIVqiuJkpxsmbA4x7hALEQ4cXOVvX6aAm5LNJNprSmDE9quaEjbzfr94mqZflORIfgO/U5XDibqPjkHH+Bgu9wUVe6cpHzsieTZs3DsMcmk8V8Ll8VGrup0xI7BWZFxds39AGW4p6+INHXt2Z5K74j3hAnMUyEczHCQKIalx1GfISsgS1Bnb/M0mN5g+bRL69ywvHHHr0YdKeBQqFHHPz3zwEgHfZUaTaVm5DCSAhFsCu6vhepdBsgp5pIzxNjHcmYF3BauSsxVz6Ho8twVigNPJgv1WYnjjiEe7HITl09Z9PZ/e+YeR8Z8j5qFCNmuwAa7tOmkUiqo6RN9ZYTZCz6oyOzDn+kOPFHW/SSqcisKtpCz+bvF3m1OimLl+TZCFqxYc5tt0Q0dup3OsLaOTBUUZoSnq684eylPSGkpS3uV3brF3l6hcEV1/owaVIQ8Zd7PKGIWOVDyrZRmKgozEPyO+t0MKbLW6LUcSAysm3U31RgW641yQTRYn20rFWpPwiRhvk8yTdn7csbIUV/8L1WpIN4zN0FtjI6jTGFUzK62SC8+ya2kO9WTo0smNFETJexPIPCrrCcYlCrRZLmHXOgFenJgsRa0G4os/Ek+ffZPI0yOMDWaEKMsqHIteV8tbyAUw2d83vbyLWpJXjpGufHPDINPNiWuN7mo8nyyDnIbjuqiTLiPZNfCjU2kQojmgYkuyGPVbuMHC6Bku9HHAEltd6SD46K/9bHHp9jI+UE33giByNqm5h/OMF96g1sj+dJQKepX597KTaqvQVLUjkWw1zJlsQjJ3M6ElnG2lA2UJWlhH6EkLUXFtfR2JsBrO2ZkLfTCDOsJRGKHjyK6YWvcdtg7ZpTs2GfmxqGtBTNL98FMNu78kvTjRbOqTr247G27DC4hjIUJCP4jJhmZlr1XbAZ5zjig8TAsjacv2QQgG1joahh6pFgVPWP8IlwdvzKoEPtbc+eST0bInBgs+VFwuoSYKnaFNIiUfKvxoLVxJ76i/3TJqcvUDcEpnm5W9UHoCaun9N8yfu2f3liB0SDPnDVInozKi+mSnBkcMgptW1NFN7opd5Ar5LFOHGAQZX+AIG261WpG/KyBc6NUDQqA+08Vr5EiKpF8SuGKjY6gldYH67CRzHNFvapHwWZUtFkcg8ZAxnhqvg/W5EAVIEH2WppkU7rsGY+kf7DV1iEt14Dl3iVs02LH7GEfepgjymgmmGLHs5rAz2e3wTT74gPlKHaSLLFwsuKoerdx6nuK0gb7sBfYctSdDIL7UQgr6Yto4UflmDe+ojCm0YFZ9jSVvN3RvSEolpL/8Z9bevZ2aQvgeou8kPAh3YQ/qh3F3L0ZqWJ+MTmM2WhdtYPyjIhuoFYM+G4+0PzFO5UMpSd34IU6TtC1iu5zB5sBryx9v426qsFjarafDt5iAERp9ulaacHG9yIS6HHQfEJTP+pgPh7qyXCK1mznJp6QFsrt1LlvO/aFJt2UZ9VxBXVLF2sEiPbFRH2Vrv7JqWDOvgLNw6oYHX5xSIP2kTLs+vXo7tZvoroYIGI1HnaAlBORbJ2XSOINpjXDMgjIqRzItWexnzcTt0fR0rLzoAS7X3YqcOHAyl5HzkdPMX0BSpDIFQ9XtaYB4nAgTnCOVUcuKFe57Pja0YuuOkQ/LVQoTWCsgAKva0AmQp49fKFpmOPb2uHZXeXiXMf2EmBtK7UurRcI7ItxGibPyB/2dg/zNf4YoXfQ75wPv76S6RV2anW+YiNsgJWPFErGO7LWW3QwAoqOCOISQMz2F5r1kccqJ0VVrrpKuS3geEkVqEtVQbkpqjfE1Ans0483CGEZ405VK0M9KR49g3XT4aX8tLQYl2Oqu2rOsemUNADJBtayvcEBrbw5Xv+PIumIQ1xPI4HfMH8q7nVGE3GPkA/qd+uFi5EpdxJwbXith+d/R25chxj34Uzm68aRIEmUc6PlLJ8iv7++DDOl/l81KI6Pi1kYby5wI4ik29zgbjuCAiT+ryaJmQVGBogAC5B2VJcgWsBP489GGQR4yKaZU8KU67dnqE1cHrYcdlUI9paiUHY1xaHvh/9qp5FdK/VpNOC/MZZ96VBEr3j1DMsFpYHXFX7AMNV+ygicN66JowbNywTr6ERVTUHwLQi/lYyJ4ytk/9gXpC5j+E6C/eHCtS0vCwMy7bmvtXoudH8WqTxSA98yyEyZxMIfiohJo0b4MqwToESXl8T5IZtfDmABk6hJwPk+TzJ+Wc/2CUYg2hrJOgxsPc/faywlg+qHfh30Cj0F64MlD8FRDAFkvSbo88XdBF5U5Zxb2ly+sN9DIlmyldyz4nQPG6oNVVw6F0vXwgMyYubYHiBl3zPUN6HUAYymg21kwcPgNG8Til3am2JeKwU+pw0bX5XoXVMQKEyqsNV7wJimuFiBBfh/3j6tXTSApRaqkEJJs8Pve8Luqve1Fy3WVIThW82NHhQXXCGYimrm4tPj/MH78qclw+SZi7hhfJwZd7hOYX2UMLgZobPyEClcLhoWJMuA3e2FhswrTFIuScqRbzblVlCbW3QBRsM1BRA44d1j6yDdxgYd4GtZgk+6Vlj78vzmzhITdLEOX7CjCmXyD0651WcnzaWjgeX65Xb4rVLQJMbzS3UjDCxF8ge8pjAueQL2b6Cuf2WV1EU9Eabt536LmTXVVj9axbKhB4ZP6JVP/ET+sTGTCSx35Gfa9qUODevqTAxKbr23tPacpQRp6CAp65Zp32MNi9oHxAq0Tuvw6frXUg41c5ElH96HAsFbVkjCbkoS6U8EbzDMnXdzdxscNo4eA5YL1ESQ15tyHN9tGr6ffkqC5OqgU1p4A4AkNd0H190p2lJobaXEgcAurF6x5qDHJDwhc6eLNVrdyGPGegKx7bls3JS2bkFOcGcdC7zhmboIptK51UdpTLUewoLNe7tsx55ifQLiyt1kpoGFH3y/UWjtFZs5g4C/1HnekV0/khNB4bw6GYnKJhkYQvhz5MkCPc28vISduE7ujzdCs6xwHdUVwKzamaenI5sHXy11RoD7pC+93ElMwA6fZupFQu3ox6UUyAEuV7hVEFOA9Fn3I72eyYMFT44/uuUxCNNhHaEFgdEKUDK1VbZyG1hZO3sfZibz7/cOYpfO5j7Ntk+YZqQSnfLk1THZCIU+/Echoro3EhHNWKgV3kPsHOPSWcklS5m8uUXon44PPJCkRSBk/l9mbx5tZfQps0e/hncbFl98OJh7WlTSj3iTLFeHtB0RNhHJKt1b0/ChT1w+2dnc2uftTDDDgy1ip/E3ZoCOkFyialtTDAvLyGwPIjMUKz5Dgprr55oSz7H9lztmRjKpCw+1+Rl5HfjlJJnwDgdfST+H+so9uzNPifrOnR7NaU0m1oX4QwUGuS5dz4luSdBquOxKZDhZ3KYh+95JvsIrG6iMzbuIcecyydLy98AjL+VA6ZqcaxzjeV9vm3p0EMKP9o+Ba62RVHYJTiJ/Rlf6q68RSmzrddu0CobGA6eksIfEQPc87MoZaLAHrTtJFWBAb6RnjlJqAOboWhkedapr9O/2Kn5YJl/mtsISRtLP3JUtvXyxNe1Cdy2veBVuvKWTlT0IC/7eZ/m7bG8DQ8ptlXYVsshJEu65/bjYRQ1PIImyTxmQuJSUesoAdDqqCQqtBEzTsARPiyLZLpBs0GZHDPJoS4C8q5zWugzHLsOfh0iXrM29rJ/ZDXqPhfG9XkoTj8tzCnnAdJxPcv/JQV7SR0LmqfNV9x105YQpWn7B9m4Lie/SRRl+VBdq74GgAySfePI0YyTM8Bo9biEJqC7RBC5N6a13vLnoZekjHpopZZXY9IUk5xupW/HW/zG6KSxNh4ms97as/YPD2YeX0ZL3e6y3bI8q65xgbTMKoyGZ5xKr89SQNeINrauzhxxzkKOEkgcuNobCuTlgJvHpCQflLSCDQpYi+PI10UaifyMwtn0QDsprwgeSYJD2D1YQUUSmr7HgM+U598iBvGL4FpeuCix3YGhGsEKL5u64Ry8j+yw+hBjnCBOOA6g8icMqWZ2ADQz/vet7jrz1DCQHepmywbEsaGyQS6cbWKpVV90Duzq144+LAJxrvx9N9KQZQcoS7o+/LsB1Ua1YoiuL2dKgzOY+nVXFjivxT9BEhsTH0M5+BLaF6xSYU58nXoUGdFS4gW+V2MnnsNEU739XPUuw2+IDPgfA+m52R87PVZB4EA1QMbnvlD/IOg14z2kICdYCIXcOipe3E3j06W+7bjb10f/pYpKP3Z8bfW+SW/fh4VXiXQnJ53swyMa6bSNkl91yRpDAjguZsbS5+4cUzTojFig7IuVNbVsDRt+AfZOEWnzul629g5X0pTnTyAusSu2Her0mJwVG0hwtXJvs8+uYOMMG/Ec91d1wXf6fZIV8LsbELK1l9FOvTPLTGYr7j1NBAZ4Hrm7yOY6xF+mEwAq9YowUs3pLrylUcQPAUFZ6jJDrSHCmYrPXsWTRq6DxxI6o1GHs/FeedZwdf8XThAgUL.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1838,
+   "completion_tokens": 1215,
+   "total_tokens": 3053,
+   "cost": 0.00593475,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00593475,
+    "upstream_inference_prompt_cost": 0.0013785,
+    "upstream_inference_completions_cost": 0.00455625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1206,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1838,
+   "completion_tokens": 1215,
+   "total_tokens": 3053,
+   "cost": 0.00593475,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00593475,
+    "upstream_inference_prompt_cost": 0.0013785,
+    "upstream_inference_completions_cost": 0.00455625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1206,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00593475,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 11.81
+ },
+ "meta": {}
+}

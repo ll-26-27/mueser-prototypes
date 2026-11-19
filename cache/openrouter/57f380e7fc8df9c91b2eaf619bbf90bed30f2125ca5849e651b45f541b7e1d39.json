@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "57f380e7fc8df9c91b2eaf619bbf90bed30f2125ca5849e651b45f541b7e1d39",
+ "fetched_at": "2026-11-19T16:42:59Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: John of Salisbury (1110s–1180-11-01). English philosopher and theologian (ca 1115-1180)\n\nEXTRACT:\nJohn of Salisbury (late 1110s – 25 October 1180), who described himself as Johannes Parvus (\"John the Little\"), was an English author, philosopher, educationalist, diplomat and bishop of Chartres.  The historian Hans Liebeschuetz described him as one of the most notable figures of the \"medieval Renaissance\" of the 12th century.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ148499  Margraviate of Brandenburg (1157) — Holy Roman Empire principality (1157–1806)\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ5066  Jin dynasty (1115) — Jurchen dynasty that ruled in northern China 1115–1234 and its eponymous empire\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ737542  Genpei War (1180–1185) — conflict during late-Heian period of Japan\nQ743768  The Anarchy (1135–1154) — civil war in England and Normandy between 1135 and 1153\nQ842357  Hōgen rebellion (1156) — civil war in Japan (1156–1156)\nQ51654  Second Crusade (1147–1149) — second major crusade launched from Europe as Catholic ('Latin') Holy War against Islam\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ683635  Wendish Crusade (1147) — Saxons and Danes vs Slavs (Wends)"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106570-Bv3mSwLfLtXDfpi0hMRq",
+  "object": "chat.completion",
+  "created": 1795106570,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Historical Points**\n\nI'm currently focused on identifying any direct links between John of Salisbury and specific historical occurrences as presented within the provided text. My analysis is strictly confined to the given extract, ensuring no external information influences the findings.\n\n**Linking Identified Events**\n\nI'm now working to establish explicit connections between John of Salisbury and the mentioned events. My current analysis is scrutinizing the extract for direct mentions or strong allusions, particularly regarding the \"medieval Renaissance\" and its relation to broader historical periods like the Middle Ages.\n\n**Evaluating \"Medieval Renaissance\"**\n\nI'm currently assessing if the \"medieval Renaissance\" mentioned refers directly to the broader \"Middle Ages\" or \"High Middle Ages\" periods. My focus is on whether the provided text explicitly links John of Salisbury to these broader historical categories, beyond the specific 12th-century context.\n\n**Filtering Textual Evidence**\n\nI'm presently re-evaluating my interpretation of \"medieval Renaissance.\" It appears this term, while seemingly broad, specifically denotes the 12th-century cultural revival and doesn't directly equate to the entirety of the Middle Ages or High Middle Ages. Therefore, I'm excluding direct connections based solely on the \"medieval\" descriptor.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Historical Points**\n\nI'm currently focused on identifying any direct links between John of Salisbury and specific historical occurrences as presented within the provided text. My analysis is strictly confined to the given extract, ensuring no external information influences the findings.\n\n**Linking Identified Events**\n\nI'm now working to establish explicit connections between John of Salisbury and the mentioned events. My current analysis is scrutinizing the extract for direct mentions or strong allusions, particularly regarding the \"medieval Renaissance\" and its relation to broader historical periods like the Middle Ages.\n\n**Evaluating \"Medieval Renaissance\"**\n\nI'm currently assessing if the \"medieval Renaissance\" mentioned refers directly to the broader \"Middle Ages\" or \"High Middle Ages\" periods. My focus is on whether the provided text explicitly links John of Salisbury to these broader historical categories, beyond the specific 12th-century context.\n\n**Filtering Textual Evidence**\n\nI'm presently re-evaluating my interpretation of \"medieval Renaissance.\" It appears this term, while seemingly broad, specifically denotes the 12th-century cultural revival and doesn't directly equate to the entirety of the Middle Ages or High Middle Ages. Therefore, I'm excluding direct connections based solely on the \"medieval\" descriptor.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1489,
+   "completion_tokens": 1069,
+   "total_tokens": 2558,
+   "cost": 0.0051255,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0051255,
+    "upstream_inference_prompt_cost": 0.00111675,
+    "upstream_inference_completions_cost": 0.00400875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1060,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1489,
+   "completion_tokens": 1069,
+   "total_tokens": 2558,
+   "cost": 0.0051255,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0051255,
+    "upstream_inference_prompt_cost": 0.00111675,
+    "upstream_inference_completions_cost": 0.00400875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1060,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0051255,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 8.46
+ },
+ "meta": {}
+}

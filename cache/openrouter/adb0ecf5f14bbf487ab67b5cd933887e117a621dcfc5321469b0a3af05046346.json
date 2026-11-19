@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "adb0ecf5f14bbf487ab67b5cd933887e117a621dcfc5321469b0a3af05046346",
+ "fetched_at": "2026-11-19T16:34:57Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Pythagoras (6th century BCE–490s BCE). Greek philosopher and mathematician (c. 570 – c. 495 BC)\n\nEXTRACT:\nPythagoras of Samos (Ancient Greek: Πυθαγόρας; c. 570 – c. 495 BC) was an ancient Ionian Greek philosopher, polymath, and the eponymous founder of Pythagoreanism. His political and religious teachings were well known in Magna Graecia and influenced the philosophies of Plato, Aristotle, and, through them, Western philosophy. Modern scholars disagree regarding Pythagoras's education and influences, but most agree that he travelled to Croton in southern Italy around 530 BC, where he founded a school in which initiates were allegedly sworn to secrecy and lived a communal, ascetic lifestyle.\nIn antiquity, Pythagoras was credited with mathematical and scientific discoveries, such as the Pythagorean theorem, Pythagorean tuning, the five regular solids, the theory of proportions, the sphericity of the Earth, the identity of the morning and evening stars as the planet Venus, and the division of the globe into five climatic zones. He was reputedly the first man to call himself a philosopher (\"lover of wisdom\"). Historians debate whether Pythagoras made these discoveries and pronouncements, as some of the accomplishments credited to him likely originated earlier or were made by his colleagues or successors, such as Hippasus and Philolaus.\nThe teaching most securely identified with Pythagoras is the \"transmigration of souls\" or metempsychosis, which holds that every soul is immortal and, upon death, enters into a new body. He may have also devised the doctrine of musica universalis, which holds that the planets move according to mathematical ratios and thus resonate to produce an inaudible symphony of music. Following Croton's decisive victory over Sybaris in around 510 BC, Pythagoras's followers came into conflict with supporters of democracy, and their meeting houses were burned. Pythagoras may have been killed during this persecution, or he may have escaped to Metapontum and died there.\nPythagoras influenced Plato whose dialogues (especially Timaeus) exhibit Pythagorean ideas. A major revival of his teachings occurred in the first century BC among Middle Platonists, coinciding with the rise of Neopythagoreanism. Pythagoras continued to be regarded as a great philosopher throughout the Middle Ages and Pythagoreanism had an influence on scientists such as Nicolaus Copernicus, Johannes Kepler, and Isaac Newton. Pythagorean symbolism was also used throughout early modern European esotericism, and his teachings as portrayed in Ovid's Metamorphoses would later influence the modern vegetarian movement.\n\nEVENTS (id, name, years):\nQ271834  Archaic Greece (-599–-500) — period of ancient Greek history\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ175447  Babylonian captivity (-596–-537) — period in Jewish history during which a number of people from the ancient Kingdom of Judah were captives in Babylon\nQ185047  Spring and Autumn period (-770–-475) — period in Chinese history from approximately 770 to 476 BCE\nQ201038  Roman Kingdom (-752–-508) — period of Roman history when the city and its territory were ruled by kings (c.753–c.509 BC)\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ926624  Twenty-seventh Dynasty of Egypt (-524) — first Achaemenid rule on Egypt (525–404 BC)\nQ208261  Ionian Revolt (-498–-492) — 499-493 BCE military rebellions by Greek cities in Asia Minor against Persian rule\nQ76026  Greco-Persian Wars (-498–-448) — series of conflicts between the Achaemenid Empire of Persia and poleis of the Hellenic world in the fifth century BCE\nQ11924845  Messenian Wars (-742–-453) — series of wars between Sparta and Messenia"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106082-mKTzp0Hntq3Z5RsKXOT4",
+  "object": "chat.completion",
+  "created": 1795106082,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Pythagoras and Events**\n\nI'm currently examining the provided extract to identify any direct or indirect links between Pythagoras and the specific historical periods (Archaic Greece, Roman Republic) and civilizations (Babylonian) mentioned. My focus is on any textual evidence that might establish a relationship.\n\n**Identifying Temporal Overlaps**\n\nI'm reviewing the provided list of historical periods and events for any temporal overlap with Pythagoras's life. The extract confirms his existence around 570–495 BC, so I'm looking for concurrent or preceding periods from the list.\n\n**Clarifying Chronological Context**\n\nI'm sifting through the provided text, specifically zeroing in on any explicit mentions of \"Archaic Greece\" or the \"Roman Republic.\" My current analysis suggests these periods aren't directly referenced in relation to Pythagoras, but I'm carefully re-evaluating the phrasing around \"antiquity\" to ensure I haven't missed subtle chronological cues.\n\n**Discovering Explicit Events**\n\nI've pinpointed an explicit event: Croton's victory over Sybaris around 510 BC, which directly involved Pythagoras's followers. I'm now meticulously cross-referencing this against the provided event list to determine if it's included, as this is a crucial step.\n\n**Searching Ancient Connections**\n\nI'm now specifically scrutinizing the extract for direct textual evidence linking Pythagoras to \"antiquity\" as a historical period where his *life* or *actions* occurred, rather than just the period when his work was *credited*. I'm also ensuring I'm adhering strictly to the prompt's directive to only use explicitly mentioned or clearly implied events.\n\n**Linking Greek Periods**\n\nI'm now analyzing the provided text for explicit mentions of \"Archaic Greece\" or the \"Ionian Revolt.\" While Pythagoras is described as an \"ancient Ionian Greek philosopher,\" neither of these specific periods or events are directly referenced in relation to his life or actions in the provided extract.\n\n**Verifying All Events**\n\nI'm cross-referencing the extract against every listed event, confirming that periods like Archaic Greece, the Roman Republic, and the Babylonian captivity are absent. While \"classical antiquity\" is mentioned, it refers to when Pythagoras was credited, not as a period he lived through or acted within.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Pythagoras and Events**\n\nI'm currently examining the provided extract to identify any direct or indirect links between Pythagoras and the specific historical periods (Archaic Greece, Roman Republic) and civilizations (Babylonian) mentioned. My focus is on any textual evidence that might establish a relationship.\n\n**Identifying Temporal Overlaps**\n\nI'm reviewing the provided list of historical periods and events for any temporal overlap with Pythagoras's life. The extract confirms his existence around 570–495 BC, so I'm looking for concurrent or preceding periods from the list.\n\n**Clarifying Chronological Context**\n\nI'm sifting through the provided text, specifically zeroing in on any explicit mentions of \"Archaic Greece\" or the \"Roman Republic.\" My current analysis suggests these periods aren't directly referenced in relation to Pythagoras, but I'm carefully re-evaluating the phrasing around \"antiquity\" to ensure I haven't missed subtle chronological cues.\n\n**Discovering Explicit Events**\n\nI've pinpointed an explicit event: Croton's victory over Sybaris around 510 BC, which directly involved Pythagoras's followers. I'm now meticulously cross-referencing this against the provided event list to determine if it's included, as this is a crucial step.\n\n**Searching Ancient Connections**\n\nI'm now specifically scrutinizing the extract for direct textual evidence linking Pythagoras to \"antiquity\" as a historical period where his *life* or *actions* occurred, rather than just the period when his work was *credited*. I'm also ensuring I'm adhering strictly to the prompt's directive to only use explicitly mentioned or clearly implied events.\n\n**Linking Greek Periods**\n\nI'm now analyzing the provided text for explicit mentions of \"Archaic Greece\" or the \"Ionian Revolt.\" While Pythagoras is described as an \"ancient Ionian Greek philosopher,\" neither of these specific periods or events are directly referenced in relation to his life or actions in the provided extract.\n\n**Verifying All Events**\n\nI'm cross-referencing the extract against every listed event, confirming that periods like Archaic Greece, the Roman Republic, and the Babylonian captivity are absent. While \"classical antiquity\" is mentioned, it refers to when Pythagoras was credited, not as a period he lived through or acted within.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1778,
+   "completion_tokens": 1873,
+   "total_tokens": 3651,
+   "cost": 0.00835725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00835725,
+    "upstream_inference_prompt_cost": 0.0013335,
+    "upstream_inference_completions_cost": 0.00702375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1864,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1778,
+   "completion_tokens": 1873,
+   "total_tokens": 3651,
+   "cost": 0.00835725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00835725,
+    "upstream_inference_prompt_cost": 0.0013335,
+    "upstream_inference_completions_cost": 0.00702375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1864,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00835725,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 15.37
+ },
+ "meta": {}
+}

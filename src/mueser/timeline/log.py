@@ -9,7 +9,6 @@ exported files in ``outputs/timeline/inbox/`` and are appended by ``ingest``, sk
 
 from __future__ import annotations
 
-import json
 import time
 import uuid
 from pathlib import Path
@@ -68,7 +67,7 @@ def read(path: Path) -> list[Event]:
             continue
         try:
             events.append(Event.model_validate_json(line))
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             raise ValueError(f"{path}:{n}: {e}") from e
     return events
 

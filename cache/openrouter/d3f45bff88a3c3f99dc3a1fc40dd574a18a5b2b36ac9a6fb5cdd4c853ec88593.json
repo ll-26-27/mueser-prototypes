@@ -1,0 +1,170 @@
+{
+ "namespace": "openrouter",
+ "key": "d3f45bff88a3c3f99dc3a1fc40dd574a18a5b2b36ac9a6fb5cdd4c853ec88593",
+ "fetched_at": "2026-11-19T16:37:27Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Solomon ibn Gabirol (1020–1058). 11th-century Andalusian poet and Jewish philosopher\n\nEXTRACT:\nSolomon ibn Gabirol or Solomon ben Judah (Hebrew: ר׳ שְׁלֹמֹה בֶּן יְהוּדָה אִבְּן גָּבִּירוֹל, romanized: Šəlomo ben Yəhūdā ʾībən Gābīrōl, pronounced [ʃ(e)loˈmo ben jehuˈda ʔibn ɡabiˈʁol]; Arabic: أبو أيوب سليمان بن يحيى بن جبيرول, romanized: ’Abū ’Ayyūb Sulaymān bin Yaḥyá bin Jabīrūl, pronounced [ˈʔæbuː ʔæjˈjuːb sʊlæjˈmæːn bɪn ˈjæħjæː bɪn dʒæbiːˈruːl]) was an 11th-century Jewish poet and philosopher in the neoplatonic tradition in Al-Andalus. He published over a hundred poems, as well as works of Hebrew Biblical exegesis, philosophy, ethics, and satire. One source credits ibn Gabirol with creating a golem, possibly female, for household chores.\nIn the 19th century, scholars discovered that medieval translators had Latinized ibn Gabirol's name to Avicebron or Avencebrol; his work on Jewish neoplatonic philosophy had become highly regarded in Islamic and Christian philosophical circles but attributed to only his Latinized name during the intervening years. Ibn Gabirol is well known in the history of philosophy for the doctrine that all things, including souls and intellects, are composed of matter and form (\"Universal Hylomorphism\") and for his emphasis on divine will.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ51648  East-West Schism (1054) — division of Christianity into two large parts in 1054"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106241-x3BQYUtwGOKMDgOBvl1V",
+  "object": "chat.completion",
+  "created": 1795106241,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": null,
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 0
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1585,
+   "completion_tokens": 734,
+   "total_tokens": 2319,
+   "cost": 0.00394125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00394125,
+    "upstream_inference_prompt_cost": 0.00118875,
+    "upstream_inference_completions_cost": 0.0027525
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 725,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1585,
+   "completion_tokens": 734,
+   "total_tokens": 2319,
+   "cost": 0.00394125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00394125,
+    "upstream_inference_prompt_cost": 0.00118875,
+    "upstream_inference_completions_cost": 0.0027525
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 725,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00394125,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.55
+ },
+ "meta": {}
+}

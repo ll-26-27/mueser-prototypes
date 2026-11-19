@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "1111ea22bbc4c93a337e5d151d5785a42739a5f1e15253bf3edd2e648ce4ca28",
+ "fetched_at": "2026-11-19T16:36:48Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Marsilius of Padua (1275–1342). Italian philosopher (1275–1342)\n\nEXTRACT:\nMarsilius of Padua (Italian: Marsilio da Padova; born Marsilio Mainardi, Marsilio de i Mainardini or Marsilio Mainardini; c. 1275 – c. 1342) was an Italian scholar, trained in medicine,  who practised a variety of professions. He was also an important 14th-century political figure. His political treatise Defensor pacis (The Defender of Peace), an attempt to refute papal claims to a \"plenitude of power\" in affairs of both church and state, is seen by some scholars as the most revolutionary political treatise written in the later Middle Ages. It is one of the first examples of a trenchant critique of ultramontanism in Western Europe. Marsilius is sometimes seen as a forerunner of the Protestant reformation, because many of his beliefs were later adopted by John Calvin and Martin Luther.\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ264012  Nanboku-chō period (1336–1392) — period (1336–1392) within the Muromachi period of Japanese history, in which two men had competing claims to the Japanese imperial throne\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ826021  Kenmu Restoration (1333) — period of Japanese history, 1333–1336\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12551  Hundred Years' War (1337–1453) — series of conflicts and wars between England and France between 1337 and 1453\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ2658255  Byzantine Civil War of 1341–1347 (1341–1347) — civil war in the Byzantine Empire\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ550172  War of the Breton Succession (1341–1365) — conflict between the Counts of Blois and the Montforts of Brittany\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ853685  Treaty of Nöteborg (1323) — 1323 peace treaty between Kingdom of Sweden and the Novgorod Republic\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106197-yeEhe7rrPpcviZjdKXMT",
+  "object": "chat.completion",
+  "created": 1795106197,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q212976\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Marsilius lived and wrote his landmark political treatise during the later Middle Ages.\",\n      \"evidence\": \"His political treatise Defensor pacis (The Defender of Peace), an attempt to refute papal claims to a \\\"plenitude of power\\\" in affairs of both church and state, is seen by some scholars as the most revolutionary political treatise written in the later Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Historical Figures**\n\nI'm currently focusing on establishing a link between Marsilius of Padua and the events you've outlined, using the provided EXTRACT to anchor this connection. My goal is to clearly articulate how his historical context intersects with the prompt's details.\n\n**Synthesizing Marsilius's Influence**\n\nI'm now integrating Marsilius of Padua's revolutionary ideas, particularly from *Defensor pacis*, into the broader context of the Late Middle Ages. My focus is on how his critique of papal power resonated with and potentially foreshadowed later reform movements, directly connecting to the provided EXTRACT.\n\n**Interpreting Time Periods**\n\nI'm wrestling with the precise temporal relationship between Marsilius and the \"Late Middle Ages,\" specifically whether its mention implies he \"lived_through\" this period as defined by the prompt's criteria, or if it's simply a descriptor of his work's context.\n\n**Clarifying Temporal Links**\n\nI'm analyzing whether \"Late Middle Ages\" counts as an event the person \"lived through,\" based on how the EXTRACT uses it to describe the context of Marsilius's life and work, rather than direct participation.\n\n**Connecting Temporal Contexts**\n\nI'm examining if \"Late Middle Ages\" as a historical period constitutes something Marsilius \"lived through,\" given the EXTRACT positions his influential treatise as written *within* that era, not necessarily as a direct participant in its defining events.\n\n**Confirming Historical Period**\n\nI've confirmed that \"Late Middle Ages\" directly maps to Q212976. My focus is now on whether this period itself counts as an event the person \"lived through,\" as opposed to merely a contextual descriptor.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Historical Figures**\n\nI'm currently focusing on establishing a link between Marsilius of Padua and the events you've outlined, using the provided EXTRACT to anchor this connection. My goal is to clearly articulate how his historical context intersects with the prompt's details.\n\n**Synthesizing Marsilius's Influence**\n\nI'm now integrating Marsilius of Padua's revolutionary ideas, particularly from *Defensor pacis*, into the broader context of the Late Middle Ages. My focus is on how his critique of papal power resonated with and potentially foreshadowed later reform movements, directly connecting to the provided EXTRACT.\n\n**Interpreting Time Periods**\n\nI'm wrestling with the precise temporal relationship between Marsilius and the \"Late Middle Ages,\" specifically whether its mention implies he \"lived_through\" this period as defined by the prompt's criteria, or if it's simply a descriptor of his work's context.\n\n**Clarifying Temporal Links**\n\nI'm analyzing whether \"Late Middle Ages\" counts as an event the person \"lived through,\" based on how the EXTRACT uses it to describe the context of Marsilius's life and work, rather than direct participation.\n\n**Connecting Temporal Contexts**\n\nI'm examining if \"Late Middle Ages\" as a historical period constitutes something Marsilius \"lived through,\" given the EXTRACT positions his influential treatise as written *within* that era, not necessarily as a direct participant in its defining events.\n\n**Confirming Historical Period**\n\nI've confirmed that \"Late Middle Ages\" directly maps to Q212976. My focus is now on whether this period itself counts as an event the person \"lived through,\" as opposed to merely a contextual descriptor.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1947,
+   "completion_tokens": 1711,
+   "total_tokens": 3658,
+   "cost": 0.0078765,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0078765,
+    "upstream_inference_prompt_cost": 0.00146025,
+    "upstream_inference_completions_cost": 0.00641625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1582,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q212976\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Marsilius lived and wrote his landmark political treatise during the later Middle Ages.\",\n      \"evidence\": \"His political treatise Defensor pacis (The Defender of Peace), an attempt to refute papal claims to a \\\"plenitude of power\\\" in affairs of both church and state, is seen by some scholars as the most revolutionary political treatise written in the later Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q212976",
+     "type": "lived_through",
+     "reason": "Marsilius lived and wrote his landmark political treatise during the later Middle Ages.",
+     "evidence": "His political treatise Defensor pacis (The Defender of Peace), an attempt to refute papal claims to a \"plenitude of power\" in affairs of both church and state, is seen by some scholars as the most revolutionary political treatise written in the later Middle Ages.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1947,
+   "completion_tokens": 1711,
+   "total_tokens": 3658,
+   "cost": 0.0078765,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0078765,
+    "upstream_inference_prompt_cost": 0.00146025,
+    "upstream_inference_completions_cost": 0.00641625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1582,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0078765,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 11.14
+ },
+ "meta": {}
+}

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "196e4b64aff2d5dd07737e1b35aa315d5946c68853e53ecf755e2d6733de5f4c",
+ "fetched_at": "2026-11-19T16:34:16Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Nagarjuna (150–250). 3rd-century Indian Buddhist philosopher\n\nEXTRACT:\nNāgārjuna (Sanskrit, from Nāga + Arjuna; Chn. Lóngshù 龍樹; Tib. Klu sgrub; c. 150 – c. 250 CE) was a philosopher and Mahāyāna Buddhist monk from South India, considered the founder of the Madhyamaka (Centrism, Middle Way) school.\nNāgārjuna is widely considered to be the most important Buddhist philosopher after the Buddha himself. Indeed, in Tibetan Buddhism, he is even called the \"second Buddha\". He was a well known defender of the Mahāyāna movement and his  treatises (śāstras) are the foundational texts of a school of Buddhist philosophy known as the view of emptiness (Śūnyatāvāda) or Madhyamaka. Nāgārjuna remains a key figure in all contemporary traditions of Mahāyāna Buddhism, and his philosophical writings on the doctrine of “emptiness” (śūnyatā) influenced Indian philosophy for a millennium, as well as being an indispensable doctrinal source for Mahāyāna doctrine in East Asian Buddhism and Indo-Tibetan Buddhism.\nNāgārjuna's Mūlamadhyamakakārikā (Root Verses on Madhyamaka, MMK) is the most important text on the Madhyamaka philosophy of emptiness. The MMK inspired a large number of commentaries in Sanskrit, Chinese, Tibetan, Korean and Japanese and continues to be studied today.\n\nEVENTS (id, name, years):\nQ51644  Early Christianity (1–325) — period of church history beginning with the ministry of Jesus (c. 27-30) and ending with the First Council of Nicaea (325)\nQ75207  Pax Romana (-26–180) — roughly 200-year-long period in Roman history\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ185043  Three Kingdoms (220–280) — period of Chinese history (220–280 AD) dominated by the Wei, Shu-Han, and Wu kingdoms\nQ206414  Principate (-26–284) — first period of the Roman Empire (ca. 27 BC to 284 AD)\nQ329838  Crisis of the Third Century (235–284) — Roman Imperial government crisis (235–284)\nQ459939  Kofun period (250–538) — period of Japanese history from 300 to 538\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ933963  Marcomannic Wars (166–180) — war between the Roman Empire and Germanic peoples (166-180)\nQ154552  Illyro-Roman Wars (229–167) — wars between the Romans and the Illyrians (229–168 BC)\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ1192043  Roman–Parthian Wars (-65–217) — series of conflicts between the Parthian Empire and the Roman Republic and Roman Empire\nQ243721  Year of the Five Emperors (193) — Roman civil war in 193 CE in which five men claimed the title of Roman emperor\nQ751743  Yellow Turban Rebellion (184–205) — rebellion against corruption of the Imperial Court rooted in Taoist religious principles\nQ599141  Antonine Plague (165–180) — pandemic"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106053-uKctWjhjttCtlOSkvNv1",
+  "object": "chat.completion",
+  "created": 1795106053,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Discovering Connections**\n\nMy current focus is on extracting direct links between Nāgārjuna and the specific events you've provided, strictly adhering to the information within the EXTRACT. I'm only considering details explicitly stated in the provided text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Discovering Connections**\n\nMy current focus is on extracting direct links between Nāgārjuna and the specific events you've provided, strictly adhering to the information within the EXTRACT. I'm only considering details explicitly stated in the provided text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1783,
+   "completion_tokens": 321,
+   "total_tokens": 2104,
+   "cost": 0.002541,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002541,
+    "upstream_inference_prompt_cost": 0.00133725,
+    "upstream_inference_completions_cost": 0.00120375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 312,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1783,
+   "completion_tokens": 321,
+   "total_tokens": 2104,
+   "cost": 0.002541,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002541,
+    "upstream_inference_prompt_cost": 0.00133725,
+    "upstream_inference_completions_cost": 0.00120375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 312,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.002541,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 3.62
+ },
+ "meta": {}
+}

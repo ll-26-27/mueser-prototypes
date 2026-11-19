@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "6ea946d9b152583d3c838ef9c2ca128fb2d8541b187de03be16897fef2078d11",
+ "fetched_at": "2026-11-19T16:43:08Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Johannes Scotus Eriugena (800s–877). Irish Catholic philosopher and theologian (c. 800 – c. 877)\n\nEXTRACT:\nJohn Scotus Eriugena, also known as Johannes Scotus Erigena, John the Scot or John the Irish-born (c. 800 – c. 877), was an Irish Neoplatonic philosopher, theologian and poet of the Early Middle Ages. Bertrand Russell dubbed him \"the most astonishing person of the ninth century\". The Stanford Encyclopedia of Philosophy states that he \"is the most significant Irish intellectual of the early monastic period. He is generally recognized to be both the outstanding philosopher (in terms of originality) of the Carolingian era and of the whole period of Latin philosophy stretching from Boethius to Anselm\".\nHe wrote a number of works, but is best known today for having written De Divisione Naturae (\"The Division of Nature\"), or Periphyseon, which has been called the \"final achievement\" of ancient philosophy, a work which \"synthesizes the philosophical accomplishments of fifteen centuries\". The principal concern of De Divisione Naturae is to unfold from φύσις (physis), which John defines as \"all things which are and which are not\", the entire integrated structure of reality. Eriugena achieves this through a dialectical method elaborated through exitus and reditus, that interweaves the structure of the human mind and reality as produced by the λόγος (logos) of God.\nEriugena is generally classified as a Neoplatonist, though he seems to have been influenced more by the anonymous and pseudepigraphic 6th century Christian author of the Corpus Areopagitica, rather than by the work of pagan philosophers such as Plotinus or Iamblichus. Relying exclusively on Christian theology and the Canon, Eriugena \"reinvented the greater part of the theses of Neoplatonism\".\nHe succeeded Alcuin of York (c. 735–804) as head of the Palace School at Aachen. Eriugena's predecessor, Alcuin, is well-known as the Magister recruited by Charlemagne to revive the study of the liberal arts--the trivium and quadrivium--whose transmission had fallen into a much deteriorated and low estate in the west.\nHe  was one of the few Western European philosophers of his day who knew Greek, having studied it in Ireland. A later medieval tradition recounts that Eriugena was stabbed to death by his students at Malmesbury with their pens, although this may rather be allegorical.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ5324  Gurjara-Pratihara (800) — dynasty that ruled northern India from 6th to 11th century\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ201705  Khmer Empire (802) — 802–1431 empire in Southeast Asia\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ614082  Carolingian art (800–1000) — art of the Frankish empire, ca. 780–900\nQ499909  Saxon Wars (772–804) — campaigns and insurrections (772–804) between the Carolingian Empire and Saxons in what is now northwestern Germany; resulted in the incorporation of Saxony into the Frankish realm and their forcible conversion from Germanic paganism to Catholicism\nQ759988  Zanj Rebellion (869–883) — slave revolt against the Abbasid Caliphate\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ134840  Treaty of Verdun (843) — 843 treaty dividing the Frankish Empire between the grandsons of Charlemagne\nQ160205  Treaty of Meerssen (870) — treaty\nQ157082  Oaths of Strasbourg (842) — military pact"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106575-pU3t20EfBCMwTA25wXCl",
+  "object": "chat.completion",
+  "created": 1795106575,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q202763\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Eriugena lived and was active as a philosopher, theologian, and poet during the Early Middle Ages.\",\n      \"evidence\": \"John Scotus Eriugena, also known as Johannes Scotus Erigena, John the Scot or John the Irish-born (c. 800 – c. 877), was an Irish Neoplatonic philosopher, theologian and poet of the Early Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Researching Carolingian Philosopher**\n\nI'm currently focusing my investigation on Johannes Scotus Eriugena, a significant figure of the Early Middle Ages. My current aim is to pinpoint relevant historical events, specifically within the Carolingian era, to contextualize his work within the later medieval tradition.\n\n**Clarifying Intellectual Influences**\n\nI've been delving into the intellectual landscape that shaped Eriugena's thought. The initial focus has been on identifying key philosophical and theological currents of the Carolingian period that likely influenced his groundbreaking ideas, especially as they connect to later medieval intellectual traditions.\n\n**Contextualizing Eriugena's Era**\n\nI'm refining the chronological context for Eriugena, confirming his placement within the \"Early Middle Ages.\" The evidence clearly supports this specific period, distinguishing it from the broader \"Middle Ages\" category, which is crucial for accurately framing his influence.\n\n**Refining Chronological Context**\n\nI'm zeroing in on precise dating for Eriugena, confirming \"Early Middle Ages\" as the correct designation. I've cross-referenced events, noting that while Carolingian art falls within the period, the \"Carolingian era\" itself isn't explicitly listed, though broader \"Middle Ages\" categories connect.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Researching Carolingian Philosopher**\n\nI'm currently focusing my investigation on Johannes Scotus Eriugena, a significant figure of the Early Middle Ages. My current aim is to pinpoint relevant historical events, specifically within the Carolingian era, to contextualize his work within the later medieval tradition.\n\n**Clarifying Intellectual Influences**\n\nI've been delving into the intellectual landscape that shaped Eriugena's thought. The initial focus has been on identifying key philosophical and theological currents of the Carolingian period that likely influenced his groundbreaking ideas, especially as they connect to later medieval intellectual traditions.\n\n**Contextualizing Eriugena's Era**\n\nI'm refining the chronological context for Eriugena, confirming his placement within the \"Early Middle Ages.\" The evidence clearly supports this specific period, distinguishing it from the broader \"Middle Ages\" category, which is crucial for accurately framing his influence.\n\n**Refining Chronological Context**\n\nI'm zeroing in on precise dating for Eriugena, confirming \"Early Middle Ages\" as the correct designation. I've cross-referenced events, noting that while Carolingian art falls within the period, the \"Carolingian era\" itself isn't explicitly listed, though broader \"Middle Ages\" categories connect.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1987,
+   "completion_tokens": 969,
+   "total_tokens": 2956,
+   "cost": 0.005124,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005124,
+    "upstream_inference_prompt_cost": 0.00149025,
+    "upstream_inference_completions_cost": 0.00363375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 826,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q202763\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Eriugena lived and was active as a philosopher, theologian, and poet during the Early Middle Ages.\",\n      \"evidence\": \"John Scotus Eriugena, also known as Johannes Scotus Erigena, John the Scot or John the Irish-born (c. 800 – c. 877), was an Irish Neoplatonic philosopher, theologian and poet of the Early Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q202763",
+     "type": "lived_through",
+     "reason": "Eriugena lived and was active as a philosopher, theologian, and poet during the Early Middle Ages.",
+     "evidence": "John Scotus Eriugena, also known as Johannes Scotus Erigena, John the Scot or John the Irish-born (c. 800 – c. 877), was an Irish Neoplatonic philosopher, theologian and poet of the Early Middle Ages.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1987,
+   "completion_tokens": 969,
+   "total_tokens": 2956,
+   "cost": 0.005124,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005124,
+    "upstream_inference_prompt_cost": 0.00149025,
+    "upstream_inference_completions_cost": 0.00363375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 826,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.005124,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 13.35
+ },
+ "meta": {}
+}

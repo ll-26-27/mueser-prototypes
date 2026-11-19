@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "2148972ad3da7a120702706afb04666c96573c392ac07e4e8c23db67a0377083",
+ "fetched_at": "2026-11-19T16:37:52Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Sriharsha (12th century–12th century). Indian philosopher and poet\n\nEXTRACT:\nShri-harsha (IAST: Śrīharṣa) was a 12th century CE Indian philosopher and poet. Śrīharṣa works discuss various themes in Indian Philosophy, such as pramana. He has been often interpreted as promoting Advaita Vedānta in his Sweets of Refutation (Khaṇḍanakhaṇḍanakhādya), however, this interpretation remains controversial among modern scholars. Śrīharṣa's thought was influential for both Nyāya-Vaiśeṣika thinkers and also for the Advaita Vedānta tradition.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106267-gNwn8ffjBKjDt6JSx01n",
+  "object": "chat.completion",
+  "created": 1795106267,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Sriharsha's Philosophy**\n\nI'm currently examining the provided extract to identify any direct links or references to specific events associated with Sriharsha. My focus is solely on the information presented in the text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Sriharsha's Philosophy**\n\nI'm currently examining the provided extract to identify any direct links or references to specific events associated with Sriharsha. My focus is solely on the information presented in the text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1227,
+   "completion_tokens": 328,
+   "total_tokens": 1555,
+   "cost": 0.00215025,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00215025,
+    "upstream_inference_prompt_cost": 0.00092025,
+    "upstream_inference_completions_cost": 0.00123
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 319,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1227,
+   "completion_tokens": 328,
+   "total_tokens": 1555,
+   "cost": 0.00215025,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00215025,
+    "upstream_inference_prompt_cost": 0.00092025,
+    "upstream_inference_completions_cost": 0.00123
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 319,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00215025,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.62
+ },
+ "meta": {}
+}

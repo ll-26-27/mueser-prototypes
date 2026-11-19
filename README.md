@@ -27,9 +27,11 @@ through the historical gazetteers; it stays as earlier work.
 
 ## Open these first
 
-Open **`index.html`** in a browser. It is the map of everything here: each
-project and experiment as a row of steps, what kind of step each is (code,
-a lookup, a model's judgment), and links to the pages below.
+Open **[index.html](index.html)** in a browser for the four-project gateway.
+Each project has an overview, its current status and a workflow diagram.
+[How it works](how-it-works.html) shows the desktop app, local folder and
+model calls; [Methods & experiments](experiments.html) keeps the detailed
+pipelines and evidence from the earlier homepage.
 
 | page | what you see |
 |---|---|
@@ -95,3 +97,9 @@ saying what ran.
 | [`resources/`](resources/README.md) | accounts and keys; a glossary; the Learning Lab handouts |
 | `src/mueser/` | the code the use cases run |
 | `cache/` | every gazetteer and model reply, kept so reruns are free and the evidence stays |
+
+The gateway pages are generated with `python3 scripts/build_gateway.py`;
+shared styling is in `assets/gateway.css`. Diagrams use the bundled Mermaid
+10.9.3 distribution (MIT license in `assets/vendor/mermaid-LICENSE`) so they
+render when opened from disk without a network connection. The report UI
+refresh command preserves the gateway.

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "ecdafebb60d6969d67c93a03f75b71f7053db4c56cda513122deba1ed1f6d7b8",
+ "fetched_at": "2026-11-19T16:40:24Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Epictetus (50–138). Greek Stoic philosopher (c. 50–c. 138)\n\nEXTRACT:\nEpictetus ( EH-pick-TEE-təss; Ancient Greek: Ἐπίκτητος, Epíktētos; c. 50 – c. 135 AD) was a Greek Stoic philosopher. He was born into slavery at Hierapolis, Phrygia (present-day Pamukkale, in western Turkey) and lived in Rome until his banishment, after which he spent the rest of his life in Nicopolis in northwestern Greece. \nEpictetus studied Stoic philosophy under Musonius Rufus and after manumission, his formal emancipation from slavery, he began to teach philosophy. When philosophers were banished from Rome by Emperor Domitian toward the end of the first century, Epictetus founded a school of philosophy in Nicopolis. He taught that philosophy is a way of life and not simply a theoretical discipline. To Epictetus, all external events are beyond our control; he argues that we should accept whatever happens calmly and dispassionately. However, he held that individuals are responsible for their own actions, which they can examine and control through rigorous self-discipline. His teachings were written down and published by his pupil Arrian in his Discourses and Enchiridion. They influenced many later thinkers, including Marcus Aurelius, Rabelais, Pascal, Montesquieu, Diderot, and Samuel Johnson.\n\nEVENTS (id, name, years):\nQ2358959  Shalivahana era (78) — all about the Shaka era\nQ51644  Early Christianity (1–325) — period of church history beginning with the ministry of Jesus (c. 27-30) and ending with the First Council of Nicaea (325)\nQ75207  Pax Romana (-26–180) — roughly 200-year-long period in Roman history\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ206414  Principate (-26–284) — first period of the Roman Empire (ca. 27 BC to 284 AD)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ723608  Trajan's Dacian Wars (101–106) — 101–106 AD pair of Roman wars against Dacia\nQ1192043  Roman–Parthian Wars (-65–217) — series of conflicts between the Parthian Empire and the Roman Republic and Roman Empire\nQ4205368  Jewish–Roman Wars (66–135) — series of large-scale revolts by the Jews of Iudaea Province and the Eastern Mediterranean against the Roman Empire\nQ470596  Year of the Four Emperors (68–69) — battles for succession to rule the Roman Empire (AD 69)\nQ6254  Diaspora Revolt (115–117) — Jewish-Roman conflict (115-117 CE)\nQ202578  First Jewish-Roman War (66–74) — war\nQ334502  Bar Kokhba revolt (132–136) — Jewish rebellion against Roman rule (132–136 CE)"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106418-YZm9ce7ESllGbILw0bhL",
+  "object": "chat.completion",
+  "created": 1795106418,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Stoic Wisdom**\n\nI'm currently analyzing Epictetus' philosophy, specifically looking for its relevance to the provided historical events. My focus is on extracting key tenets that might illuminate connections to these occurrences.\n\n**Linking Stoic Teachings**\n\nI'm continuing to process Epictetus' biographical details and philosophical context. My current effort is to directly connect his life and teachings to the specific historical events previously listed.\n\n**Identifying Potential Connections**\n\nI'm actively sifting through the provided text, specifically looking for direct mentions of concepts like \"classical antiquity,\" \"Principate,\" or \"Pax Romana.\" I'm also cross-referencing any biographical details against the historical events list, ensuring a person's life is only linked if explicitly stated in the extract. The mention of Nicopolis in \"northwestern Greece\" is under consideration for its potential relation to \"Roman Greece,\" pending further clarification of what constitutes a relevant historical period within the extract.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Stoic Wisdom**\n\nI'm currently analyzing Epictetus' philosophy, specifically looking for its relevance to the provided historical events. My focus is on extracting key tenets that might illuminate connections to these occurrences.\n\n**Linking Stoic Teachings**\n\nI'm continuing to process Epictetus' biographical details and philosophical context. My current effort is to directly connect his life and teachings to the specific historical events previously listed.\n\n**Identifying Potential Connections**\n\nI'm actively sifting through the provided text, specifically looking for direct mentions of concepts like \"classical antiquity,\" \"Principate,\" or \"Pax Romana.\" I'm also cross-referencing any biographical details against the historical events list, ensuring a person's life is only linked if explicitly stated in the extract. The mention of Nicopolis in \"northwestern Greece\" is under consideration for its potential relation to \"Roman Greece,\" pending further clarification of what constitutes a relevant historical period within the extract.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1700,
+   "completion_tokens": 975,
+   "total_tokens": 2675,
+   "cost": 0.00493125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00493125,
+    "upstream_inference_prompt_cost": 0.001275,
+    "upstream_inference_completions_cost": 0.00365625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 966,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1700,
+   "completion_tokens": 975,
+   "total_tokens": 2675,
+   "cost": 0.00493125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00493125,
+    "upstream_inference_prompt_cost": 0.001275,
+    "upstream_inference_completions_cost": 0.00365625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 966,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00493125,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.91
+ },
+ "meta": {}
+}

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "aa20c8a92eebae6b10e71e17ffa69d351decf6f61348f4e5485c72a812c5f125",
+ "fetched_at": "2026-11-19T16:36:44Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Peter Olivi (1248–1298-03-14). French theologian\n\nEXTRACT:\nPeter John Olivi, also Pierre de Jean Olivi or Petrus Joannis Olivi (1248 – 14 March 1298), was a French Franciscan theologian and philosopher who, although he died professing the faith of the Roman Catholic Church, remained a controversial figure in the arguments surrounding poverty at the beginning of the 14th century.  In large part, this was due to his view that the Franciscan vow of poverty also entailed usus pauper (i.e., 'poor' or 'restricted' use of goods). While contemporary Franciscans generally agreed that usus pauper was important to the Franciscan way of life, they disagreed that it was part of their vow of poverty.  His support of the rigorous view of ecclesiastical poverty played a part in the ideology of the groups coming to be known as the Spiritual Franciscans or Fraticelli.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ51661  Seventh Crusade (1248–1254) — military conflict (1248-1254)\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ369560  Siege of Baghdad (1258) — 1258 Mongol conquest of the Abbasid Caliphate\nQ244356  Battle of Ain Jalut (1260) — 1260 battle between the Mamluk Sultanate and the Mongol Empire\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106200-PDvb4xbBuA5CNuRK58hU",
+  "object": "chat.completion",
+  "created": 1795106200,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Contemplating Franciscan Theology**\n\nI'm focusing on the theological and philosophical work of Peter John Olivi, a 13th-century Franciscan. My recent thoughts have revolved around his involvement in the debates concerning poverty within the Franciscan order.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Contemplating Franciscan Theology**\n\nI'm focusing on the theological and philosophical work of Peter John Olivi, a 13th-century Franciscan. My recent thoughts have revolved around his involvement in the debates concerning poverty within the Franciscan order.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a18ooCDvQbBsGgIKPqL8AxequPkbpadHCnRY4yZ8Td/ppKk8utFmpdJ/SdIhiNR13Gpb2Pr+mNq6F95/Ntv9opxtQcN+podt2TE3Cxqmm8VcGOCco98kF6/ZH+LDRNL3bQPc7d7Sd0y8Cxij7G3AeVsI7DUmi+bnnAHrYiipKF7s9EQ+3GefXJ+HA8Ahc2QlBoYAOkmGBFQ3FlV3ftxmGMb1dJN72NgRMCqwRcxW14anbOjtDB4aRrZIaLo/UEeMM3w1rzH04uxyYmxi+cffntO+Erg8pSkRlGm9H2dcQqOHad6u3jVvXLHGKlvPKKm5Gbe5NfsQGkdTkLgYYltiy1skXdjvRsjkCiujIA5GVfRwrRY2C+s2XLMr05w24IBVOSpuQVUe1C+z25IkGgLBibYmMPhpnzv+xCkfESza9MHoAzAR3ho71WEHpJwBZHYOtGeFImgVLhtwUmkZtYLPswJR4GQHL42uQWV0SvEv8mJZQVWUENBOt+P5Ae5kJNwu2uZDo0v+KRbN/T+bgZ1NWVdaml/i6kMCCv1MkiceLEkrPVADrbuRIWBhYAxxECPQhwlNr3WfPq+aBpyqibTdaoSc1QVkOl4c6vC3VPlNhrnobW8C+42hqV1OdGqlW0zMiembKEocT/ViipkPJSqHIY1CNXlxsyNb3hSkhJI6eF4KgNyhD39pG4swOwA+CIPMpRvuKFpPrkwz3Y3BElo32Y9Au9b6eVvDUHv4SEX8wxHppvh/A8P6lfPlN7We+yCZuTYYVCiCbyJ4byMnMy1hoKiwJkSJ9D+Y3umyrsvLi4cvwCSDKHjPdg4exKDVemU0ZL/dskKEkjAnSMoyzZXhH0Fzsx3lDY6ruEFXzU5fEnhpcZvjKvLMIf1YKf0nEF36IJJgOwutx1bqo/6Rk9eyfL5IVQPeGRlx39ZxxOiDgtzJLeGB4xw8foKtvlqWHLIHXVPXWU+Uzulah2SrLD9C5OC+b2DnDkMnmoY+hLuaDcSAl/8diUsZuCG305Fh5S4u5WMkK7WCFtt0BGy73Tm9Ppvp9/xoIQCq5BKdba+3bKtjclVGvgmZEry26bHVcZebGMPtwHFut6peLppq/uQ3782D3RrnCo+OzYYb/GiYcSu2c2uG1H2U+0zHPCPH1UvX6XWeAUGSm5g+Ffl2bKsrhlbipe/3pliy5yD+S/rixiJJCwZkM1RiSd9/IG6IzzeKTvGI1MwfjlQBLeHkCodH6EBzCN6/c+itLhTzv6E+326UkVgsx+xqH5jvCfrRFF1my760VpWY2xiOLWTJbU40kNkmUTfe/zRJiUDLkyHQm8eMA4Ek3V4ZrBkASKJ5bZW1Fy5ZOV7yJXGmzdb4KvrnSGQU4fylhu1k67SRJw==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1769,
+   "completion_tokens": 192,
+   "total_tokens": 1961,
+   "cost": 0.00204675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00204675,
+    "upstream_inference_prompt_cost": 0.00132675,
+    "upstream_inference_completions_cost": 0.00072
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 183,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1769,
+   "completion_tokens": 192,
+   "total_tokens": 1961,
+   "cost": 0.00204675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00204675,
+    "upstream_inference_prompt_cost": 0.00132675,
+    "upstream_inference_completions_cost": 0.00072
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 183,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00204675,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 3.27
+ },
+ "meta": {}
+}

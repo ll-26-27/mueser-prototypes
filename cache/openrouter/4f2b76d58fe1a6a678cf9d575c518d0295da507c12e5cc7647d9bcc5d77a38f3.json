@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "4f2b76d58fe1a6a678cf9d575c518d0295da507c12e5cc7647d9bcc5d77a38f3",
+ "fetched_at": "2026-11-19T16:43:38Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Antiochus of Ascalon (129 BCE–67 BCE). ancient Greek philosopher\n\nEXTRACT:\nAntiochus of Ascalon (; Ancient Greek: Άντίοχος ὁ Ἀσκαλώνιος; c. 135/130 – c. 68 BC) was a 1st-century BC Platonist philosopher. He rejected skepticism, blended Stoic doctrines with Platonism, and was\nthe first philosopher in the tradition of Middle Platonism.\nAntiochus moved to Athens early in his life and became a pupil of Philo of Larissa at the Platonic Academy, but he went on to reject the prevailing Academic skepticism of Philo and his predecessors. This led to his resignation from the academy and the establishment of his own school, which he named the \"Old Academy\" as he claimed it was closer to original doctrines of Platonism that he believed had been betrayed by the skeptics of the New Academy under Philo. His students at this new institution included the Roman politicians Varro and Cicero. Antiochus was also the friend of the Roman politician and general Lucullus, whom he accompanied on a trip to North Africa and on a campaign to Armenia.\nAfter the decline of the New Academy in the late 1st century BC, his school was the sole inheritor of the Platonic tradition in Athens, which began the period of philosophy known as Middle Platonism. Antiochus endeavoured to bring some doctrines of the Stoics and the Peripatetics into Platonism, and stated, in opposition to Philo, that the mind could distinguish true from false, following the Stoic doctrine of katalepsis. In doing so, he claimed to be reviving the doctrines of the Old Academy. Despite his emphasis on the Platonic tradition, his ideas were often more Stoic than Platonist; in particular, he gave up the Platonic philosophy of transcendence in favor of a materialistic doctrine of nature.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ677316  Social War of 91-87 BCE (-90–-87) — 91-87 BCE war between the Roman Republic and its rivals\nQ194378  Third Servile War (-72–-70) — major slave rebellion against the Roman Republic (73-71 BCE)\nQ827612  Jugurthine War (-110–-104) — 2nd-century BCE war between Kingdom of Numidia and the Roman Republic\nQ903199  Cimbrian War (-112–-100) — war bewteen Rome and a union of Germanic and Celtic tribes, 113-101 BCE\nQ1616064  Mithridatic Wars (-87–-62) — 1st-century BCE wars between the Roman Republic and the Kingdom of Pontus\nQ1647768  First Mithridatic War (-88–-84) — war between the Roman Republic and king Mithridates VI of Pontus, 89-84 BCE\nQ1764124  Third Mithridatic War (-72–-62) — war between Pontus and its allies and the Roman Republic\nQ11475544  Servile Wars (-134–-70) — series of wars during the Roman Republic"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106595-0kiYX0KC39E3FHSP601L",
+  "object": "chat.completion",
+  "created": 1795106595,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Campaign Origins**\n\nI'm currently scrutinizing whether the Armenian campaign mentioned with Lucullus aligns with the Third Mithridatic War. My focus is on pinpointing the precise historical context of this joint endeavor.\n\n**Focusing on Lucullus's Campaign**\n\nI'm digging into whether the Armenian campaign linked to Lucullus, as mentioned, is definitively tied to the Third Mithridatic War. My goal is to establish if the extract explicitly states or strongly implies this connection.\n\n**Defining Event Linkage**\n\nI'm re-evaluating how to establish a connection. Simply happening concurrently isn't enough; the text must link events explicitly or through clear implication, or identify events as the same under different names.\n\n**Clarifying Source Reliance**\n\nI'm double-checking the instructions to ensure I'm strictly adhering to the extract's content. My focus is on whether an event is explicitly stated or strongly implied, rather than relying on external knowledge.\n\n**Connecting Armenian Campaigns**\n\nI'm now exploring whether Antiochus's accompaniment of Lucullus on the Armenian campaign constitutes participation under the \"took_part_in\" relation. My analysis hinges on whether this constitutes active engagement as per the definition.\n\n**Refining Event Identification**\n\nI'm clarifying if \"accompanied on a campaign to Armenia\" implies \"took_part_in\" or \"lived_through.\" The core issue is whether accompanying constitutes active participation, especially when external knowledge links it to the Third Mithridatic War, which I must avoid using unless explicitly stated or implied.\n\n**Distinguishing Direct Links**\n\nI'm focused on whether the extract explicitly links Lucullus's Armenian campaign to the Third Mithridatic War. My current thought is that even though this connection is known externally, the prompt's strict reliance on the extract means I cannot make this connection if it's not directly stated or implied.\n\n**Interpreting Participation**\n\nI'm trying to determine if \"accompanied on a campaign\" signifies \"took_part_in\" or \"lived_through.\" My current thinking is that accompanying might not be considered direct action unless explicitly stated, and I need to be careful not to infer connections not directly supported by the text.\n\n**Clarifying Campaign Roles**\n\nI'm grappling with whether \"accompanied on a campaign\" equates to \"took_part_in\" or \"lived_through.\" My current thinking leans towards needing explicit textual evidence to define participation, avoiding assumptions even when external knowledge suggests a link to specific wars.\n\n**Defining Direct Implication**\n\nI'm working to distinguish between direct statements and subtle implications within the extract. My current focus is on whether Antiochus accompanying Lucullus on the Armenian campaign is explicitly described as participation in the Third Mithridatic War, or if it's merely a temporal overlap that I should disregard based on the instructions.\n\n**Focusing on Direct Evidence**\n\nI'm now concentrating on whether Antiochus's presence on the Armenian campaign can be directly inferred as participation in the Third Mithridatic War based solely on the provided text. My analysis is guided by the strict requirement for explicit mention or clear implication, excluding external historical knowledge.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Campaign Origins**\n\nI'm currently scrutinizing whether the Armenian campaign mentioned with Lucullus aligns with the Third Mithridatic War. My focus is on pinpointing the precise historical context of this joint endeavor.\n\n**Focusing on Lucullus's Campaign**\n\nI'm digging into whether the Armenian campaign linked to Lucullus, as mentioned, is definitively tied to the Third Mithridatic War. My goal is to establish if the extract explicitly states or strongly implies this connection.\n\n**Defining Event Linkage**\n\nI'm re-evaluating how to establish a connection. Simply happening concurrently isn't enough; the text must link events explicitly or through clear implication, or identify events as the same under different names.\n\n**Clarifying Source Reliance**\n\nI'm double-checking the instructions to ensure I'm strictly adhering to the extract's content. My focus is on whether an event is explicitly stated or strongly implied, rather than relying on external knowledge.\n\n**Connecting Armenian Campaigns**\n\nI'm now exploring whether Antiochus's accompaniment of Lucullus on the Armenian campaign constitutes participation under the \"took_part_in\" relation. My analysis hinges on whether this constitutes active engagement as per the definition.\n\n**Refining Event Identification**\n\nI'm clarifying if \"accompanied on a campaign to Armenia\" implies \"took_part_in\" or \"lived_through.\" The core issue is whether accompanying constitutes active participation, especially when external knowledge links it to the Third Mithridatic War, which I must avoid using unless explicitly stated or implied.\n\n**Distinguishing Direct Links**\n\nI'm focused on whether the extract explicitly links Lucullus's Armenian campaign to the Third Mithridatic War. My current thought is that even though this connection is known externally, the prompt's strict reliance on the extract means I cannot make this connection if it's not directly stated or implied.\n\n**Interpreting Participation**\n\nI'm trying to determine if \"accompanied on a campaign\" signifies \"took_part_in\" or \"lived_through.\" My current thinking is that accompanying might not be considered direct action unless explicitly stated, and I need to be careful not to infer connections not directly supported by the text.\n\n**Clarifying Campaign Roles**\n\nI'm grappling with whether \"accompanied on a campaign\" equates to \"took_part_in\" or \"lived_through.\" My current thinking leans towards needing explicit textual evidence to define participation, avoiding assumptions even when external knowledge suggests a link to specific wars.\n\n**Defining Direct Implication**\n\nI'm working to distinguish between direct statements and subtle implications within the extract. My current focus is on whether Antiochus accompanying Lucullus on the Armenian campaign is explicitly described as participation in the Third Mithridatic War, or if it's merely a temporal overlap that I should disregard based on the instructions.\n\n**Focusing on Direct Evidence**\n\nI'm now concentrating on whether Antiochus's presence on the Armenian campaign can be directly inferred as participation in the Third Mithridatic War based solely on the provided text. My analysis is guided by the strict requirement for explicit mention or clear implication, excluding external historical knowledge.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1678,
+   "completion_tokens": 3077,
+   "total_tokens": 4755,
+   "cost": 0.01279725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01279725,
+    "upstream_inference_prompt_cost": 0.0012585,
+    "upstream_inference_completions_cost": 0.01153875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 3068,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1678,
+   "completion_tokens": 3077,
+   "total_tokens": 4755,
+   "cost": 0.01279725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01279725,
+    "upstream_inference_prompt_cost": 0.0012585,
+    "upstream_inference_completions_cost": 0.01153875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 3068,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.01279725,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 22.15
+ },
+ "meta": {}
+}

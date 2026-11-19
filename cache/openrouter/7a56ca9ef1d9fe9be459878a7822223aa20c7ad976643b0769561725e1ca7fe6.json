@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "7a56ca9ef1d9fe9be459878a7822223aa20c7ad976643b0769561725e1ca7fe6",
+ "fetched_at": "2026-11-19T16:40:11Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Sengzhao (384–414). Chinese Buddhist monk and scholar\n\nEXTRACT:\nSengzhao (Chinese: 僧肇; pinyin: Sēngzhào; Wade–Giles: Seng-chao; Japanese: 僧肇, Sōjō; 374–414) was a Chinese Buddhist philosopher from Later Qin. Born to a poor family in Jingzhao, he acquired literary skills and became a scribe. This exposed him to a variety of uncommon documents. He was influenced by the Taoists Laozi and Zhuangzi, and although we are told he enjoyed Laozi’s Daodejing, he was overjoyed when he discovered the Vimalakīirti Sūtra. This encounter transformed his life and he became a Buddhist. He was known as being among the ablest of the disciples of Kumārajīva.\nSengzhao was recognized as both a scholar of high skill and someone of profound understanding relating to religious matters. He was involved in translating Indian treatises, which formed the source of study for early Chinese Mādhyamika Buddhism. He also authored a small number of texts, but is famous for the book Zhaolun. Its chapters are: \"Things Do Not Shift,\" \"Non-Absolute Emptiness,\" \"Prajna Is Without Dichotomizing Knowledge,\" and \"Nirvana Is Without Conceptualization.\"\n\nEVENTS (id, name, years):\nQ12544  Byzantine Empire (395) — Roman Empire during Late Antiquity and the Middle Ages\nQ131192  Migration Period (375–568) — period in European history with large migration of peoples, from the 4th to the 6th centuries\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ238399  Dominate (284–565) — \"despotic\" phase of government in the ancient Roman Empire (ca. 284 to 565 AD)\nQ459939  Kofun period (250–538) — period of Japanese history from 300 to 538\nQ683551  Sixteen Kingdoms (304–439) — period of Chinese history from 304 to 439\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106406-o82glEhYTFqD06IGbeb9",
+  "object": "chat.completion",
+  "created": 1795106406,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q683551\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Sengzhao was a philosopher from the Later Qin dynasty, one of the states of the Sixteen Kingdoms period.\",\n      \"evidence\": \"Sengzhao (Chinese: 僧肇; pinyin: Sēngzhào; Wade–Giles: Seng-chao; Japanese: 僧肇, Sōjō; 374–414) was a Chinese Buddhist philosopher from Later Qin.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Sengzhao's Era**\n\nI'm currently exploring potential links between Sengzhao and the Byzantine Empire, Migration Period, Three Kingdoms of Korea, Dominate, and K. My focus is on establishing chronological and thematic connections, if any, between his life and these significant historical periods.\n\n**Defining Sengzhao's Context**\n\nI'm refining my understanding of Sengzhao's historical period. He lived during Later Qin, which falls within the broader Sixteen Kingdoms era. I'm assessing if \"Later Qin\" is a sufficiently narrow or broad enough descriptor to link to the \"Sixteen Kingdoms\" period, considering the prompt's guidance on named entities.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Sengzhao's Era**\n\nI'm currently exploring potential links between Sengzhao and the Byzantine Empire, Migration Period, Three Kingdoms of Korea, Dominate, and K. My focus is on establishing chronological and thematic connections, if any, between his life and these significant historical periods.\n\n**Defining Sengzhao's Context**\n\nI'm refining my understanding of Sengzhao's historical period. He lived during Later Qin, which falls within the broader Sixteen Kingdoms era. I'm assessing if \"Later Qin\" is a sufficiently narrow or broad enough descriptor to link to the \"Sixteen Kingdoms\" period, considering the prompt's guidance on named entities.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1359,
+   "completion_tokens": 751,
+   "total_tokens": 2110,
+   "cost": 0.0038355,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0038355,
+    "upstream_inference_prompt_cost": 0.00101925,
+    "upstream_inference_completions_cost": 0.00281625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 610,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q683551\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Sengzhao was a philosopher from the Later Qin dynasty, one of the states of the Sixteen Kingdoms period.\",\n      \"evidence\": \"Sengzhao (Chinese: 僧肇; pinyin: Sēngzhào; Wade–Giles: Seng-chao; Japanese: 僧肇, Sōjō; 374–414) was a Chinese Buddhist philosopher from Later Qin.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q683551",
+     "type": "lived_through",
+     "reason": "Sengzhao was a philosopher from the Later Qin dynasty, one of the states of the Sixteen Kingdoms period.",
+     "evidence": "Sengzhao (Chinese: 僧肇; pinyin: Sēngzhào; Wade–Giles: Seng-chao; Japanese: 僧肇, Sōjō; 374–414) was a Chinese Buddhist philosopher from Later Qin.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1359,
+   "completion_tokens": 751,
+   "total_tokens": 2110,
+   "cost": 0.0038355,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0038355,
+    "upstream_inference_prompt_cost": 0.00101925,
+    "upstream_inference_completions_cost": 0.00281625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 610,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0038355,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.33
+ },
+ "meta": {}
+}

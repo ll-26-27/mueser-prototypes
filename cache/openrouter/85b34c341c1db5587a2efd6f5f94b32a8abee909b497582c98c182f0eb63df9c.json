@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "85b34c341c1db5587a2efd6f5f94b32a8abee909b497582c98c182f0eb63df9c",
+ "fetched_at": "2026-11-19T16:40:28Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Pyrrho (360s BCE–270s BCE). Greek philosopher and founder of Pyrrhonism (c.360-c.270 BC)\n\nEXTRACT:\nPyrrho of Elis (; Ancient Greek: Πύρρων ὁ Ἠλεῖος; c. 360 – c. 270 BC) was a Greek philosopher of Classical antiquity, credited as being the first Greek skeptic philosopher and founder of Pyrrhonism.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ978071  Thirty-first Dynasty of Egypt (-342–-331) — second and last Achaemenid rule on Egypt (343–332 BC)\nQ28365  Lamian War (-322–-321) — fought by a coalition of Greek cities against Macedon and its ally Boeotia\nQ737907  Second Latin War (-340–-337) — wars fought between ancient Rome (including both the Roman Kingdom and the Roman Republic) and the Latins, from the earliest stages of the history of Rome until the final subjugation of the Latins to Rome in the aftermath of the Latin War\nQ109251  Samnite Wars (-342–-289) — series of wars between the early Roman Republic and the Samnites on the Italian Peninsula\nQ551888  Wars of Alexander the Great (-335–-322) — conflicts fought by King Alexander III of Macedon (\"The Great\"), against other Greek powers, the Persian Empire and warlords as far east as India\nQ596373  Pyrrhic War (-279–-274) — war\nQ1330607  Syrian Wars (-273–-167) — series of wars between Egypt and the Seleucid Empire in Syria (274-168 BCE)\nQ2912306  Wars of the Diadochi (-321–-274) — series of conflicts after the death of Alexander the Great\nQ200716  Battle of Chaeronea (-337) — 338 BCE battle during the expansion of Macedonia under Philip II\nQ201526  Battle of Issus (-332) — second great battle of Alexander's conquest of Asia\nQ213074  Battle of the Hydaspes (-325) — battle fought by Alexander the Great in 326 BCE against King Porus of the Paurava kingdom on the banks of the Hydaspes River (Jhelum River) in the Punjab near Bhera\nQ179670  Battle of Gaugamela (-330) — decisive battle of Alexander the Great's invasion of the Persian Achaemenid Empire\nQ192938  Battle of the Granicus (-333) — 334 BCE battle between Macedonians and Persians"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106422-jRMW0cIhB3NErJ6X8qZs",
+  "object": "chat.completion",
+  "created": 1795106422,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q486761\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Pyrrho is described as having lived and worked as a philosopher during Classical antiquity.\",\n      \"evidence\": \"Pyrrho of Elis (; Ancient Greek: Πύρρων ὁ Ἠλεῖος; c. 360 – c. 270 BC) was a Greek philosopher of Classical antiquity, credited as being the first Greek skeptic philosopher and founder of Pyrrhonism.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Focusing on Pyrrho's Origins**\n\nI'm currently working to pinpoint Pyrrho's origins, specifically within the provided EXTRACT. My analysis is centered on identifying any direct textual clues that link him to a particular geographical or historical context, as requested.\n\n**Establishing Pyrrho's Context**\n\nI'm confirming Pyrrho's categorization as a Greek philosopher of Classical antiquity. My current focus is on how this period is explicitly referenced within the text to support his identified timeline and philosophical era.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Focusing on Pyrrho's Origins**\n\nI'm currently working to pinpoint Pyrrho's origins, specifically within the provided EXTRACT. My analysis is centered on identifying any direct textual clues that link him to a particular geographical or historical context, as requested.\n\n**Establishing Pyrrho's Context**\n\nI'm confirming Pyrrho's categorization as a Greek philosopher of Classical antiquity. My current focus is on how this period is explicitly referenced within the text to support his identified timeline and philosophical era.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a18chEREB7tTKaemh9WazCCA4TMpRbtqNn6wH+g7ZCyJLi2r4oU00eUd+X4Y9E87I5QlylfM+zm2xbTBQOcm8xkQU1N0Es+9AC2nVcXn8JJH7cooTNa6O/PDEzLukVXaZJxNrGWAWvi4fWLueJTWBUo8KFXktLI+Uv4/ekb2CSA0WonO46g3Gb+/q/IQdNBweEqD65qynVfvkmgC6Wj+m25kQSuHDiAJgr3rnUwiuI0LI1SEt9u3G9tjDvdrsX5TwjHcEo4RZo/7A/494gTh2+ExXkhy/wy+9awJKPTMH1Adh3fwVjJ+zw+JdhJl8HqEGjn9a4z6hMXKOTkgBCtYVVJSBcQntZeuw2jcK/TlZoZzp85CMl5ldn/aDY3LiW0Zv2cj5rZDr+me1y9TtxLUirNU3Y2gS87mo4dXxyNtVhW5YnbZQNyotQzE6JvaIYPLsP1O4a1Apax1qemFpKiQg9s5RNZl6oFfZiO11DiuF+R7xEhs7CSWHPiDHOEbpKVmNE+thWlm5goyxBFnBcZSLjiqa/W73tK+zA6Kbgo/DmYmjAtC+OqYbLcTfX8uZ6vYBiNiiBHezk57/EjopHrnnhvqruU4atTuTLhk0822ncQKfGBJ5BqfSlMIHwWbS707As2zXX0+VxRhN6FhYf6inEhEGmmmczFSblOSIOqWfB+2FvgRsl1zmjXfeMOc0VpA22PJt592mUndWjQ+eSqewCdW7rT19HD0XP8ahwbd0ln3c1Mpo4Qk/3gZ8nkEkrVazK6/SunjXNPWm/WW17DfqdKPzmG1HvTgXnrnt3X9U1RlKyVVkxJrkihHqRm+L/HdGHW60Sd7BeBeeu7PtW7V9Go6UD105mw2G18a5XzDHLrpLo0pkRzFz/4RF4EzXY/MQcvesSzBB+SqVrAbJ4HzGqrHS6uBrbDcMG6i9wxTN6mslEho9JbNsvQuN66rZZ5G5Pv1J0OtaaVuY7UBM57oZ0HU0ab/8Nw1dKpAT9pL+XT2NhpgEcfwZ39cBDGt2U/XaQ2cn/nOg/xJLoC6bi/IB+fPWudiNbqZJRjzDaJ7stdmBj/BBSznccyKSTHxF966naUqA6wyAdUiO5ftzzGleOR60pSlRmRYkS3lGbTPXBo2g8/TC8+dGR/A/RKs8Zgra0nlufYzbVAqPiGkNH629zXDpcqHf7ICpQcCVWLqrrkt02rQWaPbnhokjdi/mJXWlw+d1i4xcOfBMpfRU21iTF2Z15+JKnAv9vusTyL0zKfDvcFQm4r/TRBiNVyTDjOHHASl2o+D/YfNLzG7A6v+24sWyTxf1UjLK2cq47+m9IAbnW8esXiJL8fHr/+sMsr72LUXBlNvIJVASJqGDzqdNRflMXwKf/bXeH/sARlCA6CJNxDw+p3oM5ly3UAIN5ii3AeUV9Wety49cTLTPGwLQQh8MkZrpswnteXuYRO6Tl5zptyKi+PDZo7AFruW3wvoTBZP7sf2J9rD++o8HS3DdSpzmq8e8eJODUwANwy8yYU86RB5uPZ5LYMQMVDZCphOKcQdqO8CDyXJnpcY0I0RJRlnNW1qWF8VxP7jJp1a2dqcZ5OG7UjdwCTv+MNZQHL1xkCo3+ZDMM886WgBUNrxVGs3uL5hMlJoUvPBiCkuarBQKoXPnM2/hPtdAOWliK49PzMXN67p9oiKnJIP4ENGk1P+MPcZLJURsJ057zCbZq2QEk+oPQvA9RPT6gu1liByR7Ahp06432jbLUr+srFuuVQolMbIW0ppIKLU7ex527r7KcrVwXyxkatx1cN9A4fLVstC+AhHObeh6EUNz+ODsdn6fWiZgJwP7R//VIS/IjUIYFuoaP85AQFxg+HXfShDXwpR34EgHEMbBAQABCK2Wee4iANf6P+usVnsOJ/MHNUidwPUEuhKm5th1JsnI6A4hXFI5QQbVf8hi1HVKxvNiHYpVMs+iaFOJ3Go3uYHG5LqWgChI4CEsndu4TvtC/+46/1fo/tdxCcaJwRxVAAlFvLs9cmFa+rNbAJEAmg21HZNC209q4e/4fOWFvpe5hLH40jhhvNtfc3fqP7reawX3H0nX5oPES0WjFnJNsa3C3XvrtlozY7ueOjXykCBx0gjOyk+FcQ6+NB4mfm9BHnyvgVxFxHBtUI5mS4Nb9wrEOTn40SxIEMeIzk2JMrXQz8DXR2/cVpWY4wfonUndlhhm6B7HoJ79vtYr6t3WloG/XJPUbh6FVKecN29WM6exAm17F6m6lKcBCIBtz539hWpibPxA5GtSbEImoDnBc08rSoal8VjzLBIZlqjLB22rem0DZA7fvZG4ShBiINTCVUJM83lwmCju5m1KwkelDqjY6C57wlyDpMOMIFuGgIKMNvDrXysUvPnZPcb87EQJ977L1fILcA8jjEsjnzNsfyPxwhJxZhKXlj8pSDX53SVL8WyqwQ7cgwecXpE3uAf2WliA1827tf78KXKwRabEZkjweR5ROOYASs/LtP3WvRMO6fM3vDlmguxGCDKg8/mrIPJIucwoXknWzKPOy6UIAQxZu0mjVi1+mQV6mHKrEHDkDYwXfyKDZ/OV39hgml3bcKc30/lnlhGLQFWbgHLRtxB5N45iXgmzgXBnFNEQJkGf2H8AT09bW7PWdHdxHsLgA7eo2dWpcoktGRYPbQp372B19NFrBXtLI2r/RtXqUbf37DgcW27kvp7QC9mbHFmFJp7JhewRFwKAhlfodlo4Zs7WZtANcFDPX8q1ECW2sH4ZJ94m6CpBdVFPFNIqTcPtP6GDo6H67J8SQFDpnQuEFWfD727WX6IHphpc9zUpgide8C68D+JBVTzKC9Kncb+EMOzqM0Y/K9vKiSBiBuQsRLfw8aFuzijH2DRD/AJZgw9HrKqzHfEKTVRkAaEkdIf7Sa/HO2ZcIyIuugQ+LyeJ7+lXbX46GsfbcjR1Qx+QPNimvILGwSUksFkpSAC+BjgfioYhdipEx72mQ8kZUGXM23jPISiVhVyRe6jc3dQPvO96fY5w87LOLrxk8jK502yMU0uTxTP0g6r470oPzxcbWb1PAjS3kDP+8CsB0P6LFYHgamoaWSi1R2UWO9FR7zt2PIF1FQusGjW3eFwJzJ9cm51CdLYTnNS+SMTkmrBuB/osCEDEZagpXvjB1c84PTOZ1Xg6lDzDqy2jw==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1702,
+   "completion_tokens": 643,
+   "total_tokens": 2345,
+   "cost": 0.00368775,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00368775,
+    "upstream_inference_prompt_cost": 0.0012765,
+    "upstream_inference_completions_cost": 0.00241125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 505,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q486761\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Pyrrho is described as having lived and worked as a philosopher during Classical antiquity.\",\n      \"evidence\": \"Pyrrho of Elis (; Ancient Greek: Πύρρων ὁ Ἠλεῖος; c. 360 – c. 270 BC) was a Greek philosopher of Classical antiquity, credited as being the first Greek skeptic philosopher and founder of Pyrrhonism.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q486761",
+     "type": "lived_through",
+     "reason": "Pyrrho is described as having lived and worked as a philosopher during Classical antiquity.",
+     "evidence": "Pyrrho of Elis (; Ancient Greek: Πύρρων ὁ Ἠλεῖος; c. 360 – c. 270 BC) was a Greek philosopher of Classical antiquity, credited as being the first Greek skeptic philosopher and founder of Pyrrhonism.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1702,
+   "completion_tokens": 643,
+   "total_tokens": 2345,
+   "cost": 0.00368775,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00368775,
+    "upstream_inference_prompt_cost": 0.0012765,
+    "upstream_inference_completions_cost": 0.00241125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 505,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00368775,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.45
+ },
+ "meta": {}
+}

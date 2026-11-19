@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "aef443c80477a22bbca0d29b5b5ef3f84ed7e19f71b2a17efa341ad71c21c4f2",
+ "fetched_at": "2026-11-19T16:40:27Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Hipparchia of Maroneia (349 BCE–279 BCE). Cynic philosopher\n\nEXTRACT:\nHipparchia of Maroneia (; Greek: Ἱππαρχία ἡ Μαρωνεῖτις; fl. c. 325 BC) was a Cynic philosopher, and wife of Crates of Thebes. She was the sister of Metrokles, the cynic philosopher.\nShe was born in Maroneia, but her family moved to Athens, where Hipparchia came into contact with Crates, the most famous Cynic philosopher in Greece at that time. She fell in love with him, and, despite the disapproval of her parents, she married him. She went on to live a life of Cynic poverty on the streets of Athens with her husband.\nLittle survives of her own philosophical views, but like most Cynics, her influence lies in the example of her life, choosing a way of life which was usually considered unacceptable for respectable women of the time. The story of her attraction to Crates, and her rejection of conventional values, became a popular theme for later writers.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ978071  Thirty-first Dynasty of Egypt (-342–-331) — second and last Achaemenid rule on Egypt (343–332 BC)\nQ28365  Lamian War (-322–-321) — fought by a coalition of Greek cities against Macedon and its ally Boeotia\nQ737907  Second Latin War (-340–-337) — wars fought between ancient Rome (including both the Roman Kingdom and the Roman Republic) and the Latins, from the earliest stages of the history of Rome until the final subjugation of the Latins to Rome in the aftermath of the Latin War\nQ109251  Samnite Wars (-342–-289) — series of wars between the early Roman Republic and the Samnites on the Italian Peninsula\nQ551888  Wars of Alexander the Great (-335–-322) — conflicts fought by King Alexander III of Macedon (\"The Great\"), against other Greek powers, the Persian Empire and warlords as far east as India\nQ596373  Pyrrhic War (-279–-274) — war\nQ2912306  Wars of the Diadochi (-321–-274) — series of conflicts after the death of Alexander the Great\nQ200716  Battle of Chaeronea (-337) — 338 BCE battle during the expansion of Macedonia under Philip II\nQ201526  Battle of Issus (-332) — second great battle of Alexander's conquest of Asia\nQ213074  Battle of the Hydaspes (-325) — battle fought by Alexander the Great in 326 BCE against King Porus of the Paurava kingdom on the banks of the Hydaspes River (Jhelum River) in the Punjab near Bhera\nQ179670  Battle of Gaugamela (-330) — decisive battle of Alexander the Great's invasion of the Persian Achaemenid Empire\nQ192938  Battle of the Granicus (-333) — 334 BCE battle between Macedonians and Persians"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106424-1InhwgTprghsnFHzV4h1",
+  "object": "chat.completion",
+  "created": 1795106424,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Considering Philosophers' Lives**\n\nI'm focusing on the biographical details of Hipparchia of Maroneia. My current thoughts are centered on her transition to Cynic philosophy, her relationship with Crates, and their shared commitment to a life of poverty.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Considering Philosophers' Lives**\n\nI'm focusing on the biographical details of Hipparchia of Maroneia. My current thoughts are centered on her transition to Cynic philosophy, her relationship with Crates, and their shared commitment to a life of poverty.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1785,
+   "completion_tokens": 375,
+   "total_tokens": 2160,
+   "cost": 0.002745,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002745,
+    "upstream_inference_prompt_cost": 0.00133875,
+    "upstream_inference_completions_cost": 0.00140625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 366,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1785,
+   "completion_tokens": 375,
+   "total_tokens": 2160,
+   "cost": 0.002745,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002745,
+    "upstream_inference_prompt_cost": 0.00133875,
+    "upstream_inference_completions_cost": 0.00140625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 366,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.002745,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 3.54
+ },
+ "meta": {}
+}

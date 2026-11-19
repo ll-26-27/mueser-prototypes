@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "dda0639c97a18b94b24899730bbbcb613e068cbe4ccf106d6decf917e8e13c4f",
+ "fetched_at": "2026-11-19T16:37:38Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Nicole Oresme (1320–1382-07-19). 14th century French philosopher and bishop\n\nEXTRACT:\nNicole Oresme (; French: [nikɔl ɔʁɛm]; c. 1325 – 11 July 1382), also known as Nicolas Oresme, Nicholas Oresme, or Nicolas d'Oresme, was a French philosopher of the later Middle Ages. He wrote influential works on economics, mathematics, physics, astrology, astronomy, philosophy, and theology. He was Bishop of Lisieux, a translator, a counselor of King Charles V of France, and one of the most original thinkers of 14th-century Europe.\n\nEVENTS (id, name, years):\nQ9903  Ming dynasty (1368) — imperial dynasty of China from 1368 to 1644\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ264012  Nanboku-chō period (1336–1392) — period (1336–1392) within the Muromachi period of Japanese history, in which two men had competing claims to the Japanese imperial throne\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ826021  Kenmu Restoration (1333) — period of Japanese history, 1333–1336\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ8959  Northern Yuan dynasty (1368) — former empire in East Asia\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12551  Hundred Years' War (1337–1453) — series of conflicts and wars between England and France between 1337 and 1453\nQ698985  Ottoman Wars in Europe (1354–1683) — series of military conflicts between the Ottoman Empire and various European states\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ2658255  Byzantine Civil War of 1341–1347 (1341–1347) — civil war in the Byzantine Empire\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ550172  War of the Breton Succession (1341–1365) — conflict between the Counts of Blois and the Montforts of Brittany\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ112524  Red Turban Rebellion (1351–1368) — Revolt against the Yuan dynasty in China (1351–1368)\nQ498871  Peasants' Revolt of 1381 (1381) — major uprising across large parts of England in 1381\nQ7126013  Jacquerie (1358) — French peasant uprising, 1358\nQ1334924  Treaty of Brétigny (1360) — treaty\nQ853685  Treaty of Nöteborg (1323) — 1323 peace treaty between Kingdom of Sweden and the Novgorod Republic\nQ27759  Battle of Crécy (1346) — 1346 battle of the Hundred Years' War\nQ201692  Battle of Poitiers (1356) — 1356 battle of the Hundred Years' War\nQ210354  Battle of Kulikovo (1380) — 1380 battle between Russian principalities and Golden Horde\nQ42005  Black Death (1346–1352) — 1346–1353 pandemic in Eurasia and North Africa"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106249-iEo9rCj8G61I0CJUk7YF",
+  "object": "chat.completion",
+  "created": 1795106249,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q212976\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Oresme lived and worked as a philosopher during the Late Middle Ages.\",\n      \"evidence\": \"Nicole Oresme (; French: [nikɔl ɔʁɛm]; c. 1325 – 11 July 1382), also known as Nicolas Oresme, Nicholas Oresme, or Nicolas d'Oresme, was a French philosopher of the later Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Oresme's Connections**\n\nI'm currently focused on identifying how Nicole Oresme's life and work intersect with the provided historical context. My analysis centers on extracting specific details from the given text to establish these links.\n\n**Confirming Temporal Links**\n\nI'm confirming the temporal context for Oresme, specifically matching \"later Middle Ages\" to the Late Middle Ages period. I'm also considering if the broader Middle Ages period should be included, aiming for the most precise identification.\n\n**Linking Eras Precisely**\n\nI'm fine-tuning the temporal connections for Oresme, focusing on his direct association with the \"later Middle Ages.\" I'm assessing whether the broader \"Middle Ages\" is also relevant based on the principle of broader or narrower names for the same event.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Oresme's Connections**\n\nI'm currently focused on identifying how Nicole Oresme's life and work intersect with the provided historical context. My analysis centers on extracting specific details from the given text to establish these links.\n\n**Confirming Temporal Links**\n\nI'm confirming the temporal context for Oresme, specifically matching \"later Middle Ages\" to the Late Middle Ages period. I'm also considering if the broader Middle Ages period should be included, aiming for the most precise identification.\n\n**Linking Eras Precisely**\n\nI'm fine-tuning the temporal connections for Oresme, focusing on his direct association with the \"later Middle Ages.\" I'm assessing whether the broader \"Middle Ages\" is also relevant based on the principle of broader or narrower names for the same event.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1926,
+   "completion_tokens": 1169,
+   "total_tokens": 3095,
+   "cost": 0.00582825,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00582825,
+    "upstream_inference_prompt_cost": 0.0014445,
+    "upstream_inference_completions_cost": 0.00438375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1029,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q212976\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Oresme lived and worked as a philosopher during the Late Middle Ages.\",\n      \"evidence\": \"Nicole Oresme (; French: [nikɔl ɔʁɛm]; c. 1325 – 11 July 1382), also known as Nicolas Oresme, Nicholas Oresme, or Nicolas d'Oresme, was a French philosopher of the later Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q212976",
+     "type": "lived_through",
+     "reason": "Oresme lived and worked as a philosopher during the Late Middle Ages.",
+     "evidence": "Nicole Oresme (; French: [nikɔl ɔʁɛm]; c. 1325 – 11 July 1382), also known as Nicolas Oresme, Nicholas Oresme, or Nicolas d'Oresme, was a French philosopher of the later Middle Ages.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1926,
+   "completion_tokens": 1169,
+   "total_tokens": 3095,
+   "cost": 0.00582825,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00582825,
+    "upstream_inference_prompt_cost": 0.0014445,
+    "upstream_inference_completions_cost": 0.00438375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1029,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00582825,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 9.28
+ },
+ "meta": {}
+}

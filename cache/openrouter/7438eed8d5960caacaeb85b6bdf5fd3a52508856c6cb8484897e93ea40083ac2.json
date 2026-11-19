@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "7438eed8d5960caacaeb85b6bdf5fd3a52508856c6cb8484897e93ea40083ac2",
+ "fetched_at": "2026-11-19T16:36:05Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Godfrey of Fontaines (13th century–1309). Belgian theologian\n\nEXTRACT:\nGodfrey of Fontaines (Latin: Godefridus de Fontibus, born sometime before 1250, died 29 October 1306 or 1309), was a scholastic philosopher and theologian who was designated by the title Doctor Venerandus. He made contributions to a diverse range of subjects ranging from moral philosophy to epistemology. However, he is best known today for his work on metaphysics.\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106161-eslbhfZVx6y55REgCNcG",
+  "object": "chat.completion",
+  "created": 1795106161,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"connections\":[]}",
+     "refusal": null,
+     "reasoning": "**Analyzing Provided Data**\n\nMy current focus is on meticulously extracting all factual anchors related to Godfrey of Fontaines from the provided text, ensuring no external information influences the matching process. This strict adherence to the extract is crucial for accurate historical correlation.\n\n**Defining Key Concepts**\n\nI'm refining my understanding of what constitutes a direct mention or clear implication versus a general association. My current task involves cross-referencing specific terms from the extract against a predefined list of events, ensuring only explicitly stated or directly implied connections are considered.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Provided Data**\n\nMy current focus is on meticulously extracting all factual anchors related to Godfrey of Fontaines from the provided text, ensuring no external information influences the matching process. This strict adherence to the extract is crucial for accurate historical correlation.\n\n**Defining Key Concepts**\n\nI'm refining my understanding of what constitutes a direct mention or clear implication versus a general association. My current task involves cross-referencing specific terms from the extract against a predefined list of events, ensuring only explicitly stated or directly implied connections are considered.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1286,
+   "completion_tokens": 391,
+   "total_tokens": 1677,
+   "cost": 0.00243075,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00243075,
+    "upstream_inference_prompt_cost": 0.0009645,
+    "upstream_inference_completions_cost": 0.00146625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 387,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"connections\":[]}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1286,
+   "completion_tokens": 391,
+   "total_tokens": 1677,
+   "cost": 0.00243075,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00243075,
+    "upstream_inference_prompt_cost": 0.0009645,
+    "upstream_inference_completions_cost": 0.00146625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 387,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00243075,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.77
+ },
+ "meta": {}
+}

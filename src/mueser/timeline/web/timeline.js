@@ -59,7 +59,7 @@
     'work–event': '#b03a2a', 'work–concept': '#2f7d4f', 'event–event': '#5e5e5e', 'event–concept': '#2f7d4f', 'concept–concept': '#2f7d4f' };
 
   // ------------------------------------------------------------------ state, store
-  const state = { sel: null, win: [1500, 1700], layers: new Set(Object.keys(CLASSES)), persp: new Set(['record', 'model', 'person']),
+  const state = { sel: null, win: [1500, 1700], layers: new Set(Object.keys(CLASS_NAME)), persp: new Set(['record', 'model', 'person']),
     showRejected: false, logOpen: false, who: '', online: false, serverEvents: 0, logFilter: { type: '', status: '' } };
   // Keep unsent notes available when this case is rebuilt with a new data id.
   const KEY = 'mueser.timeline.case.' + location.pathname;
@@ -109,6 +109,11 @@
       if (!E.has(id) && !out.some(x => x.id === id)) out.push({ id, type: ev.body.type, src: ev.body.src, dst: ev.body.dst, source: `person:${ev.who || 'unnamed'}`, status: 'person', reason: ev.body.reason || '', evidence: ev.body.evidence || '', event: ev.id });
     }
     return out;
+  }
+  function classCounts() {
+    const counts = { ...CLASSES };
+    for (const edge of personEdges()) { const key = cls(edge); counts[key] = (counts[key] || 0) + 1; }
+    return counts;
   }
   function edgesOf(id) {
     const out = [...(bySrc.get(id) || []), ...(byDst.get(id) || [])];
@@ -194,8 +199,8 @@
     const drawLanes = (lanes, isPeriod) => lanes.forEach(l => { l.items.forEach(n => {
       const s = Math.max(padL - 400, x(n.sy)), e = Math.min(W - padR + 400, Math.max(x(n.ey != null ? n.ey : n.sy), s + 8)); const g = svgEl('g', { class: 'bar-g' }); g.setAttribute('tabindex', '0');
       const r = svgEl('rect', { class: 'bar' + (n.id === state.sel ? ' hi' : connected.has(n.id) ? ' connected' : ''), x: s, y, width: e - s, height: laneH - 8, rx: 1 }); g.append(r);
-      const w = e - s; if (w > 60) { const t = svgEl('text', { x: Math.max(s, padL) + 10, y: y + laneH / 2 + 1 }); t.textContent = w > 140 ? n.label : n.label.slice(0, Math.max(3, Math.floor(w / 9))) + (n.label.length > w / 9 ? '…' : ''); g.append(t);
-        if (w > 230) { const yr = svgEl('text', { class: 'yrs', x: Math.min(e, W - padR) - 10, y: y + laneH / 2 + 1, 'text-anchor': 'end' }); yr.textContent = span(n); g.append(yr); } }
+      const w = Math.min(e, W - padR) - Math.max(s, padL); if (w > 60) { const t = svgEl('text', { x: Math.max(s, padL) + 10, y: y + laneH / 2 + 1 }); t.textContent = w > 140 ? n.label : n.label.slice(0, Math.max(3, Math.floor(w / 9))) + (n.label.length > w / 9 ? '…' : ''); g.append(t);
+        if (w > 230 + n.label.length * 7) { const yr = svgEl('text', { class: 'yrs', x: Math.min(e, W - padR) - 10, y: y + laneH / 2 + 1, 'text-anchor': 'end' }); yr.textContent = span(n); g.append(yr); } }
       const title = svgEl('title'); title.textContent = `${n.label} (${span(n)}) · ${TYPE_NAME[n.type]}`; g.append(title);
       g.onclick = () => goTo(n.id); g.onkeydown = ev => { if (ev.key === 'Enter') goTo(n.id); }; svg.append(g); }); y += laneH; });
     drawLanes(pl, true); drawLanes(evl, false);
@@ -391,17 +396,19 @@
     const act = el('div', 'actions'); const c = el('button', 'ghost', 'Cancel'); c.onclick = closePop; const s = el('button', 'primary', 'Add'); s.onclick = async () => { if (!target) { inp.focus(); return; } await store.add(mk('edge', { node: S.id, quote: `${S.label} → ${target.label}` }, { src: S.id, dst: target.id, type: sel.value, reason: why.value.trim(), evidence: evd.value.trim() })); closePop(); toast('Connection added'); renderAll(); }; act.append(c, s); p.append(act); inp.focus();
   }
   function openLayers(anchor) {
+    const counts = classCounts();
     const p = pop(anchor, 'Layers'); p.append(el('p', 'sub', 'Which connections the columns, the band and the map show.'));
-    p.append(el('div', 'group eyebrow', 'By what they connect')); Object.keys(CLASSES).sort((a, b) => CLASSES[b] - CLASSES[a]).forEach(c => { const l = el('label', 'check'); const i = el('input'); i.type = 'checkbox'; i.checked = state.layers.has(c); i.onchange = () => { if (i.checked) state.layers.add(c); else state.layers.delete(c); renderAll(); openLayers($('.tl-bar .tool')); }; l.append(i, `${CLASS_NAME[c] || c} `, el('span', 'muted', `(${CLASSES[c].toLocaleString()})`)); p.append(l); });
+    p.append(el('div', 'group eyebrow', 'By what they connect')); Object.keys(counts).sort((a, b) => counts[b] - counts[a]).forEach(c => { const l = el('label', 'check'); const i = el('input'); i.type = 'checkbox'; i.checked = state.layers.has(c); i.onchange = () => { if (i.checked) state.layers.add(c); else state.layers.delete(c); renderAll(); openLayers($('.tl-bar .tool')); }; l.append(i, `${CLASS_NAME[c] || c} `, el('span', 'muted', `(${counts[c].toLocaleString()})`)); p.append(l); });
     p.append(el('div', 'group eyebrow', 'By whose connections')); Object.keys(PERSP).forEach(k => { const l = el('label', 'check'); const i = el('input'); i.type = 'checkbox'; i.checked = state.persp.has(k); i.onchange = () => { if (i.checked) state.persp.add(k); else state.persp.delete(k); renderAll(); openLayers($('.tl-bar .tool')); }; l.append(i, PERSP[k]); p.append(l); });
     const l = el('label', 'check'); const i = el('input'); i.type = 'checkbox'; i.checked = state.showRejected; i.onchange = () => { state.showRejected = i.checked; renderAll(); openLayers($('.tl-bar .tool')); }; l.append(i, 'Show rejected proposals'); p.append(l);
     p.append(el('p', 'sub', 'A further perspective, the connections one commentator draws across these nodes, would appear here as its own line once ingested; see the README.'));
-    const act = el('div', 'actions'); const all = el('button', 'ghost', 'All'); all.onclick = () => { state.layers = new Set(Object.keys(CLASSES)); state.persp = new Set(Object.keys(PERSP)); renderAll(); }; const x = el('button', 'primary', 'Close'); x.onclick = closePop; act.append(all, x); p.append(act);
+    const act = el('div', 'actions'); const all = el('button', 'ghost', 'All'); all.onclick = () => { state.layers = new Set(Object.keys(CLASS_NAME)); state.persp = new Set(Object.keys(PERSP)); renderAll(); }; const x = el('button', 'primary', 'Close'); x.onclick = closePop; act.append(all, x); p.append(act);
   }
   function openLegend(anchor) {
+    const counts = classCounts();
     const p = pop(anchor, 'Legend'); p.append(el('div', 'group eyebrow', 'Nodes'));
     Object.keys(TYPE_NAME).forEach(t => { const r = el('div', 'legend-row'); r.append(el('span', 'dot ' + t), `${TYPE_NAME[t]}s`); p.append(r); });
-    p.append(el('div', 'group eyebrow', 'Connections')); Object.keys(CLASS_NAME).filter(c => CLASSES[c]).forEach(c => { const r = el('div', 'legend-row'); const i = el('i'); i.style.borderColor = EDGE_COLOR[c]; r.append(i, CLASS_NAME[c]); p.append(r); });
+    p.append(el('div', 'group eyebrow', 'Connections')); Object.keys(CLASS_NAME).filter(c => counts[c]).forEach(c => { const r = el('div', 'legend-row'); const i = el('i'); i.style.borderColor = EDGE_COLOR[c]; r.append(i, CLASS_NAME[c]); p.append(r); });
     p.append(el('div', 'group eyebrow', 'Standing')); [['', 'recorded: a Wikidata statement, with its property'], ['dash', 'proposed: the model read it in the Wikipedia extract; accept or reject'], ['dots', 'added here: a reader drew it, with a reason']].forEach(([k, t]) => { const r = el('div', 'legend-row'); const i = el('i', k); i.style.borderColor = '#555'; r.append(i, t); p.append(r); });
     p.append(el('div', 'group eyebrow', 'Band')); p.append(el('p', 'sub', 'Periods in the upper lanes, events below them; bars connected to the chosen node are darker, the chosen event is pale blue. Drag to move through time, scroll to zoom, Fit to return. Beneath the axis: the chosen thinker’s life with their works as ticks.'));
     const act = el('div', 'actions'); const x = el('button', 'primary', 'Close'); x.onclick = closePop; act.append(x); p.append(act);
@@ -412,7 +419,7 @@
   function defaultNode() { if (N.has('Q37621')) return 'Q37621'; const ps = D.nodes.filter(n => n.type === 'person').sort((a, b) => b.sl_n - a.sl_n); return ps[0]?.id || D.nodes[0]?.id; }
   function goTo(id, keepWindow) { if (!N.has(id)) return; closePop(); state.sel = id; if (!keepWindow) state.win = defaultWindow(N.get(id)); history.replaceState(null, '', '#' + id); renderAll(); window.scrollTo({ top: 0 }); }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
-  document.addEventListener('click', e => { if (popEl && !popEl.contains(e.target) && !e.target.closest('.tl-bar .tool, .card .ghost, .row .ghost, .refs .ghost')) closePop(); });
+  document.addEventListener('click', e => { if (popEl && !e.composedPath().includes(popEl) && !e.target.closest('.tl-bar .tool, .card .ghost, .row .ghost, .refs .ghost')) closePop(); });
   window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (id && id !== state.sel) goTo(id); });
 
   async function boot() {

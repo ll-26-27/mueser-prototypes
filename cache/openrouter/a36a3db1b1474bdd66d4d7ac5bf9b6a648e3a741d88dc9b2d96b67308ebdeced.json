@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "a36a3db1b1474bdd66d4d7ac5bf9b6a648e3a741d88dc9b2d96b67308ebdeced",
+ "fetched_at": "2026-11-19T16:17:20Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Sengzhao (384–414). Chinese Buddhist monk and scholar\n\nEXTRACT:\nSengzhao (Chinese: 僧肇; pinyin: Sēngzhào; Wade–Giles: Seng-chao; Japanese: 僧肇, Sōjō; 374–414) was a Chinese Buddhist philosopher from Later Qin. Born to a poor family in Jingzhao, he acquired literary skills and became a scribe. This exposed him to a variety of uncommon documents. He was influenced by the Taoists Laozi and Zhuangzi, and although we are told he enjoyed Laozi’s Daodejing, he was overjoyed when he discovered the Vimalakīirti Sūtra. This encounter transformed his life and he became a Buddhist. He was known as being among the ablest of the disciples of Kumārajīva.\nSengzhao was recognized as both a scholar of high skill and someone of profound understanding relating to religious matters. He was involved in translating Indian treatises, which formed the source of study for early Chinese Mādhyamika Buddhism. He also authored a small number of texts, but is famous for the book Zhaolun. Its chapters are: \"Things Do Not Shift,\" \"Non-Absolute Emptiness,\" \"Prajna Is Without Dichotomizing Knowledge,\" and \"Nirvana Is Without Conceptualization.\"\n\nEVENTS (id, name, years):\nQ12544  Byzantine Empire (395) — Roman Empire during Late Antiquity and the Middle Ages\nQ131192  Migration Period (375–568) — period in European history with large migration of peoples, from the 4th to the 6th centuries\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ238399  Dominate (284–565) — \"despotic\" phase of government in the ancient Roman Empire (ca. 284 to 565 AD)\nQ459939  Kofun period (250–538) — period of Japanese history from 300 to 538\nQ683551  Sixteen Kingdoms (304–439) — period of Chinese history from 304 to 439\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795105004-oroPmFiUOq0w70ORGzby",
+  "object": "chat.completion",
+  "created": 1795105004,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q683551\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Sengzhao lived during the Sixteen Kingdoms era as a Buddhist philosopher from the Later Qin dynasty.\",\n      \"evidence\": \"Sengzhao (Chinese: 僧肇; pinyin: Sēngzhào; Wade–Giles: Seng-chao; Japanese: 僧肇, Sōjō; 374–414) was a Chinese Buddhist philosopher from Later Qin.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Sengzhao References**\n\nI'm currently focused on identifying potential historical events linked to Sengzhao based on the provided extract. The extract confirms Sengzhao's name in Chinese and Japanese, which is a starting point for matching to potential events.\n\n\n**Connecting Later Qin**\n\nI've realized \"Later Qin\" is explicitly linked to the \"Sixteen Kingdoms\" period, as it existed during that era. I'm now clarifying the relationship—is it a sub-category or a synonymous term? This connection clarifies the relevance of the extract and the broader historical context, and helps me confirm how the extract references the era.\n\n\n**Clarifying Period Relationship**\n\nI'm now grappling with the relationship between \"Later Qin\" and the \"Sixteen Kingdoms.\" My focus is on whether \"Later Qin\" is a sub-category or a synonymous term. I'm exploring if the period encompasses Later Qin or if they are just connected. Considering Sengzhao's association, I'm trying to determine if Q683551 relates to his lifetime, and determining if the Sixteen Kingdoms is connected. I'm also ensuring I understand the constraints of only using the provided extract.\n\n\n**Refining Event Criteria**\n\nI'm now refining my criteria for connecting events to the extract. I've realized I must strictly adhere to the information within the text; no external knowledge allowed. Specifically, I must only connect events that the extract explicitly mentions or clearly implies. \"Later Qin\" is in the extract, so it must be evaluated, but no outside knowledge like its connection to the Sixteen Kingdoms is considered. I'm focusing on whether an event in the provided context is the same thing, with a broader or narrower name.\n\n\n**Evaluating Event Scope**\n\nI'm now determining if there's an expected connection between the \"Sixteen Kingdoms\" period and the mention of \"Later Qin\" within the extract. I'm focusing on whether this connection should be implicit or explicit, as my assessment must strictly adhere to the provided text. My current thought is how to assess the constraints of the provided information. I must figure out whether the provided event, Q683551, is connected. I am going back and forth, refining the assessment of \"lived_through\". I am considering an empty list of connections is correct when nothing matches.\n\n\n**Revisiting Extract Context**\n\nI've re-examined the prompt and realized that the \"EVENTS\" list is automatically generated based on the thinker's lifespan (384–414). The list contains events/periods from Wikidata that overlap this period. Now, I am focused on whether the extract explicitly mentions or clearly implies any of these events, particularly \"Sixteen Kingdoms.\" My previous focus on an implicit relationship was incorrect. I'm focusing on \"Sixteen Kingdoms.\"\n\n\n**Assessing \"Later Qin\" Implication**\n\nI'm now determining if \"Later Qin\" implicitly refers to \"Sixteen Kingdoms\" within the confines of the extract's information. I'm focusing on whether \"Later Qin\" can be considered a broader or narrower term for the Sixteen Kingdoms period. The prompt's example guides me: \"Later Qin\" is a state, while the Sixteen Kingdoms is a period of sixteen states. This is a specific state within a broader historical period, so a direct, implicit connection is questionable based on the given constraints. I will be careful to adhere strictly to the information.\n\n\n**Interpreting Implication of Events**\n\nI'm now wrestling with the nuance of \"clearly imply\" in the prompt's context. I'm focusing on whether \"Later Qin\" implicitly refers to \"Sixteen Kingdoms.\" My concern is the reader's historical knowledge. Could the author/evaluator assume a connection, and if so, is this \"clear implication?\" I see the phrase \"broader or narrower name\" as a key. I'm now evaluating if \"Sixteen Kingdoms\" is the broader name. If so, am I permitted to make the connection? My focus is on the specific event Q683551 and it's potential connection to Sengzhao's time. I'm carefully considering how to provide only factual connections.\n\n\n**Evaluating Implication Scope**\n\nI'm now clarifying the application of \"broader or narrower name\" and considering an example from the prompt. I'm focusing on \"the civil war\" versus \"English Civil War\" and pondering if the \"broader or narrower name\" concept permits the connection based on this example. I'm evaluating how the example supports the \"Later Qin\" / \"Sixteen Kingdoms\" relationship as a relevant case. The \"lived_through\" connection with Q683551 remains relevant.\n\n\n**Connecting \"Lived Through\"**\n\nI've determined that \"Sixteen Kingdoms\" is, in fact, the broader historical period encompassing \"Later Qin.\" Since the subject \"lived through\" Later Qin, they necessarily \"lived through\" the Sixteen Kingdoms period. This satisfies the \"broader/narrower name\" criteria, and I can now confidently make a \"lived_through\" connection. The extract supports this, and I've excluded other non-relevant events.\n\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Sengzhao References**\n\nI'm currently focused on identifying potential historical events linked to Sengzhao based on the provided extract. The extract confirms Sengzhao's name in Chinese and Japanese, which is a starting point for matching to potential events.\n\n\n**Connecting Later Qin**\n\nI've realized \"Later Qin\" is explicitly linked to the \"Sixteen Kingdoms\" period, as it existed during that era. I'm now clarifying the relationship—is it a sub-category or a synonymous term? This connection clarifies the relevance of the extract and the broader historical context, and helps me confirm how the extract references the era.\n\n\n**Clarifying Period Relationship**\n\nI'm now grappling with the relationship between \"Later Qin\" and the \"Sixteen Kingdoms.\" My focus is on whether \"Later Qin\" is a sub-category or a synonymous term. I'm exploring if the period encompasses Later Qin or if they are just connected. Considering Sengzhao's association, I'm trying to determine if Q683551 relates to his lifetime, and determining if the Sixteen Kingdoms is connected. I'm also ensuring I understand the constraints of only using the provided extract.\n\n\n**Refining Event Criteria**\n\nI'm now refining my criteria for connecting events to the extract. I've realized I must strictly adhere to the information within the text; no external knowledge allowed. Specifically, I must only connect events that the extract explicitly mentions or clearly implies. \"Later Qin\" is in the extract, so it must be evaluated, but no outside knowledge like its connection to the Sixteen Kingdoms is considered. I'm focusing on whether an event in the provided context is the same thing, with a broader or narrower name.\n\n\n**Evaluating Event Scope**\n\nI'm now determining if there's an expected connection between the \"Sixteen Kingdoms\" period and the mention of \"Later Qin\" within the extract. I'm focusing on whether this connection should be implicit or explicit, as my assessment must strictly adhere to the provided text. My current thought is how to assess the constraints of the provided information. I must figure out whether the provided event, Q683551, is connected. I am going back and forth, refining the assessment of \"lived_through\". I am considering an empty list of connections is correct when nothing matches.\n\n\n**Revisiting Extract Context**\n\nI've re-examined the prompt and realized that the \"EVENTS\" list is automatically generated based on the thinker's lifespan (384–414). The list contains events/periods from Wikidata that overlap this period. Now, I am focused on whether the extract explicitly mentions or clearly implies any of these events, particularly \"Sixteen Kingdoms.\" My previous focus on an implicit relationship was incorrect. I'm focusing on \"Sixteen Kingdoms.\"\n\n\n**Assessing \"Later Qin\" Implication**\n\nI'm now determining if \"Later Qin\" implicitly refers to \"Sixteen Kingdoms\" within the confines of the extract's information. I'm focusing on whether \"Later Qin\" can be considered a broader or narrower term for the Sixteen Kingdoms period. The prompt's example guides me: \"Later Qin\" is a state, while the Sixteen Kingdoms is a period of sixteen states. This is a specific state within a broader historical period, so a direct, implicit connection is questionable based on the given constraints. I will be careful to adhere strictly to the information.\n\n\n**Interpreting Implication of Events**\n\nI'm now wrestling with the nuance of \"clearly imply\" in the prompt's context. I'm focusing on whether \"Later Qin\" implicitly refers to \"Sixteen Kingdoms.\" My concern is the reader's historical knowledge. Could the author/evaluator assume a connection, and if so, is this \"clear implication?\" I see the phrase \"broader or narrower name\" as a key. I'm now evaluating if \"Sixteen Kingdoms\" is the broader name. If so, am I permitted to make the connection? My focus is on the specific event Q683551 and it's potential connection to Sengzhao's time. I'm carefully considering how to provide only factual connections.\n\n\n**Evaluating Implication Scope**\n\nI'm now clarifying the application of \"broader or narrower name\" and considering an example from the prompt. I'm focusing on \"the civil war\" versus \"English Civil War\" and pondering if the \"broader or narrower name\" concept permits the connection based on this example. I'm evaluating how the example supports the \"Later Qin\" / \"Sixteen Kingdoms\" relationship as a relevant case. The \"lived_through\" connection with Q683551 remains relevant.\n\n\n**Connecting \"Lived Through\"**\n\nI've determined that \"Sixteen Kingdoms\" is, in fact, the broader historical period encompassing \"Later Qin.\" Since the subject \"lived through\" Later Qin, they necessarily \"lived through\" the Sixteen Kingdoms period. This satisfies the \"broader/narrower name\" criteria, and I can now confidently make a \"lived_through\" connection. The extract supports this, and I've excluded other non-relevant events.\n\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLWFpLXN0dWRpbyJ9",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1057,
+   "completion_tokens": 2788,
+   "total_tokens": 3845,
+   "cost": 0.01124775,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01124775,
+    "upstream_inference_prompt_cost": 0.00079275,
+    "upstream_inference_completions_cost": 0.010455
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2650,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q683551\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Sengzhao lived during the Sixteen Kingdoms era as a Buddhist philosopher from the Later Qin dynasty.\",\n      \"evidence\": \"Sengzhao (Chinese: 僧肇; pinyin: Sēngzhào; Wade–Giles: Seng-chao; Japanese: 僧肇, Sōjō; 374–414) was a Chinese Buddhist philosopher from Later Qin.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q683551",
+     "type": "lived_through",
+     "reason": "Sengzhao lived during the Sixteen Kingdoms era as a Buddhist philosopher from the Later Qin dynasty.",
+     "evidence": "Sengzhao (Chinese: 僧肇; pinyin: Sēngzhào; Wade–Giles: Seng-chao; Japanese: 僧肇, Sōjō; 374–414) was a Chinese Buddhist philosopher from Later Qin.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1057,
+   "completion_tokens": 2788,
+   "total_tokens": 3845,
+   "cost": 0.01124775,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01124775,
+    "upstream_inference_prompt_cost": 0.00079275,
+    "upstream_inference_completions_cost": 0.010455
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2650,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.01124775,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "seconds": 35.98
+ },
+ "meta": {}
+}

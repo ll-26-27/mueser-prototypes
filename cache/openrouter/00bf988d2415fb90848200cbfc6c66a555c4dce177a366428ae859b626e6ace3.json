@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "00bf988d2415fb90848200cbfc6c66a555c4dce177a366428ae859b626e6ace3",
+ "fetched_at": "2026-11-19T16:37:56Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Adam de Wodeham (1295–1358). medieval philosopher and theologian\n\nEXTRACT:\nAdam of Wodeham, OFM (1298–1358) was a philosopher and theologian. Currently, Wodeham is best known for having been a secretary of William Ockham and for his interpretations of John Duns Scotus. But Wodeham was also an influential thinker in his own right who made valuable philosophical contributions during his life.\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ264012  Nanboku-chō period (1336–1392) — period (1336–1392) within the Muromachi period of Japanese history, in which two men had competing claims to the Japanese imperial throne\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ826021  Kenmu Restoration (1333) — period of Japanese history, 1333–1336\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12551  Hundred Years' War (1337–1453) — series of conflicts and wars between England and France between 1337 and 1453\nQ698985  Ottoman Wars in Europe (1354–1683) — series of military conflicts between the Ottoman Empire and various European states\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ2658255  Byzantine Civil War of 1341–1347 (1341–1347) — civil war in the Byzantine Empire\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ550172  War of the Breton Succession (1341–1365) — conflict between the Counts of Blois and the Montforts of Brittany\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ112524  Red Turban Rebellion (1351–1368) — Revolt against the Yuan dynasty in China (1351–1368)\nQ7126013  Jacquerie (1358) — French peasant uprising, 1358\nQ853685  Treaty of Nöteborg (1323) — 1323 peace treaty between Kingdom of Sweden and the Novgorod Republic\nQ27759  Battle of Crécy (1346) — 1346 battle of the Hundred Years' War\nQ201692  Battle of Poitiers (1356) — 1356 battle of the Hundred Years' War\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ42005  Black Death (1346–1352) — 1346–1353 pandemic in Eurasia and North Africa\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106268-775jlWQRZh2WewC6wsLG",
+  "object": "chat.completion",
+  "created": 1795106268,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Focusing on Wodeham's Legacy**\n\nI'm currently processing that Adam of Wodeham, a 14th-century philosopher and theologian, is primarily recognized for his ties to William Ockham and his scholarly engagement with John Duns Scotus's work. My focus is on understanding the extent of his own intellectual contributions beyond these associations.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Focusing on Wodeham's Legacy**\n\nI'm currently processing that Adam of Wodeham, a 14th-century philosopher and theologian, is primarily recognized for his ties to William Ockham and his scholarly engagement with John Duns Scotus's work. My focus is on understanding the extent of his own intellectual contributions beyond these associations.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1938,
+   "completion_tokens": 293,
+   "total_tokens": 2231,
+   "cost": 0.00255225,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00255225,
+    "upstream_inference_prompt_cost": 0.0014535,
+    "upstream_inference_completions_cost": 0.00109875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 284,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1938,
+   "completion_tokens": 293,
+   "total_tokens": 2231,
+   "cost": 0.00255225,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00255225,
+    "upstream_inference_prompt_cost": 0.0014535,
+    "upstream_inference_completions_cost": 0.00109875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 284,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00255225,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 8.67
+ },
+ "meta": {}
+}

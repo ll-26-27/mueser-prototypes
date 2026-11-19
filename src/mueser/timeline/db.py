@@ -12,7 +12,9 @@ from __future__ import annotations
 import json
 import sqlite3
 import time
+from contextlib import contextmanager
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from mueser.shared.runs import RunManifest, rel
 
@@ -119,6 +121,23 @@ def citations_for(node: dict, sep_meta: dict | None, summary: dict | None, acces
     return out
 
 
+@contextmanager
+def _staged_database(paths: dict[str, Path]):
+    """Publish complete exports only after both have been generated successfully."""
+    with TemporaryDirectory(prefix=".build-", dir=paths["timeline"]) as folder:
+        database = Path(folder) / paths["db"].name
+        document = Path(folder) / paths["json"].name
+        connection = sqlite3.connect(database)
+        try:
+            yield connection, document
+            connection.commit()
+        finally:
+            connection.close()
+        # Stage on the same filesystem so readers never see a half-written file.
+        database.replace(paths["db"])
+        document.replace(paths["json"])
+
+
 def build_db(case: Path, run: Path, proposals: Path | None, *, echo=print) -> tuple[Path, Path]:
     P = case_paths(case)
     t0 = time.time()
@@ -138,7 +157,7 @@ def build_db(case: Path, run: Path, proposals: Path | None, *, echo=print) -> tu
         for r in results:
             model = r.get("model") or model
             for p in r.get("proposals", []):
-                if not p.get("in_list") or p["event"] not in node_ids:
+                if not p.get("in_list") or p["event"] not in node_ids or r["person"] not in node_ids:
                     continue
                 eid = f"{p['type']}:{r['person']}:{p['event']}"
                 if eid in seen:
@@ -158,68 +177,64 @@ def build_db(case: Path, run: Path, proposals: Path | None, *, echo=print) -> tu
 
     data_id = f"{run.name}+{prop_run or 'no-proposals'}+{len(events)}ev"
     P["timeline"].mkdir(parents=True, exist_ok=True)
-    if P["db"].exists():
-        P["db"].unlink()
-    con = sqlite3.connect(P["db"])
-    con.executescript(SCHEMA)
-    for scheme, (name, pattern, kind) in LINK_SCHEMES.items():
-        con.execute("INSERT INTO sources VALUES (?,?,?,?)", (scheme, name, kind, pattern))
-    con.execute("INSERT INTO sources VALUES (?,?,?,?)", ("wikidata", "Wikidata", "item", "https://www.wikidata.org/wiki/{}"))
+    with _staged_database(P) as (con, json_path):
+        con.executescript(SCHEMA)
+        for scheme, (name, pattern, kind) in LINK_SCHEMES.items():
+            con.execute("INSERT INTO sources VALUES (?,?,?,?)", (scheme, name, kind, pattern))
+        con.execute("INSERT INTO sources VALUES (?,?,?,?)", ("wikidata", "Wikidata", "item", "https://www.wikidata.org/wiki/{}"))
 
-    page_nodes: list[dict] = []
-    for n in nodes:
-        sy, sl, sp = _years(n, "start")
-        ey, el, ep = _years(n, "end")
-        links = links_for(n)
-        summary = wp["summaries"].get(n["id"])
-        sep_meta = sep["entries"].get(n["id"])
-        cites = citations_for(n, sep_meta, summary, accessed)
-        con.execute("INSERT INTO nodes VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
-            n["id"], n["type"], n["label"], n.get("label_lang"), n.get("description", ""), n.get("rule"), sy, sl, sp, ey, el, ep,
-            int(bool(n.get("point"))), n.get("birthplace"), n.get("deathplace"), "|".join(n.get("locations", [])),
-            "|".join(n.get("countries", [])), "|".join(n.get("occupations", [])), n.get("language"), "|".join(n.get("genres", [])),
-            "|".join(n.get("instances", [])), n.get("sitelinks", 0), n.get("image"), image_url(n), n.get("wiki", {}).get("en"),
-            n.get("wiki", {}).get("de")))
-        con.executemany("INSERT INTO node_ids VALUES (?,?,?)", [(n["id"], k, v) for k, v in n.get("ids", {}).items()])
-        con.executemany("INSERT INTO links VALUES (?,?,?,?,?,?)", [(n["id"], L["scheme"], L["name"], L["kind"], L["id"], L["url"]) for L in links])
-        if summary:
-            con.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?,?,?)", (n["id"], "wikipedia", summary.get("lang"), summary.get("title"),
-                        summary.get("extract", ""), summary.get("url"), str(summary.get("revision")), summary.get("timestamp"), summary.get("licence")))
-        if sep_meta and sep_meta.get("ok"):
-            c = sep_citation(sep_meta, accessed)
-            con.execute("INSERT INTO sep_entries VALUES (?,?,?,?,?,?,?,?)", (n["id"], sep_meta["id"], sep_meta.get("title"),
-                        "|".join(sep_meta.get("authors", [])), sep_meta.get("published"), sep_meta.get("pubinfo"), sep_meta.get("url"), c["plain"]))
-        con.executemany("INSERT INTO citations VALUES (?,?,?,?)", [(n["id"], c["scheme"], c["plain"], json.dumps(c["csl"], ensure_ascii=False)) for c in cites])
-        page_nodes.append({
-            "id": n["id"], "type": n["type"], "label": n["label"], "desc": n.get("description", ""), "rule": n.get("rule"),
-            "sy": sy, "sl": sl, "ey": ey, "el": el, "pt": bool(n.get("point")),
-            "place": {k: v for k, v in (("birth", n.get("birthplace")), ("death", n.get("deathplace"))) if v} | (
-                {"at": n["locations"]} if n.get("locations") else {}),
-            "countries": n.get("countries", []), "occ": n.get("occupations", []), "lang": n.get("language"), "genres": n.get("genres", []),
-            "inst": n.get("instances", [])[:3], "img": image_url(n), "sl_n": n.get("sitelinks", 0), "links": links,
-            "text": {"t": summary.get("extract", ""), "title": summary.get("title"), "url": summary.get("url"), "lang": summary.get("lang"),
-                     "rev": summary.get("revision"), "ts": summary.get("timestamp")} if summary else None,
-            "sep": {"title": sep_meta.get("title"), "authors": sep_meta.get("authors"), "pubinfo": sep_meta.get("pubinfo"), "url": sep_meta.get("url")}
-                   if sep_meta and sep_meta.get("ok") else None,
-            "cite": cites,
-        })
+        page_nodes: list[dict] = []
+        for n in nodes:
+            sy, sl, sp = _years(n, "start")
+            ey, el, ep = _years(n, "end")
+            links = links_for(n)
+            summary = wp["summaries"].get(n["id"])
+            sep_meta = sep["entries"].get(n["id"])
+            cites = citations_for(n, sep_meta, summary, accessed)
+            con.execute("INSERT INTO nodes VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+                n["id"], n["type"], n["label"], n.get("label_lang"), n.get("description", ""), n.get("rule"), sy, sl, sp, ey, el, ep,
+                int(bool(n.get("point"))), n.get("birthplace"), n.get("deathplace"), "|".join(n.get("locations", [])),
+                "|".join(n.get("countries", [])), "|".join(n.get("occupations", [])), n.get("language"), "|".join(n.get("genres", [])),
+                "|".join(n.get("instances", [])), n.get("sitelinks", 0), n.get("image"), image_url(n), n.get("wiki", {}).get("en"),
+                n.get("wiki", {}).get("de")))
+            con.executemany("INSERT INTO node_ids VALUES (?,?,?)", [(n["id"], k, v) for k, v in n.get("ids", {}).items()])
+            con.executemany("INSERT INTO links VALUES (?,?,?,?,?,?)", [(n["id"], L["scheme"], L["name"], L["kind"], L["id"], L["url"]) for L in links])
+            if summary:
+                con.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?,?,?)", (n["id"], "wikipedia", summary.get("lang"), summary.get("title"),
+                            summary.get("extract", ""), summary.get("url"), str(summary.get("revision")), summary.get("timestamp"), summary.get("licence")))
+            if sep_meta and sep_meta.get("ok"):
+                c = sep_citation(sep_meta, accessed)
+                con.execute("INSERT INTO sep_entries VALUES (?,?,?,?,?,?,?,?)", (n["id"], sep_meta["id"], sep_meta.get("title"),
+                            "|".join(sep_meta.get("authors", [])), sep_meta.get("published"), sep_meta.get("pubinfo"), sep_meta.get("url"), c["plain"]))
+            con.executemany("INSERT INTO citations VALUES (?,?,?,?)", [(n["id"], c["scheme"], c["plain"], json.dumps(c["csl"], ensure_ascii=False)) for c in cites])
+            page_nodes.append({
+                "id": n["id"], "type": n["type"], "label": n["label"], "desc": n.get("description", ""), "rule": n.get("rule"),
+                "sy": sy, "sl": sl, "ey": ey, "el": el, "pt": bool(n.get("point")),
+                "place": {k: v for k, v in (("birth", n.get("birthplace")), ("death", n.get("deathplace"))) if v} | (
+                    {"at": n["locations"]} if n.get("locations") else {}),
+                "countries": n.get("countries", []), "occ": n.get("occupations", []), "lang": n.get("language"), "genres": n.get("genres", []),
+                "inst": n.get("instances", [])[:3], "img": image_url(n), "sl_n": n.get("sitelinks", 0), "links": links,
+                "text": {"t": summary.get("extract", ""), "title": summary.get("title"), "url": summary.get("url"), "lang": summary.get("lang"),
+                         "rev": summary.get("revision"), "ts": summary.get("timestamp")} if summary else None,
+                "sep": {"title": sep_meta.get("title"), "authors": sep_meta.get("authors"), "pubinfo": sep_meta.get("pubinfo"), "url": sep_meta.get("url")}
+                       if sep_meta and sep_meta.get("ok") else None,
+                "cite": cites,
+            })
 
-    for e in edges:
-        con.execute("INSERT INTO edges VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
-            e["id"], e["type"], e["src"], e["dst"], e["source"], e["status"], e.get("reason"), e.get("evidence"),
-            int(bool(e.get("verified"))) if "verified" in e else None, e.get("work"), e.get("model"), e.get("decided_by"),
-            e.get("decided_at"), e.get("decision_note"), int(bool(e.get("in_list"))) if "in_list" in e else None))
-    for k, v in (("data_id", data_id), ("collect_run", run.name), ("proposals_run", prop_run or ""), ("accessed", accessed),
-                 ("built", time.strftime("%Y-%m-%dT%H:%M:%S%z")), ("events", str(len(events)))):
-        con.execute("INSERT INTO meta VALUES (?,?)", (k, v))
-    con.commit()
-    con.close()
+        for e in edges:
+            con.execute("INSERT INTO edges VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+                e["id"], e["type"], e["src"], e["dst"], e["source"], e["status"], e.get("reason"), e.get("evidence"),
+                int(bool(e.get("verified"))) if "verified" in e else None, e.get("work"), e.get("model"), e.get("decided_by"),
+                e.get("decided_at"), e.get("decision_note"), int(bool(e.get("in_list"))) if "in_list" in e else None))
+        for k, v in (("data_id", data_id), ("collect_run", run.name), ("proposals_run", prop_run or ""), ("accessed", accessed),
+                     ("built", time.strftime("%Y-%m-%dT%H:%M:%S%z")), ("events", str(len(events)))):
+            con.execute("INSERT INTO meta VALUES (?,?)", (k, v))
 
-    page_edges = [{k: v for k, v in e.items() if k in ("id", "type", "src", "dst", "source", "status", "reason", "evidence", "verified", "work",
-                                                        "decided_by", "decided_at", "decision_note")} for e in edges]
-    data = {"data_id": data_id, "collect_run": run.name, "proposals_run": prop_run, "accessed": accessed, "model": model,
-            "built": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "edge_types": EDGE_TYPES, "nodes": page_nodes, "edges": page_edges}
-    P["json"].write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        page_edges = [{k: v for k, v in e.items() if k in ("id", "type", "src", "dst", "source", "status", "reason", "evidence", "verified", "work",
+                                                            "decided_by", "decided_at", "decision_note")} for e in edges]
+        data = {"data_id": data_id, "collect_run": run.name, "proposals_run": prop_run, "accessed": accessed, "model": model,
+                "built": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "edge_types": EDGE_TYPES, "nodes": page_nodes, "edges": page_edges}
+        json_path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     from collections import Counter
     nc, ec, sc = Counter(n["type"] for n in nodes), Counter(e["type"] for e in edges), Counter(e["status"] for e in edges)
     RunManifest(run_id=f"db-{time.strftime('%Y%m%d-%H%M%S')}", step="timeline.db",

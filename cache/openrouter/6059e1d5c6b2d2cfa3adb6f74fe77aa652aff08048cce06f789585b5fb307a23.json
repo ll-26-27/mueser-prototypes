@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "6059e1d5c6b2d2cfa3adb6f74fe77aa652aff08048cce06f789585b5fb307a23",
+ "fetched_at": "2026-11-19T16:37:01Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Isaac ben Solomon al-Israeli (832–932). medieval Jewish physician and philosopher\n\nEXTRACT:\nIsaac Israeli ben Solomon (Hebrew: יצחק בן שלמה הישראלי Yitzhak ben Shlomo ha-Yisraeli; Arabic: أبو يعقوب إسحاق بن سليمان الإسرائيلي Abu Ya'qub Ishaq ibn Suleiman al-Isra'ili; c. 832 – c. 932), also known as Isaac Israeli the Elder and Isaac Judaeus, was a Jewish physician and philosopher. He was one of the foremost Jewish academics living in the Arab world of his time, and is regarded as the father of medieval Jewish Neoplatonism. His works, all written in Arabic and subsequently translated into Hebrew, Latin, and Spanish, entered the medical curriculum of European universities in the early 13th century and remained popular throughout the rest of the Middle Ages.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ242115  Five Dynasties and Ten Kingdoms Period (907–960) — Period of Chinese history (907–979)\nQ614082  Carolingian art (800–1000) — art of the Frankish empire, ca. 780–900\nQ4958  Liao dynasty (916) — Khitan imperial dynasty in East Asia (916-1125), controlling northern and northeastern China, Mongolia, Russian Far East and North Korea\nQ783489  Later Liang dynasty (907) — one of the Five Dynasties of China\nQ1143126  Later Tang (923) — empire and dynasty of China during the 10th-century Five Dynasties & Ten Kingdoms period\nQ759988  Zanj Rebellion (869–883) — slave revolt against the Abbasid Caliphate\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ134840  Treaty of Verdun (843) — 843 treaty dividing the Frankish Empire between the grandsons of Charlemagne\nQ160205  Treaty of Meerssen (870) — treaty\nQ157082  Oaths of Strasbourg (842) — military pact"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106211-9JSkG7TI1VL4Aw4T3v3M",
+  "object": "chat.completion",
+  "created": 1795106211,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Researching Al-Israeli's Connections**\n\nI'm currently focused on identifying any direct links between Isaac ben Solomon al-Israeli and the events you've provided, strictly using the text that's been shared.\n\n**Tracing His Influence**\n\nI'm currently exploring the extent to which Isaac Israeli's philosophical and medical contributions during the Islamic Golden Age might have indirectly touched upon the provided historical periods. My focus remains on established textual evidence.\n\n**Confirming Time Period Overlap**\n\nI'm currently scrutinizing whether Isaac ben Solomon al-Israeli's lifespan directly intersects with the Middle Ages as a lived experience, or if the references to \"medieval\" and his works' popularity in that era are solely post-mortem attestations. This distinction is crucial for determining relevance.\n\n**Investigating Circumstantial Mentions**\n\nI'm currently examining if \"Middle Ages\" constitutes a direct circumstance of Isaac ben Solomon al-Israeli's life within the provided text. My analysis focuses on whether its mention implies his lived experience or refers solely to the reception of his work.\n\n**Validating Event Relevance**\n\nI'm presently assessing if the \"Middle Ages\" is directly applicable as a lived experience for Isaac ben Solomon al-Israeli based on the provided text. My analysis centers on whether the extract implies his direct involvement or merely discusses the later reception of his work.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Researching Al-Israeli's Connections**\n\nI'm currently focused on identifying any direct links between Isaac ben Solomon al-Israeli and the events you've provided, strictly using the text that's been shared.\n\n**Tracing His Influence**\n\nI'm currently exploring the extent to which Isaac Israeli's philosophical and medical contributions during the Islamic Golden Age might have indirectly touched upon the provided historical periods. My focus remains on established textual evidence.\n\n**Confirming Time Period Overlap**\n\nI'm currently scrutinizing whether Isaac ben Solomon al-Israeli's lifespan directly intersects with the Middle Ages as a lived experience, or if the references to \"medieval\" and his works' popularity in that era are solely post-mortem attestations. This distinction is crucial for determining relevance.\n\n**Investigating Circumstantial Mentions**\n\nI'm currently examining if \"Middle Ages\" constitutes a direct circumstance of Isaac ben Solomon al-Israeli's life within the provided text. My analysis focuses on whether its mention implies his lived experience or refers solely to the reception of his work.\n\n**Validating Event Relevance**\n\nI'm presently assessing if the \"Middle Ages\" is directly applicable as a lived experience for Isaac ben Solomon al-Israeli based on the provided text. My analysis centers on whether the extract implies his direct involvement or merely discusses the later reception of his work.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1651,
+   "completion_tokens": 1399,
+   "total_tokens": 3050,
+   "cost": 0.0064845,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0064845,
+    "upstream_inference_prompt_cost": 0.00123825,
+    "upstream_inference_completions_cost": 0.00524625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1390,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1651,
+   "completion_tokens": 1399,
+   "total_tokens": 3050,
+   "cost": 0.0064845,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0064845,
+    "upstream_inference_prompt_cost": 0.00123825,
+    "upstream_inference_completions_cost": 0.00524625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1390,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0064845,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 10.59
+ },
+ "meta": {}
+}

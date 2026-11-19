@@ -72,7 +72,8 @@ def serve(case: Path = CASE, host: str = typer.Option("127.0.0.1", "--host"), po
           who: str = typer.Option("", "--who", help="name written on every event"), no_open: bool = typer.Option(False, "--no-open"),
           verbose: bool = typer.Option(False, "--verbose")):
     """Serve the page locally; POST /api/log appends to outputs/timeline/log.jsonl."""
-    from .serve import run_forever, serve as _serve
+    from .serve import run_forever
+    from .serve import serve as _serve
     httpd, _ = _serve(case, host=host, port=port, who=who, open_browser=not no_open, quiet=not verbose)
     run_forever(httpd)
 

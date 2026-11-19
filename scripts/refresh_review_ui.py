@@ -10,7 +10,10 @@ from mueser.shared.review import enhance_html
 
 
 def main() -> None:
-    targets = [(Path("index.html"), "home")]
+    # The gateway owns its presentation; report enhancements must not turn it
+    # back into a transcription workspace when embedded assets are refreshed.
+    home = Path("index.html")
+    targets = [] if 'data-gateway="true"' in home.read_text(encoding="utf-8") else [(home, "home")]
     for path in sorted(Path("01-use-cases").glob("**/outputs/**/*.html")):
         # Timestamped run folders are immutable evidence, not presentation targets.
         if "runs" in path.parts:

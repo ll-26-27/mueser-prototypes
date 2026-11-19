@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "c96fc7ff732d722752bf2f5488b123167037926fc4c4df24469d5e75e2d418a8",
+ "fetched_at": "2026-11-19T16:35:36Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Hippocrates (459 BCE–369 BCE). Ancient Greek physician (c. 460 – c. 370 BCE)\n\nEXTRACT:\nHippocrates of Kos (; Ancient Greek: Ἱπποκράτης ὁ Κῷος, romanized: Hippokrátēs ho Kôios; c. 460 – c. 370 BC), also known as Hippocrates II, named after his grandfather Hippocrates I (also Hippocrates of Kos or Hippocrates I of Kos) was a Greek physician and philosopher of the classical period who is considered one of the most outstanding figures in the history of medicine. He is traditionally referred to as the \"Father of Medicine\" in recognition of his lasting contributions to the field, such as the use of prognosis and clinical observation, the systematic categorization of diseases, and the (later discredited) formulation of humoral theory. His studies set out the basic ideas of modern-day specialties, including surgery, urology, neurology, acute medicine and orthopedics, and advanced the systematic study of clinical medicine.\nThe Hippocratic school of medicine revolutionized ancient Greek medicine, establishing it as a discipline distinct from other fields with which it had traditionally been associated (theurgy and philosophy), thus establishing medicine as a profession. Hippocrates is also widely recognized for his contributions to medical ethics, being credited with the Hippocratic Oath that remains in use today. Works associated with Hippocrates, called the Hippocratic Corpus, also summed up the medical knowledge of previous schools, and prescribed acceptable practices for physicians.\nNevertheless, very little is known concretely about what Hippocrates himself thought, wrote and did, because his achievements were often conflated with those of the practitioners of Hippocratic medicine and the writers of the Hippocratic Corpus.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ386303  Thirtieth Dynasty of Egypt (-379) — ancient Egyptian dynasty\nQ511257  Twenty-ninth Dynasty of Egypt (-397–-377) — ancient Egyptian dynasty\nQ833118  Twenty-eighth Dynasty of Egypt (-403–-398) — ancient Egyptian dynasty\nQ651008  Corinthian War (-394–-386) — 395-387 BCE Greek conflict\nQ33745  Peloponnesian War (-430–-403) — war fought between Athens and Sparta (431–404 BCE)\nQ76026  Greco-Persian Wars (-498–-448) — series of conflicts between the Achaemenid Empire of Persia and poleis of the Hellenic world in the fifth century BCE\nQ11924845  Messenian Wars (-742–-453) — series of wars between Sparta and Messenia\nQ370709  Peace of Callias (-448) — possible Greco-Persian peace treaty (c. 449 BC)\nQ932202  Peace of Nicias (-420) — 421 BC treaty between Athens and Sparta\nQ1132922  Peace of Antalcidas (-386) — Greek-Persian treaty of 387 BCE\nQ461599  Battle of Leuctra (-370) — battle between Thebes and Sparta, 371 BCE"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106129-3bXGnvTD0a81vNFrFXWn",
+  "object": "chat.completion",
+  "created": 1795106129,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q843745\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Hippocrates lived and practiced as a physician during the classical period of Greece.\",\n      \"evidence\": \"Hippocrates of Kos (; Ancient Greek: Ἱπποκράτης ὁ Κῷος, romanized: Hippokrátēs ho Kôios; c. 460 – c. 370 BC), also known as Hippocrates II, named after his grandfather Hippocrates I (also Hippocrates of Kos or Hippocrates I of Kos) was a Greek physician and philosopher of the classical period who is considered one of the most outstanding figures in the history of medicine.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Historical Figures**\n\nI'm currently focused on identifying specific links between Hippocrates and the events cataloged. My recent work involves dissecting the provided text to pinpoint any direct or indirect associations, ensuring accurate mapping.\n\n**Classifying Historical Periods**\n\nI'm refining the temporal classification for Hippocrates. My current thinking centers on definitively linking him to \"Classical Greece\" as opposed to the broader \"Classical antiquity,\" based on the textual evidence indicating his activity within that specific era.\n\n**Distinguishing Historical Eras**\n\nMy focus is now on solidifying the temporal placement of Hippocrates. I'm confirming that the \"classical period\" directly aligns with Classical Greece (Q843745), and that Classical antiquity (Q486761) is too broad, as the text explicitly points to that specific Greek era.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Historical Figures**\n\nI'm currently focused on identifying specific links between Hippocrates and the events cataloged. My recent work involves dissecting the provided text to pinpoint any direct or indirect associations, ensuring accurate mapping.\n\n**Classifying Historical Periods**\n\nI'm refining the temporal classification for Hippocrates. My current thinking centers on definitively linking him to \"Classical Greece\" as opposed to the broader \"Classical antiquity,\" based on the textual evidence indicating his activity within that specific era.\n\n**Distinguishing Historical Eras**\n\nMy focus is now on solidifying the temporal placement of Hippocrates. I'm confirming that the \"classical period\" directly aligns with Classical Greece (Q843745), and that Classical antiquity (Q486761) is too broad, as the text explicitly points to that specific Greek era.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1832zQsfBhntZdicXF5KSqAickZjpeRKmA+ACvLNNfcp6Ztv7tmXtBzZxma9W9yVuQtcaoOd+o8mh3HbsBpUcfMEM/mqZZiFz0l5avlet+Ins23j2XDPMnHpVhT9cFHhMss6PjOlSzNTRbjdHCG7xjK1vLfw2PkJlqh0AC6T0fJEMt3C1JVnDiIOGk9l55d03V/hHbrCC4tmMdojM2hC3spRT/AwhBRzZCJU2l2Y5aXkHyifZ7Lv1p3VJ2AcC2j6/GvSbV4sCUclswsv7ll79oD0L4PkRxsqFvGCuxkuv3yNrvJR7HCS0i/VoKNl8L4Wt6870+3FSsjrNkHlYy1Sf2pG9bxpCi577t3E1EsEctoSRqsfK/nXfaYzvhDgGAEbW5Eshf356jIOO+rq1b2NF29KZTrX3g63kmt/49c/y8O3JE47cGZRMLYaBEssffcqdxTrtJwJWlxW3tJZzgoEFDMxvBO5ubzzIRihd7qwQVhKiKQ6xLFqxiqtG9zS5yleJEaIUy5LzvQ3i6OJiYtbEBuGeC3tF35G/fmy4irIrOTPngJla/8FFI6CwPyuPrkwcad8OZTuI+JGkr870i7TQG1PMRQ2B6G3yoM95M9lLrcbGAUjfBG7cEzpqD3/ZtUlRrghCZaQTaxrQ4LY/fvD5IGax1yDNlI34cAf0JIwVYQcXz6iaRJ5aqojOhrV5H4SMYsvExpIGi7MvlNSikTniHAzPV7pm4I9BZMT/ANJSqNjd0ZEnP0CHlUMSxRI2Ccy8lxtiUiW/KOQur5bziCGNPVUwNAwNSrN3snuEveF54hDPZc2zZ5dRcfafnVRbvueAQTZLZLWZgyxocYK0VpxtxwlHyNJnuRlWFJGiqhKNqEpuci5DO6y8hWTdd0hoOWLOUqb5/g6FOCTZlSCIg5YEMdAKBc6Fcbv8YsuY6tA/RrDBSOs7og+zva2L6ZWP92YIfDMJyc5zC+gGPIZ2wBvjIGSW1LRSvCsrTe1sm8orkjyODyMk5F3OfR+zJJh2YGM9CCHewKlGl7f2qJB0BojWE2LMZkOx3h9LQ7Chx94MZkao5Zben9T20DTl0LwB2gshso4++NfMHKAAIhlBmGLhwFOJCvWkLNwjgXT6LxUhob8ZsZGKGpJCuIJJxYQ+kIeFlDkkqQhltrZHgNev4iKkXPYZnHcEFlKYxafm1/lh3WsSiuFllhVeZ0XRNbgE+w2ADV/H05GMLmm6eeOkpoBJxyS4sZPoVmYyfortg8TsPprKQy1UrBeAoHaGmr1IaevjK7gIvdlCmG4f/bUvWhremwdKKvGxbPscYzD8inmkfeAScBehV0AqhKALXARMfK+a/ZwqQkJRbJyV3nZokk3gLqy2O8VfFdU3ZJg+qom+V2pa/8JDNecIFesr2mVnNJ+MjdCJyzvRuUKK5dE91atJJ0GvZhq+zdBBEPeWecqRer9NraB/+HfP9AlQIU2vEL7aVFQEuh9IZdnRDZW/wJCGNfTko0i7E0tO1SZtOsc4eLsdFPURQtaFcsz9xltMAS033mVd/IVoAdfkvoVb1MyiniIl96/sBT8ME4VoeGZfHLV3RP/4eFNH/HiveEbPV31vWCeWm7nMhnDuQ/ktuWXm5EiT3w1dOZmCZ6Ve9AZMa8Wm+nqfUikQSJrjh4VaNHUuenS375i+ianBvj/NYh8JkCTJRopxVVYEIL1h1i9jcmaXw8P336H1yi5qWBwRLi42j8grDpT5DnlVyiFfjjxv3RhESv+4LjHQxa3DLKpH1evOt6XA9ELkJaktyEUEI/E0YdEB4Uz9lf3kvfexm6cU41cQS6bxQFCEydL3A0CRyvewN1GrawR2i+RlubJdbdI8HwWYZvgJBB1wLZ8QZMqSozP1vFq6kgxAc+uWk6a5vPNWXrITR6tsj0HN+llrTSqE/Tv3sYNWH5Is6K9pRtd44LW1BJTqktzLXNW0mBZE8SXYYbAd9DCSXGUy24XQMw4cN9G7sb5IQK45aslMlVDsSTykNpqMfu2r76JuRW4tL7oY54iWD3MKUpDNjvUaVXgVNJv/KxRQFSaNYcv2SgJPClwAE8GM75dleVw0bcHSfdZw57zW1dJ2QW1KVCIn5Od+BY7e0E/x1c0xoQvX4m5DN8WNlgRtVzx4twkChFdi85XQAjNhSNFy6DOJ31Mymx+AbhFeTWiC/SR7PuqrU7l09MSzShhXx2m9iImrwzMNNPeRPyN7zbCFYKs+P6tTRsP2yONbymFtK0vcSWrvpwUi9fZq9jicNe92NJtl7Zasj2uaHNevu0tAUKlqWwv+EWYq96wqjyi6KAOV7FAujT1Q6Ko+epUl0j+YvMYNiPNJSn/wRoQyetTTUoYqHq+LGOz5R0YdmZaKn4HOqQVAYnGZEkcoo6DaOfbd74PFW8Zn8qztfXJA77e4XE7od6eKkIJN/BR6+61vzA7ciPRhuI0nx9nhvyJAx1hnm9pOv59Y6kT/3a/4ATqK68fqEYTYtrgMSRMucyTZfix6QxASKnwJz7sg3f1UHFJXq3LS1h1CWcK2o6oAjMqH90NkfmAaWfzx6ZR0qKOU2u+AjcCjzwRF35igThSQuYYLXvGH8dsFjm8w2a98EuO5MztaI1iSRyG17odkXo+SbGunC36VQqiRTgYEyyk5XQKD1SYQNouMmiJpVUmudHqrADvSGN+EHGG83lVrqumqX5EFz3i83hPY/kTtzkSAAKKQtTK7+bup2y0zO2Nj9Ame0xVuU+BTnjr0UbJt/ofebpNXHeNVJyAeCNaCuEJg7603QZB5S5rTajRieYa4PFQ5+mrdoMaIKlLA5m7krS2M4uc9G+u/zHBSI2N+uRgtE33g2M91mJI3J3kY2MIzi2k4lIIdfSNxmx4N0sdnFhmcSIREeuU23bE7JyZ7SAsOLQR7aO+lW4m1Am5DMshdaqe7jiCGruAZwrWAMD+mpvtAoK+kR1QuHCOqy44tXGtwyuBPM1pk3Xk/M+mbT3vNV7ivcLPX/PUAFn2FDDTJ8oP1NTVanuN+Qi4wBNkShCRJFGh5y0LuqEsboPoUW7cDApK1RvhLNNVEVbyEQfjtC1XkA/KywyQfy6cU4iUaKLZSHkxhf9LgnvBArDOXL86h7a82Zjzs2wR4EvhTp33rLWc17QSmFqyKv4nibgY8PKp/52gvLnGYaePTdePHFpfS7L86X8af8Y4L0b+FpZeM6bVZnAva4huq9SEf94fIXiksfK0nKAiihLpEG/s6xNjO51OIdhKIx7fuTawKV0c0ROYMLB+ws8y17Uuciq3xUPtZAyd0cPykyNv40X9wco60dO6M+XZHL3qzuJ5rUUjfS7xYRJGmsatQh4FUcan7KKWOKghdbzXUH8buTTMiKFXlbrzS7FwVKSCM8ilTCi2/lqBa5GSbu3F18m22qOq4/RafHuoLYrYuKARpArLN7CapWzgVtXyMc74en6PjS0icXlIpkoe7OUH3246CaNd2p34slIGmNNW5atoHSXKsrMHkRHoRdlwLBGn1pa2sItp++HnEOBevmjd/DyIhr8KvqI+F8G4bbeGgkUpfuWvVQx1kB8sFvnk9meRO0371WUG9VKkO9pjKThPWMB4nzA5tUoEqz3gGvm4qAZOz1slYG0C+z1I10lBTCQv4NpBo0ewxjlmr/CU6qTMiOy8TJMkC5uLMzt5HTKW55RwlZw9jdcYYudXZu4D2FK3sc3A+jwq3gDTYXvAvUHZDY+3+ULdRRo/UnvdIFQFuDPab4X/qtXJZSYES24vB/SU4ua9aC2VZWdxmbacdA1PBlbolKrxtv0JiBwuj58/0N13Y6J2KX1oFjFsE/IoTApY8WemDFGQaPXCQKhLxhnsif3NetEswkQTZ5zTkq8YsRynVOaTFRthkDROmdrz1uWEMRcEK018LyAalLpbreqYn54djRoDyTiHO8SSduF6sgLV27Mc7+i5vswxwO8iwdrGCYucjoYJGPKrS9W4n2v2bU5FpoA4BmE/O8FBfSVfmQEqUN+XqTtt8W2ZPeJr37YBvSpq5klI+34ucZxr20f3UyNFctagVxBQiS6plpVLR7hRvFZVCZSLlmLv1mL0nDWbMxyCQitp/PBVIJ3febba1U80G8ebXmKUolqR+wGBzuUXsgu18r9KUI6yRtiwgAV8ZdHHIeD1RM7R1LuXmWVxWO8DKROFuDsCX5zl3kLgdULyYWGl+OGqtpUJ+7aCZSAsX0ftDio3YqnYE+kM/dXXCjOYXOAbV3pH0UmFCGNzzsJt21J6jx62gpPMoWWL4cFIPrURpce6QfyqXyfjbrgDRydnTmXGx3Qq6pOfK+ZMshh7TveYyC7axSDkVrCcw3tH7djjNHseD3lesWAcEP9gACmdD1Jpwnul4ksetXC/ZhqwYg4gOilw/uecyKbeZ9A8MvYtNR2w6pZI1woqvYu0SLi4pILH0At0EZLskz3AOKKqmMGUsKVDd9r03esENpZlGyZk3ok6j2Kf2qqRwtHH4w/CtzEVvPIN7k1c6R60JiMKivW49WfREvoRGZ19eE/ulstf6dJcNTqqkRLM2YyD7Mtg+364ytiWBPDBwk6fEdut9OYJ91j1P7dPsDmtR4Q4XrRP6bvd4XpErxZU3cdiwY9KQBkbsAA17BFfsHmJ1iw5JrXX6sw4QMWwwey3WeDqnbYjpJE8gme3Ca022aPCfSRDckBesk8izZuPupIIrGtMxwIvGJM5WFTFfmzKTBK+tspLwKPnyGB7B4xRUUudnpp3LbT12LEX83tdkRdNg7HOSRKk4zNYFwHF2rcBLSj5Jb/QBZIVtXwE5tA1kHmif7jDt9NibB+yD1CzJFT3AcPYl+b1irT8C1EESIVoswuhiN+Z7XaxKuk2UKxhjwUSkxKq8TXxVCZtJ1GA77r6cCIHjeIkJSSSKkgrW7HTm1ZxNflwGacwlFiBCSQeLOtvMqEx9spFYj/6ojvWoGwAKlexElQTaLY2UmU/wQA+iEK6junKkRO4ldst/QIPV5bzf785w==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1718,
+   "completion_tokens": 947,
+   "total_tokens": 2665,
+   "cost": 0.00483975,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00483975,
+    "upstream_inference_prompt_cost": 0.0012885,
+    "upstream_inference_completions_cost": 0.00355125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 769,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q843745\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Hippocrates lived and practiced as a physician during the classical period of Greece.\",\n      \"evidence\": \"Hippocrates of Kos (; Ancient Greek: Ἱπποκράτης ὁ Κῷος, romanized: Hippokrátēs ho Kôios; c. 460 – c. 370 BC), also known as Hippocrates II, named after his grandfather Hippocrates I (also Hippocrates of Kos or Hippocrates I of Kos) was a Greek physician and philosopher of the classical period who is considered one of the most outstanding figures in the history of medicine.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q843745",
+     "type": "lived_through",
+     "reason": "Hippocrates lived and practiced as a physician during the classical period of Greece.",
+     "evidence": "Hippocrates of Kos (; Ancient Greek: Ἱπποκράτης ὁ Κῷος, romanized: Hippokrátēs ho Kôios; c. 460 – c. 370 BC), also known as Hippocrates II, named after his grandfather Hippocrates I (also Hippocrates of Kos or Hippocrates I of Kos) was a Greek physician and philosopher of the classical period who is considered one of the most outstanding figures in the history of medicine.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1718,
+   "completion_tokens": 947,
+   "total_tokens": 2665,
+   "cost": 0.00483975,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00483975,
+    "upstream_inference_prompt_cost": 0.0012885,
+    "upstream_inference_completions_cost": 0.00355125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 769,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00483975,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 7.37
+ },
+ "meta": {}
+}

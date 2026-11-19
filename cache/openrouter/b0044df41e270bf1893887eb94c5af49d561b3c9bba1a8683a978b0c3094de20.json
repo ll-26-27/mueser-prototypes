@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "b0044df41e270bf1893887eb94c5af49d561b3c9bba1a8683a978b0c3094de20",
+ "fetched_at": "2026-11-19T16:37:48Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Nicholas of Autrecourt (1299–1369-07-24). French philosopher\n\nEXTRACT:\nNicholas of Autrecourt (French: Nicolas d'Autrécourt; Latin: Nicolaus de Autricuria or Nicolaus de Ultricuria; c. 1299, Autrecourt – 16 or 17 July 1369, Metz) was a French medieval philosopher and Scholastic theologian.\n\nEVENTS (id, name, years):\nQ9903  Ming dynasty (1368) — imperial dynasty of China from 1368 to 1644\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ264012  Nanboku-chō period (1336–1392) — period (1336–1392) within the Muromachi period of Japanese history, in which two men had competing claims to the Japanese imperial throne\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ826021  Kenmu Restoration (1333) — period of Japanese history, 1333–1336\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ8959  Northern Yuan dynasty (1368) — former empire in East Asia\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12551  Hundred Years' War (1337–1453) — series of conflicts and wars between England and France between 1337 and 1453\nQ698985  Ottoman Wars in Europe (1354–1683) — series of military conflicts between the Ottoman Empire and various European states\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ2658255  Byzantine Civil War of 1341–1347 (1341–1347) — civil war in the Byzantine Empire\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ550172  War of the Breton Succession (1341–1365) — conflict between the Counts of Blois and the Montforts of Brittany\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ112524  Red Turban Rebellion (1351–1368) — Revolt against the Yuan dynasty in China (1351–1368)\nQ7126013  Jacquerie (1358) — French peasant uprising, 1358\nQ1334924  Treaty of Brétigny (1360) — treaty\nQ853685  Treaty of Nöteborg (1323) — 1323 peace treaty between Kingdom of Sweden and the Novgorod Republic\nQ27759  Battle of Crécy (1346) — 1346 battle of the Hundred Years' War\nQ201692  Battle of Poitiers (1356) — 1356 battle of the Hundred Years' War\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ42005  Black Death (1346–1352) — 1346–1353 pandemic in Eurasia and North Africa\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106254-i5gsHmLMtK4FbHtX0fGf",
+  "object": "chat.completion",
+  "created": 1795106254,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Nicholas of Autrecourt lived and worked as a philosopher during the Middle Ages.\",\n      \"evidence\": \"Nicholas of Autrecourt (French: Nicolas d'Autrécourt; Latin: Nicolaus de Autricuria or Nicolaus de Ultricuria; c. 1299, Autrecourt – 16 or 17 July 1369, Metz) was a French medieval philosopher and Scholastic theologian.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Synthesizing Philosophers' Backgrounds**\n\nI'm currently processing biographical data for medieval philosophers. My latest focus is on Nicholas of Autrecourt, detailing his life and geographical origins. This information is crucial for understanding his philosophical context.\n\n**Analyzing Textual Clues**\n\nI'm delving into the nuances of how periods are identified. Specifically, I'm examining whether terms like \"medieval\" in an extract are sufficient to establish a \"lived_through\" connection to an event like the Middle Ages, considering the strict criteria of the instructions.\n\n**Defining Lived Experiences**\n\nI'm currently wrestling with the interpretation of \"lived through\" concerning historical periods. The phrase \"French medieval philosopher\" presents a challenge: does it imply direct experience of the Middle Ages, or merely a categorization by era? My current focus is on disentangling this, especially given the strict instruction that events must be explicitly mentioned in the extract to establish a connection.\n\n**Resolving Event Criteria**\n\nI'm currently re-evaluating how descriptive adjectives like \"medieval\" function within the criteria. My latest thought is that if the extract explicitly states \"medieval philosopher,\" it might indeed be considered mentioning the Middle Ages as part of the person's circumstances, satisfying the \"lived_through\" condition.\n\n**Clarifying Lived Through**\n\nI'm focusing on the strict interpretation of \"lived through.\" My current thinking is that \"medieval philosopher\" is merely a classification, not an explicit mention of the Middle Ages as an event shaping the person's circumstances, according to the provided criteria.\n\n**Examining Event Overlap**\n\nI'm analyzing how the \"Middle Ages\" event is automatically generated based on date overlaps with a person's life. My current focus is on whether this automatic generation, combined with a descriptor like \"medieval philosopher,\" is sufficient to meet the \"lived through\" criteria, particularly when no other specific events are mentioned.\n\n**Evaluating \"Medieval\" Context**\n\nI'm considering whether \"medieval\" in \"French medieval philosopher\" directly counts as mentioning the Middle Ages as part of my circumstances, as per the \"lived through\" criteria. The automated nature of the EVENTS list is noted.\n\n**Reconsidering Adjective Usage**\n\nI'm currently questioning whether \"medieval\" directly implies experiencing the Middle Ages, or if it's merely a classification. I'm scrutinizing the provided instructions, specifically regarding how adjectival forms relate to event mentions and the potential for an empty list if no explicit event is detailed.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Synthesizing Philosophers' Backgrounds**\n\nI'm currently processing biographical data for medieval philosophers. My latest focus is on Nicholas of Autrecourt, detailing his life and geographical origins. This information is crucial for understanding his philosophical context.\n\n**Analyzing Textual Clues**\n\nI'm delving into the nuances of how periods are identified. Specifically, I'm examining whether terms like \"medieval\" in an extract are sufficient to establish a \"lived_through\" connection to an event like the Middle Ages, considering the strict criteria of the instructions.\n\n**Defining Lived Experiences**\n\nI'm currently wrestling with the interpretation of \"lived through\" concerning historical periods. The phrase \"French medieval philosopher\" presents a challenge: does it imply direct experience of the Middle Ages, or merely a categorization by era? My current focus is on disentangling this, especially given the strict instruction that events must be explicitly mentioned in the extract to establish a connection.\n\n**Resolving Event Criteria**\n\nI'm currently re-evaluating how descriptive adjectives like \"medieval\" function within the criteria. My latest thought is that if the extract explicitly states \"medieval philosopher,\" it might indeed be considered mentioning the Middle Ages as part of the person's circumstances, satisfying the \"lived_through\" condition.\n\n**Clarifying Lived Through**\n\nI'm focusing on the strict interpretation of \"lived through.\" My current thinking is that \"medieval philosopher\" is merely a classification, not an explicit mention of the Middle Ages as an event shaping the person's circumstances, according to the provided criteria.\n\n**Examining Event Overlap**\n\nI'm analyzing how the \"Middle Ages\" event is automatically generated based on date overlaps with a person's life. My current focus is on whether this automatic generation, combined with a descriptor like \"medieval philosopher,\" is sufficient to meet the \"lived through\" criteria, particularly when no other specific events are mentioned.\n\n**Evaluating \"Medieval\" Context**\n\nI'm considering whether \"medieval\" in \"French medieval philosopher\" directly counts as mentioning the Middle Ages as part of my circumstances, as per the \"lived through\" criteria. The automated nature of the EVENTS list is noted.\n\n**Reconsidering Adjective Usage**\n\nI'm currently questioning whether \"medieval\" directly implies experiencing the Middle Ages, or if it's merely a classification. I'm scrutinizing the provided instructions, specifically regarding how adjectival forms relate to event mentions and the potential for an empty list if no explicit event is detailed.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1947,
+   "completion_tokens": 2251,
+   "total_tokens": 4198,
+   "cost": 0.0099015,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0099015,
+    "upstream_inference_prompt_cost": 0.00146025,
+    "upstream_inference_completions_cost": 0.00844125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2107,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Nicholas of Autrecourt lived and worked as a philosopher during the Middle Ages.\",\n      \"evidence\": \"Nicholas of Autrecourt (French: Nicolas d'Autrécourt; Latin: Nicolaus de Autricuria or Nicolaus de Ultricuria; c. 1299, Autrecourt – 16 or 17 July 1369, Metz) was a French medieval philosopher and Scholastic theologian.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Nicholas of Autrecourt lived and worked as a philosopher during the Middle Ages.",
+     "evidence": "Nicholas of Autrecourt (French: Nicolas d'Autrécourt; Latin: Nicolaus de Autricuria or Nicolaus de Ultricuria; c. 1299, Autrecourt – 16 or 17 July 1369, Metz) was a French medieval philosopher and Scholastic theologian.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1947,
+   "completion_tokens": 2251,
+   "total_tokens": 4198,
+   "cost": 0.0099015,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0099015,
+    "upstream_inference_prompt_cost": 0.00146025,
+    "upstream_inference_completions_cost": 0.00844125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2107,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0099015,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 14.02
+ },
+ "meta": {}
+}

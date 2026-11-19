@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "bfc2bed0ffd77d23922ffcec85de79511e5cd1269ad8bb6e0254870bae0d6ce8",
+ "fetched_at": "2026-11-19T16:37:07Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Śāntarakṣita (725–788). Indian Buddhist philosopher (725-788)\n\nEXTRACT:\nŚāntarakṣita (Sanskrit: शान्तरक्षित; Tibetan: ཞི་བ་འཚོ, Wylie: zhi ba tsho, 725–788), whose name translates into English as \"protected by the One who is at peace\" was an important and influential Indian Buddhist philosopher, particularly for the Tibetan Buddhist tradition. Śāntarakṣita was a philosopher of the Madhyamaka school who studied at Nalanda monastery under Jñānagarbha, and became the founder of Samye, the first Buddhist monastery in Tibet.\nŚāntarakṣita defended a synthetic philosophy which combined Madhyamaka, Yogācāra and the logico-epistemology of Dharmakirti into a novel Madhyamaka philosophical system. This philosophical approach is known as Yogācāra-Mādhyamika or Yogācāra-Svatantrika-Mādhyamika in Tibetan Buddhism. Unlike other Madhyamaka philosophers, Śāntarakṣita accepted Yogācāra doctrines like mind-only (cittamatra) and self-reflective awareness (svasamvedana), but only on the level of conventional truth. According to James Blumenthal, this synthesis is the final major development in Indian Buddhist philosophy before the disappearance of Buddhism from India (c. 12-13th centuries).\n\nEVENTS (id, name, years):\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ12567  Vikings (745) — Norse people, farmers, merchants, explorers, raiders and pirates\nQ189178  Nara period (710–794) — historical medieval period of Japan from CE 710 to 794\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ499909  Saxon Wars (772–804) — campaigns and insurrections (772–804) between the Carolingian Empire and Saxons in what is now northwestern Germany; resulted in the incorporation of Saxony into the Frankish realm and their forcible conversion from Germanic paganism to Catholicism\nQ1455917  Umayyad conquest of Hispania (711–726) — war resulting in the destruction of the Visigothic Kingdom and the expansion of the Umayyad Caliphate (711–718)\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ3621258  Arab conquest of Armenia (642–744) — Arab Rashidun Caliphate conquest of Armenia\nQ5933860  Abbasid Revolution (746–750) — overthrow of the Umayyad Caliphate by the Abbasids in 750\nQ253774  An Lushan Rebellion (755–763) — rebellion against the Tang dynasty of China in 755 C.E\nQ173077  Battle of Tours (732) — battle fought in 732 by Merovingian Franks against the Umayyad Caliphate\nQ821711  Plague of Justinian (541–750) — 541–549 AD pandemic in the Byzantine Empire, later northern Europe\nQ492415  Battle of Talas (751) — 751 battle between the Abbasid Caliphate and the Chinese Tang dynasty"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106211-2soooKMcDDgW3jByLEfL",
+  "object": "chat.completion",
+  "created": 1795106211,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Śāntarakṣita's Context**\n\nI've been examining the available extract to pinpoint connections with Śāntarakṣita. Focusing on his role as an Indian Buddhist philosopher and founder of Samye, I'm now exploring his ties to the Tibetan Buddhist tradition and the Madhyamaka school, considering his Nalanda monastery background under Jñānagarbha. My goal is to extract relevant associations.\n\n\n**Exploring Śāntarakṣita's Era**\n\nI'm now cross-referencing Śāntarakṣita's known lifespan with historical periods and events. I'm focusing on the Tang Dynasty, the Middle Ages, and other events from the provided list, to see what contexts are mentioned in relation to the scholar. I'm checking for contextual connections between his philosophical contributions and the historical events and eras I'm seeing, but none yet.\n\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Śāntarakṣita's Context**\n\nI've been examining the available extract to pinpoint connections with Śāntarakṣita. Focusing on his role as an Indian Buddhist philosopher and founder of Samye, I'm now exploring his ties to the Tibetan Buddhist tradition and the Madhyamaka school, considering his Nalanda monastery background under Jñānagarbha. My goal is to extract relevant associations.\n\n\n**Exploring Śāntarakṣita's Era**\n\nI'm now cross-referencing Śāntarakṣita's known lifespan with historical periods and events. I'm focusing on the Tang Dynasty, the Middle Ages, and other events from the provided list, to see what contexts are mentioned in relation to the scholar. I'm checking for contextual connections between his philosophical contributions and the historical events and eras I'm seeing, but none yet.\n\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLWFpLXN0dWRpbyJ9",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1463,
+   "completion_tokens": 592,
+   "total_tokens": 2055,
+   "cost": 0.00331725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00331725,
+    "upstream_inference_prompt_cost": 0.00109725,
+    "upstream_inference_completions_cost": 0.00222
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 583,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1463,
+   "completion_tokens": 592,
+   "total_tokens": 2055,
+   "cost": 0.00331725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00331725,
+    "upstream_inference_prompt_cost": 0.00109725,
+    "upstream_inference_completions_cost": 0.00222
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 583,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00331725,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "seconds": 16.56
+ },
+ "meta": {}
+}

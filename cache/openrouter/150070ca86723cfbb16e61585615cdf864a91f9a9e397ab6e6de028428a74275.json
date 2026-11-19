@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "150070ca86723cfbb16e61585615cdf864a91f9a9e397ab6e6de028428a74275",
+ "fetched_at": "2026-11-19T16:37:06Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Giles of Rome (1243–1316-12-30). Roman Catholic archbishop\n\nEXTRACT:\nGiles of Rome  (Latin: Aegidius Romanus; Italian: Egidio Colonna; c. 1243 – 22 December 1316) was an Italian medieval philosopher and Scholastic theologian and a friar of the Order of St Augustine, who was also appointed to the positions of prior general of his order and as Archbishop of Bourges. He is famed as being a logician, who produced a commentary on the Organon by Aristotle, and as the author of two important works: De ecclesiastica potestate, a major text of early-14th-century papalism, and De regimine principum, a guide book for Christian temporal leadership. Giles was styled Doctor Fundatissimus (\"Best-Grounded Teacher\") by Pope Benedict XIV.\nWriters in 14th- and 15th-century-England such as John Trevisa and Thomas Hoccleve translated or adapted him into English.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ51661  Seventh Crusade (1248–1254) — military conflict (1248-1254)\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ369560  Siege of Baghdad (1258) — 1258 Mongol conquest of the Abbasid Caliphate\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ244356  Battle of Ain Jalut (1260) — 1260 battle between the Mamluk Sultanate and the Mongol Empire\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106202-EVDkhDqxNrQmYn8wI3lI",
+  "object": "chat.completion",
+  "created": 1795106202,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing the Extract**\n\nI am now focusing on matching the provided extract about Giles of Rome to potential events. My initial review suggests this could involve identifying relevant historical periods or theological developments that align with his life and work. I am searching for keywords and dates to initiate a comprehensive comparison with existing information.\n\n\n**Identifying Key Figures**\n\nI am now assessing the provided text to pinpoint the relevant historical events or periods. The details about Giles of Rome, including his roles, writings, and influence, are helping me determine if any listed events are directly associated with his life or work. I am focusing on the Middle Ages and any potential overlap with the Islamic Golden Age or Yuan dynasty, given the time period.\n\n\n**Clarifying Event Relevance**\n\nI'm now grappling with whether \"medieval philosopher\" represents a relevant event. I have determined that it is only an adjective. It describes his profession and historical setting, not an event he participated in. I'm focusing on whether the extract mentions or clearly implies an event. Currently, based on this extract alone, I am returning an empty list.\n\n\n**Evaluating Era Overlap**\n\nI am now clarifying how to handle era-based entries. I am confirming that terms like \"Middle Ages\" are included if their date ranges overlap with the subject's life, as they represent a period that was lived through. My analysis focuses on distinguishing between a descriptor and a lived experience or a period of time. I am now confirming these terms were pulled from Wikidata.\n\n\n**Refining Event Criteria**\n\nI am now refining my criteria for event association based on the provided extract. It seems I misunderstood the extract, because the extract doesn't explicitly mention any events that bear on Giles of Rome. I am distinguishing between descriptive adjectives and actual events. I am now focused on whether the extract *mentions* or clearly *implies* an event, and am excluding events that merely overlapped with his lifetime. As such, I am still returning an empty list, but with improved justification.\n\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing the Extract**\n\nI am now focusing on matching the provided extract about Giles of Rome to potential events. My initial review suggests this could involve identifying relevant historical periods or theological developments that align with his life and work. I am searching for keywords and dates to initiate a comprehensive comparison with existing information.\n\n\n**Identifying Key Figures**\n\nI am now assessing the provided text to pinpoint the relevant historical events or periods. The details about Giles of Rome, including his roles, writings, and influence, are helping me determine if any listed events are directly associated with his life or work. I am focusing on the Middle Ages and any potential overlap with the Islamic Golden Age or Yuan dynasty, given the time period.\n\n\n**Clarifying Event Relevance**\n\nI'm now grappling with whether \"medieval philosopher\" represents a relevant event. I have determined that it is only an adjective. It describes his profession and historical setting, not an event he participated in. I'm focusing on whether the extract mentions or clearly implies an event. Currently, based on this extract alone, I am returning an empty list.\n\n\n**Evaluating Era Overlap**\n\nI am now clarifying how to handle era-based entries. I am confirming that terms like \"Middle Ages\" are included if their date ranges overlap with the subject's life, as they represent a period that was lived through. My analysis focuses on distinguishing between a descriptor and a lived experience or a period of time. I am now confirming these terms were pulled from Wikidata.\n\n\n**Refining Event Criteria**\n\nI am now refining my criteria for event association based on the provided extract. It seems I misunderstood the extract, because the extract doesn't explicitly mention any events that bear on Giles of Rome. I am distinguishing between descriptive adjectives and actual events. I am now focused on whether the extract *mentions* or clearly *implies* an event, and am excluding events that merely overlapped with his lifetime. As such, I am still returning an empty list, but with improved justification.\n\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLWFpLXN0dWRpbyJ9",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1644,
+   "completion_tokens": 1393,
+   "total_tokens": 3037,
+   "cost": 0.00645675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00645675,
+    "upstream_inference_prompt_cost": 0.001233,
+    "upstream_inference_completions_cost": 0.00522375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1384,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1644,
+   "completion_tokens": 1393,
+   "total_tokens": 3037,
+   "cost": 0.00645675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00645675,
+    "upstream_inference_prompt_cost": 0.001233,
+    "upstream_inference_completions_cost": 0.00522375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1384,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00645675,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "seconds": 23.98
+ },
+ "meta": {}
+}

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "1e05dab388a0ee8bd310ddff453639f122209c0aedef5a3dc03d84f7c779344b",
+ "fetched_at": "2026-11-19T16:35:15Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Thales (624 BCE–540s BCE). ancient Greek philosopher and mathematician\n\nEXTRACT:\nThales of Miletus ( THAY-leez; Ancient Greek: Θαλῆς; c. 626/623  – c. 548/545 BC) was a pre-Socratic Greek philosopher from Miletus in Ionia, Asia Minor. Thales was one of the Seven Sages, founding figures of Ancient Greece.\nBeginning in eighteenth-century historiography, many came to regard him as the first philosopher in the Greek tradition, breaking from the prior use of mythology to explain the world and instead using natural philosophy. He is thus otherwise referred to as the first to have engaged in mathematics, science, and deductive reasoning.\nThales's view that all of nature is based on the existence of a single ultimate substance, which he theorized to be water, was widely influential among the philosophers of his time. Thales thought the Earth floated on water.\nIn mathematics, Thales is the namesake of Thales's theorem, and the intercept theorem can also be referred to as Thales's theorem. Thales was said to have calculated the heights of the pyramids and the distance of ships from the shore. In science, Thales was an astronomer who reportedly predicted the weather and a solar eclipse. The discovery of the position of the constellation Ursa Major is also attributed to Thales, as well as the timings of the solstices and equinoxes. He was also an engineer, known for having allowed the Lydian army to cross the Halys River. Plutarch wrote that \"at that time, Thales alone had raised philosophy from mere speculation to practice.\"\n\nEVENTS (id, name, years):\nQ271834  Archaic Greece (-599–-500) — period of ancient Greek history\nQ175447  Babylonian captivity (-596–-537) — period in Jewish history during which a number of people from the ancient Kingdom of Judah were captives in Babylon\nQ185047  Spring and Autumn period (-770–-475) — period in Chinese history from approximately 770 to 476 BCE\nQ201038  Roman Kingdom (-752–-508) — period of Roman history when the city and its territory were ruled by kings (c.753–c.509 BC)\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ11924845  Messenian Wars (-742–-453) — series of wars between Sparta and Messenia"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106101-tiHeZn1xyZDzjwtKCuxb",
+  "object": "chat.completion",
+  "created": 1795106101,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Historical Figures**\n\nI'm currently focusing on identifying any direct or indirect links between Thales of Miletus and the provided list of events. My initial extraction confirms Thales's historical context.\n\n**Probing Philosophical Connections**\n\nMy current efforts are concentrated on establishing any relevant connections between Thales of Miletus and the specified events. I've confirmed his foundational role in early Greek philosophy, moving beyond mythological explanations towards naturalistic reasoning.\n\n**Confirming Historical Context**\n\nI'm working to pinpoint how Thales's life intersects with Archaic Greece and Classical Antiquity, based solely on the provided text. The mention of \"Ancient Greece\" strongly suggests relevance, though the specific terms \"Archaic Greece\" or \"Classical Antiquity\" aren't directly stated.\n\n**Assessing Period Overlap**\n\nI'm currently analyzing the precise temporal scope of \"Ancient Greece\" in relation to \"Archaic Greece\" and \"Classical Antiquity\" as mentioned in my thoughts. This clarification is crucial for determining if Thales's context aligns with the provided events, as direct mention of these specific periods is absent.\n\n**Determining Event Relevance**\n\nI'm evaluating whether \"Ancient Greece,\" as mentioned in my thoughts, directly correlates to any of the listed events. While \"classical antiquity\" is a broader term that encompasses \"Ancient Greece,\" I'm checking if the text explicitly refers to the specific period. The absence of direct mentions for any listed event is a key consideration.\n\n**Reviewing Specific Events**\n\nI'm cross-referencing the provided events against the details of Thales's context. My current focus is on the absence of direct mentions for specific events like the Lydian army crossing the Halys, Babylonian captivity, or the Spring and Autumn period within the text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Historical Figures**\n\nI'm currently focusing on identifying any direct or indirect links between Thales of Miletus and the provided list of events. My initial extraction confirms Thales's historical context.\n\n**Probing Philosophical Connections**\n\nMy current efforts are concentrated on establishing any relevant connections between Thales of Miletus and the specified events. I've confirmed his foundational role in early Greek philosophy, moving beyond mythological explanations towards naturalistic reasoning.\n\n**Confirming Historical Context**\n\nI'm working to pinpoint how Thales's life intersects with Archaic Greece and Classical Antiquity, based solely on the provided text. The mention of \"Ancient Greece\" strongly suggests relevance, though the specific terms \"Archaic Greece\" or \"Classical Antiquity\" aren't directly stated.\n\n**Assessing Period Overlap**\n\nI'm currently analyzing the precise temporal scope of \"Ancient Greece\" in relation to \"Archaic Greece\" and \"Classical Antiquity\" as mentioned in my thoughts. This clarification is crucial for determining if Thales's context aligns with the provided events, as direct mention of these specific periods is absent.\n\n**Determining Event Relevance**\n\nI'm evaluating whether \"Ancient Greece,\" as mentioned in my thoughts, directly correlates to any of the listed events. While \"classical antiquity\" is a broader term that encompasses \"Ancient Greece,\" I'm checking if the text explicitly refers to the specific period. The absence of direct mentions for any listed event is a key consideration.\n\n**Reviewing Specific Events**\n\nI'm cross-referencing the provided events against the details of Thales's context. My current focus is on the absence of direct mentions for specific events like the Lydian army crossing the Halys, Babylonian captivity, or the Spring and Autumn period within the text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1428,
+   "completion_tokens": 1631,
+   "total_tokens": 3059,
+   "cost": 0.00718725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00718725,
+    "upstream_inference_prompt_cost": 0.001071,
+    "upstream_inference_completions_cost": 0.00611625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1622,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1428,
+   "completion_tokens": 1631,
+   "total_tokens": 3059,
+   "cost": 0.00718725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00718725,
+    "upstream_inference_prompt_cost": 0.001071,
+    "upstream_inference_completions_cost": 0.00611625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1622,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00718725,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 14.1
+ },
+ "meta": {}
+}

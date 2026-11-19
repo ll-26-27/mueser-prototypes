@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "9ec220eedafeb1315224c291d96262e6071adf891fafb592da1330ec419bb5f1",
+ "fetched_at": "2026-11-19T16:40:46Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Mozi (469 BCE–390 BCE). 5th-century BC Chinese philosopher and founder of Mohism\n\nEXTRACT:\nMozi, personal name Mo Di,\nwas a Chinese philosopher, logician, and the founder of the Mohist school of thought, making him one of the most important figures of the Warring States period (c. 475 – 221 BCE). Alongside Confucianism, Mohism became the most prominent organized school of the Hundred Schools of Thought throughout the period. The Mozi is an anthology of writings traditionally attributed to Mozi and to his followers. Mohism is considered to be the oldest form of Monotheistic thought developed indigenously in Historical China.\nBorn in what is now Tengzhou, Shandong, Mozi and his followers argued strongly against both Confucianism and Taoism, with a philosophy emphasizing universal love, social order, the will of Heaven, sharing, and honoring the worthy. Mohism was actively developed and practiced across the Warring States–era in China. Mohism fell out of favor following the establishment of the Qin dynasty in 221 BCE.\nWhile there is no reference to living Mohists from the Han dynasty (202 BCE – 220 CE), and tradition assumes the destruction of many Mohist texts in 213 BCE as part of Emperor Qin Shi Huang's burning of books and burying of scholars, traces of Mohism can still be seen late in the early Han (from 202 BCE) in syncretic texts like the Huainanzi of c. 139 BCE. As Confucianism became the dominant school of thought over the fading legalism system during the Han, Mohism disappeared almost entirely by the middle of the Western Han period of 202 BCE to 9 CE. Mozi is referenced in the 6th-century CE Thousand Character Classic, which records that he was saddened when he saw the dyeing of pure white silk, which to him embodied his conception of austerity as simplicity and chastity.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ511257  Twenty-ninth Dynasty of Egypt (-397–-377) — ancient Egyptian dynasty\nQ833118  Twenty-eighth Dynasty of Egypt (-403–-398) — ancient Egyptian dynasty\nQ651008  Corinthian War (-394–-386) — 395-387 BCE Greek conflict\nQ33745  Peloponnesian War (-430–-403) — war fought between Athens and Sparta (431–404 BCE)\nQ76026  Greco-Persian Wars (-498–-448) — series of conflicts between the Achaemenid Empire of Persia and poleis of the Hellenic world in the fifth century BCE\nQ11924845  Messenian Wars (-742–-453) — series of wars between Sparta and Messenia\nQ370709  Peace of Callias (-448) — possible Greco-Persian peace treaty (c. 449 BC)\nQ932202  Peace of Nicias (-420) — 421 BC treaty between Athens and Sparta"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106424-quMyfBXN5SSLh1aLA1cc",
+  "object": "chat.completion",
+  "created": 1795106424,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"connections\":[{\"event\":\"Q185063\",\"type\":\"lived_through\",\"reason\":\"Mozi lived during the Warring States period, becoming one of its most prominent philosophical figures.\",\"evidence\":\"Mozi, personal name Mo Di,\\nwas a Chinese philosopher, logician, and the founder of the Mohist school of thought, making him one of the most important figures of the Warring States period (c. 475 – 221 BCE).\",\"work\":\"\"}]}",
+     "refusal": null,
+     "reasoning": "**Connecting Mozi's Era**\n\nI'm focusing on establishing a direct link between Mozi and the provided Warring States period event. My current approach involves cross-referencing the provided extract with historical timelines to confirm this temporal overlap.\n\n**Confirming Period Overlap**\n\nI'm currently verifying the Warring States period's inclusion within the \"EVENTS\" category, specifically confirming its association with Q185063 and the \"lived_through\" type. This step is crucial for solidifying Mozi's temporal placement.\n\n**Validating Historical Context**\n\nI'm confirming that Mohism's active practice during the Warring States era directly implicates Mozi's involvement. I'm also re-evaluating the exact phrasing regarding his era to ensure it aligns with the Warring States period specified in the events.\n\n**Parsing Escaped Newlines**\n\nI'm investigating whether the prompt implies literal `\\n` characters or the concept of line breaks. My current thought process is to analyze how to represent the original text accurately, considering the possibility of needing to escape or replace newline characters to adhere to the format requirements.\n\n**Considering Token Constraints**\n\nI'm currently processing the constraint about avoiding control tokens like `\\n` and `\\t`, specifically focusing on the literal escape sequences. I'm evaluating alternative phrasing to ensure accurate representation without violating this rule.\n\n**Synthesizing Line Break Rules**\n\nI'm now considering how to handle line breaks encountered in the source text, specifically whether to replace `\\n` with spaces or to rephrase sentences entirely to avoid them. This is crucial for maintaining a single-line output as per the constraints.\n\n**Investigating Control Tokens**\n\nI'm currently examining the implications of the \"no control tokens\" rule, specifically regarding how escaped newline characters (`\\n`) within JSON strings should be handled. My goal is to determine if the rule applies to the literal string content or the rendered output.\n\n**Clarifying Escape Sequence Rules**\n\nI'm now focused on deciphering the \"no control tokens\" rule. My current interpretation is that it forbids literal newline or tab characters (ASCII 0x0A, 0x09) in the output. This means `\\n` within a JSON string, as two characters backslash and 'n', should be acceptable, but actual line breaks or tabs must be avoided in the final output.\n\n**Verifying Mozi's Era**\n\nI've confirmed Mozi's undeniable connection to the Warring States period, as explicitly stated in the source. My focus is now on ensuring this link is accurately represented, adhering to all formatting and token constraints.\n\n**Interpreting Formatting Rules**\n\nI'm clarifying the \"no control tokens\" rule. My current understanding is that literal ASCII control characters like newline and tab are forbidden. This means JSON escape sequences like `\\n` should be acceptable, as they represent the characters, not the control characters themselves, in the output.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Mozi's Era**\n\nI'm focusing on establishing a direct link between Mozi and the provided Warring States period event. My current approach involves cross-referencing the provided extract with historical timelines to confirm this temporal overlap.\n\n**Confirming Period Overlap**\n\nI'm currently verifying the Warring States period's inclusion within the \"EVENTS\" category, specifically confirming its association with Q185063 and the \"lived_through\" type. This step is crucial for solidifying Mozi's temporal placement.\n\n**Validating Historical Context**\n\nI'm confirming that Mohism's active practice during the Warring States era directly implicates Mozi's involvement. I'm also re-evaluating the exact phrasing regarding his era to ensure it aligns with the Warring States period specified in the events.\n\n**Parsing Escaped Newlines**\n\nI'm investigating whether the prompt implies literal `\\n` characters or the concept of line breaks. My current thought process is to analyze how to represent the original text accurately, considering the possibility of needing to escape or replace newline characters to adhere to the format requirements.\n\n**Considering Token Constraints**\n\nI'm currently processing the constraint about avoiding control tokens like `\\n` and `\\t`, specifically focusing on the literal escape sequences. I'm evaluating alternative phrasing to ensure accurate representation without violating this rule.\n\n**Synthesizing Line Break Rules**\n\nI'm now considering how to handle line breaks encountered in the source text, specifically whether to replace `\\n` with spaces or to rephrase sentences entirely to avoid them. This is crucial for maintaining a single-line output as per the constraints.\n\n**Investigating Control Tokens**\n\nI'm currently examining the implications of the \"no control tokens\" rule, specifically regarding how escaped newline characters (`\\n`) within JSON strings should be handled. My goal is to determine if the rule applies to the literal string content or the rendered output.\n\n**Clarifying Escape Sequence Rules**\n\nI'm now focused on deciphering the \"no control tokens\" rule. My current interpretation is that it forbids literal newline or tab characters (ASCII 0x0A, 0x09) in the output. This means `\\n` within a JSON string, as two characters backslash and 'n', should be acceptable, but actual line breaks or tabs must be avoided in the final output.\n\n**Verifying Mozi's Era**\n\nI've confirmed Mozi's undeniable connection to the Warring States period, as explicitly stated in the source. My focus is now on ensuring this link is accurately represented, adhering to all formatting and token constraints.\n\n**Interpreting Formatting Rules**\n\nI'm clarifying the \"no control tokens\" rule. My current understanding is that literal ASCII control characters like newline and tab are forbidden. This means JSON escape sequences like `\\n` should be acceptable, as they represent the characters, not the control characters themselves, in the output.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1689,
+   "completion_tokens": 2745,
+   "total_tokens": 4434,
+   "cost": 0.0115605,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0115605,
+    "upstream_inference_prompt_cost": 0.00126675,
+    "upstream_inference_completions_cost": 0.01029375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2639,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"connections\":[{\"event\":\"Q185063\",\"type\":\"lived_through\",\"reason\":\"Mozi lived during the Warring States period, becoming one of its most prominent philosophical figures.\",\"evidence\":\"Mozi, personal name Mo Di,\\nwas a Chinese philosopher, logician, and the founder of the Mohist school of thought, making him one of the most important figures of the Warring States period (c. 475 – 221 BCE).\",\"work\":\"\"}]}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q185063",
+     "type": "lived_through",
+     "reason": "Mozi lived during the Warring States period, becoming one of its most prominent philosophical figures.",
+     "evidence": "Mozi, personal name Mo Di,\nwas a Chinese philosopher, logician, and the founder of the Mohist school of thought, making him one of the most important figures of the Warring States period (c. 475 – 221 BCE).",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1689,
+   "completion_tokens": 2745,
+   "total_tokens": 4434,
+   "cost": 0.0115605,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0115605,
+    "upstream_inference_prompt_cost": 0.00126675,
+    "upstream_inference_completions_cost": 0.01029375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2639,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0115605,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 22.14
+ },
+ "meta": {}
+}

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "a6c24e29d4ac72f9a468753bc8338a1f37ce699818768f1eeccf4dec80546288",
+ "fetched_at": "2026-11-19T16:40:15Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Anaximenes of Miletus (584 BCE–524 BCE). Greek Ionian Pre-Socratic philosopher (c.586–c.526 BC)\n\nEXTRACT:\nAnaximenes of Miletus (; Ancient Greek: Ἀναξιμένης ὁ Μιλήσιος, romanized: Anaximenēs ho Milēsios; c. 586/585 – c. 526/525 BC) was a pre-Socratic Greek philosopher from Miletus in Anatolia (modern-day Turkey). He was the last of the three philosophers of the Milesian School, after Thales and Anaximander. These three are regarded by historians as the first philosophers of the Western world. Little is known of Anaximenes's life and work, as all of his original texts are lost. Historians and philosophers have reconstructed information about Anaximenes by interpreting texts about him by later writers.\nAnaximenes is known for his belief that air is the arche, or the basic element of the universe from which all things are created. All three Milesian philosophers were monists who believed in a single foundational source of everything: Anaximenes believed it to be air, while Thales believed it to be water and Anaximander believed it to be apeiron, an undefined infinity. It is generally accepted that Anaximenes was instructed by Anaximander, and many of their philosophical ideas are similar. While Anaximenes was the preeminent Milesian philosopher in Ancient Greece, he is often given lower importance than the others in the modern day.\nAnaximenes held that air could change into other forms through either rarefaction or condensation. Condensation would make the air denser, turning it into wind, clouds, water, earth, and finally stone. Rarefaction would make the air less dense as it eventually becomes fire. Anaximenes also developed a model of the Earth, describing it as a flat disc floating atop the air while the Sun and stars are also flat and float alongside it. He described the Sun as revolving around the Earth, causing it to be obscured by higher lands during the night. As one of the Milesian philosophers, Anaximenes was one of the earliest figures to develop science. He influenced many of the Pre-Socratic philosophers that succeeded him, such as Heraclitus, Anaxagoras, Diogenes of Apollonia, and Xenophanes. He also provided early examples of concepts such as natural science, physical change, and scientific writing.\n\nEVENTS (id, name, years):\nQ271834  Archaic Greece (-599–-500) — period of ancient Greek history\nQ175447  Babylonian captivity (-596–-537) — period in Jewish history during which a number of people from the ancient Kingdom of Judah were captives in Babylon\nQ185047  Spring and Autumn period (-770–-475) — period in Chinese history from approximately 770 to 476 BCE\nQ201038  Roman Kingdom (-752–-508) — period of Roman history when the city and its territory were ruled by kings (c.753–c.509 BC)\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ926624  Twenty-seventh Dynasty of Egypt (-524) — first Achaemenid rule on Egypt (525–404 BC)\nQ11924845  Messenian Wars (-742–-453) — series of wars between Sparta and Messenia"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106403-b5uTXYo1NsyEuRhU7xqB",
+  "object": "chat.completion",
+  "created": 1795106403,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Synthesizing Anaximenes Connections**\n\nI'm focusing solely on the provided extract to unearth any links between Anaximenes of Miletus and the historical events mentioned. My current analysis is strictly confined to the text's explicit statements.\n\n**Investigating Anaximenes' Context**\n\nMy current focus is on establishing direct connections between Anaximenes and any historical events within the provided snippets. I am meticulously sifting through the text, seeking explicit textual evidence.\n\n**Unearthing Anaximenes' Influence**\n\nI'm currently analyzing Anaximenes' core theories on rarefaction and condensation, noting their potential influence on later thinkers. I'm also investigating his cosmological models and how they represent early scientific inquiry.\n\n**Analyzing Textual Evidence**\n\nI'm rigorously examining the provided text for direct mentions of \"Archaic Greece\" or related terms. My current analysis strictly adheres to the extract's explicit wording, distinguishing between broader \"Ancient Greece\" and the specific period.\n\n**Scrutinizing Event Mentions**\n\nI'm re-examining the text, specifically hunting for explicit mentions of any historical events or periods beyond \"Ancient Greece.\" My current stance is that unless a direct textual link is made, any connection is not valid, regardless of temporal proximity.\n\n**Filtering Anaximenes' Connections**\n\nI am now focusing on discerning whether \"Ancient Greece\" from the text directly maps to \"Archaic Greece\" or \"Classical Antiquity\" from the provided list. My current interpretation is that it does not, pending further clarification on synonymy.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Synthesizing Anaximenes Connections**\n\nI'm focusing solely on the provided extract to unearth any links between Anaximenes of Miletus and the historical events mentioned. My current analysis is strictly confined to the text's explicit statements.\n\n**Investigating Anaximenes' Context**\n\nMy current focus is on establishing direct connections between Anaximenes and any historical events within the provided snippets. I am meticulously sifting through the text, seeking explicit textual evidence.\n\n**Unearthing Anaximenes' Influence**\n\nI'm currently analyzing Anaximenes' core theories on rarefaction and condensation, noting their potential influence on later thinkers. I'm also investigating his cosmological models and how they represent early scientific inquiry.\n\n**Analyzing Textual Evidence**\n\nI'm rigorously examining the provided text for direct mentions of \"Archaic Greece\" or related terms. My current analysis strictly adheres to the extract's explicit wording, distinguishing between broader \"Ancient Greece\" and the specific period.\n\n**Scrutinizing Event Mentions**\n\nI'm re-examining the text, specifically hunting for explicit mentions of any historical events or periods beyond \"Ancient Greece.\" My current stance is that unless a direct textual link is made, any connection is not valid, regardless of temporal proximity.\n\n**Filtering Anaximenes' Connections**\n\nI am now focusing on discerning whether \"Ancient Greece\" from the text directly maps to \"Archaic Greece\" or \"Classical Antiquity\" from the provided list. My current interpretation is that it does not, pending further clarification on synonymy.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1647,
+   "completion_tokens": 1643,
+   "total_tokens": 3290,
+   "cost": 0.0073965,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0073965,
+    "upstream_inference_prompt_cost": 0.00123525,
+    "upstream_inference_completions_cost": 0.00616125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1634,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1647,
+   "completion_tokens": 1643,
+   "total_tokens": 3290,
+   "cost": 0.0073965,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0073965,
+    "upstream_inference_prompt_cost": 0.00123525,
+    "upstream_inference_completions_cost": 0.00616125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1634,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0073965,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 11.94
+ },
+ "meta": {}
+}

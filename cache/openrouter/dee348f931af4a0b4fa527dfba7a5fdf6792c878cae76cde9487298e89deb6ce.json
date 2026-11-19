@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "dee348f931af4a0b4fa527dfba7a5fdf6792c878cae76cde9487298e89deb6ce",
+ "fetched_at": "2026-11-19T16:35:46Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Shantideva (685–763). 8th-century Indian Buddhist monk and scholar\n\nEXTRACT:\nShantideva (Sanskrit: Śāntideva; Chinese: 寂天; Tibetan: ཞི་བ་ལྷ།, THL: Zhiwa Lha; Mongolian: Шантидэва гэгээн; Vietnamese: Tịch Thiên) was an 8th-century CE Indian philosopher, Buddhist monk, poet, and scholar at the mahavihara of Nalanda. He was an adherent of the Mādhyamaka philosophy of Nāgārjuna. Abhayadatta Sri also lists Shantideva as one of the eighty-four mahasiddhas and is known as Bhusuku Pa (布苏固巴).\nTwo works of Shantideva are extant, the Bodhisattvacaryāvatāra and the Śikṣāsamuccaya, both of which were written with the intention of being training manuals for one who intends to follow the path of the bodhisattva. The Bodhisattvacaryāvatāra, in particular, was the subject of both Indian and Tibetan commentaries during the period it was written and has also received large amounts of attention from both academics and lay practitioners in recent years as well including a commentary written by the 14th Dalai Lama.\n\nEVENTS (id, name, years):\nQ726805  Jahiliyyah (500–700) — Islamic term for pre-Islamic Arabian society\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ12567  Vikings (745) — Norse people, farmers, merchants, explorers, raiders and pirates\nQ189178  Nara period (710–794) — historical medieval period of Japan from CE 710 to 794\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ210688  Asuka period (538–710) — historical period of Japan\nQ1455917  Umayyad conquest of Hispania (711–726) — war resulting in the destruction of the Visigothic Kingdom and the expansion of the Umayyad Caliphate (711–718)\nQ925960  Muslim conquest of the Maghreb (647–709) — military campaign\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ3621258  Arab conquest of Armenia (642–744) — Arab Rashidun Caliphate conquest of Armenia\nQ5933860  Abbasid Revolution (746–750) — overthrow of the Umayyad Caliphate by the Abbasids in 750\nQ253774  An Lushan Rebellion (755–763) — rebellion against the Tang dynasty of China in 755 C.E\nQ173077  Battle of Tours (732) — battle fought in 732 by Merovingian Franks against the Umayyad Caliphate\nQ821711  Plague of Justinian (541–750) — 541–549 AD pandemic in the Byzantine Empire, later northern Europe\nQ492415  Battle of Talas (751) — 751 battle between the Abbasid Caliphate and the Chinese Tang dynasty\nQ504172  Battle of Guadalete (711) — 711 battle between the Visigothic Kingdom and the Umayyad Caliphate; decisive Umayyad victory leads to the fall of the Visigothic Kingdom and the Umayyad conquest of the peninsula\nQ27900  Siege of Constantinople (717–718) — 717-718 combined land and sea offensive by the Arabs of the Umayyad Caliphate against the capital city of the Byzantine Empire, Constantinople\nQ957186  Battle of Covadonga (722) — 722 first victory won by Christian military forces after the Islamic conquest of Hispania"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106141-5i8sp8xc1jF4ajJXGtcY",
+  "object": "chat.completion",
+  "created": 1795106141,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Ideas**\n\nI'm currently exploring potential linkages between the provided EXTRACT concerning Shantideva and the subsequent list of EVENTS. My focus is on identifying thematic or chronological relationships that might exist.\n\n**Synthesizing Information**\n\nI'm analyzing Shantideva's philosophical and literary contributions, specifically his role as an 8th-century Indian Buddhist scholar at Nalanda, an adherent of Mādhyamaka philosophy, and author of key bodhisattva training manuals. My aim is to integrate this information with the provided historical periods.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Ideas**\n\nI'm currently exploring potential linkages between the provided EXTRACT concerning Shantideva and the subsequent list of EVENTS. My focus is on identifying thematic or chronological relationships that might exist.\n\n**Synthesizing Information**\n\nI'm analyzing Shantideva's philosophical and literary contributions, specifically his role as an 8th-century Indian Buddhist scholar at Nalanda, an adherent of Mādhyamaka philosophy, and author of key bodhisattva training manuals. My aim is to integrate this information with the provided historical periods.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1/L5/kQ5M47QDRR5zggVezyAT8vgCe0MSjXKnRo5TsNHp+z9SMK+B1NB2yeSgKRiiqyvg+ljKyX+Uwa/nO7OnQjnvEMIJytth4Bmldz2euCxFb4ohq0j8lehNuYv4Yc5TnGsfUVZKSUlvyCTZsIivgLTjfmyWKa5VM+zLvNRlPol1P6XUJ2t4zgf/iRzBGS2SoneVImaEeTWrmuZRMprKBNqXiS7RYcI1gt5WwtPl870274adgebSJHlgLSmnVttBZcTHPD9qMNo32wVaQpK0/mv5tQHNmNIBGRh8MGr1cVSJPL3A/Rljl9/8paveCgvN9BR/xZLYggb7/mxh6b7JhmTCEJxVZTzCsXUiWk25F8RgpUmlaZUOxIeVCHFRfbfJpgJ307a2H6bE4uWINORVNToFq/0X5ynnLOYSdpFDzRGPyXWpPzjDGQWUrijWrU6wSjcLZaDuW8vkQeJftI1dZ+wnUMIyyp2ZyVQ90nTWP7Ya46nkQArdP9uF2wsQb0sQzBEKRRJZSby31E5YQ46z8fIIOG7JyQPrOoRMX7/7+2L7m6l4FGul7zo+rXNDrQXUOo3SCf8fYLa/455VSDlcZsw95USuoLjM41lgX5QuW4S6oHzMJaIMP3uPrRhlP4//DgDklOw35AAwVhuq1nnq+SNRz5lDrVgfDVnvuVNdsUQFn8Gtz+kbkzalYGPVDWvrKkZG0Xn+Ad05GO4Y9LkwCztGolvFQAkeLnVFEsa4kuSjMN7oTiNywIWMDeNxMQhGOsnxmLQ2kbUC4UdORwgNCxjg2jE7LNzsE8HgDCFwb20TMTVi4o819Ytm/msUF5yiNdDZy534AcMdtEm3Ti0+K6AKvTk+PDzPIepWnoRvoWmFX1nDPuWk5GR+TOIZ171rqsFszPAKGcF+zxhmtOMX2VY6Uk9p6XbGPJXLWQkoaIw6mR9r+Ood0jEMDiKrMJwuZj6BETJylHzv4rz2BYjeyIKzQ6K95vrdvoglt1zZ8D1xqgtDp2F33KcbEaS2PpSnrQjrwwCGV5P/15ci67LpYHj1/93t4ZkBSIaPrsbUfEXDtP95SDXn2RArvhY50IgGeOiD6IxC8cKbyHFWFm1Vp0eDItV7rupoEeU+gqMipH9GtBNyXNOBj9zg5jb627adJm487kB1In47sZQaJlSdfznXcJTR6M8V45Qmq9Yy90BgQru7fO5WPE9QOsBhApBbg2BrTiEDPIX8OZWRs8pRZP19vbb2ToyWl/87P72L12rGdETCuJZfr5qAhxZytVZzwEmdJYGOnOHDbnd7rxGeYpsHYOh7+yMd7LpsJdjvDWAiR9tpBEntE5tETj9A0u6bYdMtuZVE9NIiWd43D4s3Z1BQ8Sf2G0AAAJxl4834Et7VCp8w0/3OgOkucE5vtOkmjk8MiufgjkqBScVXtElzM2TDae03ODP+DTFfNwG6jp68HouOdZAYZ2Y10/i/YM/Szy3nhJCJw8zZ/64tBr1rj5lIyJXH2KGlGif1GW2hlN4Ivze1OAtTetog/eDHds9obsdAJNSLjmU2NXALWDVQ1UHEs9vJlkl/mPxtGlJd0jxxUFsOM02266RIAIUzrPROw83Og6/hjGKmY9Bunr6ZfC52m6kSs7brRx4QT4UuNQdIy+CfoT3eZOTH2SpYXRSnH7K6UC2hOLS7HMNgRDHUmtcDUooPPY8D6t1oVqzabrU1vXve6z8pdg5Mn858SvbUqTq0kmrELtAY926v9gob2qz8pQ2J5INdg6etX5TxpOpY8dL0lXBh40kwVF8z7bydD5lWj/KJ60OY8xoqqMrvC2wVVjrItArEBxJqaAjRUaOWH514S8gNMPHamXMkPyp5d6c/ux/dGvhNW0zEcp3TF6vAzYcLd2M4oyZCMVQJVVZEH2xlQzuhTXJejJK5PC/AarJRXs/e+WkmF3mBCMcqcCWoY0HerTzNjOpX8torKUFI8gF3oEupsqDO9mjVx2DWZSyCFfWT3rNckJzSoBEVRG+PKXMRBHzUC7qjRg7gsX2XXNxCTVTJm5EAqdx0NJDMci7Xge6hhADezwjm+eCDe/VkzxKePOLTS57+Ha64EM8zst2u4WraBBRv7/pBqlWhxZCLCT180cKZI9fILmG8lGZ7n9ari6VpjDh6txWtGe75E6jreYQxlWYWQffehHKw9G8aYiIZ0+EZvX2ngoutbjrfGVQfUQIs+eZRR12PAvgCL9eWWumB62oqCl2nGl+Hyr3MFphhBsLLETn5lUaJ+qBxp/mKxF/0XLqLvTF6zm16uMBPZMSZ/HYuMp4lEakPGWvJ0PDgnBw7YZfR8k18WQxDQq8UdKq6Cbg9kaVXIoEgUVXCSDRbIC3gArnmEVPevzn/5jf4Qz5HNM29htoJqBMzUPxZgf+BLG/sxatSkmJ6rvq1SAcb21M9h8GEbWH0Ky3isGsZwctP/CsbUDt5aGdA2ubjeLOjD13tiVlrbnLMu1CgiM9brZ7heVFlbvZFLDYc4AbTPlmIWnFrcu6fEmwZ+YXbJl75aNIQGGUCcIcM35VMKfUx1OYzqneshuGk2UahNxaqhrNlDBJTcW275yiZAfJg100NrH4LzTq9IoTDSboWmU1ld7FrgBeig9bFGaQZnGc8WdCiE8XabPQjxJx5wFmMw7e8C4ID0Bqjb2pSbVPCJSxzGIYqHeFUiP0olzNUufXelQrOHJs1awyIPV0KmQo75mCf4rentFW9KkKv4KI5SexPcxYkKVkpQ/ZUarJC5cmpxBnAfMlvk1zNKamM6lRqOZ6GbZGQtKDYPqJt0ttyAtPMjfrjWt7V1eXublsi1lgBZ9HQ4pAk3FrjC7dyUUutd3qmFBo9myWiIMZkRIkbLCiHsYnf/aOjbuYtJCC4j85GD9idmVSz3FWvMuTnoaM4uYD3+j7lI4PvLmLrRbKbocUDzD4iRFjEwMGLPvCRTKstSkIGNlcwvR/GjOG8xIuPLXNjps4gdGw2KIJwHrSj2kGW3iLiXGMwUzjtivKqiUT9gAXxg1WhV46LVU1KGKZqFtQSy7R96+kLrVeqZMejgsQjCi3vr9ospppuJ+MYyMiteiiZ58EInPrG+ew+V9xRtUOeupCvSyaNZAELzrviBgXvXbnSdzL57Fn1aWRHkdEA20DXAGm5zEw9q3qFnI/5bSmOxfdc7l5YpCFQ6k/hheM5ej/ubYKowC22HsZBHaA8rr5QN7BG79nLZr+ZzMlxIR/BgWfGly3ihak1fceofA88PGfuqoEJgIPPLiawq3LwxehNoMg9eQHebAsUOHcQ7hUkuE2C2inRl/vhqbRwpNrSc6hNxwK8Dtjw==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1894,
+   "completion_tokens": 599,
+   "total_tokens": 2493,
+   "cost": 0.00366675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00366675,
+    "upstream_inference_prompt_cost": 0.0014205,
+    "upstream_inference_completions_cost": 0.00224625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 590,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1894,
+   "completion_tokens": 599,
+   "total_tokens": 2493,
+   "cost": 0.00366675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00366675,
+    "upstream_inference_prompt_cost": 0.0014205,
+    "upstream_inference_completions_cost": 0.00224625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 590,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00366675,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.78
+ },
+ "meta": {}
+}

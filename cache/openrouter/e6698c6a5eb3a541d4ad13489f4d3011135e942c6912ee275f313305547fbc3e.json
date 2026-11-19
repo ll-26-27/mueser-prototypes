@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "e6698c6a5eb3a541d4ad13489f4d3011135e942c6912ee275f313305547fbc3e",
+ "fetched_at": "2026-11-19T16:35:49Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Philodemus (109 BCE–34 BCE). 1st-century BC Greek Epicurean philosopher and poet\n\nEXTRACT:\nPhilodemus of Gadara (Ancient Greek: Φιλόδημος ὁ Γαδαρεύς, Philodēmos, \"love of the people\"; c. 110 – prob. c. 40 or 35 BC) was an Epicurean philosopher and poet. He studied under Zeno of Sidon in Athens, before moving to Rome, and then to Herculaneum. He was once known chiefly for his poetry preserved in the Greek Anthology, but since the 18th century, many writings of his have been discovered among the charred papyrus rolls at the Villa of the Papyri at Herculaneum. The task of excavating and deciphering these rolls is difficult, and work continues to this day. The works of Philodemus so far discovered include writings on ethics, theology, rhetoric, music, poetry, and the history of various philosophical schools. Ethel Ross Barker suggested in 1908 that he was owner of the Villa of the Papyri Library, although it is far more likely that the owner was in fact his wealthy Roman patron Lucius Calpurnius Piso Caesoninus.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ202161  Gallic War (-57–-50) — war (58–50 BCE) between the Roman Republic and Gaul\nQ677316  Social War of 91-87 BCE (-90–-87) — 91-87 BCE war between the Roman Republic and its rivals\nQ194378  Third Servile War (-72–-70) — major slave rebellion against the Roman Republic (73-71 BCE)\nQ827612  Jugurthine War (-110–-104) — 2nd-century BCE war between Kingdom of Numidia and the Roman Republic\nQ903199  Cimbrian War (-112–-100) — war bewteen Rome and a union of Germanic and Celtic tribes, 113-101 BCE\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ1192043  Roman–Parthian Wars (-65–217) — series of conflicts between the Parthian Empire and the Roman Republic and Roman Empire\nQ1238338  Caesar's Civil War (-48–-44) — one of the last politico-military conflicts in the Roman Republic before the establishment of the Roman Empire\nQ2583092  Liberators' Civil War (-42–-41) — Roman civil war between the Second Triumvirate and Caesar's assassins (43–42 BCE)\nQ1616064  Mithridatic Wars (-87–-62) — 1st-century BCE wars between the Roman Republic and the Kingdom of Pontus\nQ1647768  First Mithridatic War (-88–-84) — war between the Roman Republic and king Mithridates VI of Pontus, 89-84 BCE\nQ1764124  Third Mithridatic War (-72–-62) — war between Pontus and its allies and the Roman Republic\nQ11475544  Servile Wars (-134–-70) — series of wars during the Roman Republic\nQ131386  Battle of Alesia (-51) — decisive Roman victory in which Rome secures the conquest of Gaul\nQ203681  Battle of Pharsalus (-47) — 48 BCE decisive battle of Caesar's Civil War\nQ205887  Battle of Carrhae (-52) — ancient battle between Roman Republic and Parthian Empire in 53 BCE near modern Harran, Turkey\nQ12902417  Triumph of Lucius Licinius Lucullus (-62) — 63 BC event in Rome"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106142-3RJhxiq2amSvGaP7Noum",
+  "object": "chat.completion",
+  "created": 1795106142,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Understanding Philodemus's Journey**\n\nI'm currently focusing on Philodemus of Gadara, a fascinating Epicurean philosopher and poet. My thoughts are tracing his educational path, starting with Zeno of Sidon in Athens, and then his subsequent movements to Rome and ultimately Herculaneum.\n\n**Uncovering Philodemus's Works**\n\nMy focus is now on the tangible discoveries related to Philodemus. I'm processing the impact of the papyrus finds at Herculaneum, which have dramatically reshaped our understanding of his philosophical contributions beyond his poetry. The ongoing excavation and decipherment of these texts are a critical development.\n\n**Considering Event Links**\n\nI'm reviewing the provided extract to determine which listed events directly influenced or were influenced by Philodemus. My current analysis focuses on whether mentions of \"Rome\" or \"Roman patrons\" constitute a clear implication of the \"Roman Republic\" as an event within the context of the text itself, as per the instructions.\n\n**Evaluating Textual Connections**\n\nI'm refining my analysis of the extract's content in relation to the provided events. My current focus is on differentiating direct mentions or clear implications from mere temporal overlap or geographical location. I'm prioritizing textual evidence to determine connections, as per the instructions.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Understanding Philodemus's Journey**\n\nI'm currently focusing on Philodemus of Gadara, a fascinating Epicurean philosopher and poet. My thoughts are tracing his educational path, starting with Zeno of Sidon in Athens, and then his subsequent movements to Rome and ultimately Herculaneum.\n\n**Uncovering Philodemus's Works**\n\nMy focus is now on the tangible discoveries related to Philodemus. I'm processing the impact of the papyrus finds at Herculaneum, which have dramatically reshaped our understanding of his philosophical contributions beyond his poetry. The ongoing excavation and decipherment of these texts are a critical development.\n\n**Considering Event Links**\n\nI'm reviewing the provided extract to determine which listed events directly influenced or were influenced by Philodemus. My current analysis focuses on whether mentions of \"Rome\" or \"Roman patrons\" constitute a clear implication of the \"Roman Republic\" as an event within the context of the text itself, as per the instructions.\n\n**Evaluating Textual Connections**\n\nI'm refining my analysis of the extract's content in relation to the provided events. My current focus is on differentiating direct mentions or clear implications from mere temporal overlap or geographical location. I'm prioritizing textual evidence to determine connections, as per the instructions.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1875,
+   "completion_tokens": 1020,
+   "total_tokens": 2895,
+   "cost": 0.00523125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00523125,
+    "upstream_inference_prompt_cost": 0.00140625,
+    "upstream_inference_completions_cost": 0.003825
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1011,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1875,
+   "completion_tokens": 1020,
+   "total_tokens": 2895,
+   "cost": 0.00523125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00523125,
+    "upstream_inference_prompt_cost": 0.00140625,
+    "upstream_inference_completions_cost": 0.003825
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1011,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00523125,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.86
+ },
+ "meta": {}
+}

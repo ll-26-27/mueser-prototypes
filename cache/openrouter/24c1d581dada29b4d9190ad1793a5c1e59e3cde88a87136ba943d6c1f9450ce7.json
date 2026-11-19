@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "24c1d581dada29b4d9190ad1793a5c1e59e3cde88a87136ba943d6c1f9450ce7",
+ "fetched_at": "2026-11-19T16:42:49Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Radulphus Brito (1270–1320). grammarian\n\nEXTRACT:\nRadulphus Brito (c. 1270 – 1320) was an influential grammarian and philosopher, based in Paris. He is usually identified as Raoul le Breton, though this is disputed by some. Besides works of grammatical speculation he wrote on Aristotle, Boethius and Priscian.\nRadulphus was Master of Arts in the University of Paris in 1296, and joined the theology faculty in 1311. Very few of his works are edited, although he was a prolific and influential writer. He was one of a group of grammarians called the Modistae or modists who flourished around Paris from about 1260 to 1310, so-called because they wrote on the mode of signifying.\n\nEVENTS (id, name, years):\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106564-2JPpKyDm7eIAmubBhiSb",
+  "object": "chat.completion",
+  "created": 1795106564,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Brito's Context**\n\nI'm focusing on placing Radulphus Brito within his historical milieu, specifically the Middle Ages. My current analysis is pinpointing which specific historical events or periods are alluded to in the provided text.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Brito's Context**\n\nI'm focusing on placing Radulphus Brito within his historical milieu, specifically the Middle Ages. My current analysis is pinpointing which specific historical events or periods are alluded to in the provided text.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1760,
+   "completion_tokens": 325,
+   "total_tokens": 2085,
+   "cost": 0.00253875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00253875,
+    "upstream_inference_prompt_cost": 0.00132,
+    "upstream_inference_completions_cost": 0.00121875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 316,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1760,
+   "completion_tokens": 325,
+   "total_tokens": 2085,
+   "cost": 0.00253875,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00253875,
+    "upstream_inference_prompt_cost": 0.00132,
+    "upstream_inference_completions_cost": 0.00121875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 316,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00253875,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.08
+ },
+ "meta": {}
+}

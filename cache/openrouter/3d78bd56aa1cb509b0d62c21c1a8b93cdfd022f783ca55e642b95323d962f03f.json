@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "3d78bd56aa1cb509b0d62c21c1a8b93cdfd022f783ca55e642b95323d962f03f",
+ "fetched_at": "2026-11-19T16:36:37Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Marsilius of Inghen (14th century–1396-08-20). Dutch philosopher\n\nEXTRACT:\nMarsilius of Inghen (c. 1340 – 20 August 1396) was a Dutch philosopher of the later Middle Ages who studied with Albert of Saxony and Nicole Oresme under Jean Buridan. He was Magister at the University of Paris as well as at the University of Heidelberg from 1386 to 1396.\n\nEVENTS (id, name, years):\nQ9903  Ming dynasty (1368) — imperial dynasty of China from 1368 to 1644\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ157109  Burgundian Netherlands (1384–1482) — portion of the Low Countries ruled by the Dukes of Burgundy in the period from 1384 to 1482\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ264012  Nanboku-chō period (1336–1392) — period (1336–1392) within the Muromachi period of Japanese history, in which two men had competing claims to the Japanese imperial throne\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ8959  Northern Yuan dynasty (1368) — former empire in East Asia\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12551  Hundred Years' War (1337–1453) — series of conflicts and wars between England and France between 1337 and 1453\nQ698985  Ottoman Wars in Europe (1354–1683) — series of military conflicts between the Ottoman Empire and various European states\nQ1420791  Ottoman–Venetian Wars (1396–1718) — series of wars in the 14th–18th century\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ2658255  Byzantine Civil War of 1341–1347 (1341–1347) — civil war in the Byzantine Empire\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ550172  War of the Breton Succession (1341–1365) — conflict between the Counts of Blois and the Montforts of Brittany\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ112524  Red Turban Rebellion (1351–1368) — Revolt against the Yuan dynasty in China (1351–1368)\nQ498871  Peasants' Revolt of 1381 (1381) — major uprising across large parts of England in 1381\nQ7126013  Jacquerie (1358) — French peasant uprising, 1358\nQ1121044  Union of Krewo (1385) — 1385 document between Poland and Lithuania\nQ1334924  Treaty of Brétigny (1360) — treaty\nQ27759  Battle of Crécy (1346) — 1346 battle of the Hundred Years' War\nQ201692  Battle of Poitiers (1356) — 1356 battle of the Hundred Years' War\nQ210354  Battle of Kulikovo (1380) — 1380 battle between Russian principalities and Golden Horde\nQ179288  Battle of Kosovo (1389) — battle on 28th June 1389\nQ42005  Black Death (1346–1352) — 1346–1353 pandemic in Eurasia and North Africa\nQ212220  Battle of Nicopolis (1396) — Ottoman victory and raising of the siege of the fortress of Nicopolis in September 1396"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106191-xyeUh2yEL090j48ssC7h",
+  "object": "chat.completion",
+  "created": 1795106191,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q212976\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Marsilius of Inghen is identified as a Dutch philosopher active during the later Middle Ages.\",\n      \"evidence\": \"Marsilius of Inghen (c. 1340 – 20 August 1396) was a Dutch philosopher of the later Middle Ages who studied with Albert of Saxony and Nicole Oresme under Jean Buridan.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Matching Marsilius's Life**\n\nI'm focusing on pinpointing specific historical events that align with Marsilius of Inghen's lifespan, as detailed in the provided extract. My current progress is centered on cross-referencing his known life dates with significant occurrences of the late 14th century.\n\n**Delineating Historical Periods**\n\nI'm solidifying the timeframe by confirming that \"later Middle Ages\" strongly correlates with the Late Middle Ages (Q212976). This precision seems crucial for accurately situating Marsilius's life within the historical continuum, distinguishing it from the broader Middle Ages (Q12554).\n\n**Connecting Chronological Data**\n\nI'm prioritizing the direct match of \"later Middle Ages\" to the Late Middle Ages (Q212976). While the broader Middle Ages (Q12554) is related, the prompt's emphasis on specificity leads me to focus on the more precise temporal identifier.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Matching Marsilius's Life**\n\nI'm focusing on pinpointing specific historical events that align with Marsilius of Inghen's lifespan, as detailed in the provided extract. My current progress is centered on cross-referencing his known life dates with significant occurrences of the late 14th century.\n\n**Delineating Historical Periods**\n\nI'm solidifying the timeframe by confirming that \"later Middle Ages\" strongly correlates with the Late Middle Ages (Q212976). This precision seems crucial for accurately situating Marsilius's life within the historical continuum, distinguishing it from the broader Middle Ages (Q12554).\n\n**Connecting Chronological Data**\n\nI'm prioritizing the direct match of \"later Middle Ages\" to the Late Middle Ages (Q212976). While the broader Middle Ages (Q12554) is related, the prompt's emphasis on specificity leads me to focus on the more precise temporal identifier.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1974,
+   "completion_tokens": 982,
+   "total_tokens": 2956,
+   "cost": 0.005163,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005163,
+    "upstream_inference_prompt_cost": 0.0014805,
+    "upstream_inference_completions_cost": 0.0036825
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 856,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q212976\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Marsilius of Inghen is identified as a Dutch philosopher active during the later Middle Ages.\",\n      \"evidence\": \"Marsilius of Inghen (c. 1340 – 20 August 1396) was a Dutch philosopher of the later Middle Ages who studied with Albert of Saxony and Nicole Oresme under Jean Buridan.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q212976",
+     "type": "lived_through",
+     "reason": "Marsilius of Inghen is identified as a Dutch philosopher active during the later Middle Ages.",
+     "evidence": "Marsilius of Inghen (c. 1340 – 20 August 1396) was a Dutch philosopher of the later Middle Ages who studied with Albert of Saxony and Nicole Oresme under Jean Buridan.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1974,
+   "completion_tokens": 982,
+   "total_tokens": 2956,
+   "cost": 0.005163,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005163,
+    "upstream_inference_prompt_cost": 0.0014805,
+    "upstream_inference_completions_cost": 0.0036825
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 856,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.005163,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.35
+ },
+ "meta": {}
+}

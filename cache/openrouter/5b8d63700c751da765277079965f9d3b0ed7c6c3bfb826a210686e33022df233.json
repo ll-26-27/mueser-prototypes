@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "5b8d63700c751da765277079965f9d3b0ed7c6c3bfb826a210686e33022df233",
+ "fetched_at": "2026-11-19T16:43:03Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Kūkai (774-07-31–835-04-26). Japanese Buddhist monk and calligrapher, the founder of the Shingon school (774–835)\n\nEXTRACT:\nKūkai (空海; Japanese pronunciation: [kɯꜜː.kai], 27 July 774 – 22 April 835), born Saeki no Mao (佐伯 眞魚) posthumously called Kōbō Daishi (弘法 大師; [koː.boː daꜜi.ɕi], lit. 'the Grand Master Who Propagated the Dharma'), was a Japanese Buddhist monk, calligrapher, and poet who founded the esoteric Shingon school of Buddhism. He travelled to China, where he studied Tangmi (Chinese Vajrayana Buddhism) under the monk Huiguo. Upon returning to Japan, he founded Shingon—the Japanese branch of Vajrayana Buddhism. With the blessing of several Emperors, Kūkai was able to preach Shingon teachings and found Shingon temples. Like other influential monks, Kūkai oversaw public works and constructions. Mount Kōya was chosen by him as a holy site, and he spent his later years there until his death in 835 CE.\nBecause of his importance in Japanese Buddhism, Kūkai is associated with many stories and legends. One such legend attributes the invention of the kana syllabary to Kūkai, with which the Japanese language is written to this day (in combination with kanji), as well as the Iroha poem, which helped to standardise and popularise kana.\n\nShingon followers usually refer to Kūkai by the honorific title of Odaishi-sama (お大師様; \"The Grand Master\"), and the religious name of Henjō Kongō (遍照金剛; \"Vajra Shining in All Directions\").\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ5324  Gurjara-Pratihara (800) — dynasty that ruled northern India from 6th to 11th century\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ189178  Nara period (710–794) — historical medieval period of Japan from CE 710 to 794\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ201705  Khmer Empire (802) — 802–1431 empire in Southeast Asia\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ614082  Carolingian art (800–1000) — art of the Frankish empire, ca. 780–900\nQ499909  Saxon Wars (772–804) — campaigns and insurrections (772–804) between the Carolingian Empire and Saxons in what is now northwestern Germany; resulted in the incorporation of Saxony into the Frankish realm and their forcible conversion from Germanic paganism to Catholicism\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106570-pMSLFMDcXABaCorTajRn",
+  "object": "chat.completion",
+  "created": 1795106570,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Kūkai's Influences**\n\nI'm currently focusing on how Kūkai's experiences in Tang Dynasty China, particularly his study of Tangmi, might connect to the broader historical landscape. My analysis is strictly limited to the provided extract.\n\n**Linking Buddhist Schools**\n\nI'm now refining my understanding of \"Tangmi,\" specifically examining if its mention, even without direct dynasty naming, sufficiently links to the Tang Dynasty context within the provided text. The primary goal remains to trace Kūkai's doctrinal influences.\n\n**Re-evaluating Tang Dynasty Link**\n\nI'm reconsidering the explicit mention of the Tang Dynasty. While \"Tangmi\" is present, I need to be certain if this term alone sufficiently establishes a direct connection to the Tang Dynasty as a historical period within the given extract, adhering strictly to the provided text.\n\n**Synthesizing Kūkai's China Sojourn**\n\nI am now confirming if \"Tangmi\" itself, by virtue of its name, implicitly grounds Kūkai's studies in China to the Tang Dynasty period, even without explicit mention of the dynasty. My focus remains on textual inference.\n\n**Verifying Tang Dynasty Connection**\n\nI'm now focusing on whether the provided text explicitly states Kūkai lived through or participated in the Tang Dynasty, particularly given his travels to China. My analysis is limited to confirming this direct textual link.\n\n**Differentiating Implication from Explicit Mention**\n\nI'm now scrutinizing whether \"Tangmi\" inherently implies the Tang Dynasty period, or if the absence of the dynasty's explicit naming means I cannot make that connection based strictly on the text provided.\n\n**Confirming Tang Dynasty Absence**\n\nI'm now definitively confirming that the extract does not explicitly mention the Tang Dynasty or any related events. Therefore, based solely on the provided text, I cannot establish a direct connection to that historical period.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Kūkai's Influences**\n\nI'm currently focusing on how Kūkai's experiences in Tang Dynasty China, particularly his study of Tangmi, might connect to the broader historical landscape. My analysis is strictly limited to the provided extract.\n\n**Linking Buddhist Schools**\n\nI'm now refining my understanding of \"Tangmi,\" specifically examining if its mention, even without direct dynasty naming, sufficiently links to the Tang Dynasty context within the provided text. The primary goal remains to trace Kūkai's doctrinal influences.\n\n**Re-evaluating Tang Dynasty Link**\n\nI'm reconsidering the explicit mention of the Tang Dynasty. While \"Tangmi\" is present, I need to be certain if this term alone sufficiently establishes a direct connection to the Tang Dynasty as a historical period within the given extract, adhering strictly to the provided text.\n\n**Synthesizing Kūkai's China Sojourn**\n\nI am now confirming if \"Tangmi\" itself, by virtue of its name, implicitly grounds Kūkai's studies in China to the Tang Dynasty period, even without explicit mention of the dynasty. My focus remains on textual inference.\n\n**Verifying Tang Dynasty Connection**\n\nI'm now focusing on whether the provided text explicitly states Kūkai lived through or participated in the Tang Dynasty, particularly given his travels to China. My analysis is limited to confirming this direct textual link.\n\n**Differentiating Implication from Explicit Mention**\n\nI'm now scrutinizing whether \"Tangmi\" inherently implies the Tang Dynasty period, or if the absence of the dynasty's explicit naming means I cannot make that connection based strictly on the text provided.\n\n**Confirming Tang Dynasty Absence**\n\nI'm now definitively confirming that the extract does not explicitly mention the Tang Dynasty or any related events. Therefore, based solely on the provided text, I cannot establish a direct connection to that historical period.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1774,
+   "completion_tokens": 1788,
+   "total_tokens": 3562,
+   "cost": 0.0080355,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0080355,
+    "upstream_inference_prompt_cost": 0.0013305,
+    "upstream_inference_completions_cost": 0.006705
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1779,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1774,
+   "completion_tokens": 1788,
+   "total_tokens": 3562,
+   "cost": 0.0080355,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0080355,
+    "upstream_inference_prompt_cost": 0.0013305,
+    "upstream_inference_completions_cost": 0.006705
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1779,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0080355,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 13.03
+ },
+ "meta": {}
+}

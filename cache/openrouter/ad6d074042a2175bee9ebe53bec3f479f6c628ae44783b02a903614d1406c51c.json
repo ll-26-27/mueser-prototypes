@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "ad6d074042a2175bee9ebe53bec3f479f6c628ae44783b02a903614d1406c51c",
+ "fetched_at": "2026-11-19T16:14:22Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Chrysippus of Soli (280 BCE–207 BCE). Greek Stoic philosopher (c.279–c.206 BC)\n\nEXTRACT:\nChrysippus of Soli (; Ancient Greek: Χρύσιππος ὁ Σολεύς, Chrusippos ho Soleus; c. 279 – c. 206 BC) was a Greek Stoic philosopher. He was a native of Soli, Cilicia, but moved to Athens as a young man, where he became a pupil of the Stoic philosopher Cleanthes. When Cleanthes died, around 230 BC, Chrysippus became the third head of the Stoic school. A prolific writer, Chrysippus expanded the fundamental doctrines of Cleanthes' mentor Zeno of Citium, the founder and first head of the school, which earned him the title of the Second Founder of Stoicism.\nChrysippus excelled in logic, the theory of knowledge, ethics, and physics. He created an original system of propositional logic in order to better understand the workings of the universe and role of humanity within it. He adhered to a fatalistic view of fate, but nevertheless sought a role for personal agency in thought and action. Ethics, he thought, depended on understanding the nature of the universe, and he taught a therapy of extirpating the unruly passions that depress and crush the soul. He initiated the success of Stoicism as one of the most influential philosophical movements for centuries in the Greek and Roman world. The linguistic orientation of Chrysippus' work made it difficult for its students even within the Stoic school.\nOf his several written works, none have survived except as fragments. Segments of some of his works were discovered among the Herculaneum papyri.\n\nEVENTS (id, name, years):\nQ7183  Qin dynasty (-220) — dynasty that ruled in China from 221 to 206 BC\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ12060881  Chinese Empire (-219) — imperial period of China from 220 BCE to 1912 CE\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ714557  Kalinga War (-261–-260) — war fought by Ashoka\nQ6271  Second Punic War (-217–-200) — second war between the Roman Republic and Carthage, fought between 218 and 201 BCE\nQ6286  First Punic War (-263–-240) — First War between Rome and Carthage\nQ75626  First Macedonian War (-213–-204) — war between Rome and Macedonia\nQ75813  Macedonian Wars (-213–-147) — series of conflicts between the Roman Empire and various Greek kingdoms\nQ124988  Punic Wars (-263–-145) — series of three wars fought between Rome and Carthage from 264 BC to 146 BC, at the time probably the largest wars that had ever taken place\nQ596373  Pyrrhic War (-279–-274) — war\nQ1330607  Syrian Wars (-273–-167) — series of wars between Egypt and the Seleucid Empire in Syria (274-168 BCE)\nQ2912306  Wars of the Diadochi (-321–-274) — series of conflicts after the death of Alexander the Great\nQ1132393  Mercenary War (-239–-237) — revolt of mercenaries\nQ179591  Battle of Cannae (-215) — major battle of the Second Punic War (216 BCE)\nQ207250  Battle of Lake Trasimene (-216) — 217 BCE battle of the Second Punic War\nQ271873  Battle of the Trebia (-217) — first major battle of the Second Punic War"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795104857-TyYebZ0UK2DuSlOzsjNN",
+  "object": "chat.completion",
+  "created": 1795104857,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Synthesizing Chrysippus's Connections**\n\nI'm focusing on identifying direct links between Chrysippus of Soli and the historical events presented solely within the provided extract. My current effort is to meticulously parse the text for any explicit mentions or implied relationships.\n\n**Examining Chrysippus's Role**\n\nI'm now concentrating on the timeframe surrounding 206 BC, investigating Chrysippus's direct involvement or philosophical influence during this period. My aim is to pinpoint specific connections beyond his general contributions to Stoicism as described.\n\n**Refining Chronological Links**\n\nI'm now attempting to refine the chronological links between Chrysippus and the listed events, specifically looking for direct mentions or clear implications within the provided text, acknowledging his surviving fragments and the Herculaneum papyri.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Synthesizing Chrysippus's Connections**\n\nI'm focusing on identifying direct links between Chrysippus of Soli and the historical events presented solely within the provided extract. My current effort is to meticulously parse the text for any explicit mentions or implied relationships.\n\n**Examining Chrysippus's Role**\n\nI'm now concentrating on the timeframe surrounding 206 BC, investigating Chrysippus's direct involvement or philosophical influence during this period. My aim is to pinpoint specific connections beyond his general contributions to Stoicism as described.\n\n**Refining Chronological Links**\n\nI'm now attempting to refine the chronological links between Chrysippus and the listed events, specifically looking for direct mentions or clear implications within the provided text, acknowledging his surviving fragments and the Herculaneum papyri.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1861,
+   "completion_tokens": 707,
+   "total_tokens": 2568,
+   "cost": 0.004047,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.004047,
+    "upstream_inference_prompt_cost": 0.00139575,
+    "upstream_inference_completions_cost": 0.00265125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 698,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1861,
+   "completion_tokens": 707,
+   "total_tokens": 2568,
+   "cost": 0.004047,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.004047,
+    "upstream_inference_prompt_cost": 0.00139575,
+    "upstream_inference_completions_cost": 0.00265125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 698,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.004047,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.85
+ },
+ "meta": {}
+}

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "b16522195786c9af44ee60f5c69f02f2284a3385d893b495a0a82265a5486f04",
+ "fetched_at": "2026-11-19T16:41:21Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Peter Abelard (1079–1142-04-28). French scholastic philosopher, theologian and preeminent logician (c.1079-1142)\n\nEXTRACT:\nPeter Abelard (12 February 1079 – 21 April 1142) was a French philosopher, logician, theologian, composer, and poet, regarded as one of the most brilliant and controversial theologians of his time. Born at Pallet, near Nantes, he became a popular lecturer in Paris, but his academic career was cut short after his love affair with his student and eventual wife, Héloïse d'Argenteuil. Their relationship and philosophical exchange later became the aspect of his life for which he is best known in history and popular culture.\nIn philosophy, Abelard challenged the prevailing philosophical orthodoxy and is celebrated for his logical treatment of the problem of universals through nominalism and conceptualism, thereby helping to prepare the way for nominalism, as well as for pioneering the role of intent in ethics. He has often been called the \"Descartes of the twelfth century\" and has been considered a forerunner of Rousseau, Kant, and Spinoza. He is also sometimes credited as a major forerunner of modern empiricism.\nIn Catholic theology, Abelard was condemned for his teaching on the Trinity. He is particularly known for developing the concept of limbo and for introducing the moral influence theory of atonement. His doctrine of the atonement emphasized the love of Christ as manifested in his life and Passion, which in turn calls forth a human response of love, and this conception has had a continuing influence. Abelard expressed its underlying purpose in the words: \"The purpose and cause of the incarnation was that God might illuminate the world by his wisdom and stir it to the love of himself.\"\nAbelard is also regarded, alongside Augustine, as one of the most significant forerunners of the modern self-reflective autobiographer. His publicly circulated autobiographical letter, The History of My Calamities, together with his public correspondence, helped establish the tone for later epistolary novels and public accounts of the private lives of prominent figures. His works also include Christian Theology, Ethics, and his letters to Héloïse.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ5066  Jin dynasty (1115) — Jurchen dynasty that ruled in northern China 1115–1234 and its eponymous empire\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ51650  People's Crusade (1096) — poor people's army to fight muslim Turks in Jerusalem (1095-1100)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ743768  The Anarchy (1135–1154) — civil war in England and Normandy between 1135 and 1153\nQ51649  First Crusade (1096–1099) — 1096–1099 Christian conquest of the Holy Land\nQ51653  Crusade of 1101 (1101) — battle in the summer of 1101\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ392538  Battle of Sagrajas (1086) — 1086 battle of the Reconquista\nQ456993  Siege of Jerusalem (1099) — 1099 battle during which the Crusaders captured Jerusalem from the Fatimid Caliphate\nQ166861  Cistercians (1098) — Roman Catholic order of the Benedictine reform in the tradition of the monastery of Citaux"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106472-4kwOaS6u1ZI06eplwCMN",
+  "object": "chat.completion",
+  "created": 1795106472,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Finding Abelard's Links**\n\nI'm focusing on pinpointing direct connections between Peter Abelard's life dates and the provided historical events, as strictly dictated by the extract.\n\n**Examining Chronological Anchors**\n\nI'm scrutinizing the extract for explicit mentions or clear implications of historical periods or events that directly align with Abelard's life dates. My current focus is on whether \"twelfth century\" automatically signifies \"Middle Ages\" or \"High Middle Ages\" based solely on the provided text.\n\n**Filtering Chronological Clues**\n\nI'm actively filtering out any external knowledge and solely scrutinizing the provided extract for direct mentions of historical periods or specific events that could anchor Abelard's life dates. My current analysis confirms that no specific historical periods like \"Middle Ages\" or \"High Middle Ages,\" nor events such as the Crusades or Cistercians, are explicitly stated within the text.\n\n**Unearthing Ethical Precursors**\n\nI'm currently sifting through the provided text, seeking direct evidence of Abelard's influence on ethical theories. My focus is on how his ideas, particularly concerning intent, are presented as foundational for later philosophical developments, as described within this specific extract.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Finding Abelard's Links**\n\nI'm focusing on pinpointing direct connections between Peter Abelard's life dates and the provided historical events, as strictly dictated by the extract.\n\n**Examining Chronological Anchors**\n\nI'm scrutinizing the extract for explicit mentions or clear implications of historical periods or events that directly align with Abelard's life dates. My current focus is on whether \"twelfth century\" automatically signifies \"Middle Ages\" or \"High Middle Ages\" based solely on the provided text.\n\n**Filtering Chronological Clues**\n\nI'm actively filtering out any external knowledge and solely scrutinizing the provided extract for direct mentions of historical periods or specific events that could anchor Abelard's life dates. My current analysis confirms that no specific historical periods like \"Middle Ages\" or \"High Middle Ages,\" nor events such as the Crusades or Cistercians, are explicitly stated within the text.\n\n**Unearthing Ethical Precursors**\n\nI'm currently sifting through the provided text, seeking direct evidence of Abelard's influence on ethical theories. My focus is on how his ideas, particularly concerning intent, are presented as foundational for later philosophical developments, as described within this specific extract.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1879,
+   "completion_tokens": 995,
+   "total_tokens": 2874,
+   "cost": 0.0051405,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0051405,
+    "upstream_inference_prompt_cost": 0.00140925,
+    "upstream_inference_completions_cost": 0.00373125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 986,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1879,
+   "completion_tokens": 995,
+   "total_tokens": 2874,
+   "cost": 0.0051405,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0051405,
+    "upstream_inference_prompt_cost": 0.00140925,
+    "upstream_inference_completions_cost": 0.00373125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 986,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0051405,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 8.34
+ },
+ "meta": {}
+}

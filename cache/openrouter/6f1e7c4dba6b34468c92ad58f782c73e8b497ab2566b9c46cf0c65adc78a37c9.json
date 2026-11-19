@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "6f1e7c4dba6b34468c92ad58f782c73e8b497ab2566b9c46cf0c65adc78a37c9",
+ "fetched_at": "2026-11-19T16:41:24Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Lucretius (93 BCE–54-10-13 BCE). 1st-century BC Roman poet and philosopher\n\nEXTRACT:\nTitus Lucretius Carus (  TY-tuhs loo-KREE-shuhs; Latin: [ˈtitʊs lʊˈkreːtɪ.ʊs ˈkaːrʊs]; c. 99 – October 15, 55 BC) was a Roman poet and philosopher. His only known work is the philosophical poem De rerum natura, a didactic work about the tenets and philosophy of Epicureanism, which usually is translated into English as On the Nature of Things—and somewhat less often as On the Nature of the Universe. \nVery little is known about Lucretius's life; the only certainty is that he was either a friend or client of Gaius Memmius, to whom the poem was addressed and dedicated. De rerum natura was a considerable influence on the Augustan poets, particularly Virgil (in his Aeneid and Georgics, and to a lesser extent on the Eclogues) and Horace. The work was almost lost during the Middle Ages, but was rediscovered in 1417 in a monastery in Germany by Poggio Bracciolini. It played an important role both in the development of atomism (Lucretius was an important influence on Pierre Gassendi) and the efforts of various figures of the Enlightenment era to construct a new Christian humanism.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ202161  Gallic War (-57–-50) — war (58–50 BCE) between the Roman Republic and Gaul\nQ677316  Social War of 91-87 BCE (-90–-87) — 91-87 BCE war between the Roman Republic and its rivals\nQ194378  Third Servile War (-72–-70) — major slave rebellion against the Roman Republic (73-71 BCE)\nQ1192043  Roman–Parthian Wars (-65–217) — series of conflicts between the Parthian Empire and the Roman Republic and Roman Empire\nQ1616064  Mithridatic Wars (-87–-62) — 1st-century BCE wars between the Roman Republic and the Kingdom of Pontus\nQ1647768  First Mithridatic War (-88–-84) — war between the Roman Republic and king Mithridates VI of Pontus, 89-84 BCE\nQ1764124  Third Mithridatic War (-72–-62) — war between Pontus and its allies and the Roman Republic\nQ11475544  Servile Wars (-134–-70) — series of wars during the Roman Republic\nQ12902417  Triumph of Lucius Licinius Lucullus (-62) — 63 BC event in Rome"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106477-1Xngav8EYHRuIcaLBI6a",
+  "object": "chat.completion",
+  "created": 1795106477,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Lucretius and Events**\n\nMy current focus is on identifying any direct or indirect links between Lucretius and specific historical occurrences, using only the provided textual fragment. The extract itself is quite limited, so this is proving to be a significant constraint.\n\n**Weaving Lucretius's Influence**\n\nI'm currently exploring how Lucretius's philosophical poem, \"De rerum natura,\" might connect with broader historical movements. My analysis is primarily focused on tracing its rediscovery and its impact on later thinkers and artistic endeavors. This is a complex weaving, given the fragmented nature of the source.\n\n**Examining Event Overlap**\n\nI'm meticulously cross-referencing the provided events list with mentions in the extract. My current focus is on whether a \"Roman poet\" implies the \"Roman Republic,\" a connection the extract doesn't explicitly state. The absence of direct correlations is a recurring challenge.\n\n**Discerning Explicit Mentions**\n\nI am rigorously analyzing the provided text for direct mentions of specific events. My current assessment is that the extract only refers to Lucretius as a \"Roman poet,\" which does not explicitly name the \"Roman Republic\" or any other listed historical period or war.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Lucretius and Events**\n\nMy current focus is on identifying any direct or indirect links between Lucretius and specific historical occurrences, using only the provided textual fragment. The extract itself is quite limited, so this is proving to be a significant constraint.\n\n**Weaving Lucretius's Influence**\n\nI'm currently exploring how Lucretius's philosophical poem, \"De rerum natura,\" might connect with broader historical movements. My analysis is primarily focused on tracing its rediscovery and its impact on later thinkers and artistic endeavors. This is a complex weaving, given the fragmented nature of the source.\n\n**Examining Event Overlap**\n\nI'm meticulously cross-referencing the provided events list with mentions in the extract. My current focus is on whether a \"Roman poet\" implies the \"Roman Republic,\" a connection the extract doesn't explicitly state. The absence of direct correlations is a recurring challenge.\n\n**Discerning Explicit Mentions**\n\nI am rigorously analyzing the provided text for direct mentions of specific events. My current assessment is that the extract only refers to Lucretius as a \"Roman poet,\" which does not explicitly name the \"Roman Republic\" or any other listed historical period or war.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1606,
+   "completion_tokens": 1080,
+   "total_tokens": 2686,
+   "cost": 0.0052545,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0052545,
+    "upstream_inference_prompt_cost": 0.0012045,
+    "upstream_inference_completions_cost": 0.00405
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1071,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1606,
+   "completion_tokens": 1080,
+   "total_tokens": 2686,
+   "cost": 0.0052545,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0052545,
+    "upstream_inference_prompt_cost": 0.0012045,
+    "upstream_inference_completions_cost": 0.00405
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1071,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0052545,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 7.31
+ },
+ "meta": {}
+}

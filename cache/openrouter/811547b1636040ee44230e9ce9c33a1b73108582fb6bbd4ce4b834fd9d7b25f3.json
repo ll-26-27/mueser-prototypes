@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "811547b1636040ee44230e9ce9c33a1b73108582fb6bbd4ce4b834fd9d7b25f3",
+ "fetched_at": "2026-11-19T16:37:50Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Gersonides (1288–1344-04-20). medieval Jewish philosopher\n\nEXTRACT:\nLevi ben Gershon (1288 – 20 April 1344), better known by his Graecized name as Gersonides, or by his Latinized name Magister Leo Hebraeus, or in Hebrew by the abbreviation of first letters as RaLBaG, was a medieval French Jewish philosopher, Talmudist, mathematician, physician and astronomer/astrologer. He was born at Bagnols in Languedoc, France. According to Abraham Zacuto and others, he was the son of Gerson ben Solomon Catalan.\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ264012  Nanboku-chō period (1336–1392) — period (1336–1392) within the Muromachi period of Japanese history, in which two men had competing claims to the Japanese imperial throne\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ826021  Kenmu Restoration (1333) — period of Japanese history, 1333–1336\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12551  Hundred Years' War (1337–1453) — series of conflicts and wars between England and France between 1337 and 1453\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ2658255  Byzantine Civil War of 1341–1347 (1341–1347) — civil war in the Byzantine Empire\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ550172  War of the Breton Succession (1341–1365) — conflict between the Counts of Blois and the Montforts of Brittany\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ853685  Treaty of Nöteborg (1323) — 1323 peace treaty between Kingdom of Sweden and the Novgorod Republic\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106260-PKCZsBIW341TFNl9nI1N",
+  "object": "chat.completion",
+  "created": 1795106260,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Gersonides lived and worked during the Middle Ages, identified as a medieval philosopher and scholar.\",\n      \"evidence\": \"Levi ben Gershon (1288 – 20 April 1344), better known by his Graecized name as Gersonides, or by his Latinized name Magister Leo Hebraeus, or in Hebrew by the abbreviation of first letters as RaLBaG, was a medieval French Jewish philosopher, Talmudist, mathematician, physician and astronomer/astrologer.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Recalling Key Identifiers**\n\nI'm focusing on the various names associated with Levi ben Gershon, specifically his Graecized, Latinized, and Hebrew abbreviated forms. This is crucial for establishing his full historical context.\n\n**Evaluating Contextual Links**\n\nI'm probing whether the descriptor \"medieval\" directly implies a lived experience within the Middle Ages, or if it's merely a classification. This distinction is critical for accurate contextual linking.\n\n**Re-evaluating Temporal Context**\n\nI'm questioning if \"medieval\" simply categorizes me or signifies actual lived experience during that era. The distinction hinges on whether the extract frames it as circumstance or a mere descriptor, and if the benchmark equates \"medieval\" with the \"Middle Ages.\"\n\n**Testing Event Overlap**\n\nI'm confirming if the descriptor \"medieval\" definitively signifies lived experience during the Middle Ages or just a classification. The provided text explicitly calls him a \"medieval French Jewish philosopher,\" which directly links him to the period. I'm also considering if specific sub-periods like \"Late Middle Ages\" or \"High Middle Ages\" are implied, concluding that \"medieval\" simply refers to the broader Middle Ages.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Recalling Key Identifiers**\n\nI'm focusing on the various names associated with Levi ben Gershon, specifically his Graecized, Latinized, and Hebrew abbreviated forms. This is crucial for establishing his full historical context.\n\n**Evaluating Contextual Links**\n\nI'm probing whether the descriptor \"medieval\" directly implies a lived experience within the Middle Ages, or if it's merely a classification. This distinction is critical for accurate contextual linking.\n\n**Re-evaluating Temporal Context**\n\nI'm questioning if \"medieval\" simply categorizes me or signifies actual lived experience during that era. The distinction hinges on whether the extract frames it as circumstance or a mere descriptor, and if the benchmark equates \"medieval\" with the \"Middle Ages.\"\n\n**Testing Event Overlap**\n\nI'm confirming if the descriptor \"medieval\" definitively signifies lived experience during the Middle Ages or just a classification. The provided text explicitly calls him a \"medieval French Jewish philosopher,\" which directly links him to the period. I'm also considering if specific sub-periods like \"Late Middle Ages\" or \"High Middle Ages\" are implied, concluding that \"medieval\" simply refers to the broader Middle Ages.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1805,
+   "completion_tokens": 1317,
+   "total_tokens": 3122,
+   "cost": 0.0062925,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0062925,
+    "upstream_inference_prompt_cost": 0.00135375,
+    "upstream_inference_completions_cost": 0.00493875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1159,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Gersonides lived and worked during the Middle Ages, identified as a medieval philosopher and scholar.\",\n      \"evidence\": \"Levi ben Gershon (1288 – 20 April 1344), better known by his Graecized name as Gersonides, or by his Latinized name Magister Leo Hebraeus, or in Hebrew by the abbreviation of first letters as RaLBaG, was a medieval French Jewish philosopher, Talmudist, mathematician, physician and astronomer/astrologer.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Gersonides lived and worked during the Middle Ages, identified as a medieval philosopher and scholar.",
+     "evidence": "Levi ben Gershon (1288 – 20 April 1344), better known by his Graecized name as Gersonides, or by his Latinized name Magister Leo Hebraeus, or in Hebrew by the abbreviation of first letters as RaLBaG, was a medieval French Jewish philosopher, Talmudist, mathematician, physician and astronomer/astrologer.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1805,
+   "completion_tokens": 1317,
+   "total_tokens": 3122,
+   "cost": 0.0062925,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0062925,
+    "upstream_inference_prompt_cost": 0.00135375,
+    "upstream_inference_completions_cost": 0.00493875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1159,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0062925,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 10.4
+ },
+ "meta": {}
+}

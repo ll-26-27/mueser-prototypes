@@ -1,0 +1,191 @@
+{
+ "namespace": "openrouter",
+ "key": "03cb804b8fb10e1ea2d7fad4bfe7175648517a8876cde14ba024ca1514b025aa",
+ "fetched_at": "2026-11-19T16:34:59Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Moshe ben Maimon (1138-04-06–1204-12-20). Medieval Jewish philosopher from Spain (1135–1204)\n\nEXTRACT:\nMoses ben Maimon (died 12 December 1204), commonly known as Maimonides and also referred to by the Hebrew acronym Rambam, was a Sephardic Jewish rabbi who is widely acknowledged as one of the most prolific and influential Torah scholars of the Middle Ages.\nOriginally from Córdoba, where he was born on Passover Eve of 1135 or 1138, his family was exiled from Muslim-ruled Spain shortly after the Almohad Caliphate conquered the Almoravid dynasty in 1148. Over the course of the next two decades, Maimonides resided in Fez, Acre, Jerusalem, Alexandria, and Cairo before finally settling in Fustat between 1168 and 1171. During this period, he advanced his vocations and became renowned for his achievements as an astronomer, philosopher, and physician—even being appointed to serve as personal physician to Saladin of the Ayyubid Sultanate.\nMost contemporary Jews as far as Iraq and Yemen acclaimed Maimonides' writings on halakha and Jewish ethics. Yet, while he rose to lead the Jewish community in Egypt, he also had many loud critics, particularly in Spain. He continued to live in Fustat until his death in 1204 and is said to have been buried in Tiberias. Accordingly, the Tomb of Maimonides in Tiberias holds importance as a Jewish pilgrimage site.\nTo date, Maimonides is recognized as one of the foremost rabbinic decisors and his copious work comprises a cornerstone of Jewish scholarship. His fourteen-volume Mishneh Torah still carries significant canonical authority in Judaism as a codification of halakha, as do his thirteen principles of faith. Maimonides' era is considered by many to mark the end of the Jewish Golden Age in Spain, owing to the ubiquitous persecution of his family and the Sephardic Jewish community in general, though others assert that it lasted until the Christian Reconquista concluded in the 15th century.\nAside from being revered by Jewish historians, Maimonides features very prominently in the history of Islamic science. Influenced by Aristotle, al-Farabi, ibn Sina, and his contemporary ibn Rushd, his work as a polymath contributed to the Islamic Golden Age and was regarded highly in many parts of the Muslim world.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ148499  Margraviate of Brandenburg (1157) — Holy Roman Empire principality (1157–1806)\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ196409  Livonian Crusade (1198) — German and Danish conquest of medieval Livonia\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ737542  Genpei War (1180–1185) — conflict during late-Heian period of Japan\nQ743768  The Anarchy (1135–1154) — civil war in England and Normandy between 1135 and 1153\nQ842357  Hōgen rebellion (1156) — civil war in Japan (1156–1156)\nQ51654  Second Crusade (1147–1149) — second major crusade launched from Europe as Catholic ('Latin') Holy War against Islam\nQ51655  Third Crusade (1189–1192) — attempt by European leaders to reconquer the Holy Land from Ayyubid\nQ51656  Fourth Crusade (1202–1204) — armed expedition against Constantinople\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ646409  Crusade of 1197 (1197–1198) — crusade\nQ683635  Wendish Crusade (1147) — Saxons and Danes vs Slavs (Wends)\nQ233568  Battle of Hattin (1187) — Victory of Ayyubid forces under Saladin against Crusader joint forces, 1187\nQ815161  Conquest of Jerusalem (1187) — 1187 conquest that marks the end of Christian dominion over the Greater Jerusalem"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106086-Ld9tXEtxwlF5lSeASnzV",
+  "object": "chat.completion",
+  "created": 1795106086,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Maimonides lived during the Middle Ages, establishing himself as one of the era's most prominent Torah scholars.\",\n      \"evidence\": \"Moses ben Maimon (died 12 December 1204), commonly known as Maimonides and also referred to by the Hebrew acronym Rambam, was a Sephardic Jewish rabbi who is widely acknowledged as one of the most prolific and influential Torah scholars of the Middle Ages.\",\n      \"work\": \"\"\n    },\n    {\n      \"event\": \"Q745799\",\n      \"type\": \"took_part_in\",\n      \"reason\": \"Maimonides actively contributed to the Islamic Golden Age through his intellectual output as a polymath.\",\n      \"evidence\": \"Influenced by Aristotle, al-Farabi, ibn Sina, and his contemporary ibn Rushd, his work as a polymath contributed to the Islamic Golden Age and was regarded highly in many parts of the Muslim world.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Jewish Scholars**\n\nI'm currently focusing on identifying direct links between Moshe ben Maimon and the historical events or periods highlighted in the provided text. My immediate goal is to establish any correlations mentioned, specifically noting his association with the Middle Ages as per the extract.\n\n**Mapping Historical Context**\n\nI'm now carefully distinguishing between events Maimonides directly experienced and those that merely mark chronological periods. My current focus is to clarify his relationship to the end of the Islamic Golden Age and the conclusion of the Christian Reconquista, ensuring I only attribute lived experiences accurately.\n\n**Defining Contributions**\n\nI'm now clarifying my involvement with the Islamic Golden Age, focusing on my specific contributions rather than just the period itself. My current aim is to precisely define the nature of my participation.\n\n**Focusing on Direct Impact**\n\nI'm now honing in on direct influences and lived experiences, specifically distinguishing between periods I was active in and those merely marking chronological endpoints. My current effort is to ensure the Reconquista is understood as a concluding marker for others, not a personal event for me.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Jewish Scholars**\n\nI'm currently focusing on identifying direct links between Moshe ben Maimon and the historical events or periods highlighted in the provided text. My immediate goal is to establish any correlations mentioned, specifically noting his association with the Middle Ages as per the extract.\n\n**Mapping Historical Context**\n\nI'm now carefully distinguishing between events Maimonides directly experienced and those that merely mark chronological periods. My current focus is to clarify his relationship to the end of the Islamic Golden Age and the conclusion of the Christian Reconquista, ensuring I only attribute lived experiences accurately.\n\n**Defining Contributions**\n\nI'm now clarifying my involvement with the Islamic Golden Age, focusing on my specific contributions rather than just the period itself. My current aim is to precisely define the nature of my participation.\n\n**Focusing on Direct Impact**\n\nI'm now honing in on direct influences and lived experiences, specifically distinguishing between periods I was active in and those merely marking chronological endpoints. My current effort is to ensure the Reconquista is understood as a concluding marker for others, not a personal event for me.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1+m/XcIimqsPWahZWGNODU5/85J1j8R39RaxIhVfyPTLQnakWgZ7TIqe/XQYvyhcVCJlWrZH0nJ9B2zPDAceb0yov7aJQiE48gsK1qxWcmlwIdH7N97cPp/KhCmdfP53HsvoDgYFgUoP9a1pxxL0rYvvX7MWKvFOxlmsGbPdBgCeBcn76lV9egS6lnctmX5j1rwOMcVfsb36DJuAuH/EXl16EfGaGDNKEbsb7xd6lP9h4z8p48zb7qmR/YqeUN6XcfRXfMZNFhUNybkpDnM+eMHUl/J0+sHwF+iTGxqv6azkm2SVRJxAXwGecuSBDUop4lbUon8NJ2hVhLN12vzT4/c+a3EOoCtSVvTqtP/iFjCNdFfFZSkwvFjyGwfboPzTm9Vc4J+HO/r9Xk8Nqf3D00f2FY4ImPjjBga6fBuP89qKUv/S6GTUiG9PU2PACc2YUkcD/xi+2qNHFfPYwhV3RU0Pj6qBZ9K8j+t7pIzVE7bQoWi6JDV0Ew0DVDzZ/GKAPOFscFULhDxxQFMDKdZQ56VzDMzm0LTrrHY6lIaEfvFTqsY0/7rLkQFd1t2XduwCjnq2PiRfTD3++QMZ721eu6p05qo+qZXOSvam222nlVkkBeksmHtI4U9Lg2cQEG8Q90fpaQVCIX5MXXfUv3pg321ckQwzgowaQjM39e/t9w3XTYRZQvvsjsqRqSo/w+SVlalV9IrG6b5YiYN7kwbSdIqomipq0Kgni3aR0XKIOeHuzz9cWLn7GdY4NpISxaoAm7PJYOLFsjkZ9DrPGP5WZoPvnqbxMHoy6cbMSQdwkf2riRLrvqU8LW/xOmgahgty00Iq9Wra8IdXDQSjO3i8oNYcICg4x0Aj/ffLpGKLlvBL8iKnW7MPykXfMLlf+sd2t0Zy2UpNu59n2AjT6hLa8hZ/K9WkVk5nLgPL6qJ++HetSv6yptfb7XOBwWHYo3ZPgGY/BT0+04KnIrZJwB02AIHDr53lOH2Gyn00HhJCnMC+rp7pzmQmSswVfRZdD8VnJo6hewThgN6RNrqZHO6vcM80F+WBKXExlICWTHWNRYnWCait40ww0mDeCzwQGg7QxCXvHCFD3d/fZFKQSQT2XxdgUzC5DJpWVUNx8/2/Gxfs7NGli93cYs1wZojbp5013CIkGx4tHh0yufNUKRp/6TORcYMyOzVTbO63Bm0LH+wpmKEqy74UKyyJSuI6QV2MYtQmF+af+T1s2H3TPA+i045f3OoU1E9N6Drc1jjBqhnEuTXoGA+IezNMcXgnFf7j7SPRZLm2EVxfM/hC3zmhLb27HTdy7I9w8A0o4pS57H1Qe+tTg1bGBwIpfRl9Torp7av4XgAzJUmMRkOja72s7Q+SGHVJowDCMqRSUPtMMNuQJmmSzthAZrd+INmCWi9nmABdMhh8iWPBnKojXhsgJrta2+QD9WV5p0jvU6iHeKp6ezltLgZxQk12KK2i6IrJw0IwXhn69gQwoq5TTeL2jFmpx7NgZQpJFDGqHpZNeHU6jT8N0Uy+v/2bdZQ/VUvDScLf0caw3uhOo99zjCuwg+eYLteyCnmepZ1De0yXpdwWm+LwCw1L4yD18+Ex8zRzy1pqC8TcPUKFtM/n5OUkT4el6GNQhyHf507DrWOo9uY+KD7Cl2qGalvv7QLbDjmFDvmitWgGCqwtrCk9II3rzLYOiCwB7yECKY93/6oDPVXoWkTfWYhDSVEdid8XEFiLZTRoY41ySOUUJ2UTM5YWwOIjGxwDWuNMxLMMiF7G3oGCC/mVaysqe0Qornft59eUUKs8wPJICW2ttJY2TSyKAwrqA/Gyk1UmsWuKrzm9ASrfleHvwOxOpYzble9Xxm60u6zj4wc3qJo1wPJV99EsnmGW+XJihRvnJnwMD0k5xguDAjvQHCuNcNo9D8+IGTUyrqmAHn8h9TyVJ9hBXn2dIXKJ6o/zOgJLepx+vkpcxqhqDhrG0H15dMJJZq4phgx09HoDdh+6T03jMSslL9+tNSvatuWNmDbG8DCFXId8uIRQEdO+FJpZCXh/mLoy0uHqEHGfHs4aDAgLYRFnlzHXmTgkJnHMYIfTU+PSasRAC+fZ9EOxdg+xi5rVJeSzCtp44Wd6wqZfKNxGXnw3q6UEiJdySfo6d0y4mRRXi3JE2AhF6MA2zZ5XF5NdA1k69lvUuTH4rX4YQSDl/BvlhIBItpDZYQvhuaa+BvBo2zNFbTRB8rCxSwULBaGr1JvsePpuG6mithKbWxs+dcOLJwHuZBvLzMlBE8mI0317hBckJW169aqzKtdAruMGDChZQkMS9Ej3iN+1AfNyKuvUBEGeXjuPkZ1zL9L5XGZR+7hNSQpyJHPXdn4sWMADm3uJhVOrCvhqvEyDyW2T0LVTqoVwt1k3W+T4VAicI5kFpztafeM5Jd1DAyf535XUPPKZYbLeqnbzxe+Yfc7gjaSVkda7u5pmtO8abz3VrlRXr1TUSXbFNjQsnSdWF0RINrpJ1KaUzNKYFU16mET0CJXiaD2J+MttYYFJnX6K4JUL56i7UyIyjKcQMHOB48akZrUg5ml+gDy0Fs6hKnDkR7JJTdyvLcriINaGfmHTk0hR2NzvRrxb7bYgsCdBs0TR/kzrZzRwhXJ6n3+13DdY8Z6HToVzdT3zQrHfSzGgqycWf15/XJ2DU0714toRwVRtvoEsxltAAP5pJcmn/NDl8TsoQZLL+2Ut3iCSDS2fOBPRNZBxmORXDdL35O1nAq08yJQPaARpEXc99bDOYTGutN3e8EEDJyldXc6bhOwTXpNQqTPoXOBfKcUBRbMj9yLOuBM1Zegc2dPzqkk63JYr8jjELKf5DVRcvYVA1+rcJj7Rhd6JJYc+FTanDqYte7Rr72up3nnunvNI8pNcBVg2YWrJ/66zW6fQgwAKErQfcX6NvIpjKnADTT/Gpwed9j7Or8rWqo7rojnZPw/UvrK5Bs9/WtBinEBwj8n9hFPwl1zLjfy9VGeKqcVK9NwaDSk/cafnQ36OZXWYCJUftTcNjmavEzG6Cdgs+UDDOza/pHPuqDd36q5vNSJBemSKgLxWKCQ2uLMs9oM37vlirZhY3Mty7HsOvlqbQqTVV4s/pbKTMP0/L3cAThNM4wpp3RUa8Baq8sZTZi6yY0VddHvYth2Z6KOqPOZikHq7B2Gtu5S2YCMH1DJ0OyY+QgjNnHewCZbHpbN9A2ajQHJoyZf+g+ARBifLTXWUruQJmYWFAe5PyYEvFXCtgDb9ISMGfoUvcnmV9f1ZL5dlxnS+UW4QgJWDh2jO6CeL0NWL/Bg3PPPWg1elCXzqEbyIlSjAwoINdXprfB3FXodcJU37zBd7ueuK7lcv3kZMEhkfuAdNjUjRfmHQYz8+pFvEeE1dS1j4/dYHAvxDUVIKwBOOo9wb2BzZkjrKISZX3ln83v7lMWv6+/Kcq4EufYXJVUBRGfDnDsorDa5+jN/vC+tp2LGgR6/jiO28dzP6+Ik6KORuk19YdA9NGbz2HN7cVJc4Fy+WvfVW3iZeEG6WMg4sOypSTN8aTwiuBOyaQ3POipk7naw1oih5S3O8sWIuQCIRPNdmZIm+8MH4OniEXQAQORhTdRoZC8uOJyuti22inw3rQKL6lQpG+/LUDmtawEvVya9747GmD5zZSaMUTtyIn0BXuT10ZJLXhFYNvEukqyApNgG76dHFm2o2UYTiVaK7oW2XdgUO7YT7mKfktseiuhDLa7tlWSTTL6szBpnScVSFRopII4hmhoDAIUDM1QAL8C5JvrYIkjsNBasZYuwCG9hgjSjrNYya8ntIq1yfMGZ+rqN3UWmzR3jIL6mNyEbRN+4bvXEQTl7nUaxwORNBVorr92U1cBxRHpTbiDGVoo20d3LXEcyBfc4rebCg8Y6tRvSmOFVrajkzGTDniSv1KPyPFyYAXeiq9HFS5z7g5Um0KkxfEP9HcOB6k0VUwnvcd7HWelPETw83N30fnlsP3zA1gFbt8FiE1gHwkD1tF5vD8pWOgPUpY3+93FR2sBADXv5VueEQOsDO/IIgX9yyK3X0LBjDTFbz/q6SSPOC/I+svioeqQREsqREwE3IZ2pllH4qMN6TQznhyB6WioWgud+cm4W+cXmMGNB5XRRKsRAI3dAeFzH/GEx9tVqKb4fdpRIrgf8iI6K/Pc+IbWK3ddGdZirlFyn+bTClAPweK03kCdZ55P2GR8ErlCznr+RDxLlaJuxJxlnj9QlIwb0cKS6hcC3d951ThrU6ZJueEVVDAwYFmd6kBVEuPDJOmZd0WZak1aAAgoxDfu2Ag0QG6SVukcJRU9tTWDXPJ3hAkk13ONXM+uB3ucaDWWck3VrRLeWeEtu5NxbwMOkh2pq6hR4EDlqUcyqhMPd1sKnze1A9y7Zxgzno1/6ZcXRatfYV1hQgyU+570CYuEuDAqDFQswNWwP6b5kXJJkFdrING9uwmgYSH3lymVm8atuZY4C8f/67C6jNBIK9eaZWzHhyHGQxpoD/V0tpEcKlI1GZbK2Qh8OCfl4HZ0ulu1oqjAQ4nYI+iiCNDeFE802wKCUWumwIzHBRAJuu6zzFGblAdA0pTn6vyAzDMWVtr+KymDhwguU70zKVwzwf7mh0XTxDFQPhX/ei/sHk3wFo4UfpwYvTckMpee+xCVakU5xalNaN2Ibwkbl1Mmm7ksMx0+usp+NpU44Yo/MpImHlE6VnLAUXJOjo5gAJs2QhqAU6W+worVQGYE61zkWA5pOaoTsmp9Y7oD9dvxqdOnEkRZK8SCUJTqOFIhwUT7unqEcnoVR8OXbiOn7KTJiHBOr5ooz5A3dxclplS3ABfHgrqybS5xOpBGAxjqyE4SOjnO/bcR54GDsGqdOMgr6p2l+JRWCZh3afhH4RtA+P8RZXhOmuVW2W35qCchiho2oRqMS7SmFxB7Qadv236ZLUgzYVGKkYvIB2FKk0cKIAvkVYz+dz+H1nKTuV+YYGAnn2vNF+FwbDwjDqlyoSF1aHmtiu3vtyd2A3h+NVCgbQSXyEn2CjZA0T0/ExixCvmYfiMriOM3kWWApk/gd7hSj5AC/3nJD4ib2DzlGNTyJ2qQbi4Sg4mLa/M/l/F/9PSxtPKpgXjS+wNaDUYpb6FUrmk+7nczP9VzztA8P64TtgQDtX3UNOCFEnlC6d1lMDbnSqSwNfUxqbFVGD3HEh2191m0AHmi2W79VocBPdQlNPYlGVmT3bSEbQDHyO+htZlMt7NIgSr1ofuGirHshTtaHiHFe7WsZ3ZSVgqHS5eVyVtxASSbGtZYOGe1YpszhcRZ3uOwcfBxznJ03NKkWyQBTUKsbrCzj6mBAHX+/QDxFmAbuytZIdVgSwARLfms7xX03Ag1iz7BBCT9Ry0GN8hxCFV7zacl5vS4xvBQkOwCPRp3hGf+YzoCNaDZ1XiBpGOO73h1cmwxkACjrAXcPQz6Wg1pf4fsilOz9o//SPji7fh57qwKcVe0xoGij/hAz7lfdMrI7/es6+Tw8RxmcDEYY7tPIFqziEhDaOypICo5Gf3sBejeg2uKO2/2HBV4ZSUL+oU5TiWT4YPYA3sTwqzvWXaQ6jHtlHQFgyriwOUCdUArljs7aupa5dEHD2g9yaEhT2sNC1OcqymNET9rCL4UH8jllEA9Ewqd3Cws/8Pc59FNYBWTrrrArgERQcYiqba/upiM6L/Pzr8zXW5fSoqjW3eTiqITWQtHxGDj855Lhmspls4otYDei0igZrqoK1JyR+EbDRe9mzijhzmJJFUfMfgzJ5x3+xfufBUw7LRRWybJJiDRTKvK9gedlpf+1YwDSsl+2IYjaDxRla4DfqBJRXypAMYCMXwpG7L884edJiC4YuSL1FXdtD7yz+k2BFZu/6Zd/k8twbZf9v7JxNAnlyghejZmIOfg5gX2A+aa3bSyaMDA1g9ikPHSC+cAxii/rcJwvWfrpm6XmXSpps8pmySCzs1DVT70hCAe0+j7QRG/pyIvsA6jp3A3jq8cIfKOlsLlmAPUmMFGxoXOaTGOrgaodbOfImwskcsIVzo4HfWPgUPW4kjthCJX/if3gCkTLfMNjpJsQw1W2yjjr0xwUVQlfpDw6ZvucSvt/EoDGV32AbjFGDkpdnXUn/QNOM9YHn/4uq6LT1VytXrJX6Lse1oGjvgtLeZGLjP8zH0TJf1Gb0x1g0Yk59jmOx7SmPYZ36xLLCAvIZWcZHOQsL16R29FLcZG1axikblDgHWj0a/uVOQ4qCNKl/wr2CybM4JwaFhu3FmBiVv4H0NBy+NZXg2ogZwHIvWCUuWPEP5oKxpykNP0mlrefqkaOsOwehm8axZsAXerQDEg9VBC05DbrgLpNpkZN1CymCCZIqbsAyVbkQbzualwLhyVH6gfPO3OsOwclOie70J71zTZzzOU1/4Vx6D+JNWHu+GPE7uXD9DiuNZQFUGps5l2WeREs9HU70KUGcokNMAwDRFR7E8Dvv3Ib/56jAQg1Zgfz66y/i8XAekLNDyq72wLa1JJ1CDocnacA5JX/k5QTjbzpbO5itPUO7LaMkUAiXRqs4y2gXHNdBubricjhOyW9i3VU+GsNmSonyqLRg7pFqrKyfB5Aqh99hAndILFb+8gQxq2FoInSsBPG3aQElIYOI850EZMjWa+QBp+deuuALihRaJjl/1IIFQzIYbmhF2OOn8rKKLXG5xBez/lB4DnLP7VFceMmTW+XVIcR4PvCzUzOkKdfRj0ILKNP7jjoFXTctbhbXbSaYTVbFGPbGQkWBM6yeTtQrgJoWAhVaM0bkkRuS9Iakqw9VffXIyc1L2rweXjNB0OT0z9ywSkaagKrkpnR7EyfC5vynY9iCguiv/IacQPMHy2vBCvfsQ05leQI+mQObAHqSrmOBheQic6fpjyC400Q7Ujra1JqyqNBnrsxUTztRcE0OQAtKTQAsE1y59/2Fod0mhY6C1HnqcTpxoqdgct4C/873OV6IIWbnxBN2fIdZc2WeTB97cAf6OjjS3Y7ADT5KeDG4C3eR0PN1V4YHAvCdOvJ80fVz0x8/kJyiZINzvvTF6D8CTD6s2DXMChX8MEhM+ZJiMtjPWBPEwVjcpiuy4HzdnNyJVowUnGaD9IXgUu9DOB/rbb6p6yHYcdOeAanQuU6h8RqexhFGaE5ykZE/RYM9EmdURXSUXy/GMvXwba9Nj99iW301IAlzmB9jm3EaoEP.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2122,
+   "completion_tokens": 1382,
+   "total_tokens": 3504,
+   "cost": 0.006774,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.006774,
+    "upstream_inference_prompt_cost": 0.0015915,
+    "upstream_inference_completions_cost": 0.0051825
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1124,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Maimonides lived during the Middle Ages, establishing himself as one of the era's most prominent Torah scholars.\",\n      \"evidence\": \"Moses ben Maimon (died 12 December 1204), commonly known as Maimonides and also referred to by the Hebrew acronym Rambam, was a Sephardic Jewish rabbi who is widely acknowledged as one of the most prolific and influential Torah scholars of the Middle Ages.\",\n      \"work\": \"\"\n    },\n    {\n      \"event\": \"Q745799\",\n      \"type\": \"took_part_in\",\n      \"reason\": \"Maimonides actively contributed to the Islamic Golden Age through his intellectual output as a polymath.\",\n      \"evidence\": \"Influenced by Aristotle, al-Farabi, ibn Sina, and his contemporary ibn Rushd, his work as a polymath contributed to the Islamic Golden Age and was regarded highly in many parts of the Muslim world.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Maimonides lived during the Middle Ages, establishing himself as one of the era's most prominent Torah scholars.",
+     "evidence": "Moses ben Maimon (died 12 December 1204), commonly known as Maimonides and also referred to by the Hebrew acronym Rambam, was a Sephardic Jewish rabbi who is widely acknowledged as one of the most prolific and influential Torah scholars of the Middle Ages.",
+     "work": ""
+    },
+    {
+     "event": "Q745799",
+     "type": "took_part_in",
+     "reason": "Maimonides actively contributed to the Islamic Golden Age through his intellectual output as a polymath.",
+     "evidence": "Influenced by Aristotle, al-Farabi, ibn Sina, and his contemporary ibn Rushd, his work as a polymath contributed to the Islamic Golden Age and was regarded highly in many parts of the Muslim world.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 2122,
+   "completion_tokens": 1382,
+   "total_tokens": 3504,
+   "cost": 0.006774,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.006774,
+    "upstream_inference_prompt_cost": 0.0015915,
+    "upstream_inference_completions_cost": 0.0051825
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1124,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.006774,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 12.63
+ },
+ "meta": {}
+}

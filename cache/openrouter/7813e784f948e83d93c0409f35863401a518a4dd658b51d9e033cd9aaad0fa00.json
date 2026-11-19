@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "7813e784f948e83d93c0409f35863401a518a4dd658b51d9e033cd9aaad0fa00",
+ "fetched_at": "2026-11-19T16:34:47Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Hipparchia of Maroneia (349 BCE–279 BCE). Cynic philosopher\n\nEXTRACT:\nHipparchia of Maroneia (; Greek: Ἱππαρχία ἡ Μαρωνεῖτις; fl. c. 325 BC) was a Cynic philosopher, and wife of Crates of Thebes. She was the sister of Metrokles, the cynic philosopher.\nShe was born in Maroneia, but her family moved to Athens, where Hipparchia came into contact with Crates, the most famous Cynic philosopher in Greece at that time. She fell in love with him, and, despite the disapproval of her parents, she married him. She went on to live a life of Cynic poverty on the streets of Athens with her husband.\nLittle survives of her own philosophical views, but like most Cynics, her influence lies in the example of her life, choosing a way of life which was usually considered unacceptable for respectable women of the time. The story of her attraction to Crates, and her rejection of conventional values, became a popular theme for later writers.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ978071  Thirty-first Dynasty of Egypt (-342–-331) — second and last Achaemenid rule on Egypt (343–332 BC)\nQ28365  Lamian War (-322–-321) — fought by a coalition of Greek cities against Macedon and its ally Boeotia\nQ737907  Second Latin War (-340–-337) — wars fought between ancient Rome (including both the Roman Kingdom and the Roman Republic) and the Latins, from the earliest stages of the history of Rome until the final subjugation of the Latins to Rome in the aftermath of the Latin War\nQ109251  Samnite Wars (-342–-289) — series of wars between the early Roman Republic and the Samnites on the Italian Peninsula\nQ551888  Wars of Alexander the Great (-335–-322) — conflicts fought by King Alexander III of Macedon (\"The Great\"), against other Greek powers, the Persian Empire and warlords as far east as India\nQ596373  Pyrrhic War (-279–-274) — war\nQ2912306  Wars of the Diadochi (-321–-274) — series of conflicts after the death of Alexander the Great\nQ200716  Battle of Chaeronea (-337) — 338 BCE battle during the expansion of Macedonia under Philip II\nQ201526  Battle of Issus (-332) — second great battle of Alexander's conquest of Asia\nQ213074  Battle of the Hydaspes (-325) — battle fought by Alexander the Great in 326 BCE against King Porus of the Paurava kingdom on the banks of the Hydaspes River (Jhelum River) in the Punjab near Bhera\nQ179670  Battle of Gaugamela (-330) — decisive battle of Alexander the Great's invasion of the Persian Achaemenid Empire\nQ192938  Battle of the Granicus (-333) — 334 BCE battle between Macedonians and Persians"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106082-KcP0sNI432mDOWpMeaa8",
+  "object": "chat.completion",
+  "created": 1795106082,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Linking Hipparchia's Era**\n\nI'm currently analyzing the provided extract to pinpoint the chronological markers associated with Hipparchia of Maroneia. My focus is on establishing a clear temporal frame for her activities around 325 BC, which will serve as the anchor for any subsequent historical connections.\n\n**Identifying Key Dates**\n\nI'm sifting through the details to pinpoint specific chronological anchors. My current focus is on establishing Hipparchia's timeline around 325 BC, the approximate date of her marriage and life in Athens, to ground the historical context.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Linking Hipparchia's Era**\n\nI'm currently analyzing the provided extract to pinpoint the chronological markers associated with Hipparchia of Maroneia. My focus is on establishing a clear temporal frame for her activities around 325 BC, which will serve as the anchor for any subsequent historical connections.\n\n**Identifying Key Dates**\n\nI'm sifting through the details to pinpoint specific chronological anchors. My current focus is on establishing Hipparchia's timeline around 325 BC, the approximate date of her marriage and life in Athens, to ground the historical context.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1785,
+   "completion_tokens": 614,
+   "total_tokens": 2399,
+   "cost": 0.00364125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00364125,
+    "upstream_inference_prompt_cost": 0.00133875,
+    "upstream_inference_completions_cost": 0.0023025
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 605,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1785,
+   "completion_tokens": 614,
+   "total_tokens": 2399,
+   "cost": 0.00364125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00364125,
+    "upstream_inference_prompt_cost": 0.00133875,
+    "upstream_inference_completions_cost": 0.0023025
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 605,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00364125,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.93
+ },
+ "meta": {}
+}

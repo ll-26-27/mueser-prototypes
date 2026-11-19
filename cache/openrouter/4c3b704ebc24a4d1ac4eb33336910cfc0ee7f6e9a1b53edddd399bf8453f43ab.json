@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "4c3b704ebc24a4d1ac4eb33336910cfc0ee7f6e9a1b53edddd399bf8453f43ab",
+ "fetched_at": "2026-11-19T16:43:06Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Porphyry (233–301). 3rd-century Phoenician Neoplatonist philosopher\n\nEXTRACT:\nPorphyry (; Koine Greek: Πορφύριος, romanized: Porphýrios; c. 234 – c. 305) was a Phoenician Neoplatonic philosopher born in Tyre, Roman Phoenicia during Roman rule. He edited and published the Enneads, the only collection of the work of Plotinus, his teacher.\nHe wrote original works in the Greek language on a wide variety of topics, ranging from music theory to Homer to vegetarianism. His Isagoge or Introduction, an introduction to logic and philosophy, was the standard textbook on logic throughout the Middle Ages in its Latin and Arabic translations. Porphyry was, and still is, also well known for his anti-Christian polemics, and for arguing that the Book of Daniel was pseudepigrapha written during the Maccabean period. Through works such as Philosophy from Oracles and Against the Christians (which was banned by Constantine the Great), he was involved in a controversy with early Christians.\n\nEVENTS (id, name, years):\nQ7352  Jin dynasty (266) — Chinese dynasty (266–420)\nQ51644  Early Christianity (1–325) — period of church history beginning with the ministry of Jesus (c. 27-30) and ending with the First Council of Nicaea (325)\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ174450  Roman Tetrarchy (293–324) — division of power in the Roman Empire under Diocletian until Constantine the Great (ca. 293 to 324 AD)\nQ185043  Three Kingdoms (220–280) — period of Chinese history (220–280 AD) dominated by the Wei, Shu-Han, and Wu kingdoms\nQ206414  Principate (-26–284) — first period of the Roman Empire (ca. 27 BC to 284 AD)\nQ238399  Dominate (284–565) — \"despotic\" phase of government in the ancient Roman Empire (ca. 284 to 565 AD)\nQ329838  Crisis of the Third Century (235–284) — Roman Imperial government crisis (235–284)\nQ459939  Kofun period (250–538) — period of Japanese history from 300 to 538\nQ466803  Pallava dynasty (275) — Indian dynasty between the 3rd and 9th centuries CE\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ770951  War of the Eight Princes (291–306) — series of civil wars (291–306 CE) among princes of the Chinese Jin dynasty"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106577-JXktLaYJgJO8hmlD1Svk",
+  "object": "chat.completion",
+  "created": 1795106577,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q51644\",\n      \"type\": \"wrote_in_response_to\",\n      \"reason\": \"Porphyry authored anti-Christian polemics, engaging directly in theological controversy with early Christians.\",\n      \"evidence\": \"Through works such as Philosophy from Oracles and Against the Christians (which was banned by Constantine the Great), he was involved in a controversy with early Christians.\",\n      \"work\": \"Against the Christians\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Porphyry's Ideas**\n\nI'm currently exploring potential linkages between Porphyry's philosophical concepts and the historical events mentioned, using the provided extract as my primary source of information. My focus is on identifying any thematic or temporal overlaps that might illuminate his influence.\n\n**Synthesizing Porphyry's Works**\n\nI'm now focusing on Porphyry's specific anti-Christian polemics and his arguments concerning the Book of Daniel, contrasting them with the broader context of Early Christianity as outlined in the provided events. I'm looking for direct textual evidence of his engagement with Christian thinkers.\n\n**Analyzing Porphyry's Polemics**\n\nI've been specifically examining Porphyry's \"Against the Christians,\" noting its significance and Constantine the Great's ban. My focus is on how this work directly positions him within a controversy with early Christians, and whether \"wrote_in_response_to\" is the most accurate descriptor for this engagement.\n\n**Investigating Porphyry's Polemics**\n\nI'm currently reviewing the details about Porphyry's \"Against the Christians,\" specifically how Constantine the Great's ban positions him in controversy. My analysis is focused on whether \"wrote_in_response_to\" accurately captures his engagement with early Christians, considering the specific work named.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Porphyry's Ideas**\n\nI'm currently exploring potential linkages between Porphyry's philosophical concepts and the historical events mentioned, using the provided extract as my primary source of information. My focus is on identifying any thematic or temporal overlaps that might illuminate his influence.\n\n**Synthesizing Porphyry's Works**\n\nI'm now focusing on Porphyry's specific anti-Christian polemics and his arguments concerning the Book of Daniel, contrasting them with the broader context of Early Christianity as outlined in the provided events. I'm looking for direct textual evidence of his engagement with Christian thinkers.\n\n**Analyzing Porphyry's Polemics**\n\nI've been specifically examining Porphyry's \"Against the Christians,\" noting its significance and Constantine the Great's ban. My focus is on how this work directly positions him within a controversy with early Christians, and whether \"wrote_in_response_to\" is the most accurate descriptor for this engagement.\n\n**Investigating Porphyry's Polemics**\n\nI'm currently reviewing the details about Porphyry's \"Against the Christians,\" specifically how Constantine the Great's ban positions him in controversy. My analysis is focused on whether \"wrote_in_response_to\" accurately captures his engagement with early Christians, considering the specific work named.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1635,
+   "completion_tokens": 978,
+   "total_tokens": 2613,
+   "cost": 0.00489375,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00489375,
+    "upstream_inference_prompt_cost": 0.00122625,
+    "upstream_inference_completions_cost": 0.0036675
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 859,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q51644\",\n      \"type\": \"wrote_in_response_to\",\n      \"reason\": \"Porphyry authored anti-Christian polemics, engaging directly in theological controversy with early Christians.\",\n      \"evidence\": \"Through works such as Philosophy from Oracles and Against the Christians (which was banned by Constantine the Great), he was involved in a controversy with early Christians.\",\n      \"work\": \"Against the Christians\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q51644",
+     "type": "wrote_in_response_to",
+     "reason": "Porphyry authored anti-Christian polemics, engaging directly in theological controversy with early Christians.",
+     "evidence": "Through works such as Philosophy from Oracles and Against the Christians (which was banned by Constantine the Great), he was involved in a controversy with early Christians.",
+     "work": "Against the Christians"
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1635,
+   "completion_tokens": 978,
+   "total_tokens": 2613,
+   "cost": 0.00489375,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00489375,
+    "upstream_inference_prompt_cost": 0.00122625,
+    "upstream_inference_completions_cost": 0.0036675
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 859,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00489375,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 9.14
+ },
+ "meta": {}
+}

@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "c84e3e93b0b0c66576289db13f26c13769ff4710b8c67977308258f93dd753d1",
+ "fetched_at": "2026-11-19T16:35:34Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Confucius (550 BCE–478 BCE). 5th-century BCE Chinese philosopher and politician\n\nEXTRACT:\nConfucius (c. 551 – c. 479 BCE), born Kong Qiu, was a Chinese philosopher of the Spring and Autumn period who is traditionally considered the paragon of Chinese sages. Much of the shared cultural heritage of the Sinosphere originates in the philosophy and teachings of Confucius. His philosophical teachings, called Confucianism, emphasized personal and governmental morality, harmonious social relationships, righteousness, kindness, sincerity, and a ruler's responsibilities to lead by virtue.\nConfucius considered himself a transmitter for the values of earlier periods which he claimed had been abandoned in his time. He advocated for filial piety, endorsing strong family loyalty, ancestor veneration, and the respect of elders by their children and of husbands by their wives. Confucius recommended a robust family unit as the cornerstone for an ideal government. He championed the Silver Rule, or a negative form of the Golden Rule, advising, \"Do not do unto others what you do not want done to yourself.\"\nThe time of Confucius's life saw a rich diversity of thought, and was a formative period in China's intellectual history. His ideas gained in prominence during the Warring States period, but experienced setback immediately following the Qin conquest. Under Emperor Wu of Han, Confucius's ideas received official sanction, with affiliated works becoming mandatory readings for career paths leading to officialdom. During the Tang and Song dynasties, Confucianism developed into a system known in the West as Neo-Confucianism. In the 20th century, an intellectual movement emerged in the Republic of China that sought to apply Confucian ideology in a modern context, known as New Confucianism. From ancient dynasties to the modern era, Confucianism has integrated into the Chinese social fabric and way of life.\nTraditionally, Confucius is credited with having authored or edited many of the ancient texts including all of the Five Classics. However, modern scholars exercise caution in attributing specific assertions to Confucius himself, for at least some of the texts and philosophy associated with him were of a more ancient origin. Aphorisms concerning his teachings were compiled in the Analects, but not until many years after his death.\n\nEVENTS (id, name, years):\nQ271834  Archaic Greece (-599–-500) — period of ancient Greek history\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ175447  Babylonian captivity (-596–-537) — period in Jewish history during which a number of people from the ancient Kingdom of Judah were captives in Babylon\nQ185047  Spring and Autumn period (-770–-475) — period in Chinese history from approximately 770 to 476 BCE\nQ201038  Roman Kingdom (-752–-508) — period of Roman history when the city and its territory were ruled by kings (c.753–c.509 BC)\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ926624  Twenty-seventh Dynasty of Egypt (-524) — first Achaemenid rule on Egypt (525–404 BC)\nQ208261  Ionian Revolt (-498–-492) — 499-493 BCE military rebellions by Greek cities in Asia Minor against Persian rule\nQ1122337  Second Persian invasion of Greece (-479–-478) — 480–479 BC phase of the Greco-Persian Wars\nQ76026  Greco-Persian Wars (-498–-448) — series of conflicts between the Achaemenid Empire of Persia and poleis of the Hellenic world in the fifth century BCE\nQ11924845  Messenian Wars (-742–-453) — series of wars between Sparta and Messenia\nQ31900  Battle of Marathon (-489) — 490 BCE battle in the Greco-Persian wars\nQ204636  Battle of Plataea (-478) — 479 BCE land battle during the second Persian invasion of Greece\nQ131969  Battle of Thermopylae (-479) — battle of 480 BCE during Persian invasion of Greece\nQ178850  Battle of Salamis (-479) — 480 BCE naval battle fought between an alliance of Greek city-states and the Persian Empire"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106129-GstHDHwYMRO8UUbNPNh3",
+  "object": "chat.completion",
+  "created": 1795106129,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q185047\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Confucius lived and worked as a philosopher during the Spring and Autumn period of Chinese history.\",\n      \"evidence\": \"Confucius (c. 551 – c. 479 BCE), born Kong Qiu, was a Chinese philosopher of the Spring and Autumn period who is traditionally considered the paragon of Chinese sages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Synthesizing Confucius's Era**\n\nI'm currently focused on establishing the temporal proximity between Confucius's lifespan and the provided events, aiming to pinpoint any direct or indirect influences based on the extract's contextual information.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Synthesizing Confucius's Era**\n\nI'm currently focused on establishing the temporal proximity between Confucius's lifespan and the provided events, aiming to pinpoint any direct or indirect influences based on the extract's contextual information.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1916,
+   "completion_tokens": 552,
+   "total_tokens": 2468,
+   "cost": 0.003507,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.003507,
+    "upstream_inference_prompt_cost": 0.001437,
+    "upstream_inference_completions_cost": 0.00207
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 428,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q185047\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Confucius lived and worked as a philosopher during the Spring and Autumn period of Chinese history.\",\n      \"evidence\": \"Confucius (c. 551 – c. 479 BCE), born Kong Qiu, was a Chinese philosopher of the Spring and Autumn period who is traditionally considered the paragon of Chinese sages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q185047",
+     "type": "lived_through",
+     "reason": "Confucius lived and worked as a philosopher during the Spring and Autumn period of Chinese history.",
+     "evidence": "Confucius (c. 551 – c. 479 BCE), born Kong Qiu, was a Chinese philosopher of the Spring and Autumn period who is traditionally considered the paragon of Chinese sages.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1916,
+   "completion_tokens": 552,
+   "total_tokens": 2468,
+   "cost": 0.003507,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.003507,
+    "upstream_inference_prompt_cost": 0.001437,
+    "upstream_inference_completions_cost": 0.00207
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 428,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.003507,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.29
+ },
+ "meta": {}
+}

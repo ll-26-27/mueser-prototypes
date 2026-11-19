@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "029178a21da9c41698d55a5871a5e137acd37fb0b3ec0a3ac4150ad83ed48b16",
+ "fetched_at": "2026-11-19T16:37:21Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Al-Kindi (801–870). Muslim Arab philosopher, mathematician and physician (c.801–873)\n\nEXTRACT:\nAbū Yūsuf Yaʻqūb ibn ʼIsḥāq aṣ-Ṣabbāḥ al-Kindī (; Arabic: أبو يوسف يعقوب بن إسحاق الصبّاح الكندي; Latin: Alkindus; c. 801–873 AD) was a Mesopotamian Arab polymath who was active as a philosopher, mathematician, physician, and music theorist. Al-Kindi was the first of the Islamic peripatetic philosophers, and is hailed as the \"father of Arab philosophy\".\nAl-Kindi was born in Kufa and educated in Baghdad. He became a prominent figure in the House of Wisdom (Bayt al-Hikma), an institute of translation and learning patronized by the Abbasid caliphs, in Baghdad, and a number of Abbasid caliphs appointed him to oversee the translation of Greek scientific and philosophical texts into the Arabic language. This contact with \"the philosophy of the ancients\" (as Hellenistic philosophy was often referred to by Muslim scholars) had a profound effect on him, as he synthesized, adapted and promoted Hellenistic and Peripatetic philosophy in the Muslim world. He subsequently wrote hundreds of original treatises of his own on a range of subjects, from metaphysics, ethics, logic and psychology, to medicine, pharmacology, mathematics, astronomy, astrology and optics, and further afield to more practical topics like perfumes, swords, jewels, glass, dyes, zoology, tides, mirrors, meteorology and earthquakes.\nIn the field of mathematics, al-Kindi played an important role in introducing Hindu-Arabic numerals to the Islamic world, and their further development into Arabic numerals along with al-Khwarizmi, which eventually were adopted by the rest of the world. Al-Kindi was also one of the fathers of cryptography. Building on the work of al-Khalil (717–786), Al-Kindi's book entitled Manuscript on Deciphering Cryptographic Messages gave rise to the birth of cryptanalysis, was the earliest known use of statistical inference, and introduced several new methods of breaking ciphers, notably frequency analysis. He was able to create a scale that would enable doctors to gauge the effectiveness of their medication by combining his knowledge of mathematics and medicine.\nThe central theme underpinning al-Kindi's philosophical writings is the compatibility between philosophy and other \"orthodox\" Islamic sciences, particularly theology, and many of his works deal with subjects in which theologians had an immediate interest. These include the nature of God, the soul, and prophetic knowledge.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ201705  Khmer Empire (802) — 802–1431 empire in Southeast Asia\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ614082  Carolingian art (800–1000) — art of the Frankish empire, ca. 780–900\nQ499909  Saxon Wars (772–804) — campaigns and insurrections (772–804) between the Carolingian Empire and Saxons in what is now northwestern Germany; resulted in the incorporation of Saxony into the Frankish realm and their forcible conversion from Germanic paganism to Catholicism\nQ759988  Zanj Rebellion (869–883) — slave revolt against the Abbasid Caliphate\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ134840  Treaty of Verdun (843) — 843 treaty dividing the Frankish Empire between the grandsons of Charlemagne\nQ160205  Treaty of Meerssen (870) — treaty\nQ157082  Oaths of Strasbourg (842) — military pact"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106231-9fM0QTlDiAVBDM2Y1Zy7",
+  "object": "chat.completion",
+  "created": 1795106231,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Historical Periods**\n\nI'm currently investigating how Al-Kindi relates to the provided historical eras, specifically the Islamic Golden Age, Tang dynasty, Middle Ages, and Heian period. My focus is on pinpointing any direct or indirect links mentioned in the extract.\n\n**Defining Al-Kindi's Era**\n\nI'm examining the provided text to see if it explicitly uses the term \"Islamic Golden Age\" when discussing Al-Kindi, or if it only alludes to related concepts like the House of Wisdom and the translation of Greek texts under the Abbasids. This distinction is crucial for framing his historical context accurately.\n\n**Synthesizing Al-Kindi's Contributions**\n\nI'm focusing on Al-Kindi's intellectual output and his role in the translation movement. The text highlights his prolific work across various disciplines and his significant contribution to integrating Hellenistic philosophy within the Muslim world through the House of Wisdom.\n\n**Expanding Al-Kindi's Influence**\n\nI'm now considering Al-Kindi's role in introducing Hindu-Arabic numerals and his pioneering work in cryptanalysis, particularly frequency analysis. My thoughts are also turning to his medical contributions and his philosophical efforts to reconcile faith and reason.\n\n**Evaluating Temporal Linkages**\n\nI'm critically re-evaluating the provided text for explicit mentions or clear implications of the \"Islamic Golden Age.\" While the extract details the House of Wisdom and Abbasid patronage, I'm being cautious about equating these directly with the broader historical period as per the instructions.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Historical Periods**\n\nI'm currently investigating how Al-Kindi relates to the provided historical eras, specifically the Islamic Golden Age, Tang dynasty, Middle Ages, and Heian period. My focus is on pinpointing any direct or indirect links mentioned in the extract.\n\n**Defining Al-Kindi's Era**\n\nI'm examining the provided text to see if it explicitly uses the term \"Islamic Golden Age\" when discussing Al-Kindi, or if it only alludes to related concepts like the House of Wisdom and the translation of Greek texts under the Abbasids. This distinction is crucial for framing his historical context accurately.\n\n**Synthesizing Al-Kindi's Contributions**\n\nI'm focusing on Al-Kindi's intellectual output and his role in the translation movement. The text highlights his prolific work across various disciplines and his significant contribution to integrating Hellenistic philosophy within the Muslim world through the House of Wisdom.\n\n**Expanding Al-Kindi's Influence**\n\nI'm now considering Al-Kindi's role in introducing Hindu-Arabic numerals and his pioneering work in cryptanalysis, particularly frequency analysis. My thoughts are also turning to his medical contributions and his philosophical efforts to reconcile faith and reason.\n\n**Evaluating Temporal Linkages**\n\nI'm critically re-evaluating the provided text for explicit mentions or clear implications of the \"Islamic Golden Age.\" While the extract details the House of Wisdom and Abbasid patronage, I'm being cautious about equating these directly with the broader historical period as per the instructions.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a19Ldpc7nvorPtYa4VAn/gqR1bIui6s6TDx6HKwFOi/pQFjRRskdKvqzgQ7+g2zw1Qst9nz/p4Q8G0dFnGaQFn2A2Y9o1jXN71+hJhXqkGLoJYvXIBjwtr/IV98jSmsNBDecOgLkokRAUaAEEoIFhYrg5hmADcrCLTXmd8ss7aB5l7E2uQDO3W8cfq7kNwiRz5fUlGf+Q6HA/yKa8wi6wo/VIH1hDb+l6QRozVwYHsNgi7PIYd8+o863TZrLrSIfB9sCKyPZZHz5DDSchtyKYE1KiJ1P+g8MNSncRAUi/drMCcDF0eE9IY1dGZSt7yRM0dElEGfKQTbmtu5Lpvy1zFHkyyYJF6ZzoFlmPfEpEmDkcxjygH2F6F3e77Nlo9jNgpiZOXI2cH7QxIuWBEluqdIfcdmH2Bhhi1FmY/w9H44RQtgyYEgJE2AFnQqI7nZvQIHpcIp3RKPNTLHPT7q3AGgxoBRdRzBTadPqfbj4l8nXOIn0CfHf91oa7PGsZ3UCP+J+upYoXiiW4iKmfuZz9h5k3eRgkbDsKOB15+rz+0jzc/iTtpIfjcLxVdehb4Klgyuu5RX722D1qSKzKa9WmWft6lvR3CsSa0QvPiulZE4kERiD7ty1vxId+TAw/AdZfNxvxl/bNfaECKcV4C2ZjpDq+75eJgZGw7OKJ6wIHZBDCdF/fgLehwhsxApRoUt/3Ukcy41HA+pfr8WYMI/Y0OC3nXUevMREGuanJDiNd3rGg+V7IZ/i+hsQKWjQ/0g82IvK9nslPumXUUwCGqRjMWEYN4MpJB4J2CEt889LheTsrkPTdZqDZxIsbUABTZtAMg+zfKlQAK025C919nN3it3HVC3tH3S12AuNWHJoi4fNjvm8dPrpQGVPRNJNRbloMYX50LZy4h/AaLrCGyA6b+/hkz+29VNLJSNXHP0fgmDyltFP367JAPOsPRp6HNOj8vGQfbeXV+Oj/PvEkiV8fHwGJpXPuRLzIkewRJACh99P4r/SYu/jUfWd4RvIRiJj/c7IJ+gxbrY+u0pMGcfE1Iue4LPo7+pM4drGrweXzIKrelr2ndPqPfH9ZojwOQ83G4+dWt8QanSVwUJciNj8A9fNsx2rDcV+25aUziFfE0FAvRHAtejsrZvgEO4PhUWxqPsFlAbTYmSimCeroJ7k/SFnu5MVI9kpMKTR5PZK1aq9I6VElBRPJIgcCNpqggL9SXzEvKxnsEUpfIOzElD+iJNstZELgiWB5XVDFc2P0GparB455wKF/ktKSYEVvrZD+6UOihbIZX0b3u3PCLm7RB/Tbqtxg6i32Etwu12xqf6ocwOUk1eEzcG56DI24RwgdCtNf8/nzn8dIWh4uypIHV4vwQOy20kSVxdIQbpuqU9MhUmp4jfzlGR7aIVO0sxLqFkP558uMmqiD7waYxfU9wPjI8HakPIP9QvddYXPJp3lJA5h9xfpEs6WuJvF6GIjkXMmPEdyX0BcQbyDlbwqDIXsNDN1R0jYL6Jbow6hJczkrGWv4hz/JpbDqllzvRLpAuoTTnCal3DSO3rDUrdJ55jy8ZNU94YpYzxqmDWhYAngknX4BUEmy4gB9al7w5Aq9HAv09PtC86tW/5fSqh+92n98SyuFzF9KhcPHy37AcU1POgykY1i/xI0mSwxrHjXxWS6oZSW1yEt1tr1qKvWmFsq5oTXVfRci8LHB4u8OpbP5oHBi8V3v3u4RkQZ8zCxviCR23PPc3oQGlf9mKUJ5VaQ9ALkG9UySkLqKtjri/t+KN/5qP/PBefQ13PseUnbbg/IXhPjLhPsKl1HUr3shOrBqyh4Z/A+IfSJCPB1XuvAT+DSs6PbnvjnGVVYxF0Wk0pvxOo3nYSl38mVqJX8Oz+giqV+BSbuEAUH/tmlSVt/6vW99LRnS1rAexm+l+ysiapsDAIsJ0T87ZYzNhntKX3QReIEmIA9t1X271Qb7TOxD3O9c1eOgQ3F4rQGJD5cUJGZsT5IMYYBAAHkmgO0SDbaSCSo2z0Wz5NKbBUJz2CjBOdmW1aPa2Vzo2TN3ZlI+BA2YNJGoGXwo6sU/+uyugcJ0fYe4fSp3Hlyp7G0ClFgdnxsVWm8Bo+SwW1Df8xgpXA1pJeElW3vX/e8QaMVcUhXmcBIgWNNZGTC8OCvsNyCRDFiFBPh+6c6WskTCC8WuEiEJAo/1NY86MKurJx+eQ8ZNYzwOUs4Dg6fRPQ58VzDC2dW1wC/I3llIdwPp3x4GJ2QPSLStfI1wD5blM2SW3qJlj4oWm2yoy8YMMA/2FyEcAri8vFoqTj9fL+cHvnZrdvCwKg0nf0VWZmWxaLjxY79iYsl1PZyW4NlmimQvYUPxrjfQnD5kUYU7x+Y9YRS14SXxCu7dagnl6Cj14Yl3eKiVQW5ORWmdiX52iYhYD6c7EoKxua5DYu2Fo26y26pGIy0FB/bag78BSPj6AQH4UEGl6R1/iQGJTKOSz13KAlLF7vqFhIk4oMaPAVS93O+ePplm8Fr/MUjLappAvsdAS/UC+CG6UKqfEaVJQlCn2l8WjCTQOTYfJBOJmlTS8QizSq656jkAhABXzZTSTs80R5HbEZJqQIxtdZhybVAW1kz6y7sWcmAFEiUAgecoum+AbeY2fwAnJ1xznlKXer3YkIrNFySFwOe+tTRRuczfMQnFvgUR8V+v2PExiZAIMtgVxz+zF6JsOxNngFLiFB/BDZh4wNjZjUCy9T2H14ccLSzwOdzypSZ15hOejNBUp4cX5Qp76g/07gxVpeaom4utNhwZvpl0BqQGe3FS8vlPH7axtFp91J14aPWb64kBh34Kli17WMSe1IifzXPg8bPLk2y530OtgxAbRmF7vl5mSb+DzRe4SJyC6JNgZNgxsyECbX2jEJ+pH8lAxCpppyRZhsYa1flg8xKDA5JWSKN4Oq0+QhxXf3EFMtU26TZfWsFlbAzhxlcSxavsBPoUt3x4dJ5UnHt0t0FRcFqY/+haU4VxLodD8yUwepf+lGttuPce5fqjmDoo4SIpr5zDvQ1QkV3JHkkJeN8Ys7DU58ZEUyy+9pqxbNmyVNlCCQ/4lUojpEIwgQ+GIjAyu+v3ehBJVNAmejiiVxFIuSvrs+xLOaac7D1iQgo5s14VQzS6KI18l2F6Rs8lXrYOlsUpwMwdmPj3746mqTrFv84ThUMlgQE3dHOPf5CK3H2OCvdKDdu/aGApS/hDvXNBtEpwlOutp8eyWvy9F+blBzjOmSn0z3x+1k0Cm0PWxlV/c2u5Noh7XMnHKDtjg8dRkya3ER+fQkAPH1DH7ixMgrJsRfqwAc2kcJby3xID8xszoQM9HUKiJOrkfOR2Ylp1Z4wuYswAQyEzU3w+2RwE8ji9+WT7EDCOEB8TuymBRE6SLSL2EYZcScGtD66Ym1JyUYUWP7d/w0yF4REL3b9xmlpK6kabFuw6jPZHGGkFHFqHnR59K/IZ/1fCAKA9OqQLLONVq/EHgUezzjeYMfKlBKWx3B43RD+poED97WiZfAjoFx7geVPN41J5tRJ7YltsPMBD8vzKBsFxU9UXs7vBnIIzzGpOte7WHR5tvY5URwv/JlT54lI5c2PhkaoEK6eSGqtIESFgBgp9VGWq10sEjRQ/WIxFcqvD6WpcidrP5NmRtRqvNvJJTpyDDdFlGDPX+4sM52aartamtPTNV9QbVeUqqFlUx3sJlQJaUallFBhNXhzNqf85jAl0ogrKSYsCkipwyYnbM9pB+JbeT166KoLi1WJ/lJHybO9nixwqUDmOfd2G8oqOB2rXj2XdWRWbvMXm8QUd6sRl7VzNkc4TxGenABLV4FgGDU+LYOYvGjNbx2A2NpjXI9GjN2+uRANjoBqTF4DM0ZhV2POOhm4vnvA4E/nd2g00gXEZ6OEJuw9nacuhjEH7xeXkvojTeI513tGCWJh8hjYvCMVoJLnYntsvIX75apMplwFcpKv/d9EJKcmKlhiL6NGcpsuVMrUceTzjBZbZhKTL6r+90uCKaLeIrPY6qihahGF7uJKO700MbNAJfAki4AfpamwltQk5733wihfPRUvpw/IN89MlLdgY42Mx1zaIlmWwdhDUEuYKnLtw7BpEWzYotGPkfbZ0lVlooXZppjw46RyEKeVI2R4CzY6amYaMl1pnOzCu1XYxbkynhKGynoo4Fl27ecf8r72VkLJVldDALq30tsMpRLz3I7pjvv1IesrSP2UnmWweIl0CqArEXaxo9uKNqmB3h+0DNsszPX5x6l9M/FgiIHPXziDLoubBjsG6JygRTX3RQA7PWSCBYvCRQBE1Q0hT6waZeh/3EcGJfMb8FlkFoVwR3HGKC8pnKPDzEGnAbq90aRY5C8zDoabFN4em0dyHTWGy2Gb4fhmBs1aBRbJ/Ogb49h903BVpKmZLH69QADA8uFyhhnz5Qaz4sDS1GbCGVufoENSt2/2+13JYl5FwfVhRV+p3OxHsI3e4qdP3EVTjSWkCkaTA+tB9bSguAmnSQG1/vGRYHrtCUjgDwRVWd4pr6W3BF5J2SVAkMSN1cI3l4ib3YRC2bs99NZmQKcmDNmwYMRYu87aJD5HeDsu8vWGUMCsrdx9ZIGXm72z/CinzkTFM3Gj+fkuDtgMiSe8ovov1EJvKJREzNHhNlQYoMmq312XveNr/2c8SK2QXP6MFYr3dx++IWBl+g6EvCSmN5aQutvvtLlUngcDBMqWkTIWmGz8MEwi3kPWBHEN16pPebfcOliJriSYbns9OWSr/J5hFt7acyasKZP6gd8C81IIREk5/DonuDXekmrRbL8BciL+hxb0//MLSpcsvuPFNwBsjH8FgaxZyVunmssJEiNjfHQ4XIAKAIDxmRsZuHWsl5pOMN48TAgAxGGE+7LZzkkCF6T6lynThJ0vx2IMTc9xJ4TkJBs6GeL1Pk3y6jYekfm4WuO3hhFtO1iWCG5/QgcBUdpkx5CH5wRMtcQ63QcxKn5Gqquqr+bI2JxzWwv3I6GQdWePlA3tWuol35cKB2cFs0KCRfI3RpwUordgHuhdvgOxd0mFOaoxD3IlrGWUdiymZ8qjutqsjUvY9773FUdC6BbodxrqQqACBs6o140kViishTY6AOVW0LWImEZEo3b4iY0KnUITcPyXAexMfGMs/fSSKZHV0EAnNTT1Bh7Y9dvsLiZ1EOGf4NeNdJOlVvghovnhPSN7fBNcl8yH4TlI4Gs+UwMr9aW1o9AvuF/Uvnd2ffs085XazC82LTqzSX2LU3MrqRMz18F66GIolw8sLbfuROiHpR1YwGSbLLujXHWgaGIoqQG75XpVB9YhKl2HtS3SHF3QUhrofnhCSegS4RIRJ0FNMQ3sxHTxz5O0uFBOVSN3im3Os48jzkhxOqLIPRbKB4eA0Pg5FqTQ2Q4vVCcL3At3jlGi3VzfSDhX6pxlPiB3r3aGVIBAachCeqyvF79PDq8Z/huk8F6ZVt6F8/QJGH4L8y4P1k9GCmmoHfbV2BEBhlW9XpxrvBwpx019Cr1EpC58KDtzm8gn/97h5gWfVrCwxhixaM28t8oCfE24xUn89FdL4+tgStpf9nm038zBp8jIa933QrHCQ8fv35CRf6IMUxxsqhuzGF18KQio5LUWIng297XY4n5HSZwoGY0/lFMVHTdgONzbZQNxyExtMHUutBjzBoi0oLAHEYrNwSuEEMcLhe0+lFWqwIjoIJttMJsHH7TCDWR/Cu3s+yuK4JDrz4pJ+mS6OTjo16KAIOR3ZFy8Uh7850/AMuzviD9vPjnTo4sXqQCfbJFk3q/eT1m/TNTQIuslyu5uGfhWFkmp9nJKBmjKt0fzh/hc5BcDhFBQj7w5DcFi7EYcOsbtxkijBztv4HqvoapUbTt5ZOrEAJrKxC5ZN68yJfPmCT7kby5oD5GF2lOppZV9Gv3ayNiwJlCedcznzcrbqS1foHGzfcRvE8sxFm6tR+oJslOPPHeuJJ4qnwKQfcvSNeGaUnyUWKNPjHBYaOTT6rk3CIu9htzsm61BCGtiscmbZkOW3/hX00dPg1l2g1tTO2lgJkfIIxfC2CtpmYOftmfsdO/PjS9hgUfkdVGIo9YGRxFpNJOuMMmEZlcYu4yNYFu8/oYqDE+R4hVtfKw3vVponXGoi7f59bzShs+OVEqU16p2vkfhTDCSLyG8qL/LiXitk0lWBfHQlY/seM437YB6fU+LkbN6wSFNOhpbjdfLXAuSC+pQJVkHve/nsQBrk7nhgrhzAm97TJHjrGTJlLqitQV3lnASs1Z1EhOd3q9UWCXDEy5N11L+TKUaiFx6LQaBB5fmsKC4p8RHImVegXAvyuv6HSy8NTd53CzyW0JgKdWCUaEgDL2XuyZKYDIp1a5wAq3n1p7tOYAfP/835ERomV/06LbaVOXL5RDrO/WcOqZlh96zRrdyxDtZyTC13CWzIHsy35zNz/9bPfhdeDmWGdgNVDDW8Z0dLPaRDPoVaVCzmeiTnC5jRlvyyWhrmqt4LLe/k4q9xxOrW29+WsIRwZaQf0q/UaqV0RJyaCviEgCC/Muwi8/X1fzsP11bPVWfnOurky9Tn9LmWBdCkhN1or0Iiz8G9bWO4UnkOdR1sl6DpVN6qaJaMa2qsUvOgojSbDM6F/DqkIDt/CySEyMrvctmuF17Ouz4IvOhqVVjHa39A4m2tcdWkn/3nyS5tzcM3sy4q4f2ttiuK1PG41DgDSrw+OWShFhP/ngncu35tmIk+PcLCQ75MDXRkSF4k1meTYnL3yrfeb8u32Ku8bEdoBgIFNBP+1aeYg39VfSicvuxywyHjdgOUeEYHA1r1wXYJZai7qazyH+jZctUk0nIW3q0gGCLjM5VEC1uuKgHw5ztIEk9uhLlC5Y9R6a+6KYQB5B3iMlEUZrEOZ+2LYgiICKZ5zM79hjW5GRIoEVw/IgIsIsRitC+mZm6fRm9Nud9xBfVvmUPqZCoiocPCZaEVlzYrFUukaNz2q43w9SD2QH4+n3EXUPgwqJWqzjTrHEc3ePFv1hgBwG8FoMJiYETkFl7kqV+5WZp6B0Kr1Bstcq8Ez7CX9nFXyXFg6kwOYsM8jqgTGY3rbzoC6o8YxCu0QDH4ObuOwpWwyJhrJ7AVjVj1LAqfgt1Cs3CA/xei5dNz6iZB4PiWSptvj/GPsxQAM8d9i/ibHvFF4iEbl1tFwfGuYOlPUygnWm7csfVinh49R2Q8hsNJw/XXMRBh05FDqwoQ9kvFfEV9eRBNc8NrP6Xkm5RZvhhp4gQUZVnJtiTkB+tqgQvyHOzwNXUpre6FYtTjS5sW+de6ocDkpq3hXDhFPL19pn13MRV6ot+pTzfQ+Uy3xC17jriaHDVe266MkR00lHyV4AGT5qf9kjtlkZpZe8B/vh68KogppWfybn/iqNQy+pcEYzoD56KDnOgTvA9xvS3WW/eQ7I9A32HYmXLiQYuz63Y6SXrgCeamTCDLq2181JDMMPIUcj6PUhRg9F+IacEX6Be3T98WuYJuikF7nnoALsO/fcJReuE8r8Iejw49Wwhp/AdEdEcMfZ92smm8sX8b/H1J5aus8QDVFdBIQKhUcY3IlQjqMtFSqj4HUBiiBC2Zfb+wTjx/DQZBzN5nZhz6wM+IXGU0hgIcR8M1XRDORTmMPZDDKwP8qflhjMpjn6RAncg23/+C3Sdcic3/XJEjpyOtpnnTUKpcqZ/M6OyeIGvwBtNnaYK3L4AC1p88boY9TWFaHN3y3/vWRRSlVG9X0P1W171Rc+QA4UQoFfdrzVDqQJVtiDtYZ+Acg8GGv1Kxibzr/gY4rNMTTHQh4Dc0dYEmHw0w79p+YI2CNNAM/Ck8zs3K9Hx0eQmGDnojZGEukpHaK4ZKElE4AzOb+9oOGYpk93ulhzUMULOf3ZyfGjkS1923xDUL6w2O41FdyYck5XLX1YVWL9rg4llqfiCprVipftAMLImuD4Gsde9tdSzwCd7T2D6+OBe4nfgvKwuKpG7P46VhbCHw3mX/QvadVxywQPGyGZB52L6hynGkCK8j2WP4LbWr/LNzggPgnMWr4ioPuXcCJc7TJa8zCgP3Q+JdkfK+zaSHVWxucOS7AkaGd7G/FudPuTkqoizmnFvXIzKa3P8cC5I7152EsRCiSqafVPzgyYHg90AFhEskBsHeN87eIjyu4B1u/g/TnwIsCIUR/LA9awm7wmZIJ3TvxHEz1tWdXzVZtBciEuIbC4H0lPCx9w7TFf42TBkXtxqSglS/C7N5d4yOcHW6TVZQvoU3L/ly4IQVRPW/5t+mB5PQo2OrIndvUZ5JPNGfWlGmqGdj3sPMZFh49CNgG5xiGlzx+prOZIE7VNCpfio5+roUQTJB6bYsHa++06vdS9ns8+WHSyPdHdPF3ohwZzdU2SwD0gqDr5LfMbY4XXBzT2r+U03TI3yGUdVM677Y5DBdpaKC23zUsm0r23+hxrT0hj8PZaN81J+ehd9Mh5xIPbXRkMfK5Xi02rDHfbw00RYxtucny+dvZ3YVqi45pHaTR8L491w3/wyAU0FTBQVXKJRkfbWHsUfMI6Sxn6qFlKULWY9Jw3zO7jcDS8gp3bxJvTTXjGdco6ryd1RdVisjaNbpGSIgMIbaXqIXB0N/fBOuGai3yroomCxlquZtfDsrvHSwVdK2tgZUOQPZ3/t6RaYkEnUzpySyQEFQNTKRjt6nFFSmLix1ZSVUcjw8wCl31coJIeuMds4IOJzKEQiXJugJ4xyZj4Z6vJc03Wff/7LZHXVuhx9V75sBAC0ms9jDfBzlxKC5QYvTuN1uu9fHlSVMnWIxnrRnIRTDH8yGdNLia8wnmaaps13TZWCiEujYQnEO3aOC5nxHA6GmihiUofcwwg/e4JA9Gv5ZiEOzmXR8YMI4XP5LuMrc+9J22bGxsC/rYUnAE0J+LyAy9vBC4NiycE+arXBziy0NPlx5PY+SNuNznBknOwfwJU5EmZSogjwLlAMY1wcC26+dmyVyJk3h7cgE7IiU/8UokA7eQ/z/Kp1SP3a6ze+Oy0EH9ZvCWE5BgDVcxt3jf5M9Y47+BaGVaW1YBSaVoB4ahVH7y9U5gD0Kl+drAh4SGoF0twMg27K3u76QWUFg7TilHTrikJpJXxjZAvJiRCKTWUbUZomnZwWuOCyXIdYuOtUCrFjwPPHK8eck+MIhU/6T5SuU6qALGeWeQmNOGTd940UlQKbG4UWfxoUotZcgV7riw==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1963,
+   "completion_tokens": 1484,
+   "total_tokens": 3447,
+   "cost": 0.00703725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00703725,
+    "upstream_inference_prompt_cost": 0.00147225,
+    "upstream_inference_completions_cost": 0.005565
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1475,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1963,
+   "completion_tokens": 1484,
+   "total_tokens": 3447,
+   "cost": 0.00703725,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00703725,
+    "upstream_inference_prompt_cost": 0.00147225,
+    "upstream_inference_completions_cost": 0.005565
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1475,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00703725,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 10.59
+ },
+ "meta": {}
+}

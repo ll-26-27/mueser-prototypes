@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "d69f9d9c27c4e0ce24543b4e8f469010e54eb44e8f96f69b213c7df698923083",
+ "fetched_at": "2026-11-19T16:42:06Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Ibn Kammuna (1215–1284). philosopher and dissenter of Islam\n\nEXTRACT:\nSa'd ibn Mansur (Izz Al-dawla) Ibn Kammuna (Arabic: إبن كمونة سعد إبن منصور, 1215—1284, was a 13th-century  Jewish physician and philosopher. His main works include a comparative treatise of the three Abrahamic religions, which includes a well informed critical evaluation of Islam, as well as a commentaries on Ibn Sina and as-Suhrawardi.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ431177  Mongol invasion of Khwarazmian Empire and Eastern Iran (1219–1221) — 1219–1221 military campaign\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ2086498  First Barons' War (1215–1217) — civil war in the Kingdom of England (1215-1217)\nQ51657  Albigensian Crusade (1209–1229) — 1209 military campaigns against Catharism in southern France\nQ51659  Fifth Crusade (1213–1221) — an attempt to recontrol Jerusalem and the holy land from Ayyubid control\nQ51660  Sixth Crusade (1228–1229) — 13th-century military raid against Ayyubids\nQ51661  Seventh Crusade (1248–1254) — military conflict (1248-1254)\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ369560  Siege of Baghdad (1258) — 1258 Mongol conquest of the Abbasid Caliphate\nQ244356  Battle of Ain Jalut (1260) — 1260 battle between the Mamluk Sultanate and the Mongol Empire\nQ521799  Battle of the Neva (1240) — 1240 battle\nQ570204  Battle of the Kalka River (1223) — 1223 middle ages battle\nQ14689  Battle of the Ice (1242) — 1242 battle during Northern Crusades\nQ159512  Battle of Legnica (1241) — 1241 battle between Polish and Mongol forces"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106523-ACfftzuwAyXAjYmTaNuu",
+  "object": "chat.completion",
+  "created": 1795106523,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"connections\":[]}",
+     "refusal": null,
+     "reasoning": "**Summarizing Jewish Physician's Life**\n\nI'm processing information on Sa'd ibn Mansur (Izz Al-dawla) Ibn Kammuna, a 13th-century Jewish physician and philosopher. My focus is on his notable works, particularly his comparative treatise on Abrahamic religions.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Summarizing Jewish Physician's Life**\n\nI'm processing information on Sa'd ibn Mansur (Izz Al-dawla) Ibn Kammuna, a 13th-century Jewish physician and philosopher. My focus is on his notable works, particularly his comparative treatise on Abrahamic religions.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1/fGlH1Zg2rvUml8GbyA2MK8eLU8jrhxCNBorMtVHERWH+Dd1ZN7ikLEshMgu+yB08E2Dsed6NOc2qww4t2nf9mmijjK44Kt/LPtN1+Seen8ct8on34fUXLmqIljGPES0GrP1Tpx+jeYQ3HW2a1Z0pDdppjyFZUqGbRlyqrFeqh0J53DUqxVbmhGr+5xd1FrPYD2Y3Q15R2CbX4KGFejTFDMPmpTbVPIVmyFXLMRroe3nUqSvbU7ejke4CI2DfkgHApjyQhFYJczZzFLwSuI2PJLWqUV3VAw7BORZAt5XfT1jqwTY09kVW3nUg+Klat5s61OYKmsZqybvWzY2/hI1/FJuGCnWGb09tizvw4gKYtJ8Z0GtlDJNCVABsUrrcosBZ5heeSnd9Vh92n09659hKtyJejmssXEZbr8wWpsriY89iaAQ/c6oQRuFYRuppIq0zwYcCSGknFqKrH8tgHYWu32wLjONsGL4b9dCK5AgaNySM81oYr8Pq1ej34w3lmhA8QttHq3HiLs5nDTLThml7r2gFh7D4wownw6U53UEbrtH/5UaFijqEUOom8MzGmRfIjQEwiamv5o00mAuMT1ME22cQ5MM6516Rc9IBJPQBAcL21s0lvwwNKvv2c6bsNU9s+N/GgHOtfp5rE5xKZliAkjA4IaxubvJYptR6Yw2n8egv+/FvrbNjE5C6DRLPmlRFrd7QpX+fvXbX3RiHTsgIcd18nFG6PC/SPNhipmuROFmgLiPKIdlpyLZfeXWpkUFx00pzYQd4Xb27iiX8c6zlYGiWv/kwz7YMyHW+qrUzs0WretGDyCLmfqxn9+AWP32Wv8o7QsCkvlzGjr9ehOy1DYzNd//u71KewE5fXbAgn8EYbsENAOqO2O7yuIlIAl3juFTLnM2+W/zH768xxkyktUEDl8Hfu5WDrCjRftzMoGgfPPvYdcomeVaYWZuMHFjVrPuJKHaEB+NGlZGo67bc9VzFQiNyAfpHEQtrDULaldbM76gtbZNaEsbj0nv/FEVVkDR+QQMly7INbjRLQJNDs9ufA/7QnS/3oYHqJ+Z4R3NFwERs/y+NujDYKyNSiNYZT46Jig+jgaMFxu5uHERbRt7mz4moP+UTOfySwIqkR/mtRedB0uFU1WQ3b5vaip+itXx/z0Vng+R/aOdX4H94CXUbb4KBz8451r/x77Bf9xMBcYAyWk5TfYDMvqvlgs0ZiUIZOz36QoVOLTFjSryg2hreaChk9OSM00kdkWDP56tgdRHgDrcvijFL+puKVmWnl/HAeHcDPTIoVQp0ncfNzLQhVBgOFN5lKux9XVxrOuoBWVLkbPuoEyBAZ9UWDewZMnTAg/l86CJ43bdjKoYxe6NObJ+7iC10DMjJM6kPYuEGBdGEEbttrJ9orA9MQU5L+vi8phxgTEgyVia6eEOghs/FbtyETtiwR+Z61JoWcx9On2cemTaYBaHzJ9y48rr+/HmKA1vvAj14SIumnsvoe4tcuB7er69W7lQjprq1xdvqfoT2Uh40OB/oJ4Yrld1Y3NcYpFienOn2oYCGN6SzWTaM5DERlg2BKFD7l6IwRvzmVZMeZXR7m4xDz.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1909,
+   "completion_tokens": 259,
+   "total_tokens": 2168,
+   "cost": 0.002403,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002403,
+    "upstream_inference_prompt_cost": 0.00143175,
+    "upstream_inference_completions_cost": 0.00097125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 255,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"connections\":[]}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1909,
+   "completion_tokens": 259,
+   "total_tokens": 2168,
+   "cost": 0.002403,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002403,
+    "upstream_inference_prompt_cost": 0.00143175,
+    "upstream_inference_completions_cost": 0.00097125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 255,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.002403,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 3.16
+ },
+ "meta": {}
+}

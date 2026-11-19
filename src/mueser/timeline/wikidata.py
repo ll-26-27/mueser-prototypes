@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 import time
-from typing import Iterable
+from collections.abc import Iterable
 
 import httpx
 

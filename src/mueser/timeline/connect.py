@@ -61,7 +61,7 @@ SCHEMA = {
 
 def load_prompt() -> str:
     text = PROMPT_PATH.read_text(encoding="utf-8")
-    m = re.search(r"<!-- PROMPT START -->(.*)<!-- PROMPT END -->", text, re.S)
+    m = re.search(r"<!-- PROMPT START -->(.*)<!-- PROMPT END -->", text, re.DOTALL)
     return (m.group(1) if m else text).strip()
 
 
@@ -110,7 +110,7 @@ def verify(proposal: dict, extract: str, cand_ids: set[str]) -> dict:
 def connect_person(person: dict, extract: str, cands: list[dict], *, model: str, system: str) -> dict:
     text = user_text(person, extract, cands)
     reply = chat(model=model, system=system, user_text=text, schema=SCHEMA, schema_name="connections",
-                 step="timeline.connect", max_tokens=3000)
+                 step="timeline.connect", max_tokens=8000)
     parsed = reply.get("parsed") or {"connections": []}
     cand_ids = {c["id"] for c in cands}
     props = [verify(p, extract, cand_ids) for p in parsed.get("connections", [])]

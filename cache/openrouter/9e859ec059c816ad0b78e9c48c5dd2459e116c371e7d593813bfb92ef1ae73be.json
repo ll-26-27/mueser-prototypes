@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "9e859ec059c816ad0b78e9c48c5dd2459e116c371e7d593813bfb92ef1ae73be",
+ "fetched_at": "2026-11-19T16:40:10Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Meister Eckhart (1260–1328-02-05). German philosopher and theologian\n\nEXTRACT:\nEckhart von Hochheim  (born Johannes Eckhart; c. 1260 – c. 1328), commonly known as Meister Eckhart (German: [ˈmaɪstɐ ˈʔɛkaʁt]), was a German Catholic priest, theologian, philosopher and mystic. He was born near Gotha in the Landgraviate of Thuringia in the Holy Roman Empire. He was a member of the Dominican Order.\nEckhart came into prominence during the Avignon Papacy at a time of increased tensions between monastic orders, diocesan clergy, the Franciscans, and the Dominicans. In later life, he was accused of heresy, brought up before the local Franciscan-led Inquisition and tried as a heretic by Pope John XXII with the bull In Agro Dominico of March 27, 1329. In the trial, excerpts of his Book of Divine Consolation were used against Eckhart. He seems to have died before his verdict was received.\nEckhart was well known for his work with pious lay groups such as the Friends of God and was succeeded by his more circumspect disciples Johannes Tauler and Henry Suso, the latter of whom was beatified. Since the 19th century, Eckhart has received renewed attention. He has acquired a status as a great mystic within contemporary new age spirituality, as well as considerable interest from scholars situating him within the medieval scholastic and philosophical tradition.\n\nEVENTS (id, name, years):\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ853685  Treaty of Nöteborg (1323) — 1323 peace treaty between Kingdom of Sweden and the Novgorod Republic\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ244356  Battle of Ain Jalut (1260) — 1260 battle between the Mamluk Sultanate and the Mongol Empire\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106402-cR80P9uvnfygFmNwXGOr",
+  "object": "chat.completion",
+  "created": 1795106402,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Exploring Meister Eckhart's Origins**\n\nI'm currently focusing on pinpointing the precise birth year and location of Meister Eckhart, as initial details place him near Gotha. This period of his life, though foundational, is proving to be a nuanced area of investigation, and I'm meticulously sifting through available biographical data.\n\n**Investigating Eckhart's Context**\n\nI'm delving into the socio-political landscape of Eckhart's era, specifically the Avignon Papacy and the tensions between religious orders. My current focus is on his later life, including the heresy accusations and the trial by Pope John XXII, understanding the implications of the bull *In Agro Dominico*.\n\n**Analyzing Historical Context**\n\nI'm examining the provided extract for mentions of specific historical events impacting Eckhart, like the Yuan Dynasty or the Crusades. My current focus is on discerning whether the text explicitly links him to these, or merely uses descriptive terms like \"medieval\" without direct event association, ensuring strict adherence to the extract's content.\n\n**Identifying Event Connections**\n\nI'm currently clarifying the distinction between general temporal descriptors like \"medieval\" and explicit connections to listed historical events. My focus is on ensuring that any \"connection\" is directly supported by the provided text, not just a shared timeframe.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Exploring Meister Eckhart's Origins**\n\nI'm currently focusing on pinpointing the precise birth year and location of Meister Eckhart, as initial details place him near Gotha. This period of his life, though foundational, is proving to be a nuanced area of investigation, and I'm meticulously sifting through available biographical data.\n\n**Investigating Eckhart's Context**\n\nI'm delving into the socio-political landscape of Eckhart's era, specifically the Avignon Papacy and the tensions between religious orders. My current focus is on his later life, including the heresy accusations and the trial by Pope John XXII, understanding the implications of the bull *In Agro Dominico*.\n\n**Analyzing Historical Context**\n\nI'm examining the provided extract for mentions of specific historical events impacting Eckhart, like the Yuan Dynasty or the Crusades. My current focus is on discerning whether the text explicitly links him to these, or merely uses descriptive terms like \"medieval\" without direct event association, ensuring strict adherence to the extract's content.\n\n**Identifying Event Connections**\n\nI'm currently clarifying the distinction between general temporal descriptors like \"medieval\" and explicit connections to listed historical events. My focus is on ensuring that any \"connection\" is directly supported by the provided text, not just a shared timeframe.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1981,
+   "completion_tokens": 963,
+   "total_tokens": 2944,
+   "cost": 0.005097,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005097,
+    "upstream_inference_prompt_cost": 0.00148575,
+    "upstream_inference_completions_cost": 0.00361125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 954,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1981,
+   "completion_tokens": 963,
+   "total_tokens": 2944,
+   "cost": 0.005097,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005097,
+    "upstream_inference_prompt_cost": 0.00148575,
+    "upstream_inference_completions_cost": 0.00361125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 954,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.005097,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 8.46
+ },
+ "meta": {}
+}

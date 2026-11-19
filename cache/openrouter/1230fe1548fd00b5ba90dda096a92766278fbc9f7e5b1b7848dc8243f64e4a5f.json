@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "1230fe1548fd00b5ba90dda096a92766278fbc9f7e5b1b7848dc8243f64e4a5f",
+ "fetched_at": "2026-11-19T16:34:25Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Origen (184–254). Christian scholar, ascetic, and theologian (c. 185 – c. 253)\n\nEXTRACT:\nOrigen of Alexandria (c. 185 – c. 253), also known as Origen Adamantius, was an early Christian theologian and ascetic. He was a prolific writer who wrote roughly 2,000 treatises in multiple branches of theology, including textual criticism, biblical exegesis and hermeneutics, homiletics, and spirituality. He was one of the most influential and controversial figures in early Christian theology, apologetics, and asceticism. He has been described by John Anthony McGuckin as \"the greatest genius the early church ever produced\".\nOrigen founded the Christian School of Caesarea, where he taught logic, cosmology, natural history, and theology, and became regarded by the churches of Palestine and Arabia as the ultimate authority on all matters of theology. He was tortured for his faith during the Decian persecution in 250 and died three to four years later from his injuries.\nOrigen produced a massive quantity of writings because of the patronage of his close friend Ambrose of Alexandria, who provided him with a team of secretaries to copy his works, making him one of the most prolific writers in late antiquity. His treatise On the First Principles systematically laid out the principles of Christian theology and became the foundation for later theological writings. He also authored Contra Celsum, one of the most influential works of early Christian apologetics. Origen produced the Hexapla, the first critical edition of the Hebrew Bible, which contained the original Hebrew text, four different Greek translations, and a Greek transliteration of the Hebrew, all written in columns, side by side. He wrote hundreds of sermons covering almost the entire Bible, interpreting many passages as allegorical. Origen was the first to propose the ransom theory of atonement in its fully developed form, and he also significantly contributed to the development of the concept of the Trinity. Origen hoped that all people might eventually attain salvation but was always careful to maintain that this was only speculation. He defended free will and advocated Christian pacifism.\nOrigen is considered by some Christian groups to be a Church Father. He is widely regarded as one of the most influential Christian theologians. His teachings were especially influential in the east, with Athanasius of Alexandria and the three Cappadocian Fathers being among his most devoted followers. Argument over the orthodoxy of Origen's teachings spawned the First Origenist Crisis in the late fourth century, in which he was attacked by Epiphanius of Salamis and Jerome but defended by Tyrannius Rufinus and John of Jerusalem. In 543, Emperor Justinian I condemned him as a heretic and ordered all his writings to be burned. The Second Council of Constantinople in 553 may have anathematized Origen, or it may have only condemned certain heretical teachings which claimed to be derived from Origen. The Church rejected his teachings on the pre-existence of souls.\n\nEVENTS (id, name, years):\nQ51644  Early Christianity (1–325) — period of church history beginning with the ministry of Jesus (c. 27-30) and ending with the First Council of Nicaea (325)\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ185043  Three Kingdoms (220–280) — period of Chinese history (220–280 AD) dominated by the Wei, Shu-Han, and Wu kingdoms\nQ206414  Principate (-26–284) — first period of the Roman Empire (ca. 27 BC to 284 AD)\nQ329838  Crisis of the Third Century (235–284) — Roman Imperial government crisis (235–284)\nQ459939  Kofun period (250–538) — period of Japanese history from 300 to 538\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ1192043  Roman–Parthian Wars (-65–217) — series of conflicts between the Parthian Empire and the Roman Republic and Roman Empire\nQ243721  Year of the Five Emperors (193) — Roman civil war in 193 CE in which five men claimed the title of Roman emperor\nQ751743  Yellow Turban Rebellion (184–205) — rebellion against corruption of the Imperial Court rooted in Taoist religious principles"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106049-VTwz01C4LMZhlSm2Yzpv",
+  "object": "chat.completion",
+  "created": 1795106049,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q51644\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Origen lived and worked during early Christianity, being described as one of the most prominent figures produced by the early church.\",\n      \"evidence\": \"He has been described by John Anthony McGuckin as \\\"the greatest genius the early church ever produced\\\".\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Origen's Context**\n\nI'm currently focused on identifying potential links between Origen and the provided historical periods. My initial review is examining the intersection of early Christianity with the Korean Three Kingdoms period and the broader concept of \"Three.\"\n\n**Synthesizing Origen's Era**\n\nI'm continuing to map Origen's life and work against the provided historical periods, specifically noting the overlap with the Crisis of the Third Century and the Kofun period. The mention of the \"Decian persecution in 250\" is a key temporal anchor.\n\n**Interpreting Origen's Role**\n\nI'm delving into Origen's specific connection to \"Early Christianity.\" While he clearly lived *during* this period, the nuance of \"lived_through\" versus \"took_part_in\" is key. Given his foundational role and influence, \"took_part_in\" seems more accurate.\n\n**Confirming Early Christianity Link**\n\nI've confirmed \"Early Christianity\" is indeed a significant temporal context. The description of him as a \"greatest genius the early church ever produced\" strongly suggests a direct participation rather than just living through it.\n\n**Leading Origen's Work**\n\nI'm now considering how to best categorize Origen's relationship with \"Early Christianity.\" Given his role in founding a school and teaching, \"took_part_in\" seems more fitting than merely \"lived_through\" this significant movement.\n\n**Defining Origen's Involvement**\n\nI'm re-evaluating my assessment of Origen's connection to \"Early Christianity.\" The instruction to connect events only if mentioned or implied by the extract is crucial. The evidence suggests he didn't just live through it, but actively participated.\n\n**Leading Christian Development**\n\nI'm now assessing my categorization of Origen's link to \"Early Christianity.\" The provided definition of \"Early Christianity\" as a historical period, coupled with the explicit mention of \"early church\" and \"early Christian\" in the extract, confirms its relevance. My analysis points towards \"took_part_in\" due to his founding of the Christian School of Caesarea.\n\n**Refining Origen's Role**\n\nI'm now reconsidering the exact phrasing for Origen's connection to \"Early Christianity.\" While his foundational work and influence are clear, the existing definitions lean towards \"lived_through\" for broad periods, unless specific actions within them are detailed. I'm weighing whether his described influence constitutes active participation as defined.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Origen's Context**\n\nI'm currently focused on identifying potential links between Origen and the provided historical periods. My initial review is examining the intersection of early Christianity with the Korean Three Kingdoms period and the broader concept of \"Three.\"\n\n**Synthesizing Origen's Era**\n\nI'm continuing to map Origen's life and work against the provided historical periods, specifically noting the overlap with the Crisis of the Third Century and the Kofun period. The mention of the \"Decian persecution in 250\" is a key temporal anchor.\n\n**Interpreting Origen's Role**\n\nI'm delving into Origen's specific connection to \"Early Christianity.\" While he clearly lived *during* this period, the nuance of \"lived_through\" versus \"took_part_in\" is key. Given his foundational role and influence, \"took_part_in\" seems more accurate.\n\n**Confirming Early Christianity Link**\n\nI've confirmed \"Early Christianity\" is indeed a significant temporal context. The description of him as a \"greatest genius the early church ever produced\" strongly suggests a direct participation rather than just living through it.\n\n**Leading Origen's Work**\n\nI'm now considering how to best categorize Origen's relationship with \"Early Christianity.\" Given his role in founding a school and teaching, \"took_part_in\" seems more fitting than merely \"lived_through\" this significant movement.\n\n**Defining Origen's Involvement**\n\nI'm re-evaluating my assessment of Origen's connection to \"Early Christianity.\" The instruction to connect events only if mentioned or implied by the extract is crucial. The evidence suggests he didn't just live through it, but actively participated.\n\n**Leading Christian Development**\n\nI'm now assessing my categorization of Origen's link to \"Early Christianity.\" The provided definition of \"Early Christianity\" as a historical period, coupled with the explicit mention of \"early church\" and \"early Christian\" in the extract, confirms its relevance. My analysis points towards \"took_part_in\" due to his founding of the Christian School of Caesarea.\n\n**Refining Origen's Role**\n\nI'm now reconsidering the exact phrasing for Origen's connection to \"Early Christianity.\" While his foundational work and influence are clear, the existing definitions lean towards \"lived_through\" for broad periods, unless specific actions within them are detailed. I'm weighing whether his described influence constitutes active participation as defined.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1937,
+   "completion_tokens": 2266,
+   "total_tokens": 4203,
+   "cost": 0.00995025,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00995025,
+    "upstream_inference_prompt_cost": 0.00145275,
+    "upstream_inference_completions_cost": 0.0084975
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2162,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q51644\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Origen lived and worked during early Christianity, being described as one of the most prominent figures produced by the early church.\",\n      \"evidence\": \"He has been described by John Anthony McGuckin as \\\"the greatest genius the early church ever produced\\\".\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q51644",
+     "type": "lived_through",
+     "reason": "Origen lived and worked during early Christianity, being described as one of the most prominent figures produced by the early church.",
+     "evidence": "He has been described by John Anthony McGuckin as \"the greatest genius the early church ever produced\".",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1937,
+   "completion_tokens": 2266,
+   "total_tokens": 4203,
+   "cost": 0.00995025,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00995025,
+    "upstream_inference_prompt_cost": 0.00145275,
+    "upstream_inference_completions_cost": 0.0084975
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2162,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00995025,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 1021.74
+ },
+ "meta": {}
+}

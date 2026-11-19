@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "bec9703fcc085876f2aa4b079f856f8594eeebfe34f33d13cd195a7d9b43d5f7",
+ "fetched_at": "2026-11-19T16:40:31Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Fazang (643–712). Buddhist patriarch (643-713)\n\nEXTRACT:\nFazang (Chinese: 法藏; pinyin: Fǎzàng; Wade–Giles: Fa-tsang; 643–712) was a Sogdian-Chinese Buddhist scholar, translator, and religious leader of the Tang dynasty. He was the third patriarch of the Huayan school of East Asian Buddhism, a key figure at the Chinese Imperial Court, and an influential Chinese Buddhist philosopher. Some scholars see him as the main figure in or even de facto founder of the Huayan school. Fazang's ancestors came from the Central Asian region of Sogdia, a major center for Silk Road trade, but he was born in the Tang capital of Chang'an (now Xi'an), where his family had become culturally Chinese.\nFazang was known for his skill as a translator, knowledge of Sanskrit, and for his efforts to produce a new translation of an extended edition of the Gaṇḍavyūha sūtra. He also composed an original commentary on the Avatamsaka Sutra, called the Huayan jing tanxuan ji (Record of Investigating the Mystery of the Huayan jing). He was also known as a popularizer and promoter of Huayan teachings, through his relationship with Empress Wu Zetian and his authorship of several essays on Huayan philosophy, especially Essay on the Golden Lion.\n\nEVENTS (id, name, years):\nQ726805  Jahiliyyah (500–700) — Islamic term for pre-Islamic Arabian society\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ189178  Nara period (710–794) — historical medieval period of Japan from CE 710 to 794\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ210688  Asuka period (538–710) — historical period of Japan\nQ1455917  Umayyad conquest of Hispania (711–726) — war resulting in the destruction of the Visigothic Kingdom and the expansion of the Umayyad Caliphate (711–718)\nQ887684  Muslim conquest of Persia (633–654) — historical event (633–651) during which the Rashidun caliphate conquered the Sasanian empire\nQ925960  Muslim conquest of the Maghreb (647–709) — military campaign\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1417059  First Fitna (656–661) — Rashidun-era Muslim civil war (656 to 661)\nQ3621258  Arab conquest of Armenia (642–744) — Arab Rashidun Caliphate conquest of Armenia\nQ626058  Battle of Karbala (680) — battle in October 680 between the army of Ubayd Allah ibn Ziyad and al-Husayn ibn Ali\nQ821711  Plague of Justinian (541–750) — 541–549 AD pandemic in the Byzantine Empire, later northern Europe\nQ504172  Battle of Guadalete (711) — 711 battle between the Visigothic Kingdom and the Umayyad Caliphate; decisive Umayyad victory leads to the fall of the Visigothic Kingdom and the Umayyad conquest of the peninsula\nQ735876  Battle of Siffin (657) — battle of the First Fitna in 657 AD\nQ1133574  Battle of the Camel (656) — 656 battle of the First Fitna"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106425-wwrLGqwn8Je3cmnQitf6",
+  "object": "chat.completion",
+  "created": 1795106425,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q9683\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Fazang lived and worked as a Buddhist scholar, translator, and religious leader during China's Tang dynasty.\",\n      \"evidence\": \"Fazang (Chinese: 法藏; pinyin: Fǎzàng; Wade–Giles: Fa-tsang; 643–712) was a Sogdian-Chinese Buddhist scholar, translator, and religious leader of the Tang dynasty.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Summarizing Buddhist Scholar**\n\nI'm currently focused on detailing the life and contributions of Fazang, a significant Tang dynasty Buddhist scholar. My understanding is progressing, and I'm exploring his background as a Sogdian-Chinese figure.\n\n**Clarifying Huayan Patriarch**\n\nI'm delving into Fazang's pivotal role as the third patriarch of the Huayan school, noting his influence at court and philosophical contributions. My research highlights his likely founding status and his Sogdian-Chinese heritage.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Summarizing Buddhist Scholar**\n\nI'm currently focused on detailing the life and contributions of Fazang, a significant Tang dynasty Buddhist scholar. My understanding is progressing, and I'm exploring his background as a Sogdian-Chinese figure.\n\n**Clarifying Huayan Patriarch**\n\nI'm delving into Fazang's pivotal role as the third patriarch of the Huayan school, noting his influence at court and philosophical contributions. My research highlights his likely founding status and his Sogdian-Chinese heritage.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1860,
+   "completion_tokens": 732,
+   "total_tokens": 2592,
+   "cost": 0.00414,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00414,
+    "upstream_inference_prompt_cost": 0.001395,
+    "upstream_inference_completions_cost": 0.002745
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 597,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q9683\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Fazang lived and worked as a Buddhist scholar, translator, and religious leader during China's Tang dynasty.\",\n      \"evidence\": \"Fazang (Chinese: 法藏; pinyin: Fǎzàng; Wade–Giles: Fa-tsang; 643–712) was a Sogdian-Chinese Buddhist scholar, translator, and religious leader of the Tang dynasty.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q9683",
+     "type": "lived_through",
+     "reason": "Fazang lived and worked as a Buddhist scholar, translator, and religious leader during China's Tang dynasty.",
+     "evidence": "Fazang (Chinese: 法藏; pinyin: Fǎzàng; Wade–Giles: Fa-tsang; 643–712) was a Sogdian-Chinese Buddhist scholar, translator, and religious leader of the Tang dynasty.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1860,
+   "completion_tokens": 732,
+   "total_tokens": 2592,
+   "cost": 0.00414,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00414,
+    "upstream_inference_prompt_cost": 0.001395,
+    "upstream_inference_completions_cost": 0.002745
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 597,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00414,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.07
+ },
+ "meta": {}
+}

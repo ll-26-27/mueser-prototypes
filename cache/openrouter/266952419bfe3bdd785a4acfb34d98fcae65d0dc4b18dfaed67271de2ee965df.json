@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "266952419bfe3bdd785a4acfb34d98fcae65d0dc4b18dfaed67271de2ee965df",
+ "fetched_at": "2026-11-19T16:39:50Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Xunzi (312 BCE–230s BCE). Chinese Confucian philosopher (c. 310 – after 238 BCE)\n\nEXTRACT:\nXunzi (荀子, Xúnzǐ, lit. 'Master Xun'; c. 310 – c. after 238 BCE), born Xun Kuang, was a late Warring States period Confucian Chinese philosopher, often ranked as the third great Confucian philosopher of antiquity after his predecessors Confucius and Mencius. By his time, Confucianism had suffered considerable criticism from Taoist and Mohist thinkers, and Xunzi is traditionally regarded as a synthesizer of these traditions with earlier Confucian thought. The result was a thorough and cohesive revision of Confucianism, which was crucial to the philosophy's ability to flourish in the Han dynasty and throughout the later history of East Asia. His works were compiled in the eponymous Xunzi, and survive in excellent condition. Unlike other ancient compilations, his authorship of these texts is generally secure, though it is likely that Western Han dynasty historian Liu Xiang organized them into their present form centuries after Xunzi's death.\nBorn in the state of Zhao, Xunzi studied at the prestigious Jixia Academy in Qi, where he learned about every major philosophical tradition of his time. After graduating, Xunzi traveled to Chu where he mastered poetry, returning to the academy as a highly regarded teacher. His students Han Fei and Li Si each had important political and academic careers, though some of their Legalist sentiments were at odds with his philosophy. Other students such as Fuqiu Bo, Zhang Cang and Mao Heng authored important editions and commentaries on the Confucian classics. Later in his life, Xunzi served in the court of Lord Chunshen and died sometime after Lord Chunshen's death. The constant warfare of his time informed his work profoundly, as did his interactions with leaders and witnessing the downfall of various states.\nXunzi's writings respond to dozens of thinkers, often naming and criticizing them directly. His well-known notion that \"Human nature is evil\" has led many commentators to place him opposite to Mencius, who believed human nature was intrinsically good. Both saw education and ritual as key to self-cultivation, which for Xunzi could circumvent one's naturally foul nature. Xunzi's definition of both concepts was loose, encouraging lifelong education and applied ritual to every aspect of life. Though he still cited the ancient sages, he differed from other Confucian philosophers by his insistence on emulating recent rulers rather than those of long ago. Other important topics include the promotion of music and the careful application of names.\nRepeated oversimplifications and misunderstandings on Xunzi's teachings, particularly his view on human nature, led to gradual dismissal and condemnation of his thought from the Tang dynasty onwards. By the rise of Neo-Confucianism in the 10th century, Mencius gradually upended Xunzi, particularly by the choice to include the Mencius in the Four Books. Since the 20th century, a reevaluation of Xunzi's doctrine has taken place in East Asia, leading to recognition of his profound impact and relevance to both his times and present day.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ428995  Hellenistic period (-322–-29) — period of Mediterranean history from 323 to 31 BC\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ714557  Kalinga War (-261–-260) — war fought by Ashoka\nQ6286  First Punic War (-263–-240) — First War between Rome and Carthage\nQ109251  Samnite Wars (-342–-289) — series of wars between the early Roman Republic and the Samnites on the Italian Peninsula\nQ124988  Punic Wars (-263–-145) — series of three wars fought between Rome and Carthage from 264 BC to 146 BC, at the time probably the largest wars that had ever taken place\nQ596373  Pyrrhic War (-279–-274) — war\nQ1330607  Syrian Wars (-273–-167) — series of wars between Egypt and the Seleucid Empire in Syria (274-168 BCE)\nQ2912306  Wars of the Diadochi (-321–-274) — series of conflicts after the death of Alexander the Great\nQ1132393  Mercenary War (-239–-237) — revolt of mercenaries"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106383-wGHHhBujTRSazYsRNgLP",
+  "object": "chat.completion",
+  "created": 1795106383,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"connections\":[{\"event\":\"Q185063\",\"type\":\"lived_through\",\"reason\":\"Xunzi lived and worked as a Confucian philosopher during the late Warring States period of ancient China.\",\"evidence\":\"Xunzi (荀子, Xúnzǐ, lit. 'Master Xun'; c. 310 – c. after 238 BCE), born Xun Kuang, was a late Warring States period Confucian Chinese philosopher, often ranked as the third great Confucian philosopher of antiquity after his predecessors Confucius and Mencius.\",\"work\":\"\"}]}",
+     "refusal": null,
+     "reasoning": "**Connecting Xunzi's Ideas**\n\nI'm focusing on identifying direct links between Xunzi's philosophy and the provided historical periods, specifically the Warring States era. My current effort is to see if his teachings directly correlate with or influenced events within that timeframe.\n\n**Analyzing Xunzi's Influence**\n\nI'm currently examining how the Warring States period, which Xunzi lived through, profoundly shaped his philosophical work. My focus is on the direct causal link between the era's conflicts and his resulting ideas.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Xunzi's Ideas**\n\nI'm focusing on identifying direct links between Xunzi's philosophy and the provided historical periods, specifically the Warring States era. My current effort is to see if his teachings directly correlate with or influenced events within that timeframe.\n\n**Analyzing Xunzi's Influence**\n\nI'm currently examining how the Warring States period, which Xunzi lived through, profoundly shaped his philosophical work. My focus is on the direct causal link between the era's conflicts and his resulting ideas.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1919,
+   "completion_tokens": 738,
+   "total_tokens": 2657,
+   "cost": 0.00420675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00420675,
+    "upstream_inference_prompt_cost": 0.00143925,
+    "upstream_inference_completions_cost": 0.0027675
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 611,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"connections\":[{\"event\":\"Q185063\",\"type\":\"lived_through\",\"reason\":\"Xunzi lived and worked as a Confucian philosopher during the late Warring States period of ancient China.\",\"evidence\":\"Xunzi (荀子, Xúnzǐ, lit. 'Master Xun'; c. 310 – c. after 238 BCE), born Xun Kuang, was a late Warring States period Confucian Chinese philosopher, often ranked as the third great Confucian philosopher of antiquity after his predecessors Confucius and Mencius.\",\"work\":\"\"}]}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q185063",
+     "type": "lived_through",
+     "reason": "Xunzi lived and worked as a Confucian philosopher during the late Warring States period of ancient China.",
+     "evidence": "Xunzi (荀子, Xúnzǐ, lit. 'Master Xun'; c. 310 – c. after 238 BCE), born Xun Kuang, was a late Warring States period Confucian Chinese philosopher, often ranked as the third great Confucian philosopher of antiquity after his predecessors Confucius and Mencius.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1919,
+   "completion_tokens": 738,
+   "total_tokens": 2657,
+   "cost": 0.00420675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00420675,
+    "upstream_inference_prompt_cost": 0.00143925,
+    "upstream_inference_completions_cost": 0.0027675
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 611,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00420675,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 7.44
+ },
+ "meta": {}
+}

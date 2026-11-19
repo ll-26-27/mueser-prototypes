@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "3d65779f227c4bbb099145d1a935e552beae31ba3bdc5f55b9afc0b91e13703a",
+ "fetched_at": "2026-11-19T16:41:50Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Godfrey of Fontaines (13th century–1309). Belgian theologian\n\nEXTRACT:\nGodfrey of Fontaines (Latin: Godefridus de Fontibus, born sometime before 1250, died 29 October 1306 or 1309), was a scholastic philosopher and theologian who was designated by the title Doctor Venerandus. He made contributions to a diverse range of subjects ranging from moral philosophy to epistemology. However, he is best known today for his work on metaphysics.\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106504-UNMiyfUqz0obTu3YXR21",
+  "object": "chat.completion",
+  "created": 1795106504,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"connections\": []}",
+     "refusal": null,
+     "reasoning": "**Analyzing Fontaines' Connections**\n\nI'm focusing on identifying direct links between Godfrey of Fontaines and the event list, using only the provided text as my source. My current task is to cross-reference the extract with each event, noting any explicit mentions or implied relationships.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Fontaines' Connections**\n\nI'm focusing on identifying direct links between Godfrey of Fontaines and the event list, using only the provided text as my source. My current task is to cross-reference the extract with each event, noting any explicit mentions or implied relationships.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1286,
+   "completion_tokens": 452,
+   "total_tokens": 1738,
+   "cost": 0.0026595,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0026595,
+    "upstream_inference_prompt_cost": 0.0009645,
+    "upstream_inference_completions_cost": 0.001695
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 447,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"connections\": []}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1286,
+   "completion_tokens": 452,
+   "total_tokens": 1738,
+   "cost": 0.0026595,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0026595,
+    "upstream_inference_prompt_cost": 0.0009645,
+    "upstream_inference_completions_cost": 0.001695
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 447,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0026595,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 6.7
+ },
+ "meta": {}
+}

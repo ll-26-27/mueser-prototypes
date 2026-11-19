@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "7a3982d28accc725de2618e0fd43fab8452840ec1c9a5b48d151ac48c1a16f04",
+ "fetched_at": "2026-11-19T16:37:47Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Samuel ibn Tibbon (1160–1230). French Orthodox rabbi\n\nEXTRACT:\nSamuel ben Judah ibn Tibbon (c. 1150 – c. 1230), more commonly known as Samuel ibn Tibbon (Hebrew: שמואל בן יהודה אבן תבון, Arabic: ابن تبّون), was a  Jewish philosopher and doctor who lived and worked in Provence, later part of France. He was born about 1150 in Lunel (Languedoc), and died about 1230 in Marseille. He is best known for his translations of Jewish rabbinic literature from Arabic to Hebrew. Samuel ibn Tibbon wrote his own philosophical works, including \"Sefer ha-Mikhtav\" (The Book of the Letter), which dealt with ethics and spirituality. Samuel ibn Tibbon's translations and commentaries had a significant impact on Jewish thought and scholarship during the Middle Ages. They helped to disseminate the ideas of Greek philosophy and Islamic science throughout the Jewish world, and they also contributed to the development of Jewish philosophy in their own right.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ196409  Livonian Crusade (1198) — German and Danish conquest of medieval Livonia\nQ431177  Mongol invasion of Khwarazmian Empire and Eastern Iran (1219–1221) — 1219–1221 military campaign\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ737542  Genpei War (1180–1185) — conflict during late-Heian period of Japan\nQ2086498  First Barons' War (1215–1217) — civil war in the Kingdom of England (1215-1217)\nQ51655  Third Crusade (1189–1192) — attempt by European leaders to reconquer the Holy Land from Ayyubid\nQ51656  Fourth Crusade (1202–1204) — armed expedition against Constantinople\nQ51657  Albigensian Crusade (1209–1229) — 1209 military campaigns against Catharism in southern France\nQ51658  Children's Crusade (1212) — attempted crusade by European Christians to expel Muslims from the Holy Land\nQ51659  Fifth Crusade (1213–1221) — an attempt to recontrol Jerusalem and the holy land from Ayyubid control\nQ51660  Sixth Crusade (1228–1229) — 13th-century military raid against Ayyubids\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ646409  Crusade of 1197 (1197–1198) — crusade\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ233568  Battle of Hattin (1187) — Victory of Ayyubid forces under Saladin against Crusader joint forces, 1187\nQ570204  Battle of the Kalka River (1223) — 1223 middle ages battle\nQ219697  Battle of Las Navas de Tolosa (1212) — 1212 battle between Iberian Christian armies and an Almohad Muslim army\nQ815161  Conquest of Jerusalem (1187) — 1187 conquest that marks the end of Christian dominion over the Greater Jerusalem"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106259-b1jDqlZZICHKPYgQ8wgK",
+  "object": "chat.completion",
+  "created": 1795106259,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Samuel ibn Tibbon lived and produced his influential scholarly works and translations during the Middle Ages.\",\n      \"evidence\": \"Samuel ibn Tibbon's translations and commentaries had a significant impact on Jewish thought and scholarship during the Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Ibn Tibbon**\n\nI'm currently focusing on identifying direct links between Samuel ibn Tibbon and any specific events mentioned in the provided text. My aim is to pinpoint chronological or causal relationships, though the current extract is quite limited.\n\n**Clarifying Tibbon's Era**\n\nI'm re-examining the text's timeframe for Samuel ibn Tibbon. The statement about his significant impact during the Middle Ages suggests he was active throughout that period. I'm verifying if \"lived_through\" is the most appropriate relation given this context.\n\n**Considering Lived Through**\n\nI'm weighing whether \"Middle Ages\" truly fits the \"lived_through\" definition. While his impact occurred during that time, the phrasing focuses on the *period* of his influence rather than his direct, personal experience of the era itself. I'm still evaluating the best way to represent this.\n\n**Verifying Tibbon's Era**\n\nI've confirmed that \"Middle Ages\" is an explicit mention for Samuel ibn Tibbon, and the \"lived_through\" relation is indeed appropriate based on the evidence provided about his impact during that period.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Ibn Tibbon**\n\nI'm currently focusing on identifying direct links between Samuel ibn Tibbon and any specific events mentioned in the provided text. My aim is to pinpoint chronological or causal relationships, though the current extract is quite limited.\n\n**Clarifying Tibbon's Era**\n\nI'm re-examining the text's timeframe for Samuel ibn Tibbon. The statement about his significant impact during the Middle Ages suggests he was active throughout that period. I'm verifying if \"lived_through\" is the most appropriate relation given this context.\n\n**Considering Lived Through**\n\nI'm weighing whether \"Middle Ages\" truly fits the \"lived_through\" definition. While his impact occurred during that time, the phrasing focuses on the *period* of his influence rather than his direct, personal experience of the era itself. I'm still evaluating the best way to represent this.\n\n**Verifying Tibbon's Era**\n\nI've confirmed that \"Middle Ages\" is an explicit mention for Samuel ibn Tibbon, and the \"lived_through\" relation is indeed appropriate based on the evidence provided about his impact during that period.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2025,
+   "completion_tokens": 975,
+   "total_tokens": 3000,
+   "cost": 0.005175,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005175,
+    "upstream_inference_prompt_cost": 0.00151875,
+    "upstream_inference_completions_cost": 0.00365625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 875,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q12554\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Samuel ibn Tibbon lived and produced his influential scholarly works and translations during the Middle Ages.\",\n      \"evidence\": \"Samuel ibn Tibbon's translations and commentaries had a significant impact on Jewish thought and scholarship during the Middle Ages.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q12554",
+     "type": "lived_through",
+     "reason": "Samuel ibn Tibbon lived and produced his influential scholarly works and translations during the Middle Ages.",
+     "evidence": "Samuel ibn Tibbon's translations and commentaries had a significant impact on Jewish thought and scholarship during the Middle Ages.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 2025,
+   "completion_tokens": 975,
+   "total_tokens": 3000,
+   "cost": 0.005175,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005175,
+    "upstream_inference_prompt_cost": 0.00151875,
+    "upstream_inference_completions_cost": 0.00365625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 875,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.005175,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 8.01
+ },
+ "meta": {}
+}

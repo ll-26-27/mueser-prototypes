@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "4810710ef420f0523cffe33eb304fb82bd1ecf5fb63b7f442d15ae9dcac5ea08",
+ "fetched_at": "2026-11-19T16:42:55Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Shem-Tov ibn Falaquera (1225–1290). Spanish philosopher\n\nEXTRACT:\nShem-Tov ben Joseph ibn Falaquera, also spelled Palquera (Hebrew: שם טוב בן יוסף אבן פלקירה‎; 1225 – c. 1290), was a Spanish Jewish philosopher, poet, and commentator. A vast body of work is attributed to Falaquera, including encyclopedias of Arabic and Greek philosophies, maqamas, some 20,000 poetic verses, and commentaries on Maimonides’ Guide to the Perplexed.  The common theme in Falaquera’s writing was to encourage observant Jews to study philosophy and to appreciate the harmony that existed between Torah and rational truth learned in philosophy. While Falaquera did not advocate teaching the secrets of science and divine sciences to every man, he did advocate the teaching of these truths to a broader range of educated Jewish males than previous proponents of rationalist thinking. He authored a Medieval Hebrew philosophical-scientific encyclopedia, De'ot ha-Filosofim (The Opinions of the Philosophers) (ca. 1270), which consists of a detailed theoretical, and not merely descriptive, treatment of zoology, botany and mineralogy, comparable to that of Albertus Magnus.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ51657  Albigensian Crusade (1209–1229) — 1209 military campaigns against Catharism in southern France\nQ51660  Sixth Crusade (1228–1229) — 13th-century military raid against Ayyubids\nQ51661  Seventh Crusade (1248–1254) — military conflict (1248-1254)\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ369560  Siege of Baghdad (1258) — 1258 Mongol conquest of the Abbasid Caliphate\nQ244356  Battle of Ain Jalut (1260) — 1260 battle between the Mamluk Sultanate and the Mongol Empire\nQ521799  Battle of the Neva (1240) — 1240 battle\nQ14689  Battle of the Ice (1242) — 1242 battle during Northern Crusades\nQ159512  Battle of Legnica (1241) — 1241 battle between Polish and Mongol forces"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106567-6tTxGcKD2f2Gc032DWRt",
+  "object": "chat.completion",
+  "created": 1795106567,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Exploring New Scholar**\n\nI'm currently digging into the life and works of Shem-Tov ben Joseph ibn Falaquera, a fascinating 13th-century Spanish Jewish philosopher, poet, and commentator. His extensive writings are proving to be a rich area for exploration.\n\n**Analyzing Philosophical Content**\n\nI'm currently examining Falaquera's philosophical contributions, particularly his De'ot ha-Filosofim. I'm noting his detailed, theoretical approach to zoology, botany, and mineralogy, finding it comparable to Albertus Magnus. My focus is on how he bridged Torah and philosophical truths.\n\n**Connecting Time Periods**\n\nI'm verifying if \"Medieval Hebrew\" in the text directly links to the broader \"Middle Ages\" event, and how that connection informs our understanding of the subject's context.\n\n**Refining Event Connections**\n\nI'm questioning whether \"Medieval Hebrew\" implies a direct event connection or is merely descriptive of the language. My focus is on strictly adhering to extract mentions, avoiding external assumptions about events the subject lived through or responded to.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Exploring New Scholar**\n\nI'm currently digging into the life and works of Shem-Tov ben Joseph ibn Falaquera, a fascinating 13th-century Spanish Jewish philosopher, poet, and commentator. His extensive writings are proving to be a rich area for exploration.\n\n**Analyzing Philosophical Content**\n\nI'm currently examining Falaquera's philosophical contributions, particularly his De'ot ha-Filosofim. I'm noting his detailed, theoretical approach to zoology, botany, and mineralogy, finding it comparable to Albertus Magnus. My focus is on how he bridged Torah and philosophical truths.\n\n**Connecting Time Periods**\n\nI'm verifying if \"Medieval Hebrew\" in the text directly links to the broader \"Middle Ages\" event, and how that connection informs our understanding of the subject's context.\n\n**Refining Event Connections**\n\nI'm questioning whether \"Medieval Hebrew\" implies a direct event connection or is merely descriptive of the language. My focus is on strictly adhering to extract mentions, avoiding external assumptions about events the subject lived through or responded to.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1902,
+   "completion_tokens": 1022,
+   "total_tokens": 2924,
+   "cost": 0.005259,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005259,
+    "upstream_inference_prompt_cost": 0.0014265,
+    "upstream_inference_completions_cost": 0.0038325
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1013,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1902,
+   "completion_tokens": 1022,
+   "total_tokens": 2924,
+   "cost": 0.005259,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.005259,
+    "upstream_inference_prompt_cost": 0.0014265,
+    "upstream_inference_completions_cost": 0.0038325
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1013,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.005259,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 7.81
+ },
+ "meta": {}
+}

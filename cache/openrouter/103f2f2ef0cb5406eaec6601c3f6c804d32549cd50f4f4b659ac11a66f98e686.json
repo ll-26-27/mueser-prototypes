@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "103f2f2ef0cb5406eaec6601c3f6c804d32549cd50f4f4b659ac11a66f98e686",
+ "fetched_at": "2026-11-19T16:37:08Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Radulphus Brito (1270–1320). grammarian\n\nEXTRACT:\nRadulphus Brito (c. 1270 – 1320) was an influential grammarian and philosopher, based in Paris. He is usually identified as Raoul le Breton, though this is disputed by some. Besides works of grammatical speculation he wrote on Aristotle, Boethius and Priscian.\nRadulphus was Master of Arts in the University of Paris in 1296, and joined the theology faculty in 1311. Very few of his works are edited, although he was a prolific and influential writer. He was one of a group of grammarians called the Modistae or modists who flourished around Paris from about 1260 to 1310, so-called because they wrote on the mode of signifying.\n\nEVENTS (id, name, years):\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106224-CoSMvOn4N0UBSUlTp1we",
+  "object": "chat.completion",
+  "created": 1795106224,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Researching Connections**\n\nI'm focused on establishing links between Radulphus Brito and the provided event list, using only the given text. My current efforts center on scrutinizing the extract for any potential correlations or hints that might facilitate this connection.\n\n**Finding Direct Links**\n\nI'm currently evaluating the provided text for direct mentions or clear implications of any events or periods from the list. My focus is on identifying explicit connections rather than inferring them, as per the instructions.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Researching Connections**\n\nI'm focused on establishing links between Radulphus Brito and the provided event list, using only the given text. My current efforts center on scrutinizing the extract for any potential correlations or hints that might facilitate this connection.\n\n**Finding Direct Links**\n\nI'm currently evaluating the provided text for direct mentions or clear implications of any events or periods from the list. My focus is on identifying explicit connections rather than inferring them, as per the instructions.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1760,
+   "completion_tokens": 616,
+   "total_tokens": 2376,
+   "cost": 0.00363,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00363,
+    "upstream_inference_prompt_cost": 0.00132,
+    "upstream_inference_completions_cost": 0.00231
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 607,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1760,
+   "completion_tokens": 616,
+   "total_tokens": 2376,
+   "cost": 0.00363,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00363,
+    "upstream_inference_prompt_cost": 0.00132,
+    "upstream_inference_completions_cost": 0.00231
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 607,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00363,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.05
+ },
+ "meta": {}
+}

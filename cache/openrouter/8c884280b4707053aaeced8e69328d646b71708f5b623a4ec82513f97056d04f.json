@@ -1,0 +1,184 @@
+{
+ "namespace": "openrouter",
+ "key": "8c884280b4707053aaeced8e69328d646b71708f5b623a4ec82513f97056d04f",
+ "fetched_at": "2026-11-19T16:35:58Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Cheng Yi (1033–1107-10-12). Chinese philosopher (1033–1107)\n\nEXTRACT:\nCheng Yi (1033–1107), also known by various other names and romanizations, was a Chinese classicist, essayist, philosopher, and politician of the Song Dynasty. He worked with his older brother Cheng Hao. Like his brother, he was a student of Zhou Dunyi, a friend of Shao Yong, and a nephew of Zhang Zai. The five of them, along with Sima Guang, are called the Six Great Masters by his follower Zhu Xi. He became a prominent figure in neo-Confucianism, and the philosophy of Cheng Yi, Cheng Hao and Zhu Xi is referred to as the Cheng–Zhu school or the Rationalistic School.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ51650  People's Crusade (1096) — poor people's army to fight muslim Turks in Jerusalem (1095-1100)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ51649  First Crusade (1096–1099) — 1096–1099 Christian conquest of the Holy Land\nQ51653  Crusade of 1101 (1101) — battle in the summer of 1101\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ83224  Battle of Hastings (1066) — battle which occurred on 14 October 1066\nQ200032  Battle of Manzikert (1071) — 1071 battle between the Byzantine Empire and Seljuk Turks\nQ203225  Battle of Stamford Bridge (1066) — 1066 battle in the East Riding of Yorkshire, England, UK\nQ392538  Battle of Sagrajas (1086) — 1086 battle of the Reconquista\nQ456993  Siege of Jerusalem (1099) — 1099 battle during which the Crusaders captured Jerusalem from the Fatimid Caliphate\nQ51648  East-West Schism (1054) — division of Christianity into two large parts in 1054\nQ2224419  1061 papal election (1061) — 1061 election of the Catholic pope\nQ166861  Cistercians (1098) — Roman Catholic order of the Benedictine reform in the tradition of the monastery of Citaux"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106148-XIJTuozgrrkWboNnJEKe",
+  "object": "chat.completion",
+  "created": 1795106148,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q7462\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Cheng Yi lived and was active as a scholar and politician during the Song Dynasty.\",\n      \"evidence\": \"Cheng Yi (1033–1107), also known by various other names and romanizations, was a Chinese classicist, essayist, philosopher, and politician of the Song Dynasty.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Analyzing Cheng Yi's Connections**\n\nI'm currently examining the provided extract to identify any links between Cheng Yi and the listed events. My focus is on extracting relevant details from the text to establish these connections.\n\n**Connecting Cheng Yi to Song Dynasty**\n\nI've confirmed Cheng Yi's direct connection to the Song Dynasty, as he was a politician during that period. I'm now evaluating whether this fits the \"lived_through\" or \"took_part_in\" relationship type, considering the context of a dynasty as a historical period.\n\n**Considering Dynasty Relations**\n\nI'm refining my understanding of how to categorize Cheng Yi's relationship with the Song Dynasty. While \"lived_through\" seems standard for historical periods, I'm considering if his role as a politician might lean towards \"took_part_in\" given the nuances of the definitions.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Cheng Yi's Connections**\n\nI'm currently examining the provided extract to identify any links between Cheng Yi and the listed events. My focus is on extracting relevant details from the text to establish these connections.\n\n**Connecting Cheng Yi to Song Dynasty**\n\nI've confirmed Cheng Yi's direct connection to the Song Dynasty, as he was a politician during that period. I'm now evaluating whether this fits the \"lived_through\" or \"took_part_in\" relationship type, considering the context of a dynasty as a historical period.\n\n**Considering Dynasty Relations**\n\nI'm refining my understanding of how to categorize Cheng Yi's relationship with the Song Dynasty. While \"lived_through\" seems standard for historical periods, I'm considering if his role as a politician might lean towards \"took_part_in\" given the nuances of the definitions.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1750,
+   "completion_tokens": 786,
+   "total_tokens": 2536,
+   "cost": 0.00426,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00426,
+    "upstream_inference_prompt_cost": 0.0013125,
+    "upstream_inference_completions_cost": 0.0029475
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 671,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q7462\",\n      \"type\": \"lived_through\",\n      \"reason\": \"Cheng Yi lived and was active as a scholar and politician during the Song Dynasty.\",\n      \"evidence\": \"Cheng Yi (1033–1107), also known by various other names and romanizations, was a Chinese classicist, essayist, philosopher, and politician of the Song Dynasty.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q7462",
+     "type": "lived_through",
+     "reason": "Cheng Yi lived and was active as a scholar and politician during the Song Dynasty.",
+     "evidence": "Cheng Yi (1033–1107), also known by various other names and romanizations, was a Chinese classicist, essayist, philosopher, and politician of the Song Dynasty.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1750,
+   "completion_tokens": 786,
+   "total_tokens": 2536,
+   "cost": 0.00426,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00426,
+    "upstream_inference_prompt_cost": 0.0013125,
+    "upstream_inference_completions_cost": 0.0029475
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 671,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00426,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 10.25
+ },
+ "meta": {}
+}

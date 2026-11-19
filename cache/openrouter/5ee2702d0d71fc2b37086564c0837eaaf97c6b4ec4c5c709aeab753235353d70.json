@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "5ee2702d0d71fc2b37086564c0837eaaf97c6b4ec4c5c709aeab753235353d70",
+ "fetched_at": "2026-11-19T16:36:45Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Iamblichus (245–325). Syrian Neoplatonist philosopher (c. 245 – c. 325)\n\nEXTRACT:\nIamblichus ( eye-AM-blik-əs; Ancient Greek: Ἰάμβλιχος, romanized: Iámblichos; Aramaic: 𐡉𐡌𐡋𐡊𐡅, romanized: Yamlīkū; c. 245 – c. 325) was a Syrian Arab Neoplatonic philosopher who determined a direction later taken by Neoplatonism. Iamblichus was also the biographer (or hagiographer) of the Greek mystic, philosopher, and mathematician Pythagoras. In addition to his philosophical contributions, his Protrepticus is important for the study of the sophists because it preserved about ten pages of an otherwise unknown sophist, whose name is not mentioned and who is currently known as \"Anonymus Iamblichi\" (\"Iamblichus's Anonymous\").\n\nEVENTS (id, name, years):\nQ7352  Jin dynasty (266) — Chinese dynasty (266–420)\nQ51644  Early Christianity (1–325) — period of church history beginning with the ministry of Jesus (c. 27-30) and ending with the First Council of Nicaea (325)\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ174450  Roman Tetrarchy (293–324) — division of power in the Roman Empire under Diocletian until Constantine the Great (ca. 293 to 324 AD)\nQ185043  Three Kingdoms (220–280) — period of Chinese history (220–280 AD) dominated by the Wei, Shu-Han, and Wu kingdoms\nQ206414  Principate (-26–284) — first period of the Roman Empire (ca. 27 BC to 284 AD)\nQ238399  Dominate (284–565) — \"despotic\" phase of government in the ancient Roman Empire (ca. 284 to 565 AD)\nQ329838  Crisis of the Third Century (235–284) — Roman Imperial government crisis (235–284)\nQ459939  Kofun period (250–538) — period of Japanese history from 300 to 538\nQ466803  Pallava dynasty (275) — Indian dynasty between the 3rd and 9th centuries CE\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ683551  Sixteen Kingdoms (304–439) — period of Chinese history from 304 to 439\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ770951  War of the Eight Princes (291–306) — series of civil wars (291–306 CE) among princes of the Chinese Jin dynasty\nQ339321  Battle of the Milvian Bridge (312) — 4th-century battle for control of Rome"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106200-KuE5udGR8WqRAjAnE5oi",
+  "object": "chat.completion",
+  "created": 1795106200,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Iamblichus and Events**\n\nI'm currently examining the provided extract for any mentions or implicit links to historical events. My focus is on identifying direct or indirect relationships between Iamblichus and the listed occurrences.\n\n**Discovering Iamblichus's Context**\n\nI'm digging into the provided text, specifically looking for historical events connected to Iamblichus. My goal is to pinpoint any direct or indirect relationships between his life and the listed occurrences.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Iamblichus and Events**\n\nI'm currently examining the provided extract for any mentions or implicit links to historical events. My focus is on identifying direct or indirect relationships between Iamblichus and the listed occurrences.\n\n**Discovering Iamblichus's Context**\n\nI'm digging into the provided text, specifically looking for historical events connected to Iamblichus. My goal is to pinpoint any direct or indirect relationships between his life and the listed occurrences.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1691,
+   "completion_tokens": 560,
+   "total_tokens": 2251,
+   "cost": 0.00336825,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00336825,
+    "upstream_inference_prompt_cost": 0.00126825,
+    "upstream_inference_completions_cost": 0.0021
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 551,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1691,
+   "completion_tokens": 560,
+   "total_tokens": 2251,
+   "cost": 0.00336825,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00336825,
+    "upstream_inference_prompt_cost": 0.00126825,
+    "upstream_inference_completions_cost": 0.0021
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 551,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00336825,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.44
+ },
+ "meta": {}
+}

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "59e0dfd5d3016a3360e529bd7171bd837ef449d693aa3ac9afc51d04d87a3583",
+ "fetched_at": "2026-11-19T16:39:53Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Nasir Khusraw (1004-09-09–1088). 11th-century Persian Isma'ili poet, scholar, philosopher, and missionary\n\nEXTRACT:\nAbu Mo'in Nasir ibn Khusraw ibn Harith Qubodiyani Balkhi, known as Nasir Khusraw (Persian: ناصرخسرو; 1004 – between 1072–1088), was an Persian-speaking Isma'ili poet, philosopher, traveler, and missionary (da'i and later Ḥujjah of Imam al-Mustansir Billah) for the Isma'ili Fatimid Caliphate. He was born in Qubodiyon, Khorasan and died in Yamgan, Badakhshan. His resting place is in Balkh, Afghanistan. \nDespite being one of the most prominent Isma'ili philosophers and theologians of the Fatimids and the writer of many philosophical works intended for only the inner circle of the Isma'ili community, Nasir is best known to the general public as a poet and writer who ardently supported his native Persian tongue as an artistic and scientific language. All of Nasir's philosophical Isma'ili works are in Persian, a rarity in the Isma'ili literature of the Fatimids, which primarily used Arabic.\nNasir was a key figure in the spread of Isma'ilism in Central Asia. He is with great reverence called \"Pir\" or \"Shah Sayyid Nasir\" by the Isma'ili community of Badakhshan (split between Afghanistan and Tajikistan) and their branches in northern Pakistan, who all consider him to be their founder.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ213649  Viking Age (793–1066) — the period of European history characterised by Viking raids and trading\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ83224  Battle of Hastings (1066) — battle which occurred on 14 October 1066\nQ200032  Battle of Manzikert (1071) — 1071 battle between the Byzantine Empire and Seljuk Turks\nQ203225  Battle of Stamford Bridge (1066) — 1066 battle in the East Riding of Yorkshire, England, UK\nQ392538  Battle of Sagrajas (1086) — 1086 battle of the Reconquista\nQ51648  East-West Schism (1054) — division of Christianity into two large parts in 1054\nQ2224419  1061 papal election (1061) — 1061 election of the Catholic pope"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106388-ygsDjuB61VLaGvYYRYoJ",
+  "object": "chat.completion",
+  "created": 1795106388,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Nasir Khusraw**\n\nI'm currently focused on identifying direct links between Nasir Khusraw and the provided event list, strictly adhering to the information within the given extract. My initial review suggests limited explicit connections so far.\n\n**Unearthing Khusraw's Role**\n\nMy current focus is on extracting explicit connections between Nasir Khusraw and the provided event data. So far, the direct links appear sparse, though his significant missionary work in Central Asia for the Fatimid Caliphate is a notable point.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Nasir Khusraw**\n\nI'm currently focused on identifying direct links between Nasir Khusraw and the provided event list, strictly adhering to the information within the given extract. My initial review suggests limited explicit connections so far.\n\n**Unearthing Khusraw's Role**\n\nMy current focus is on extracting explicit connections between Nasir Khusraw and the provided event data. So far, the direct links appear sparse, though his significant missionary work in Central Asia for the Fatimid Caliphate is a notable point.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1700,
+   "completion_tokens": 618,
+   "total_tokens": 2318,
+   "cost": 0.0035925,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0035925,
+    "upstream_inference_prompt_cost": 0.001275,
+    "upstream_inference_completions_cost": 0.0023175
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 609,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1700,
+   "completion_tokens": 618,
+   "total_tokens": 2318,
+   "cost": 0.0035925,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0035925,
+    "upstream_inference_prompt_cost": 0.001275,
+    "upstream_inference_completions_cost": 0.0023175
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 609,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0035925,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.38
+ },
+ "meta": {}
+}

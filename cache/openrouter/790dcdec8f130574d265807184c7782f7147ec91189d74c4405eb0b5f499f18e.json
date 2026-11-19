@@ -1,0 +1,198 @@
+{
+ "namespace": "openrouter",
+ "key": "790dcdec8f130574d265807184c7782f7147ec91189d74c4405eb0b5f499f18e",
+ "fetched_at": "2026-11-19T16:41:50Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Marcus Aurelius (121-04-25–180-03-16). 16th Roman Emperor from 161 to 180 and Stoic philosopher\n\nEXTRACT:\nMarcus Aurelius Antoninus ( or-EE-lee-əs; Latin: [ˈmaːrkʊs au̯ˈreːli.us antoːˈniːnʊs]; 26 April 121 – 17 March 180) was Roman emperor from 161 to 180 and a Stoic philosopher. He was a member of the Nerva–Antonine dynasty, the last of the rulers later known as the Five Good Emperors and the last emperor of the Pax Romana, an age of relative peace, calm, and stability for the Roman Empire lasting from 27 BC to 180 AD. He served as Roman consul in 140, 145, and 161.\nMarcus Aurelius was the son of the praetor Marcus Annius Verus and his wife Domitia Calvilla. He was related through marriage to the emperors Trajan and Hadrian. Marcus was three when his father died, and he was raised by his mother and paternal grandfather. After Hadrian's adoptive son, Aelius Caesar, died in 138, Hadrian adopted Marcus's uncle Antoninus Pius as his new heir. In turn, Antoninus adopted Marcus and Lucius, the son of Aelius. Hadrian died that year, and Antoninus became emperor. Now heir to the throne, Marcus studied Greek and Latin under tutors such as Herodes Atticus and Marcus Cornelius Fronto. He married Antoninus's daughter Faustina in 145.\nAfter Antoninus died in 161, Marcus acceded to the throne alongside his adoptive brother, who took the regnal name Lucius Aurelius Verus. Under the reign of Marcus Aurelius, the Roman Empire witnessed much military conflict. In the East, the Romans fought the Parthian War of Lucius Verus with a revitalised Parthian Empire and the rebel Kingdom of Armenia. Marcus defeated the Marcomanni, Quadi, and Iazyges in the Marcomannic Wars. These and other Germanic peoples began to represent a troubling reality for the Empire. He reduced the silver purity of the Roman currency, the denarius. The persecution of Christians in the Roman Empire appears to have increased during his reign, although his involvement is unlikely since there are no Christian sources ascribing him the blame, and he was praised by Justin Martyr and Tertullian. The Antonine Plague broke out in 165 or 166 and devastated the population of the Roman Empire, causing the deaths of five to ten million people. Lucius Verus may have died from the plague in 169. When Marcus himself died in 180, he was succeeded by his son Commodus.\nCommodus's succession after Marcus has been a subject of debate among both contemporary and modern historians. The column and equestrian statue of Marcus Aurelius still stand in Rome, where they were erected in celebration of his military victories. As a philosopher, his work Meditations is one of the most important sources for the modern understanding of ancient Stoic philosophy. These writings have been praised by fellow writers, philosophers, monarchs, and politicians centuries after his death.\n\nEVENTS (id, name, years):\nQ51644  Early Christianity (1–325) — period of church history beginning with the ministry of Jesus (c. 27-30) and ending with the First Council of Nicaea (325)\nQ75207  Pax Romana (-26–180) — roughly 200-year-long period in Roman history\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ206414  Principate (-26–284) — first period of the Roman Empire (ca. 27 BC to 284 AD)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ933963  Marcomannic Wars (166–180) — war between the Roman Empire and Germanic peoples (166-180)\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ1192043  Roman–Parthian Wars (-65–217) — series of conflicts between the Parthian Empire and the Roman Republic and Roman Empire\nQ4205368  Jewish–Roman Wars (66–135) — series of large-scale revolts by the Jews of Iudaea Province and the Eastern Mediterranean against the Roman Empire\nQ334502  Bar Kokhba revolt (132–136) — Jewish rebellion against Roman rule (132–136 CE)\nQ599141  Antonine Plague (165–180) — pandemic"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106493-jb0JvCSKyu0CICrY77b8",
+  "object": "chat.completion",
+  "created": 1795106493,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": [\n    {\n      \"event\": \"Q75207\",\n      \"type\": \"took_part_in\",\n      \"reason\": \"Marcus Aurelius ruled as the final emperor of the Pax Romana period.\",\n      \"evidence\": \"He was a member of the Nerva–Antonine dynasty, the last of the rulers later known as the Five Good Emperors and the last emperor of the Pax Romana, an age of relative peace, calm, and stability for the Roman Empire lasting from 27 BC to 180 AD.\",\n      \"work\": \"\"\n    },\n    {\n      \"event\": \"Q933963\",\n      \"type\": \"took_part_in\",\n      \"reason\": \"Marcus Aurelius militarily led Roman forces to defeat tribal coalitions during the Marcomannic Wars.\",\n      \"evidence\": \"Marcus defeated the Marcomanni, Quadi, and Iazyges in the Marcomannic Wars.\",\n      \"work\": \"\"\n    },\n    {\n      \"event\": \"Q599141\",\n      \"type\": \"lived_through\",\n      \"reason\": \"The Antonine Plague struck and devastated the Roman Empire during his imperial reign.\",\n      \"evidence\": \"The Antonine Plague broke out in 165 or 166 and devastated the population of the Roman Empire, causing the deaths of five to ten million people.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+     "refusal": null,
+     "reasoning": "**Matching Historical Events**\n\nI'm currently evaluating if Q75207, the Pax Romana, aligns with Marcus Aurelius based on the provided extract. The mention of him as part of the Nerva-Antonine dynasty and one of the Five Good Emperors is a strong indicator.\n\n**Analyzing Era Participation**\n\nI'm considering how best to represent Marcus Aurelius's involvement with the Pax Romana. While he ruled during its final period and fought wars that ended it, the specific phrasing \"took_part_in\" or \"lived_through\" requires careful distinction. My focus is now on the Marcomannic Wars and Antonine Plague to establish a consistent approach for these interactions.\n\n**Validating Event Connections**\n\nI'm refining my assessment of the Pax Romana's direct linkage. Given Marcus Aurelius was the \"last emperor of the Pax Romana,\" \"took_part_in\" seems the most accurate descriptor for his role in governing that era. My current focus is on ensuring the other identified events, like the Marcomannic Wars, are equally well-supported.\n\n**Defining War Involvement**\n\nI'm focusing on differentiating between \"lived_through\" and \"took_part_in\" for Marcus Aurelius's military engagements. The Marcomannic Wars are a clear \"took_part_in,\" but the broader Roman-Parthian Wars require more nuance. I'm considering if the specific mention of the Parthian War of Lucius Verus qualifies as a direct participation in the overall Roman-Parthian Wars.\n\n**Clarifying Historical Roles**\n\nI'm reassessing Marcus Aurelius's interaction with the Pax Romana, now leaning towards \"took_part_in\" due to his status as its final emperor. I'm also examining the Parthian War of Lucius Verus, considering if \"took_part_in\" applies to the broader Roman-Parthian Wars given his co-emperor status.\n\n**Revising Event Connections**\n\nI'm refining the classifications for Marcus Aurelius's historical involvements. The Pax Romana is now firmly categorized as \"took_part_in\" due to his reign as its final emperor. My current focus is on discerning the most precise terminology for the Marcomannic Wars and the Roman-Parthian Wars, especially considering the specific mention of Lucius Verus's Parthian campaign.\n\n**Confirming War Participation**\n\nI'm solidifying the \"took_part_in\" classification for Marcus Aurelius regarding the Marcomannic Wars, as he directly led Roman forces. My current analysis is focusing on the distinction between the broader Roman-Parthian Wars and the specific campaign of Lucius Verus, ensuring accuracy in how I represent this involvement.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Matching Historical Events**\n\nI'm currently evaluating if Q75207, the Pax Romana, aligns with Marcus Aurelius based on the provided extract. The mention of him as part of the Nerva-Antonine dynasty and one of the Five Good Emperors is a strong indicator.\n\n**Analyzing Era Participation**\n\nI'm considering how best to represent Marcus Aurelius's involvement with the Pax Romana. While he ruled during its final period and fought wars that ended it, the specific phrasing \"took_part_in\" or \"lived_through\" requires careful distinction. My focus is now on the Marcomannic Wars and Antonine Plague to establish a consistent approach for these interactions.\n\n**Validating Event Connections**\n\nI'm refining my assessment of the Pax Romana's direct linkage. Given Marcus Aurelius was the \"last emperor of the Pax Romana,\" \"took_part_in\" seems the most accurate descriptor for his role in governing that era. My current focus is on ensuring the other identified events, like the Marcomannic Wars, are equally well-supported.\n\n**Defining War Involvement**\n\nI'm focusing on differentiating between \"lived_through\" and \"took_part_in\" for Marcus Aurelius's military engagements. The Marcomannic Wars are a clear \"took_part_in,\" but the broader Roman-Parthian Wars require more nuance. I'm considering if the specific mention of the Parthian War of Lucius Verus qualifies as a direct participation in the overall Roman-Parthian Wars.\n\n**Clarifying Historical Roles**\n\nI'm reassessing Marcus Aurelius's interaction with the Pax Romana, now leaning towards \"took_part_in\" due to his status as its final emperor. I'm also examining the Parthian War of Lucius Verus, considering if \"took_part_in\" applies to the broader Roman-Parthian Wars given his co-emperor status.\n\n**Revising Event Connections**\n\nI'm refining the classifications for Marcus Aurelius's historical involvements. The Pax Romana is now firmly categorized as \"took_part_in\" due to his reign as its final emperor. My current focus is on discerning the most precise terminology for the Marcomannic Wars and the Roman-Parthian Wars, especially considering the specific mention of Lucius Verus's Parthian campaign.\n\n**Confirming War Participation**\n\nI'm solidifying the \"took_part_in\" classification for Marcus Aurelius regarding the Marcomannic Wars, as he directly led Roman forces. My current analysis is focusing on the distinction between the broader Roman-Parthian Wars and the specific campaign of Lucius Verus, ensuring accuracy in how I represent this involvement.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1991,
+   "completion_tokens": 2368,
+   "total_tokens": 4359,
+   "cost": 0.01037325,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01037325,
+    "upstream_inference_prompt_cost": 0.00149325,
+    "upstream_inference_completions_cost": 0.00888
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2043,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": [\n    {\n      \"event\": \"Q75207\",\n      \"type\": \"took_part_in\",\n      \"reason\": \"Marcus Aurelius ruled as the final emperor of the Pax Romana period.\",\n      \"evidence\": \"He was a member of the Nerva–Antonine dynasty, the last of the rulers later known as the Five Good Emperors and the last emperor of the Pax Romana, an age of relative peace, calm, and stability for the Roman Empire lasting from 27 BC to 180 AD.\",\n      \"work\": \"\"\n    },\n    {\n      \"event\": \"Q933963\",\n      \"type\": \"took_part_in\",\n      \"reason\": \"Marcus Aurelius militarily led Roman forces to defeat tribal coalitions during the Marcomannic Wars.\",\n      \"evidence\": \"Marcus defeated the Marcomanni, Quadi, and Iazyges in the Marcomannic Wars.\",\n      \"work\": \"\"\n    },\n    {\n      \"event\": \"Q599141\",\n      \"type\": \"lived_through\",\n      \"reason\": \"The Antonine Plague struck and devastated the Roman Empire during his imperial reign.\",\n      \"evidence\": \"The Antonine Plague broke out in 165 or 166 and devastated the population of the Roman Empire, causing the deaths of five to ten million people.\",\n      \"work\": \"\"\n    }\n  ]\n}",
+  "parsed": {
+   "connections": [
+    {
+     "event": "Q75207",
+     "type": "took_part_in",
+     "reason": "Marcus Aurelius ruled as the final emperor of the Pax Romana period.",
+     "evidence": "He was a member of the Nerva–Antonine dynasty, the last of the rulers later known as the Five Good Emperors and the last emperor of the Pax Romana, an age of relative peace, calm, and stability for the Roman Empire lasting from 27 BC to 180 AD.",
+     "work": ""
+    },
+    {
+     "event": "Q933963",
+     "type": "took_part_in",
+     "reason": "Marcus Aurelius militarily led Roman forces to defeat tribal coalitions during the Marcomannic Wars.",
+     "evidence": "Marcus defeated the Marcomanni, Quadi, and Iazyges in the Marcomannic Wars.",
+     "work": ""
+    },
+    {
+     "event": "Q599141",
+     "type": "lived_through",
+     "reason": "The Antonine Plague struck and devastated the Roman Empire during his imperial reign.",
+     "evidence": "The Antonine Plague broke out in 165 or 166 and devastated the population of the Roman Empire, causing the deaths of five to ten million people.",
+     "work": ""
+    }
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1991,
+   "completion_tokens": 2368,
+   "total_tokens": 4359,
+   "cost": 0.01037325,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.01037325,
+    "upstream_inference_prompt_cost": 0.00149325,
+    "upstream_inference_completions_cost": 0.00888
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2043,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.01037325,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 65.98
+ },
+ "meta": {}
+}

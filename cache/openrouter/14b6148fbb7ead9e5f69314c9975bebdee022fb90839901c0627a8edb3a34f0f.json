@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "14b6148fbb7ead9e5f69314c9975bebdee022fb90839901c0627a8edb3a34f0f",
+ "fetched_at": "2026-11-19T16:40:44Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Al-Shahrastani (1086–1153). Persian historian of religions and Islamic scholar (1086–1153)\n\nEXTRACT:\nTāj al-Dīn Abū al-Fath Muhammad ibn `Abd al-Karīm ash-Shahrastānī (Arabic: تاج الدين أبو الفتح محمد بن عبد الكريم الشهرستاني; 1086–1153 CE), also known as Muhammad al-Shahrastānī, was an influential Seljuk Persian historian of religions, a historiographer, Islamic scholar, philosopher and theologian. His book, Kitab al-Milal wa al-Nihal (lit. The Book of Sects and Creeds) was one of the pioneers in developing an objective and philosophical approach to the study of religions.\n\nEVENTS (id, name, years):\nQ745799  Islamic Golden Age (800–1258) — period of cultural flourishing in the 8th to 13th centuries\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ193292  Heian period (794–1185) — last major division of classical Japanese history (794 to 1185), named after the capital city of Heian-kyō, or modern Kyōto\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ5066  Jin dynasty (1115) — Jurchen dynasty that ruled in northern China 1115–1234 and its eponymous empire\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ51650  People's Crusade (1096) — poor people's army to fight muslim Turks in Jerusalem (1095-1100)\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ743768  The Anarchy (1135–1154) — civil war in England and Normandy between 1135 and 1153\nQ51649  First Crusade (1096–1099) — 1096–1099 Christian conquest of the Holy Land\nQ51653  Crusade of 1101 (1101) — battle in the summer of 1101\nQ51654  Second Crusade (1147–1149) — second major crusade launched from Europe as Catholic ('Latin') Holy War against Islam\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ683635  Wendish Crusade (1147) — Saxons and Danes vs Slavs (Wends)\nQ392538  Battle of Sagrajas (1086) — 1086 battle of the Reconquista\nQ456993  Siege of Jerusalem (1099) — 1099 battle during which the Crusaders captured Jerusalem from the Fatimid Caliphate\nQ166861  Cistercians (1098) — Roman Catholic order of the Benedictine reform in the tradition of the monastery of Citaux"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106440-TZDLqZMdDZJOTaHWqud0",
+  "object": "chat.completion",
+  "created": 1795106440,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Reviewing Shahrastani's Origins**\n\nI'm currently focusing on the early life and background of Muhammad al-Shahrastānī. My recent thoughts have revolved around his upbringing and formative influences during the Seljuk period, particularly his Persian heritage.\n\n**Analyzing Historical Context**\n\nMy focus has shifted to identifying specific historical periods or events mentioned in relation to Shahrastānī's work. I've reviewed the provided text and confirmed that while it describes his intellectual contributions, it doesn't explicitly name any of the listed periods or events such as the Islamic Golden Age or Crusades.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Reviewing Shahrastani's Origins**\n\nI'm currently focusing on the early life and background of Muhammad al-Shahrastānī. My recent thoughts have revolved around his upbringing and formative influences during the Seljuk period, particularly his Persian heritage.\n\n**Analyzing Historical Context**\n\nMy focus has shifted to identifying specific historical periods or events mentioned in relation to Shahrastānī's work. I've reviewed the provided text and confirmed that while it describes his intellectual contributions, it doesn't explicitly name any of the listed periods or events such as the Islamic Golden Age or Crusades.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a1+NXPlZIqIPk8qJZBVy9RsuII8IzDqEYqE7kzhfxmfs8Z6FvmoBApqgTB+V1Nu6WSFZNjZoJUYsaGf3zksMBE4QZvX9p3hVtAbSazbZR7B+Hnsd35P4PO3iqPBzLbHcZqXgaXgjLWiMRTC3Wm7h1YV0VhiICnv6KxNSVu8oQsKMDPMYocM3CD4hrlzPTe4d3b2x13ImWYPxL9ulufGpMEmMhxhc6PSeP4js9LRYmGHSd+6HyrF46Rt+yQssVUUEL8piD37mXfDC1m+dxlKQc61I9cka0+cK13EbbSVthlvD+3Ve9kMgzqhp1DuRfvn+B6JNbgZ8aOrCcYOPoXmxQjJByfOPrQjtrX3mOguroCvP9cmvLs/Oq0SbEAovGS6Kj1OvgVW5BBdMlVQXerDqJZJl4tweIGPeRzwxO6REHLOJGRGge0ZmIDJlBFNaXU+0YbvqaBMiAFJNaPgsSZQNC7OsUeQHlTMLp3FhpgmiUBHfjKEyGQB8uNHk3OT5tooaCbOWDeB0ChsQnWn7J/n3EjU/NFuKgcNyoqr6BmpCx3ft05Y7yVAZwwlhfElEyTbLojzrL+ma6lge8wE9IMf/HQHs0uUVQo5QXPRQOM8OU0NCFZIGrdI+6br7E81I+NIuek5h5xFrCd2+JAiggawLVqouYg7C8X99XW0Dcs9iEs50qaQDpDubYLY+1IS8zSj6lSd/PpV8az/oBzdR68QQhIBl43hP8GWykbF+rDAFtrPjIaXD8u/ZZR94i4omOvx01mgyPqq3BI/ed9yRE9C3NM4Cn2Lrf/JzkOx6iomhrvSzuMn/Z25s6vAT7yF6OGzeoKn9QoCMcmFrvgeaARn79XyzMaTAYO0oorHP7jaF/mm6SpPFqVpodZOywEK6KlMiEo0PWtxFJNzOKqIBaVShUtV7g0zxWXP6cTeXA3QEI0mpc+htF05vaAhCCXRCqsjWEzgaCvEGDvXYaE+2MiFPoOGa1JRIUOlTn9CbNOU9WPMvYL6Mgh+on9AU6phX1hGJnYokkM11yX583QTeGZgdWj2PzhuO75TjXB6QIqbiGh0pKxR890I3Hho6wC3NuOZ0rG3OgeI7a/29DTwsfkLWXW4i2CuPTcoaojNqQzxRbjFNfoXI+aXcEyYqaJqZLoif97nyYnR8C9TWFuNLyzdnR/qT4ofY3uVo1Hta9pfhYhgS6s5sy8nyO+NsRVc3UxkutXdFpWlnuS7/Hvklmib7WW+7IawZRDU7D3tXGCSUF1A2oVF+KekXPLaruUX93KLVvLOgMCtiKOf9gvNh9b0QX5zf1Cu3Yay2bFBceF/nCJNBGCipHFzkylaTii9442cGrIzuRfwCGvjT/vE6qOM4DRr472drWvtVHaaFBIF4sAjLpcyno4Mxp+MOcm3e7Ff6mFynZksIJS+7E2q5H5NEqqnWQDePsueSivypMbzzNOhP0ssRLDIE6M9GqGbvJn7dXHNJv3DRLCv3RKeNF0dLbSaDJw5rnqMFhwakdRHHHkLnE/TTLxCXsv7QYJB/x0DpTF826Ib7E3dKtHmRNDOpaRsU2ard1jxXIyecfj3/Bz68P6xwhMZCHxWcSn/Lf030rN8Vt4/FQS5Jt3QajBa12qlDcleEPbFzkPdAtlTObdEPBkmOuRkaUJNW4S6RY4hNXh+uwgSIHV+ep1XU8l4s8w+C6yeXRuB7U8cVO3bECJGe5Ye3/3hH3PR5r7BogyijIXid7HB5S/DD9bujiC3rd684PAOxbpsFZVqgYEUIb5Fgxt8sB2K4O7hLCBS4HSUim+qWvROOpunD/5plflPLhGUHftheoyUWIA88pPqei582T3SFZJf+xwMXcpnd4RwEebH+4i2HoEeMq7futEmq2ybyjtM/sSjkpUvhHrWkA2xmhC9W1F2CCqqL5ZSWSQLaMA+dcCxyG/z1312oZTyjE8P7/sDS14uabApx6yDZvakHYVeOkGqYUI93L27002fOCXJvFs/Pcq8dfJsk8elez2+kpODxseY0sE0KPYR1YSmywL+SPNiFsGS4RvjtnPMKtFWGmEDtuINU51E8CaRSFLm4WsHJMAc+bBq9nDX2fbNYOSwdd6/BpbuvCRMs11dju+StExR0hzKHuG1IQt+XigP//oPQyRu4e0ottGULFmM84o4BRW1K0P68DjwadObBb7/Wxb9NWIQJF9XbdxlWv4tnPVmApDfF0vFTRF11zmQDTcd/WLW9xguhEigUl0xMhhwAUjMEjLoN4dRDwXHg1AvPWPsFaMit+9dmevHMDEqgBQQuTVmVQcXengiHj+bu2V6Vj9dwVo+APK2xXwXiMMVRliMndQ3Hx+10fOVLB3CNTQqqLh22bAoY3QexaX8dZoIUYKp+Lgv7hHVnu/ugmWLAhZebGbaIA8ceHKUXLwBuRvOyqRF8eD5jxvOw5zO4xrYghp15mMdenYzaBA6Tx0i864ABThkweQuhhhDg+2fAQPZkItwBiUKYup31SvViY1pAiQycOyGecHCRpUhKvzJ824ob6t3adw8XLzUwYVV+/T/uDYPQP7+RB+s4JrvQu5ZhprQ8toZQpaDW65QCcxfwmTqI9uKklom+xKzhI+mYMbmm9GjL7ir8lFd/38tCzPa4x4AqztoNVqLVJiHgHK1z8GD+ipLAXg+LyZ57LufkAyButPiATqEuwJKQD3dxJaxaVryJ0JNc511gHV3yqdfoMxtQbyyl7qDVHfzPGVWyLslpWOLOCQBPp2pDj6V8MInKs1vdB6N6dmimjw1InZW3BdmcDU/e8qmq1m4tjf2IGUwNtamzLs2YfX+2Z7zOUDUEoCll2TUauzs0gZbhzIbkPcRH/BWZgMpWUYacpyxcJFHxVB55JAq3qBh6Xfx4o4BgGUCxZh27+uVr9OVnVLFhsjZey7RCmLk4RcoyRIRAyPWS4AALoqvnHMQvrVg4W+5/EKXuAIqPMyG6H+YkMCUz7iiKZw==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1653,
+   "completion_tokens": 463,
+   "total_tokens": 2116,
+   "cost": 0.002976,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002976,
+    "upstream_inference_prompt_cost": 0.00123975,
+    "upstream_inference_completions_cost": 0.00173625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 454,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1653,
+   "completion_tokens": 463,
+   "total_tokens": 2116,
+   "cost": 0.002976,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002976,
+    "upstream_inference_prompt_cost": 0.00123975,
+    "upstream_inference_completions_cost": 0.00173625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 454,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.002976,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.01
+ },
+ "meta": {}
+}

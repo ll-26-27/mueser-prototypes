@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "b51f8657700e33be3ae085b2e4a8f8802484d85c3f02573162909638a0eed434",
+ "fetched_at": "2026-11-19T16:42:40Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Śāntarakṣita (725–788). Indian Buddhist philosopher (725-788)\n\nEXTRACT:\nŚāntarakṣita (Sanskrit: शान्तरक्षित; Tibetan: ཞི་བ་འཚོ, Wylie: zhi ba tsho, 725–788), whose name translates into English as \"protected by the One who is at peace\" was an important and influential Indian Buddhist philosopher, particularly for the Tibetan Buddhist tradition. Śāntarakṣita was a philosopher of the Madhyamaka school who studied at Nalanda monastery under Jñānagarbha, and became the founder of Samye, the first Buddhist monastery in Tibet.\nŚāntarakṣita defended a synthetic philosophy which combined Madhyamaka, Yogācāra and the logico-epistemology of Dharmakirti into a novel Madhyamaka philosophical system. This philosophical approach is known as Yogācāra-Mādhyamika or Yogācāra-Svatantrika-Mādhyamika in Tibetan Buddhism. Unlike other Madhyamaka philosophers, Śāntarakṣita accepted Yogācāra doctrines like mind-only (cittamatra) and self-reflective awareness (svasamvedana), but only on the level of conventional truth. According to James Blumenthal, this synthesis is the final major development in Indian Buddhist philosophy before the disappearance of Buddhism from India (c. 12-13th centuries).\n\nEVENTS (id, name, years):\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ12567  Vikings (745) — Norse people, farmers, merchants, explorers, raiders and pirates\nQ189178  Nara period (710–794) — historical medieval period of Japan from CE 710 to 794\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ499909  Saxon Wars (772–804) — campaigns and insurrections (772–804) between the Carolingian Empire and Saxons in what is now northwestern Germany; resulted in the incorporation of Saxony into the Frankish realm and their forcible conversion from Germanic paganism to Catholicism\nQ1455917  Umayyad conquest of Hispania (711–726) — war resulting in the destruction of the Visigothic Kingdom and the expansion of the Umayyad Caliphate (711–718)\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ3621258  Arab conquest of Armenia (642–744) — Arab Rashidun Caliphate conquest of Armenia\nQ5933860  Abbasid Revolution (746–750) — overthrow of the Umayyad Caliphate by the Abbasids in 750\nQ253774  An Lushan Rebellion (755–763) — rebellion against the Tang dynasty of China in 755 C.E\nQ173077  Battle of Tours (732) — battle fought in 732 by Merovingian Franks against the Umayyad Caliphate\nQ821711  Plague of Justinian (541–750) — 541–549 AD pandemic in the Byzantine Empire, later northern Europe\nQ492415  Battle of Talas (751) — 751 battle between the Abbasid Caliphate and the Chinese Tang dynasty"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106556-4RbDSxEgkLKJHPmBoYft",
+  "object": "chat.completion",
+  "created": 1795106556,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Historical Figures**\n\nI'm currently analyzing the provided text to identify any direct or indirect links between Śāntarakṣita and the events you've listed. My focus is on details within the EXTRACT to establish these connections.\n\n**Identifying Śāntarakṣita's Core Philosophy**\n\nI am currently discerning the essence of Śāntarakṣita's philosophical contributions. My focus is on understanding how he integrated Madhyamaka, Yogācāra, and Dharmakirti's logic, particularly his nuanced acceptance of Yogācāra doctrines on a conventional truth level, as a significant development in Indian Buddhist thought.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Historical Figures**\n\nI'm currently analyzing the provided text to identify any direct or indirect links between Śāntarakṣita and the events you've listed. My focus is on details within the EXTRACT to establish these connections.\n\n**Identifying Śāntarakṣita's Core Philosophy**\n\nI am currently discerning the essence of Śāntarakṣita's philosophical contributions. My focus is on understanding how he integrated Madhyamaka, Yogācāra, and Dharmakirti's logic, particularly his nuanced acceptance of Yogācāra doctrines on a conventional truth level, as a significant development in Indian Buddhist thought.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1765,
+   "completion_tokens": 615,
+   "total_tokens": 2380,
+   "cost": 0.00363,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00363,
+    "upstream_inference_prompt_cost": 0.00132375,
+    "upstream_inference_completions_cost": 0.00230625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 606,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1765,
+   "completion_tokens": 615,
+   "total_tokens": 2380,
+   "cost": 0.00363,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00363,
+    "upstream_inference_prompt_cost": 0.00132375,
+    "upstream_inference_completions_cost": 0.00230625
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 606,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00363,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.45
+ },
+ "meta": {}
+}

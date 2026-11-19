@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "8dfd987b96dc52d00fc3b9013aefb7800d12212f8e2397e1f35d14218a9f1e31",
+ "fetched_at": "2026-11-19T15:36:54Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Thrasymachus (458 BCE–398 BCE). 5th-century BC Greek sophist\n\nEXTRACT:\nThrasymachus was a sophist of ancient Greece best known as a character in Plato's Republic.\n\nEVENTS (id, name, years):\nQ17167  Roman Republic (-508–-26) — period of ancient Roman civilization (509 BC–27 BC)\nQ185063  Warring States period (-475–-220) — period in Chinese history from approximately 475 to 221 BCE\nQ389688  Achaemenid Empire (-549–-329) — Iranian (Persian) empire (550–330 BC)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ843745  Classical Greece (-489–-322) — period of ancient Greece from 510 to 323 BC\nQ833118  Twenty-eighth Dynasty of Egypt (-403–-398) — ancient Egyptian dynasty\nQ33745  Peloponnesian War (-430–-403) — war fought between Athens and Sparta (431–404 BCE)\nQ76026  Greco-Persian Wars (-498–-448) — series of conflicts between the Achaemenid Empire of Persia and poleis of the Hellenic world in the fifth century BCE\nQ11924845  Messenian Wars (-742–-453) — series of wars between Sparta and Messenia\nQ370709  Peace of Callias (-448) — possible Greco-Persian peace treaty (c. 449 BC)\nQ932202  Peace of Nicias (-420) — 421 BC treaty between Athens and Sparta"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795102593-0QhDFwrCP7f3hN7zG4Qi",
+  "object": "chat.completion",
+  "created": 1795102593,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Thrasymachus**\n\nI'm currently focused on identifying any potential connections, however tenuous, between Thrasymachus and the provided events, specifically the Roman Republic (Q17167) and the number Q185. At this juncture, the only direct link I have is that Thrasymachus existed in ancient Greece, and that provides very little. I am still searching for more possible connections.\n\n\n**Clarifying Historical Context**\n\nI am now focusing on refining the historical context surrounding Thrasymachus. My primary question is how \"ancient Greece\" relates to the enumerated items like \"Classical Greece\" (Q843745) and \"classical antiquity\" (Q486761). I'm carefully analyzing whether the term \"ancient Greece\" refers to a specific period or a broader geographic/cultural designation, and whether it aligns with any items from the provided list. The goal is to establish a clearer mapping of the historical setting.\n\n\n**Analyzing Ancient Greece**\n\nI'm now carefully analyzing the phrase \"ancient Greece.\" I'm determining if it refers to a specific event or period within the historical context. I see that the extract mentions Thrasymachus as a sophist of ancient Greece. My current focus is to clarify whether the mention of \"ancient Greece\" in the text, implies specific overlap between Thrasymachus and any of the listed enumerated events or periods. I need to be certain whether any connection or lack thereof should be returned.\n\n\n**Interpreting \"Ancient Greece\"**\n\nI'm now carefully interpreting \"ancient Greece\" in the context of the prompt. I'm focusing on whether it represents a period/event, or a cultural affiliation. The description \"a sophist of ancient Greece\" seems to indicate the latter. This is important: does that imply a connection to an event/period? The text indicates \"ancient Greece\" is broader than \"Classical Greece,\" which appears to be a period. Perhaps there is no overlap to be found.\n\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Thrasymachus**\n\nI'm currently focused on identifying any potential connections, however tenuous, between Thrasymachus and the provided events, specifically the Roman Republic (Q17167) and the number Q185. At this juncture, the only direct link I have is that Thrasymachus existed in ancient Greece, and that provides very little. I am still searching for more possible connections.\n\n\n**Clarifying Historical Context**\n\nI am now focusing on refining the historical context surrounding Thrasymachus. My primary question is how \"ancient Greece\" relates to the enumerated items like \"Classical Greece\" (Q843745) and \"classical antiquity\" (Q486761). I'm carefully analyzing whether the term \"ancient Greece\" refers to a specific period or a broader geographic/cultural designation, and whether it aligns with any items from the provided list. The goal is to establish a clearer mapping of the historical setting.\n\n\n**Analyzing Ancient Greece**\n\nI'm now carefully analyzing the phrase \"ancient Greece.\" I'm determining if it refers to a specific event or period within the historical context. I see that the extract mentions Thrasymachus as a sophist of ancient Greece. My current focus is to clarify whether the mention of \"ancient Greece\" in the text, implies specific overlap between Thrasymachus and any of the listed enumerated events or periods. I need to be certain whether any connection or lack thereof should be returned.\n\n\n**Interpreting \"Ancient Greece\"**\n\nI'm now carefully interpreting \"ancient Greece\" in the context of the prompt. I'm focusing on whether it represents a period/event, or a cultural affiliation. The description \"a sophist of ancient Greece\" seems to indicate the latter. This is important: does that imply a connection to an event/period? The text indicates \"ancient Greece\" is broader than \"Classical Greece,\" which appears to be a period. Perhaps there is no overlap to be found.\n\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLWFpLXN0dWRpbyJ9",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 949,
+   "completion_tokens": 1051,
+   "total_tokens": 2000,
+   "cost": 0.004653,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.004653,
+    "upstream_inference_prompt_cost": 0.00071175,
+    "upstream_inference_completions_cost": 0.00394125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1042,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 949,
+   "completion_tokens": 1051,
+   "total_tokens": 2000,
+   "cost": 0.004653,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.004653,
+    "upstream_inference_prompt_cost": 0.00071175,
+    "upstream_inference_completions_cost": 0.00394125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1042,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.004653,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "seconds": 21.14
+ },
+ "meta": {}
+}

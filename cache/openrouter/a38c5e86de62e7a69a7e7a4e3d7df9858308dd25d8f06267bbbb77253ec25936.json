@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "a38c5e86de62e7a69a7e7a4e3d7df9858308dd25d8f06267bbbb77253ec25936",
+ "fetched_at": "2026-11-19T16:41:49Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Petrus Aureolus (1280–1322-01-18). French philosopher\n\nEXTRACT:\nPetrus Aureoli (c. 1280 – 10 January 1322), often anglicized Peter Auriol, was a scholastic philosopher and theologian.\n\nEVENTS (id, name, years):\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106506-3GNV4NIOSoRhT8Kzb78S",
+  "object": "chat.completion",
+  "created": 1795106506,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\"connections\":[]}",
+     "refusal": null,
+     "reasoning": "**Analyzing Philosopher's Role**\n\nI'm currently dissecting the provided text to identify key roles and historical periods. My focus is on extracting specific mentions of events or classifications that can help pinpoint the individual's significance.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Analyzing Philosopher's Role**\n\nI'm currently dissecting the provided text to identify key roles and historical periods. My focus is on extracting specific mentions of events or classifications that can help pinpoint the individual's significance.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a18336WUhu2ovW/Uu2Ugd64RWW4HrCU/uOxqC3ZXetgjqDuj+D2uRQ14CRkdEwm1uERWn8FGFgbU2kRZaD70oAMh3BlemVlkxSwAo0UFls29Yzg1AMlJ+Fhbvxm/C4zdfI1riT1Hxq7Rt9X79070vwN7pdt9fwOx4mAywZ0DyijXqww5rVeSyksVJFnIaVjLUA3KezK1luoPWrePT7b6LMrl5yZfzp1W9d2QH0abNaoevhbLFEA82lgltcbfrW9lPxPa/lxu61eygHPydSvQFj2uOjpqNnPkX1ejvXF5ebdGgcuqCv3cP6LNz8xnGnDDMoEJE+JaqEIbG9WiNQKI1R9zQPLX1jvcNgSAN8pJH8hE1Nx5dZmNcCxq34aMWn99uoDi/j+P5iYfDIQPM2Ad1Q4rSvA+O0foPST+K2M1jakIjR+55noECnqRQDJxdLZGT0ysOvNlSgEe8zDNUgzHvHCnUhWaVJO7h+WpBmdy9tE9Ef3Qo+lOYHu+DvQbmKy0B4BRi1d5MuTLc2pc/fnvxBsp/mqGUwtgstKoDttioR0lYITqX8FKEqlG+cv56s8E/5on+L1j8+cOLNrHkY+Pjdp95/MGDcvSRevlGjjd/uaxUc3gXlcHAX8g4vOQyTGkRABR39p89/RuZX+hYZW5tleOJdhIzxRhD1ZIgH1QIC7QqR5ajbuF2zYvsBBAOCtPsL6EjnJOUSy47lEV8Vn/y1ubTQ4X5sILvZhYnvAqV3RRIM7fFLZburboysmmoGTWcIh1GYWebJ7rxJ6tiAVP2yZ0qOs/Mle+sYbjFGDxQzFuZolok/PN/3ssAd92ByShmN+Aiuu4uQY+ipmEuSKh+X3Kgz+RKs/rpmmpwd0qHJNaxcU+LeVT1HmHMj8e+i4OmHEr4w1ZPUMd4NYKl3tstzPM1b+BjF7KpV9uHp9wAkfj0fv+IWkjBIBrTHw9k2f3FkyqziA2o+SHXMX1TAOEGIaPVF2ySJcTvSb19px+o2eP6SYuOKB/8n5cGPibebyPeYQmhbn/gaWIOtCOTH/zDs+Uy3ARI5KgFBhDpB139q1/IivtppiYbrV5svMuw40+D46n6tG4BNJLNrecIQhGwGcriBsefxLgvHCaujdaLyi3snMeV2RvE3ASgKYJ3MJiukKEhBCdb6yNOpByCPSji3b8dCw6nWX711aBCEmbMHWpvrFvPlDyu8Y5HG8foQDsb3hDVry4uE5moOus/UrHbDKtUpOORXNRgarJz42ZRn1V5iDKLzhFxFylUUFM7Pq+Nh5Se/TCabXhQEowb9harAxQJTn4d9duo+6DdRn//mHBMhKh6KlOUuofUG1XGTbgXan4Me6UEv4+jlPIFp1HzR0BCp4ZCLlAYEGhN0AVZnXymZL9zLhm+SwcfjaUi04tkuZhD9Ve6HzeOVfAjp3esOiFCkGByX/hUhzxDXjq0s5e1OsqHNhcQoLzwXbpS1uFkZ+r3B8Jigz+Lv8B5m6X98pTPGgGGzwqiWTNelobL+iC/i3Si6lFdRXsSQle7PP3ZOXS2aQVzlrtUuMfddvh37jrMYvrNDpxazaHtJ8u1vmj+PQGejLkPCcXZpxsh/9kXd1LSmw4PqrBfhbv8u83I1muPN1jMty3UtH+GiJO1DNc7PpdXNQ8dd2/XoDow+LUeqlsDg==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1460,
+   "completion_tokens": 250,
+   "total_tokens": 1710,
+   "cost": 0.0020325,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0020325,
+    "upstream_inference_prompt_cost": 0.001095,
+    "upstream_inference_completions_cost": 0.0009375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 246,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\"connections\":[]}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1460,
+   "completion_tokens": 250,
+   "total_tokens": 1710,
+   "cost": 0.0020325,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0020325,
+    "upstream_inference_prompt_cost": 0.001095,
+    "upstream_inference_completions_cost": 0.0009375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 246,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.0020325,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 2.78
+ },
+ "meta": {}
+}

@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "a7896ebd57a449b616f71b8e4145083e3178887fa228f849bac154a20dcd74d4",
+ "fetched_at": "2026-11-19T16:37:05Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Elia del Medigo (1460–1493). Sephardic philosopher\n\nEXTRACT:\nElia del Medigo (c. 1458 – c. 1493) was also called Elijah Delmedigo or Elias ben Moise del Medigo and was sometimes known to his contemporaries as Helias Hebreus Cretensis or in Hebrew Elijah Mi-Qandia. According to Jacob Joshua Ross, \"while the non-Jewish students of Delmedigo may have classified him as an 'Averroist', he clearly saw himself as a follower of Maimonides\". But, according to other scholars, Delmedigo was clearly a strong follower of Averroes's doctrines, even the more radical ones: unity of intellect, eternity of the world, autonomy of reason from the boundaries of revealed religion.\nBorn in Candia, on the island of Crete (which at that time was under the control of the Venetian Republic), whither his family had emigrated from Germany, he spent ten years in Rome and in Padua in northern Italy, returning to Candia at the end of his life.\nHe is remembered for a number of translations, commentaries on Averroes (notably on his Substantia Orbis in 1485), for his influence on many Italian Platonists of the early Renaissance (especially Giovanni Pico della Mirandola), and for his treatise on Jewish philosophy, Sefer Beḥinat ha-Dat (The Examination of Religion), published many years after his death, in 1629.\n\nEVENTS (id, name, years):\nQ530936  Spanish Golden Age (1492–1681) — 16th- and 17th-century period of cultural and literary flourishing coinciding with the rise of the Spanish Empire\nQ871792  Ottoman Greece (1453–1821) — period of Ottoman rule of Greece\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ157109  Burgundian Netherlands (1384–1482) — portion of the Low Countries ruled by the Dukes of Burgundy in the period from 1384 to 1482\nQ184716  European colonization of the Americas (1492) — European colonization of the Americas between 1492 and c.1800\nQ204023  Sengoku period (1467–1590) — period of Japanese history from 1467 to 1615\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ334845  Muromachi period (1336–1573) — division of Japanese history running from approximately 1336 to 1573\nQ1047607  Spanish colonization of the Americas (1493–1898) — overseas expansion under the Crown of Castile\nQ315342  Burgundian Wars (1474–1477) — conflict between the Dukes of Burgundy and the Old Swiss Confederacy, 1474–77\nQ315921  Thirteen Years' War (1454–1466) — 1454-1466 war between the Kingdom of Poland and the Teutonic Order\nQ385676  Ōnin War (1467–1477) — 15th-century civil war in Japan\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ127751  Wars of the Roses (1455–1487) — dynastic civil war in England from 1455 to 1487\nQ698985  Ottoman Wars in Europe (1354–1683) — series of military conflicts between the Ottoman Empire and various European states\nQ1420791  Ottoman–Venetian Wars (1396–1718) — series of wars in the 14th–18th century\nQ1567698  Muscovite-Lithuanian Wars (1487–1583) — 1487-1583 series of wars between the Grand Duchy of Lithuania and the Grand Duchy of Moscow\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ222013  Battle of Bosworth Field (1485) — 1485 last significant battle of the Wars of the Roses\nQ1638992  1471 papal conclave (1471) — conclave\nQ2233458  1464 papal conclave (1464) — election of Pope Paul II"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106204-7FcexssMI8t3hDKw45db",
+  "object": "chat.completion",
+  "created": 1795106204,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Considering Elia's Connections**\n\nI'm starting to explore how Elia del Medigo's life connects with the historical context. I'm focusing on key periods and events. I'm looking at potential connections to understand the influence he had.\n\n\n**Analyzing Delmedigo's Influences**\n\nI'm now diving deeper into Delmedigo's intellectual lineage. I'm noting the apparent conflict in scholarly views about his philosophical allegiance. Was he a Maimonidean, an Averroist, or both? I'm examining his core beliefs, considering his embrace of reason, the unity of intellect, and the eternity of the world. Additionally, I'm considering his translations and commentaries on Averroes.\n\n\n**Examining Post-Mortem Context**\n\nI'm now focusing on the historical events following Delmedigo's death in 1493, specifically up to 1629. I'm noting the Venetian Republic's control, his time in Rome, Padua, Italy, and connections to the early Renaissance, and other figures. I'm exploring how his intellectual circle, including Averroes, Maimonides, and Giovanni Pico della Mirandola, influenced this period. I am also considering his time in Candia, Crete, and Germany. I have checked for events relevant to this period, and none were explicitly mentioned.\n\n\n**Clarifying Temporal Framework**\n\nI am now focusing on aligning the timeline of Delmedigo's life with specific historical periods. I am verifying the absence of connections with the listed events, which include the Spanish Golden Age and the Middle Ages. I am confirming a lack of direct relevance to the listed periods. I am determining that there is no connection.\n\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Considering Elia's Connections**\n\nI'm starting to explore how Elia del Medigo's life connects with the historical context. I'm focusing on key periods and events. I'm looking at potential connections to understand the influence he had.\n\n\n**Analyzing Delmedigo's Influences**\n\nI'm now diving deeper into Delmedigo's intellectual lineage. I'm noting the apparent conflict in scholarly views about his philosophical allegiance. Was he a Maimonidean, an Averroist, or both? I'm examining his core beliefs, considering his embrace of reason, the unity of intellect, and the eternity of the world. Additionally, I'm considering his translations and commentaries on Averroes.\n\n\n**Examining Post-Mortem Context**\n\nI'm now focusing on the historical events following Delmedigo's death in 1493, specifically up to 1629. I'm noting the Venetian Republic's control, his time in Rome, Padua, Italy, and connections to the early Renaissance, and other figures. I'm exploring how his intellectual circle, including Averroes, Maimonides, and Giovanni Pico della Mirandola, influenced this period. I am also considering his time in Candia, Crete, and Germany. I have checked for events relevant to this period, and none were explicitly mentioned.\n\n\n**Clarifying Temporal Framework**\n\nI am now focusing on aligning the timeline of Delmedigo's life with specific historical periods. I am verifying the absence of connections with the listed events, which include the Spanish Golden Age and the Middle Ages. I am confirming a lack of direct relevance to the listed periods. I am determining that there is no connection.\n\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLWFpLXN0dWRpbyJ9",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1627,
+   "completion_tokens": 1208,
+   "total_tokens": 2835,
+   "cost": 0.00575025,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00575025,
+    "upstream_inference_prompt_cost": 0.00122025,
+    "upstream_inference_completions_cost": 0.00453
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1199,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1627,
+   "completion_tokens": 1208,
+   "total_tokens": 2835,
+   "cost": 0.00575025,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00575025,
+    "upstream_inference_prompt_cost": 0.00122025,
+    "upstream_inference_completions_cost": 0.00453
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1199,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00575025,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google AI Studio",
+  "seconds": 21.02
+ },
+ "meta": {}
+}

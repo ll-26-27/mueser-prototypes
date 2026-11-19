@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "3831a9d5399a7bdcfa798df82a720a147531f57b16c4b7d44e64d2306adb6fdc",
+ "fetched_at": "2026-11-19T16:34:54Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Philo of Alexandria (14 BCE–50). Hellenistic Jewish philosopher who lived in Alexandria (c. 20 BCE-c. 50 CE)\n\nEXTRACT:\nPhilo of Alexandria (; Ancient Greek: Φίλων, romanized: Phílōn; Hebrew: יְדִידְיָה, romanized: Yəḏīḏyāh; c. 20 BCE – c. 50 CE), also called Philō Judæus, was a Hellenistic Jewish philosopher who lived in Alexandria, in the Roman province of Egypt.\nThe only event in Philo's life that can be decisively dated is his representation of the Alexandrian Jews in a delegation to the Roman emperor Caligula in 40 CE following civil strife between the Jewish and Greek communities of Alexandria.\nPhilo was a leading writer of the Hellenistic Jewish community in Alexandria, Egypt. He wrote expansively in Koine Greek on philosophy, politics, and religion in his time; specifically, he explored the connections between Greek Platonic philosophy and late Second Temple Judaism. For example, he maintained that the Greek-language Septuagint and the Jewish law still being developed by the rabbis of the period together served as a blueprint for the pursuit of individual enlightenment.\nPhilo used philosophical allegory to harmonize the Hebrew Bible, mainly the Torah, with Greek philosophy. His method followed the practices of both Jewish exegesis and Stoicism. His allegorical exegesis was important for many Christian Church Fathers, but he had very little reception history within Rabbinic Judaism.. Many critics of Philo assumed his allegorical perspective, in contrast to Biblical Literalism, would lend credibility to the notion of legend over historicity. However, Philo often advocated a literal understanding of the Torah and the historicity of such described events, while at other times favoring allegorical readings.\nSome scholars hold that his concept of the Logos as God's creative principle influenced early Christology. Other scholars deny direct influence but say that Philo and Early Christianity borrow from a common source.\n\nEVENTS (id, name, years):\nQ51644  Early Christianity (1–325) — period of church history beginning with the ministry of Jesus (c. 27-30) and ending with the First Council of Nicaea (325)\nQ75207  Pax Romana (-26–180) — roughly 200-year-long period in Roman history\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ206414  Principate (-26–284) — first period of the Roman Empire (ca. 27 BC to 284 AD)\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ504769  Xin dynasty (9) — The dynasty declared by Wang Mang during his rule over imperial China during AD 9-23\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ1192043  Roman–Parthian Wars (-65–217) — series of conflicts between the Parthian Empire and the Roman Republic and Roman Empire\nQ87779  Battle of the Teutoburg Forest (9) — battle between a coalition of Germanic peoples and an Imperial Roman army, 9 BCE\nQ51628  Nativity of Jesus (-4) — birth of Jesus\nQ749771  ministry of Jesus (28–33) — period of the life of Jesus between baptism and the Last Supper according to the canonical gospels\nQ901397  Conversion of Paul the Apostle (30) — event that led Paul to cease persecuting early Christians and to become an apostle of Jesus\nQ51624  Resurrection of Jesus (33) — event in the Christian faith, Gospel episode represented in the cycle of the Passion of Christ Central teaching of Christianity; Luke 24:1-11\nQ51636  crucifixion of Jesus (33) — Jesus' crucifixion as described in the four canonical gospels\nQ7317265  return from Egypt (0) — event in the life of Jesus given in the canonical gospels"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106082-8IPpjFk3C9638SmwT9Gu",
+  "object": "chat.completion",
+  "created": 1795106082,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Philo's Ideas**\n\nI'm currently exploring potential links between Philo of Alexandria and the provided historical periods. My focus is on identifying thematic or philosophical resonances that might connect his thought to Early Christianity and the Pax Romana, while also considering the distinct context of the Three Kingdoms of Korea.\n\n**Finding Common Threads**\n\nI'm actively searching for philosophical and thematic overlaps between Philo of Alexandria and the provided historical contexts. My current effort is focused on how his Platonic interpretations of Judaism might intersect with developments in Roman antiquity and early Christianity, while also considering the unique societal structures of the Yayoi period and the subsequent Three Kingdoms era.\n\n**Interpreting Philo's Methods**\n\nI'm analyzing Philo's interpretive techniques, particularly his use of allegory to reconcile Jewish scripture with Greek philosophy. I'm noting his dual approach to exegesis, sometimes literal, sometimes allegorical, and considering its potential impact on early Christian thought, while also acknowledging his limited reception within Rabbinic Judaism.\n\n**Evaluating Chronological Overlap**\n\nI'm scrutinizing the chronological relationship between Philo and Early Christianity. The extract suggests scholarly debate on direct influence versus a shared source, prompting me to determine if Philo's life spanned or influenced this period, rather than if he \"lived through\" it in a participatory sense.\n\n**Defining Influence Types**\n\nI'm clarifying the distinction between an event happening during a person's life and a true connection, as the extract implies. My focus is now on identifying specific types of connection: \"lived_through,\" \"took_part_in,\" \"wrote_in_response_to,\" \"suffered_under,\" or \"shaped_by,\" based on explicit mentions in the text.\n\n**Considering Direct Connections**\n\nI'm reassessing if Philo had any direct involvement. While direct participation isn't evident, I'm noting his presence during the Roman delegation to Emperor Caligula in 40 CE, a detail not explicitly listed in the events. I'm also clarifying whether \"Early Christianity\" or \"Pax Romana\" are mentioned by name.\n\n**Revising Event Matches**\n\nI'm re-evaluating the provided historical periods against the source text. It seems none of the specific events are mentioned. I'm now focusing on broader historical periods like \"Early Christianity,\" \"Pax Romana,\" \"Principate,\" and \"classical antiquity\" to see if they are implicitly or explicitly referenced.\n\n**Filtering Potential Matches**\n\nI'm now refining my assessment of \"Early Christianity.\" The text indicates it may have borrowed from common sources with Philo or been influenced by him, not the other way around. This doesn't fit the defined connection types (\"lived_through,\" \"took_part_in,\" etc.), so it appears to be a non-match.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Philo's Ideas**\n\nI'm currently exploring potential links between Philo of Alexandria and the provided historical periods. My focus is on identifying thematic or philosophical resonances that might connect his thought to Early Christianity and the Pax Romana, while also considering the distinct context of the Three Kingdoms of Korea.\n\n**Finding Common Threads**\n\nI'm actively searching for philosophical and thematic overlaps between Philo of Alexandria and the provided historical contexts. My current effort is focused on how his Platonic interpretations of Judaism might intersect with developments in Roman antiquity and early Christianity, while also considering the unique societal structures of the Yayoi period and the subsequent Three Kingdoms era.\n\n**Interpreting Philo's Methods**\n\nI'm analyzing Philo's interpretive techniques, particularly his use of allegory to reconcile Jewish scripture with Greek philosophy. I'm noting his dual approach to exegesis, sometimes literal, sometimes allegorical, and considering its potential impact on early Christian thought, while also acknowledging his limited reception within Rabbinic Judaism.\n\n**Evaluating Chronological Overlap**\n\nI'm scrutinizing the chronological relationship between Philo and Early Christianity. The extract suggests scholarly debate on direct influence versus a shared source, prompting me to determine if Philo's life spanned or influenced this period, rather than if he \"lived through\" it in a participatory sense.\n\n**Defining Influence Types**\n\nI'm clarifying the distinction between an event happening during a person's life and a true connection, as the extract implies. My focus is now on identifying specific types of connection: \"lived_through,\" \"took_part_in,\" \"wrote_in_response_to,\" \"suffered_under,\" or \"shaped_by,\" based on explicit mentions in the text.\n\n**Considering Direct Connections**\n\nI'm reassessing if Philo had any direct involvement. While direct participation isn't evident, I'm noting his presence during the Roman delegation to Emperor Caligula in 40 CE, a detail not explicitly listed in the events. I'm also clarifying whether \"Early Christianity\" or \"Pax Romana\" are mentioned by name.\n\n**Revising Event Matches**\n\nI'm re-evaluating the provided historical periods against the source text. It seems none of the specific events are mentioned. I'm now focusing on broader historical periods like \"Early Christianity,\" \"Pax Romana,\" \"Principate,\" and \"classical antiquity\" to see if they are implicitly or explicitly referenced.\n\n**Filtering Potential Matches**\n\nI'm now refining my assessment of \"Early Christianity.\" The text indicates it may have borrowed from common sources with Philo or been influenced by him, not the other way around. This doesn't fit the defined connection types (\"lived_through,\" \"took_part_in,\" etc.), so it appears to be a non-match.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1841,
+   "completion_tokens": 2044,
+   "total_tokens": 3885,
+   "cost": 0.00904575,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00904575,
+    "upstream_inference_prompt_cost": 0.00138075,
+    "upstream_inference_completions_cost": 0.007665
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2035,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1841,
+   "completion_tokens": 2044,
+   "total_tokens": 3885,
+   "cost": 0.00904575,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00904575,
+    "upstream_inference_prompt_cost": 0.00138075,
+    "upstream_inference_completions_cost": 0.007665
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 2035,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00904575,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 11.92
+ },
+ "meta": {}
+}

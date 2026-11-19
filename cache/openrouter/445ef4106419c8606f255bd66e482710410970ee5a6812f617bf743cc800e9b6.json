@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "445ef4106419c8606f255bd66e482710410970ee5a6812f617bf743cc800e9b6",
+ "fetched_at": "2026-11-19T16:39:54Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Bhartṛhari (570–651). Indian linguist, poet and writer\n\nEXTRACT:\nBhartṛhari (Devanagari: भर्तृहरि; Bhartrhari; fl. c. 5th to 6th century CE), was an Indian grammarian (Vyākaraṇa) and philosopher of language. In his principal treatise, the Vākyapadīya, he systematized the philosophy of the Sanskrit grammatical tradition and formulated the metaphysics of Śabdādvaita (linguistic monism). His work is known for developing the theory of sphoṭa (the semantic unit of speech) and the concept of Śabda-Brahman, that identifies ultimate reality with the principle of language. Although traditional accounts identify him as the author of the poetic collection Śatakatraya, modern scholars generally treat the grammarian and the poet as distinct figures.\nBesides Vākyapadīya, he is also best known for his works, Mahābhāṣyatikā (a commentary on Patanjali's Mahabhashya), Vākyapadīyavṛtti (a commentary on Vākyapadīya kāṇḍas 1 and 2), and Śabdadhātusamīkṣā.\nBhartrhari's linguistic theories influenced subsequent Indian philosophical traditions, notably Advaita Vedanta, Mīmāṃsā, and Pratyabhijñā (Kashmir Shaivism), where his holistic model of meaning and Śabda-Brahman doctrine were debated extensively.\n\nEVENTS (id, name, years):\nQ726805  Jahiliyyah (500–700) — Islamic term for pre-Islamic Arabian society\nQ9683  Tang dynasty (618–907) — empire in the China proper between 618 and 907 AD\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ49696  Northern and Southern dynasties (420–589) — period in Chinese history from 420 to 589\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ202763  Early Middle Ages (476–900) — period of European history lasting from the 5th century to the 10th century\nQ210688  Asuka period (538–710) — historical period of Japan\nQ248984  Muslim conquest of the Levant (633–640) — 7th-century conquest by the Rashidun Caliphate\nQ1348630  Ridda Wars (632–633) — series of military campaigns (632–633 CE) launched by Abu Bakr against rebel Arabian tribes soon after Muhammad's death; ended with Muslim victory\nQ887684  Muslim conquest of Persia (633–654) — historical event (633–651) during which the Rashidun caliphate conquered the Sasanian empire\nQ925960  Muslim conquest of the Maghreb (647–709) — military campaign\nQ29100  Arab–Byzantine wars (629–1050) — series of wars between the 7th and 11th centuries\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ2326099  Byzantine–Sassanid War of 602–628 (602–628) — the last war between Byzantine Empire and Persia\nQ3621258  Arab conquest of Armenia (642–744) — Arab Rashidun Caliphate conquest of Armenia\nQ1647162  Treaty of Hudaybiyyah (628) — treaty between prophet Muhammad, representing the state of Islam, and the Quraish tribe of Mecca\nQ194226  Battle of Yarmouk (636) — battle of the Arab–Byzantine wars\nQ826083  Battle of the Trench (627) — failed besieging of early Muslims by Arab and Jewish forces in 627 CE\nQ486124  Battle of Badr (624) — 624 battle between the Muslims and the Quraysh near Badr (present-day Saudi Arabia)\nQ488278  Battle of Uhud (625) — early Islamic battle\nQ821711  Plague of Justinian (541–750) — 541–549 AD pandemic in the Byzantine Empire, later northern Europe\nQ565661  Battle of Khaybar (628) — 7th-century battle\nQ1639459  Battle of Mu'tah (629) — September 629 battle\nQ836844  Battle of al-Qadisiyyah (636) — 636 AD battle between the Sasanian Empire and the Rashidun Caliphate\nQ262529  Japanese missions to Tang China (630) — Japanese efforts of cultural exchange and diplomacy with Tang Dynasty China\nQ131482  Hijra (622) — journey of Muhammad from Mecca to Yathrib (Medina)"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106390-vL2ACjBP2Qrn8HcymDlX",
+  "object": "chat.completion",
+  "created": 1795106390,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Bhartṛhari to Events**\n\nI'm focusing on identifying direct links between Bhartṛhari and the historical events presented in the extract. My current task is to meticulously review the text, pinpointing any explicit mentions or strong contextual implications that might establish a connection, however subtle, between his philosophical work and the timeline.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Bhartṛhari to Events**\n\nI'm focusing on identifying direct links between Bhartṛhari and the historical events presented in the extract. My current task is to meticulously review the text, pinpointing any explicit mentions or strong contextual implications that might establish a connection, however subtle, between his philosophical work and the timeline.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "AY89a19P+oJdWUt65Wq98CeisiG95002CmzeviHzjfm8azYLasVbteLv9nF2KcCifGtkOia0ga09IfULnR5D3J2dPn8LGysMt7oPIPr9Pa2aGkAzlU5RL8ZWJHqYzDnHHYCywG9QFie+xKS4XXh2kNMwaSNIRWE2wqmBZEMJFK8UkY/p2awZunAkB5J1Zt4/sGColMhhFvF8cg7td+ydg29e5hftM0qDsNW7zr7fwTNSrzLrSofmVQZt29uqe8q94uVq3hhMDeJWCrMaS32mkH4GMcOO/DBWR/tAxySgw3r1zE/Fo7i3vJwiOikBIc7JwEQJkkiJcyTbkavBBHTMd1GOmMVTWFaimhmMy8Rq3aeYqXOc7heDlJKiEBfzKwCZnr5NxWoyRZsTq6ukVdpBiEOTtRO1GiPMlwxWlKG3fiE+s5EzhRnqzLvszvSzqSg7BCz4TNqPibWTgP+EThxY8F8kT/UbWga/i/ETuc3Qxef0UkBq/3ZB8g9oTELeRW9OsLf5WASXehE4Xjp9SzyYwPSJDYKXjPnpym8AjILsSg5Y9wp5XKUzlenWchlArNdw4j3W2+sgN3xt5Rh/mWAyi80cD13rbLdbBzXOqFfqp0df7WzXxhZqaOT9opVsFQhgt/0jXj+6ldR4eDb5tBpZfJoqKnARESIZI8yQ3GVEVgK+dSNdSBOV3jS+9zrrkanp3uzIYr050bFtyjzIBoV4ysDE+ExOwT/2t+P7cG3az9ci58XrNSAYf18w4/g3gFHw8hOv5VH6xQYYWOIKJ/6R7HTTWpGUsYEZF/ZXpRv1vralN5mlCg1v/8bx7mgjB4FCn2XKrggCVX71b12ZBWdTACJbbXySGkADpxU1behUwLmqdVSF+88gLuZqXuTpXmNvFqczAtCk7v7aELt8+QZpuI3QtJF/wC2CUheWv8YvpuDALcuEjezUYKD4sBJHibg/oAecn8a0gCSg/stOKGvn4Fwj5AZM6tzx/R96jGNn0w5EbK+fapeZrCkgzguwLdLipWlmUyqZKqExveK47415u7YLLu2X9jOxd8urskaU5vllAKznrw+zixi+UK3TOh5O7ACIOqLCVjsrPRFxIZlmQAGigi4Xvxf1sexu8QZKjHlNFabCILXf7xMJV17Kz5Mw8gPULEXeKpymuCLbdMem8cnM0QbCmXhxlCay4pUZxIEHw4Vh2qyBjxvmSBijoP0phfZPpYP6jcLjNXM/f9aPPtZQ4srtOm/Od+BIwZgCpyUkkmYZgLfEQathpR3jpxxH26ZYm+PicNIRsOeMp5b2jRn7c8YgH9oP6LNnO3sIIU1LIS/d36wphGpdTKUb5rQ25BNHYl0++GvGsRMSsKvM56EwTdb7f1Z0pDtaf/sreBDDZlmTYERquqkTQgApiV1vTwK9Wk2FvzJhlV8INzbVYDnRwpsTo+dnijXlo56Td1XGh4gAKSx2F0XvREQx3p0WuvTaMrJNjrJYH0t6at9q3SHFqt1dodlfKwi3NTUY9Cjj0anWVuZpdaKFqmADthMbAxpm/xmK/d3AQoaUIRII9VkUVurAWacxz8mTtbKlvE7B0c9g2VKxYGlarwKmzRa+59idr9ghs9YNyOCq0bC/E9SRNic0Q2kglEqFu0MY9XOph6IFAfsyTbkmNQFTwXA5iVrMXfez51P48S/ri/jMn27/mDiKIa1bcBvYQmHJEIk4KAnTkav/q79jRjmkV4CiN9ETgd2TqWrHLtQM8JvZ2OHmbpsIHRlyW+hVx/rTb6cGiJrG4SXKLEWNMquI+UO2PpbVSCFfroo9Uvkkm6dYvUnL4aU+XgA1DMTUwXMqFO3qJ5AAYn3/kh4G2EM+RarVdfDM16Wz3wdAP3/ZAFQSMoCRmwKcijdVHJI9iKgFlkKrtzq9TQfF2XbqeSsfPmj5zw==.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 2066,
+   "completion_tokens": 323,
+   "total_tokens": 2389,
+   "cost": 0.00276075,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00276075,
+    "upstream_inference_prompt_cost": 0.0015495,
+    "upstream_inference_completions_cost": 0.00121125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 314,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 2066,
+   "completion_tokens": 323,
+   "total_tokens": 2389,
+   "cost": 0.00276075,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00276075,
+    "upstream_inference_prompt_cost": 0.0015495,
+    "upstream_inference_completions_cost": 0.00121125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 314,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00276075,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 4.04
+ },
+ "meta": {}
+}

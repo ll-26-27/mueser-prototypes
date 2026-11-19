@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "b423c1d55722b9b5955aa43804b3abd56b69ac0a50c586add06d402df58e59f4",
+ "fetched_at": "2026-11-19T16:40:21Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 8000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Nagarjuna (150–250). 3rd-century Indian Buddhist philosopher\n\nEXTRACT:\nNāgārjuna (Sanskrit, from Nāga + Arjuna; Chn. Lóngshù 龍樹; Tib. Klu sgrub; c. 150 – c. 250 CE) was a philosopher and Mahāyāna Buddhist monk from South India, considered the founder of the Madhyamaka (Centrism, Middle Way) school.\nNāgārjuna is widely considered to be the most important Buddhist philosopher after the Buddha himself. Indeed, in Tibetan Buddhism, he is even called the \"second Buddha\". He was a well known defender of the Mahāyāna movement and his  treatises (śāstras) are the foundational texts of a school of Buddhist philosophy known as the view of emptiness (Śūnyatāvāda) or Madhyamaka. Nāgārjuna remains a key figure in all contemporary traditions of Mahāyāna Buddhism, and his philosophical writings on the doctrine of “emptiness” (śūnyatā) influenced Indian philosophy for a millennium, as well as being an indispensable doctrinal source for Mahāyāna doctrine in East Asian Buddhism and Indo-Tibetan Buddhism.\nNāgārjuna's Mūlamadhyamakakārikā (Root Verses on Madhyamaka, MMK) is the most important text on the Madhyamaka philosophy of emptiness. The MMK inspired a large number of commentaries in Sanskrit, Chinese, Tibetan, Korean and Japanese and continues to be studied today.\n\nEVENTS (id, name, years):\nQ51644  Early Christianity (1–325) — period of church history beginning with the ministry of Jesus (c. 27-30) and ending with the First Council of Nicaea (325)\nQ75207  Pax Romana (-26–180) — roughly 200-year-long period in Roman history\nQ165292  Three Kingdoms of Korea (-17–660) — period of Korean history (1st century BCE – 7th century CE), where three kingdoms (Goguryeo, Baekje, and Silla) coexisted on the Korean peninsula\nQ185043  Three Kingdoms (220–280) — period of Chinese history (220–280 AD) dominated by the Wei, Shu-Han, and Wu kingdoms\nQ206414  Principate (-26–284) — first period of the Roman Empire (ca. 27 BC to 284 AD)\nQ329838  Crisis of the Third Century (235–284) — Roman Imperial government crisis (235–284)\nQ459939  Kofun period (250–538) — period of Japanese history from 300 to 538\nQ486761  classical antiquity (-799–300) — period of ancient history centered in the Mediterranean between the 8th century BCE and the 3rd century CE\nQ2497438  Roman Greece (-145–330) — historic period of Greece\nQ207858  Yayoi period (-299–250) — historical period of Japan\nQ933963  Marcomannic Wars (166–180) — war between the Roman Empire and Germanic peoples (166-180)\nQ154552  Illyro-Roman Wars (229–167) — wars between the Romans and the Illyrians (229–168 BC)\nQ500409  Roman–Persian Wars (-53–628) — series of wars between ancient Greco-Roman and Iranian states\nQ1192043  Roman–Parthian Wars (-65–217) — series of conflicts between the Parthian Empire and the Roman Republic and Roman Empire\nQ243721  Year of the Five Emperors (193) — Roman civil war in 193 CE in which five men claimed the title of Roman emperor\nQ751743  Yellow Turban Rebellion (184–205) — rebellion against corruption of the Imperial Court rooted in Taoist religious principles\nQ599141  Antonine Plague (165–180) — pandemic"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795106417-DjXsjVhNbHVucVnn4SGH",
+  "object": "chat.completion",
+  "created": 1795106417,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "provisioned",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Connecting Philosophers to History**\n\nI'm currently focused on establishing links between Nāgārjuna and the provided historical context, specifically his significant role as the founder of the Madhyamaka school and his immense philosophical influence, positioning him as a pivotal figure in Buddhist thought after the Buddha.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Connecting Philosophers to History**\n\nI'm currently focused on establishing links between Nāgārjuna and the provided historical context, specifically his significant role as the founder of the Madhyamaka school and his immense philosophical influence, positioning him as a pivotal figure in Buddhist thought after the Buddha.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1783,
+   "completion_tokens": 353,
+   "total_tokens": 2136,
+   "cost": 0.002661,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002661,
+    "upstream_inference_prompt_cost": 0.00133725,
+    "upstream_inference_completions_cost": 0.00132375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 344,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1783,
+   "completion_tokens": 353,
+   "total_tokens": 2136,
+   "cost": 0.002661,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.002661,
+    "upstream_inference_prompt_cost": 0.00133725,
+    "upstream_inference_completions_cost": 0.00132375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 344,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.002661,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 5.03
+ },
+ "meta": {}
+}

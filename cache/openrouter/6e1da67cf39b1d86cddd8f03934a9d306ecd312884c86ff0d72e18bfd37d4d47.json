@@ -1,0 +1,176 @@
+{
+ "namespace": "openrouter",
+ "key": "6e1da67cf39b1d86cddd8f03934a9d306ecd312884c86ff0d72e18bfd37d4d47",
+ "fetched_at": "2026-11-19T16:16:30Z",
+ "request": {
+  "model": "google/gemini-3.8-flash",
+  "temperature": 0.0,
+  "max_tokens": 3000,
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are given one person (a thinker), the lead section of their encyclopedia article (EXTRACT), and a list of historical events and periods whose dates overlap the person's life (EVENTS, each with an id).\n\nSay which of the listed events bear on this person, and how. Use only the EXTRACT: if the extract does not mention or clearly imply an event, do not connect it, even if you know the connection from elsewhere. An event that merely happened during the person's life is not a connection unless the extract brings it up.\n\nFor each connection give:\n- \"event\": the id from the EVENTS list, exactly as written (Q followed by digits). Never an event that is not in the list.\n- \"type\", one of:\n  - \"lived_through\": the extract mentions the event as part of the person's circumstances, without saying they acted in it or wrote against it;\n  - \"took_part_in\": the person acted in the event (fought, sat in the assembly, negotiated, signed, governed, led);\n  - \"wrote_in_response_to\": a named work, or the person's writing generally, answers or treats the event; put the work's title in \"work\" if the extract names one;\n  - \"suffered_under\": the person was exiled, imprisoned, censored, dismissed, persecuted or killed because of the event;\n  - \"shaped_by\": the extract says the event formed the person's thinking, without naming a work.\n- \"reason\": one sentence in your own words.\n- \"evidence\": one sentence copied exactly from the EXTRACT, character for character, that supports the connection. Do not paraphrase, shorten or join sentences.\n- \"work\": the title of the work, if the type is wrote_in_response_to and the extract names it; otherwise an empty string.\n\nIf an event in the list is the same thing under a broader or narrower name as one the extract mentions (the extract says \"the civil war\" and the list has \"English Civil War\"), connect it. If nothing in the extract bears on any listed event, return an empty list. Return JSON only, matching the schema you are given."
+   },
+   {
+    "role": "user",
+    "content": "PERSON: Meister Eckhart (1260–1328-02-05). German philosopher and theologian\n\nEXTRACT:\nEckhart von Hochheim  (born Johannes Eckhart; c. 1260 – c. 1328), commonly known as Meister Eckhart (German: [ˈmaɪstɐ ˈʔɛkaʁt]), was a German Catholic priest, theologian, philosopher and mystic. He was born near Gotha in the Landgraviate of Thuringia in the Holy Roman Empire. He was a member of the Dominican Order.\nEckhart came into prominence during the Avignon Papacy at a time of increased tensions between monastic orders, diocesan clergy, the Franciscans, and the Dominicans. In later life, he was accused of heresy, brought up before the local Franciscan-led Inquisition and tried as a heretic by Pope John XXII with the bull In Agro Dominico of March 27, 1329. In the trial, excerpts of his Book of Divine Consolation were used against Eckhart. He seems to have died before his verdict was received.\nEckhart was well known for his work with pious lay groups such as the Friends of God and was succeeded by his more circumspect disciples Johannes Tauler and Henry Suso, the latter of whom was beatified. Since the 19th century, Eckhart has received renewed attention. He has acquired a status as a great mystic within contemporary new age spirituality, as well as considerable interest from scholars situating him within the medieval scholastic and philosophical tradition.\n\nEVENTS (id, name, years):\nQ7313  Yuan dynasty (1271) — Mongol-led imperial dynasty of China (1271–1368)\nQ12554  Middle Ages (476–1500) — period of European history from the 5th to the late 15th-century\nQ212685  High Middle Ages (1000–1300) — period in European history from 1000-1250 CE\nQ212976  Late Middle Ages (1301–1492) — period of European history generally comprising the 14th and 15th centuries\nQ236205  Kamakura period (1185–1333) — period of Japanese history\nQ1197995  Frankokratia (1204–1453) — historical period in Greece\nQ7462  Song dynasty (960–1279) — former imperial dynasty of China (960–1279)\nQ625133  Aragonese Crusade (1283–1286) — 1284 military campaign\nQ630259  Byzantine–Ottoman wars (1265–1479) — conflict\nQ12546  Crusades (1095–1291) — mass military expeditions and wars initiated by the Catholic Church in the High Middle Ages\nQ2288144  Byzantine–Bulgarian Wars (680–1355) — series of conflicts fought between the Byzantines and Bulgarians from 680 to 1355\nQ1368240  Wars of Scottish Independence (1296–1357) — war of national liberation\nQ79791  Reconquista (722–1492) — period in the history of the Iberian Peninsula\nQ243684  Eighth Crusade (1270) — military raid against muslim Hafsids 1270\nQ316743  Ninth Crusade (1271–1272) — European crusade to the Holy Land in 1271-1272\nQ2092093  Mongol invasions and conquests (1206–1337) — series of Mongol invasions and conquests (1206–1405)\nQ2665664  Prussian Crusade (1230–1274) — series of 13th-century campaigns of Roman Catholic crusaders\nQ853685  Treaty of Nöteborg (1323) — 1323 peace treaty between Kingdom of Sweden and the Novgorod Republic\nQ222520  Battle of Bannockburn (1314) — 1314 battle during the First War of Scottish Independence\nQ244356  Battle of Ain Jalut (1260) — 1260 battle between the Mamluk Sultanate and the Mongol Empire\nQ1988505  Great Famine of 1315–1317 (1315–1317) — famine in 14th century medieval Europe\nQ499626  Battle of Stirling Bridge (1297) — 1297 battle of the First War of Scottish Independence\nQ589318  Battle of Falkirk (1298) — 1298 battle of the First War of Scottish Independence\nQ44732  Battle of the Golden Spurs (1302) — 1302 battle between Flamish citizens and the king"
+   }
+  ],
+  "usage": {
+   "include": true
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "connections",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "connections": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "event": {
+          "type": "string",
+          "description": "the event's id from the list, e.g. Q12345"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "lived_through",
+           "took_part_in",
+           "wrote_in_response_to",
+           "suffered_under",
+           "shaped_by"
+          ]
+         },
+         "reason": {
+          "type": "string",
+          "description": "one sentence, in your words"
+         },
+         "evidence": {
+          "type": "string",
+          "description": "the sentence of the extract that supports it, copied exactly"
+         },
+         "work": {
+          "type": "string",
+          "description": "the work's title if the type is wrote_in_response_to, else empty"
+         }
+        },
+        "required": [
+         "event",
+         "type",
+         "reason",
+         "evidence",
+         "work"
+        ]
+       }
+      }
+     },
+     "required": [
+      "connections"
+     ]
+    }
+   }
+  },
+  "image_path": null
+ },
+ "raw": {
+  "id": "gen-1795104981-HRnIzXTtKqF7yKhTaXlR",
+  "object": "chat.completion",
+  "created": 1795104981,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "stop",
+    "native_finish_reason": "STOP",
+    "message": {
+     "role": "assistant",
+     "content": "{\n  \"connections\": []\n}",
+     "refusal": null,
+     "reasoning": "**Matching Eckhart's Era**\n\nI'm focusing on pinpointing Meister Eckhart's timeframe within the provided historical periods. My current efforts involve cross-referencing his known life dates with the Middle Ages classifications, specifically the High and Late periods, to establish the most accurate historical context for him.\n\n**Confirming Avignon Papacy**\n\nI'm confirming the Avignon Papacy's timeframe as a primary anchor. My current focus is on how the mentioned tensions between monastic orders, the Inquisition, and Pope John XXII align with this period, and how Eckhart's accusations fit within that established context.\n\n**Locating Eckhart's Context**\n\nI'm now considering how the \"medieval scholastic and philosophical tradition\" anchors Eckhart within the Middle Ages, as per the instructions. This, along with his disciples Tauler and Suso and his renewed 19th-century attention, helps define his historical and spiritual significance.\n\n**Assessing Historical Links**\n\nI'm scrutinizing the prompt's criteria for linking Eckhart to the Middle Ages. It seems my previous interpretation was too broad; the connection requires explicit mention of him living through or being shaped by the era, not just academic situating within its traditions.\n\n",
+     "reasoning_details": [
+      {
+       "type": "reasoning.text",
+       "text": "**Matching Eckhart's Era**\n\nI'm focusing on pinpointing Meister Eckhart's timeframe within the provided historical periods. My current efforts involve cross-referencing his known life dates with the Middle Ages classifications, specifically the High and Late periods, to establish the most accurate historical context for him.\n\n**Confirming Avignon Papacy**\n\nI'm confirming the Avignon Papacy's timeframe as a primary anchor. My current focus is on how the mentioned tensions between monastic orders, the Inquisition, and Pope John XXII align with this period, and how Eckhart's accusations fit within that established context.\n\n**Locating Eckhart's Context**\n\nI'm now considering how the \"medieval scholastic and philosophical tradition\" anchors Eckhart within the Middle Ages, as per the instructions. This, along with his disciples Tauler and Suso and his renewed 19th-century attention, helps define his historical and spiritual significance.\n\n**Assessing Historical Links**\n\nI'm scrutinizing the prompt's criteria for linking Eckhart to the Middle Ages. It seems my previous interpretation was too broad; the connection requires explicit mention of him living through or being shaped by the era, not just academic situating within its traditions.\n\n",
+       "format": "google-gemini-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "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.eyJlbmRwb2ludF9zbHVnIjoiZ29vZ2xlL2dlbWluaS0zLjgtZmxhc2gtMjAyNjA5MDJ8Z29vZ2xlLXZlcnRleC9nbG9iYWwifQ",
+       "format": "google-gemini-v1",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 1981,
+   "completion_tokens": 1170,
+   "total_tokens": 3151,
+   "cost": 0.00587325,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00587325,
+    "upstream_inference_prompt_cost": 0.00148575,
+    "upstream_inference_completions_cost": 0.0043875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1161,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ "parsed": {
+  "text": "{\n  \"connections\": []\n}",
+  "parsed": {
+   "connections": []
+  },
+  "usage": {
+   "prompt_tokens": 1981,
+   "completion_tokens": 1170,
+   "total_tokens": 3151,
+   "cost": 0.00587325,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00587325,
+    "upstream_inference_prompt_cost": 0.00148575,
+    "upstream_inference_completions_cost": 0.0043875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1161,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  },
+  "cost_usd": 0.00587325,
+  "model": "google/gemini-3.8-flash",
+  "provider": "Google",
+  "seconds": 8.69
+ },
+ "meta": {}
+}
